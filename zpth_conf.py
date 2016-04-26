@@ -1,4 +1,7 @@
 
+import zpth2 as pth
+
+
 def generateLaunch_PBS(accountname,queuename,testname,mpiLaunch,executable,ranks,ranks_per_node,walltime):
   if not ranks:
     print("<generateLaunch_PBS>: Requires the number of MPI-ranks be specified")
@@ -107,14 +110,13 @@ def generateLaunch_LoadLevelerBG(accountname,queuename,testname,executable,total
 
 
 class zpthBatchQueuingSystem:
-  accountName = []
-  queueName = []
-  mpiLaunch = []
-  queuingSystemType = []
-  #  ignoreKeywords = [ '#', '!', '//', '*' ]
-  jobSubmissionCommand = []
 
   def __init__(self):
+    self.accountName = []
+    self.queueName = []
+    self.mpiLaunch = []
+    self.queuingSystemType = []
+    self.jobSubmissionCommand = []
     self.use_batch = False
 
 
@@ -138,22 +140,31 @@ class zpthBatchQueuingSystem:
     if type in ['PBS','pbs']:
       self.queuingSystemType = 'pbs'
       self.jobSubmissionCommand = 'qsub '
+      self.use_batch = True
       print('Recognized PBS queuing system')
 
     elif type in ['LSF','lsf']:
       self.queuingSystemType = 'lsf'
       self.jobSubmissionCommand = 'bsub < '
+      self.use_batch = True
       print('Recognized LSF queuing system')
 
     elif type in ['SLURM','slurm']:
       self.queuingSystemType = 'slurm'
       self.jobSubmissionCommand = 'sbatch '
+      self.use_batch = True
       print('Recognized Slurm queuing system')
 
     elif type in ['LoadLeveler','load_leveler','loadleveler','llq']:
       self.queuingSystemType = 'load_leveler'
       self.jobSubmissionCommand = 'llsubmit '
+      self.use_batch = True
       print('Recognized IBM LoadLeveler queuing system')
+
+    elif type in ['none','None', 'local']:
+      self.queuingSystemType = 'none'
+      self.jobSubmissionCommand = ''
+      print('No queuing system being used')
 
     else:
       print('Value found: ' + type + ' ...')
@@ -177,7 +188,7 @@ class zpthBatchQueuingSystem:
 
   def configure(self):
     print('Creating new .conf file')
-    v = input('Batch queuing system type <pbs,lsf,slurm,llq>: ')
+    v = input('Batch queuing system type <pbs,lsf,slurm,llq,none>: ')
     if not v:
       raise ValueError('You must specify the type of queuing system')
     self.setQueueSystemType(v)
@@ -187,11 +198,13 @@ class zpthBatchQueuingSystem:
       raise ValueError('You must specify an MPI launch command')
     self.setMPILaunch(v)
 
-    v = input('Account to charge (optional - hit enter if not applicable): ')
-    self.setHPCAccountName(v)
+    if self.use_batch == True:
 
-    v = input('Queue name to submit tests to (optional - hit enter if not applicable): ')
-    self.setQueueName(v)
+      v = input('Account to charge (optional - hit enter if not applicable): ')
+      self.setHPCAccountName(v)
+
+      v = input('Queue name to submit tests to (optional - hit enter if not applicable): ')
+      self.setQueueName(v)
     
     self.writeDefinition()
 
@@ -230,8 +243,9 @@ class zpthBatchQueuingSystem:
     #    file.write('mpiLaunch = ' + self.mpiLaunch + '\n' )
     file.write( self.queuingSystemType + '\n' )
     file.write( self.mpiLaunch + '\n' )
-    file.write( self.queueName + '\n' )
-    file.write( self.accountName + '\n' )
+    if self.use_batch == True:
+      file.write( self.queueName + '\n' )
+      file.write( self.accountName + '\n' )
     file.close()
 
 
@@ -246,11 +260,13 @@ class zpthBatchQueuingSystem:
       v = file.readline()
       self.setMPILaunch(v.rstrip())
 
-      v = file.readline()
-      self.setQueueName(v.rstrip())
+      if self.use_batch == True:
+        v = file.readline()
+        self.setQueueName(v.rstrip())
 
-      v = file.readline()
-      self.setHPCAccountName(v.rstrip())
+        v = file.readline()
+        self.setHPCAccountName(v.rstrip())
+
 
       file.close()
     except:
@@ -260,28 +276,37 @@ class zpthBatchQueuingSystem:
     if self.queuingSystemType == 'pbs':
       filename = generateLaunch_PBS(self.accountName,self.queueName,testname,self.mpiLaunch,commnd,ranks,ranks_per_node,walltime)
 
-
     print('To launch execute: ' + self.jobSubmissionCommand + filename)
     return(filename)
 
+  def submitJob(self,unittest):
+    if not self.use_batch:
+      print('Execute mpiXXX ./stuff')
+    else:
+      print('Call createSubmissionFile() then launch')
+      self.createSubmissionFile(unittest.name,unittest.execute,unittest.ranks,'',"00:05:00")
+
 # < end class >
 
-batch = zpthBatchQueuingSystem()
-batch.configure()
-batch.view()
+def test1():
+  batch = zpthBatchQueuingSystem()
+  batch.configure()
+  batch.view()
 
-batch2 = zpthBatchQueuingSystem()
-batch2.reconfigure()
+  batch2 = zpthBatchQueuingSystem()
+  batch2.reconfigure()
 
-#conf.addIgnoreKeywords('**')
-#print(conf.ignoreKeywords)
+  #conf.addIgnoreKeywords('**')
+  #print(conf.ignoreKeywords)
 
-#batch.setQueueSystemType('llq')
-#batch.setMPILaunch('mpiexec')
-#batch.setHPCAccountName('geophys')
-#batch.setQueueName('small')
+  #batch.setQueueSystemType('llq')
+  #batch.setMPILaunch('mpiexec')
+  #batch.setHPCAccountName('geophys')
+  #batch.setQueueName('small')
 
-batch2.view()
+  batch2.view()
 
-batch2.createSubmissionFile('ex1a','./ex1 -options_file go.fast',24,6,"00:05:00")
+  batch2.createSubmissionFile('ex1a','./ex1 -options_file go.fast',24,6,"00:05:00")
 
+if __name__ == "__main__":
+  test1()
