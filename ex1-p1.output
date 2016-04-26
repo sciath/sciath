@@ -1,0 +1,13 @@
+@ -------------------------------------------------------
+@ Example output
+@ consider this a comment dumped by application code
+@ -------------------------------------------------------
+
+$cputime = { 2.22 }
+$residuals = { 
+  33.32999999,
+  6.6
+}
+kspits 42
+$norm = 102.00000001
+$rms 51.0
