@@ -13,12 +13,26 @@ We provide
 ### How do I use this crap? ###
 
 * For an example defining a test and performing the verification, execute 
-  ```
-  #!bash
+```
+#!bash
+
   python3.4 zpth2.py
-  ```
+
+```
+
+
 * For an example of the batch queuing system support, execute  
-  ```
-  #!bash
+```
+#!bash
+
   python3.4 zpth_conf.py
-  ```
+
+```
+
+* For a more complete example demonstrating unit-test and batch queuing system support, execute  
+```
+#!bash
+
+  python3.4 busi.py
+
+```
