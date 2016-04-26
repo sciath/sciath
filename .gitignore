@@ -1,1 +1,5 @@
 zpthBatchQueuingSystem.conf
+*.pbs
+*.lsf
+*.slurm
+*.llq
