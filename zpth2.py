@@ -13,7 +13,8 @@ def compareLiteral(input,expected):
     err = err + "<compareLiteral failed>: input and expected are of different length\n"
     err = err + ("  expected: %s\n" % expected)
     err = err + ("  input:    %s\n" % input)
-  
+    return status,err
+
   for index in range(0,len(expected)):
     if input[index] != expected[index]:
       status = False
@@ -39,6 +40,7 @@ def compareFloatingPoint(input,tolerance,expected):
     err = err + "<compareFloatingPoint failed>: input and expected are of different length\n"
     err = err + ("  expected: %s\n" % e_f)
     err = err + ("  input:    %s\n" % i_f)
+    return status,err
 
   for index in range(0,len(e_f)):
     absdiff = np.abs(i_f[index] - e_f[index]);
@@ -66,8 +68,8 @@ def compareInteger(input,tolerance,expected):
     err = err + "<compareInteger failed>: input and expected are of different length\n"
     err = err + ("  expected: %s\n" % e_i)
     err = err + ("  input:    %s\n" % i_i)
-  
-  
+    return status,err
+    
   for index in range(0,len(e_i)):
     absdiff = np.abs(i_i[index] - e_i[index]);
     if absdiff > tol_i:
@@ -275,6 +277,7 @@ class UnitTest:
   
   def __init__(self, name,ranks,execute,expected_file):
     self.passed = -1
+    self.walltime = "00:05:00"
     self.errormessage = ''
     self.name = name
     self.ranks = ranks
