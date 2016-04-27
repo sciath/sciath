@@ -1,17 +1,17 @@
 
-import zpth2 as pth
+import pth_test as pth
 
-from zpth2 import compareLiteral
-from zpth2 import compareFloatingPoint
-from zpth2 import compareInteger
-from zpth2 import parseFile
-from zpth2 import getKeyValues
-from zpth2 import getKeyValuesAsInt
-from zpth2 import getKeyValuesAsFloat
-from zpth2 import getKeyValuesNLinesInclusive
-from zpth2 import getKeyValuesNLinesExclusive
+from pth_test import compareLiteral
+from pth_test import compareFloatingPoint
+from pth_test import compareInteger
+from pth_test import parseFile
+from pth_test import getKeyValues
+from pth_test import getKeyValuesAsInt
+from pth_test import getKeyValuesAsFloat
+from pth_test import getKeyValuesNLinesInclusive
+from pth_test import getKeyValuesNLinesExclusive
 
-import zpth_conf as batch
+import pth_batch as batch
 
 def test1_example():
   

@@ -1,6 +1,6 @@
 
 import os
-import zpth2 as pth
+import pth_test as pth
 
 
 def generateLaunch_PBS(accountname,queuename,testname,mpiLaunch,executable,ranks,ranks_per_node,walltime,outfile):
