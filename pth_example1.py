@@ -65,7 +65,7 @@ def test1_example():
 # /Users/dmay/software/petsc-3.6.0/arch-darwin-c-debug/bin/mpiexec
 def run_petsc_ex2a():
 
-  launch = '/Users/dmay/software/petsc-3.6.0/src/ksp/ksp/examples/tutorials/ex2'
+  launch = '${PETSC_DIR}/src/ksp/ksp/examples/tutorials/ex2'
   ranks = 4
   expected_file = 'ex2.expected'
   
@@ -79,7 +79,7 @@ def run_petsc_ex2a():
 
 def run_petsc_ex2b():
   
-  launch = '/Users/dmay/software/petsc-3.6.0/src/ksp/ksp/examples/tutorials/ex2 -ksp_monitor_short'
+  launch = '${PETSC_DIR}/src/ksp/ksp/examples/tutorials/ex2 -ksp_monitor_short'
   ranks = 4
   expected_file = 'ex2.expected'
   
@@ -93,7 +93,7 @@ def run_petsc_ex2b():
 
 def run_petsc_ex2c():
   
-  launch = '/Users/dmay/software/petsc-3.6.0/src/ksp/ksp/examples/tutorials/ex2 -ksp_type gcr -ksp_monitor_short'
+  launch = '${PETSC_DIR}/src/ksp/ksp/examples/tutorials/ex2 -ksp_type gcr -ksp_monitor_short'
   ranks = 4
   expected_file = 'ex2.expected'
   
