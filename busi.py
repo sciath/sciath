@@ -62,6 +62,28 @@ def test1_example():
   
   return(ex1)
 
+# /Users/dmay/software/petsc-3.6.0/arch-darwin-c-debug/bin/mpiexec
+def run_petsc_ex2():
+
+  launch = '/Users/dmay/software/petsc-3.6.0/src/ksp/ksp/examples/tutorials/ex2'
+  ranks = 4
+  expected_file = 'ex2.expected'
+  
+  def comparefunc(unittest):
+    expected,expected_flat = unittest.getExpected()
+    output,output_flat = unittest.getOutput()
+
+    key = 'KSP Residual norm'
+    values_e = getKeyValuesAsFloat(expected_flat,key)
+    values   = getKeyValuesAsFloat(output_flat,key)
+    status,err = compareFloatingPoint(values,0.01,values_e)
+    unittest.updateStatus(status,err)
+
+  test = pth.UnitTest('ex2',ranks,launch,expected_file)
+  test.setVerifyMethod(comparefunc)
+  return(test)
+
+
 def run_my_tests():
   
   launcher = batch.zpthBatchQueuingSystem()
@@ -83,10 +105,32 @@ def run_my_tests():
   for test in registered_tests:
     test.report('log')
 
+def run_my_tests_petsc():
+  
+  launcher = batch.zpthBatchQueuingSystem()
+  launcher.configure()
+  
+  registered_tests = [ run_petsc_ex2() ]
+  
+  for test in registered_tests:
+    launcher.submitJob(test)
+  
+  for test in registered_tests:
+    test.verifyOutput()
+  
+  print('-- Unit test report --')
+  for test in registered_tests:
+    test.report('summary')
+  
+  print('-- Unit test error messages --')
+  for test in registered_tests:
+    test.report('log')
+
 
 if __name__ == "__main__":
   #test1()
   #test2()
   #test3()
   #test1_example()
-  run_my_tests()
+  #run_my_tests()
+  run_my_tests_petsc()
