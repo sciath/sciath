@@ -10,7 +10,7 @@ def compareLiteral(input,expected):
   
   if len(input) != len(expected):
     status = False
-    err = err + "<compareLiteral failed>: input and expected are of different length\n"
+    err = err + "compareLiteral [failed]\nReason: input and expected are of different length\n"
     err = err + ("  expected: %s\n" % expected)
     err = err + ("  input:    %s\n" % input)
     return status,err
@@ -18,7 +18,7 @@ def compareLiteral(input,expected):
   for index in range(0,len(expected)):
     if input[index] != expected[index]:
       status = False
-      err = err + "<compareLiteral failed>\n"
+      err = err + "compareLiteral [failed]\n"
       err = err + ("  expected: %s\n" % expected)
       err = err + ("  input:    %s\n" % input)
       err = err + "  index[" + str(index) +  "]" + " input \"" +  input[index] + "\" : expected \"" + expected[index] + "\"\n"
@@ -37,7 +37,7 @@ def compareFloatingPoint(input,tolerance,expected):
 
   if len(input) != len(expected):
     status = False
-    err = err + "<compareFloatingPoint failed>: input and expected are of different length\n"
+    err = err + "compareFloatingPoint [failed]\nReason: input and expected are of different length\n"
     err = err + ("  expected: %s\n" % e_f)
     err = err + ("  input:    %s\n" % i_f)
     return status,err
@@ -46,7 +46,7 @@ def compareFloatingPoint(input,tolerance,expected):
     absdiff = np.abs(i_f[index] - e_f[index]);
     if absdiff > tol_f:
       status = False
-      err = err + "<compareFloatingPoint failed>: tolerance " + str(tol_f) + " not satisifed\n"
+      err = err + "compareFloatingPoint [failed]\nReason: tolerance " + str(tol_f) + " not satisifed\n"
       err = err + ("  expected: %s\n" % e_f)
       err = err + ("  input:    %s\n" % i_f)
       err = err + "  index[" + str(index) + "]" + (" input \"%s\"" %  i_f[index])  + (" : expected \"%s\"" % e_f[index]) + " (+/-"+str(tol_f)+")\n"
@@ -65,7 +65,7 @@ def compareInteger(input,tolerance,expected):
 
   if len(input) != len(expected):
     status = False
-    err = err + "<compareInteger failed>: input and expected are of different length\n"
+    err = err + "compareInteger [failed]\nReason: input and expected are of different length\n"
     err = err + ("  expected: %s\n" % e_i)
     err = err + ("  input:    %s\n" % i_i)
     return status,err
@@ -74,7 +74,7 @@ def compareInteger(input,tolerance,expected):
     absdiff = np.abs(i_i[index] - e_i[index]);
     if absdiff > tol_i:
       status = False
-      err = err + "<compareInteger failed>: tolerance " + str(tol_i) + " not satisifed\n"
+      err = err + "compareInteger [failed]\nReason: tolerance " + str(tol_i) + " not satisifed\n"
       err = err + ("  expected: %s\n" % e_i)
       err = err + ("  input:    %s\n" % i_i)
       err = err + "  index[" + str(index) + "]" + (" input \"%s\"" %  i_i[index]) + (" : expected \"%s\"" % e_i[index]) + " (+/-"+str(tol_i)+")\n"
@@ -346,7 +346,8 @@ class UnitTest:
     values_e = getKeyValuesAsFloat(expected_flat,key)
     values   = getKeyValuesAsFloat(output_flat,key)
     status,err = compareFloatingPoint(values,tolerance,values_e)
-    self.updateStatus(status,err)
+    kerr = 'Key = \"' + key + '\" --> ' + err
+    self.updateStatus(status,kerr)
 
 
   def compareInteger(self,key,tolerance):
@@ -355,6 +356,7 @@ class UnitTest:
     values_e = getKeyValuesAsInt(expected_flat,key)
     values   = getKeyValuesAsInt(output_flat,key)
     status,err = compareInteger(values,tolerance,values_e)
+    kerr = 'Key = \"' + key + '\" --> ' + err
     self.updateStatus(status,err)
 
 
