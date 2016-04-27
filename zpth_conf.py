@@ -11,9 +11,10 @@ def generateLaunch_PBS(accountname,queuename,testname,mpiLaunch,executable,ranks
   
   filename = testname + '-zpth.pbs'
   file = open(filename,"w")
-  file.write("# ZPTH: auto-generated pbs file\n")
   file.write("#!/bin/bash\n")
   
+  file.write("# ZPTH: auto-generated pbs file\n")
+
   if accountname:
     file.write("#PBS -A " + accountname + "\n") # account to charge
   file.write("#PBS -N \"" + testname + "\"" + "\n") # jobname
@@ -37,9 +38,9 @@ def generateLaunch_SLURM(accountname,queuename,testname,mpiLaunch,executable,ran
   
   filename = testname + '-zpth.slurm'
   file = open(filename,"w")
-  file.write("# ZPTH: auto-generated slurm file\n")
   file.write("#!/bin/bash -l\n")
   
+  file.write("# ZPTH: auto-generated slurm file\n")
   if accountname:
     file.write("#SBATCH --account=" + accountname + "\n") # account to charge
   file.write("#SBATCH --job-name=\"" + testname + "\"" + "\n") # jobname
@@ -66,9 +67,10 @@ def generateLaunch_LSF(accountname,queuename,testname,executable,ranks,rusage,wa
   if not walltime:
     print("<generateLaunch_LSF>: Requires the walltime be specified")
   
-  print("# ZPTH: auto-generated lsf file")
   print("#!/bin/sh")
   
+  print("# ZPTH: auto-generated lsf file")
+
   print("#BSUB -J " + testname ) # jobname
   
   print("#BSUB -o " + testname + ".stdout") # jobname.stdout
@@ -93,9 +95,8 @@ def generateLaunch_LoadLevelerBG(accountname,queuename,testname,executable,total
   if not walltime:
     print("<generateLaunch_LoadLeveler>: Requires the walltime be specified")
   
-  print("# ZPTH: auto-generated llq file")
-  
   print("#!/bin/sh")
+  print("# ZPTH: auto-generated llq file")
   print("# @ job_name = " + testname)
   print("# @ job_type = bluegene")
   print("# @ error = $(job_name)_$(jobid).stderr")
