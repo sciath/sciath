@@ -18,10 +18,10 @@ def compareLiteral(input,expected):
   for index in range(0,len(expected)):
     if input[index] != expected[index]:
       status = False
-      err = err + "compareLiteral [failed]\n"
+      err = err + "compareLiteral [failed]\nReason: strings are different\n"
       err = err + ("  expected: %s\n" % expected)
       err = err + ("  input:    %s\n" % input)
-      err = err + "  index[" + str(index) +  "]" + " input \"" +  input[index] + "\" : expected \"" + expected[index] + "\"\n"
+      err = err + "  index[" + str(index) +  "]" + " input \"" +  input[index] + "\" != expected \"" + expected[index] + "\"\n"
 
   return status,err
 
@@ -49,7 +49,7 @@ def compareFloatingPoint(input,tolerance,expected):
       err = err + "compareFloatingPoint [failed]\nReason: tolerance " + str(tol_f) + " not satisifed\n"
       err = err + ("  expected: %s\n" % e_f)
       err = err + ("  input:    %s\n" % i_f)
-      err = err + "  index[" + str(index) + "]" + (" input \"%s\"" %  i_f[index])  + (" : expected \"%s\"" % e_f[index]) + " (+/-"+str(tol_f)+")\n"
+      err = err + "  index[" + str(index) + "]" + (" input \"%s\"" %  i_f[index])  + (" != expected \"%s\"" % e_f[index]) + " (+/-"+str(tol_f)+")\n"
 
   return status,err
 
@@ -77,7 +77,7 @@ def compareInteger(input,tolerance,expected):
       err = err + "compareInteger [failed]\nReason: tolerance " + str(tol_i) + " not satisifed\n"
       err = err + ("  expected: %s\n" % e_i)
       err = err + ("  input:    %s\n" % i_i)
-      err = err + "  index[" + str(index) + "]" + (" input \"%s\"" %  i_i[index]) + (" : expected \"%s\"" % e_i[index]) + " (+/-"+str(tol_i)+")\n"
+      err = err + "  index[" + str(index) + "]" + (" input \"%s\"" %  i_i[index]) + (" != expected \"%s\"" % e_i[index]) + " (+/-"+str(tol_i)+")\n"
 
   return status,err
 
@@ -357,7 +357,16 @@ class UnitTest:
     values   = getKeyValuesAsInt(output_flat,key)
     status,err = compareInteger(values,tolerance,values_e)
     kerr = 'Key = \"' + key + '\" --> ' + err
-    self.updateStatus(status,err)
+    self.updateStatus(status,kerr)
+
+  def compareLiteral(self,key):
+    expected,expected_flat = self.getExpected()
+    output,output_flat = self.getOutput()
+    values_e = getKeyValues(expected_flat,key)
+    values   = getKeyValues(output_flat,key)
+    status,err = compareLiteral(values,values_e)
+    kerr = 'Key = \"' + key + '\" --> ' + err
+    self.updateStatus(status,kerr)
 
 
 def test1_example():
