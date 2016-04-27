@@ -69,7 +69,7 @@ def compareInteger(input,tolerance,expected):
     err = err + ("  expected: %s\n" % e_i)
     err = err + ("  input:    %s\n" % i_i)
     return status,err
-    
+  
   for index in range(0,len(e_i)):
     absdiff = np.abs(i_i[index] - e_i[index]);
     if absdiff > tol_i:
@@ -335,7 +335,7 @@ class UnitTest:
 
     if type == 'log':
       if self.passed == False:
-        print(bcolors.FAIL,'---------------------------------------\n' + '[' + self.name + ']: reason for failure\n' + self.errormessage + bcolors.ENDC)
+        print(bcolors.FAIL + '_______________________________________________\n' + '[' + self.name + ']: reason for failure\n' + self.errormessage + bcolors.ENDC)
 
 
 
