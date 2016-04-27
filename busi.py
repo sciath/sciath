@@ -63,7 +63,7 @@ def test1_example():
   return(ex1)
 
 # /Users/dmay/software/petsc-3.6.0/arch-darwin-c-debug/bin/mpiexec
-def run_petsc_ex2():
+def run_petsc_ex2a():
 
   launch = '/Users/dmay/software/petsc-3.6.0/src/ksp/ksp/examples/tutorials/ex2'
   ranks = 4
@@ -76,13 +76,52 @@ def run_petsc_ex2():
     key = 'KSP Residual norm'
     values_e = getKeyValuesAsFloat(expected_flat,key)
     values   = getKeyValuesAsFloat(output_flat,key)
-    status,err = compareFloatingPoint(values,0.01,values_e)
+    status,err = compareFloatingPoint(values,1.0e-5,values_e)
     unittest.updateStatus(status,err)
 
-  test = pth.UnitTest('ex2',ranks,launch,expected_file)
+  test = pth.UnitTest('ex2a',ranks,launch,expected_file)
   test.setVerifyMethod(comparefunc)
   return(test)
 
+def run_petsc_ex2b():
+  
+  launch = '/Users/dmay/software/petsc-3.6.0/src/ksp/ksp/examples/tutorials/ex2 -ksp_monitor_short'
+  ranks = 4
+  expected_file = 'ex2.expected'
+  
+  def comparefunc(unittest):
+    expected,expected_flat = unittest.getExpected()
+    output,output_flat = unittest.getOutput()
+    
+    key = 'KSP Residual norm'
+    values_e = getKeyValuesAsFloat(expected_flat,key)
+    values   = getKeyValuesAsFloat(output_flat,key)
+    status,err = compareFloatingPoint(values,1.0e-5,values_e)
+    unittest.updateStatus(status,err)
+  
+  test = pth.UnitTest('ex2b',ranks,launch,expected_file)
+  test.setVerifyMethod(comparefunc)
+  return(test)
+
+def run_petsc_ex2c():
+  
+  launch = '/Users/dmay/software/petsc-3.6.0/src/ksp/ksp/examples/tutorials/ex2 -ksp_type gcr -ksp_monitor_short'
+  ranks = 4
+  expected_file = 'ex2.expected'
+  
+  def comparefunc(unittest):
+    expected,expected_flat = unittest.getExpected()
+    output,output_flat = unittest.getOutput()
+    
+    key = 'KSP Residual norm'
+    values_e = getKeyValuesAsFloat(expected_flat,key)
+    values   = getKeyValuesAsFloat(output_flat,key)
+    status,err = compareFloatingPoint(values,1.0e-5,values_e)
+    unittest.updateStatus(status,err)
+  
+  test = pth.UnitTest('ex2c',ranks,launch,expected_file)
+  test.setVerifyMethod(comparefunc)
+  return(test)
 
 def run_my_tests():
   
@@ -110,7 +149,7 @@ def run_my_tests_petsc():
   launcher = batch.zpthBatchQueuingSystem()
   launcher.configure()
   
-  registered_tests = [ run_petsc_ex2() ]
+  registered_tests = [ run_petsc_ex2a() , run_petsc_ex2b() , run_petsc_ex2c() ]
   
   for test in registered_tests:
     launcher.submitJob(test)
