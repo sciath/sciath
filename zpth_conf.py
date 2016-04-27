@@ -1,8 +1,9 @@
 
+import os
 import zpth2 as pth
 
 
-def generateLaunch_PBS(accountname,queuename,testname,mpiLaunch,executable,ranks,ranks_per_node,walltime):
+def generateLaunch_PBS(accountname,queuename,testname,mpiLaunch,executable,ranks,ranks_per_node,walltime,outfile):
   if not ranks:
     print("<generateLaunch_PBS>: Requires the number of MPI-ranks be specified")
   if not walltime:
@@ -24,7 +25,7 @@ def generateLaunch_PBS(accountname,queuename,testname,mpiLaunch,executable,ranks
   
   file.write("#PBS -l mppwidth=1024,walltime=" + str(walltime) + "\n")
   
-  file.write(mpiLaunch + " " + executable + "\n") # launch command
+  file.write(mpiLaunch + " " + executable + " > " + outfile + "\n") # launch command
   file.close()
   return(filename)
 
@@ -215,7 +216,7 @@ class zpthBatchQueuingSystem:
     
     except:
       print('Creating new .conf file')
-      v = input('Batch queuing system type <pbs,lsf,slurm,llq>: ')
+      v = input('Batch queuing system type <pbs,lsf,slurm,llq,none>: ')
       if not v:
         raise ValueError('You must specify the type of queuing system')
       self.setQueueSystemType(v)
@@ -272,19 +273,21 @@ class zpthBatchQueuingSystem:
     except:
       raise ValueError('You must execute configure(), and or writeDefinition() first')
 
-  def createSubmissionFile(self,testname,commnd,ranks,ranks_per_node,walltime):
+  def createSubmissionFile(self,testname,commnd,ranks,ranks_per_node,walltime,outfile):
     if self.queuingSystemType == 'pbs':
-      filename = generateLaunch_PBS(self.accountName,self.queueName,testname,self.mpiLaunch,commnd,ranks,ranks_per_node,walltime)
+      filename = generateLaunch_PBS(self.accountName,self.queueName,testname,self.mpiLaunch,commnd,ranks,ranks_per_node,walltime,outfile)
 
     print('To launch execute: ' + self.jobSubmissionCommand + filename)
     return(filename)
 
   def submitJob(self,unittest):
     if not self.use_batch:
-      print('Execute mpiXXX ./stuff')
+      launchCmd = self.mpiLaunch + ' ' + str(unittest.ranks) + ' ' + unittest.execute + " > " + unittest.output_file
+      print('Execute ',launchCmd)
+      os.system(launchCmd)
     else:
       print('Call createSubmissionFile() then launch')
-      self.createSubmissionFile(unittest.name,unittest.execute,unittest.ranks,'',"00:05:00")
+      self.createSubmissionFile(unittest.name,unittest.execute,unittest.ranks,'',unittest.walltime,unittest.output_file)
 
 # < end class >
 
@@ -306,7 +309,7 @@ def test1():
 
   batch2.view()
 
-  batch2.createSubmissionFile('ex1a','./ex1 -options_file go.fast',24,6,"00:05:00")
+  batch2.createSubmissionFile('ex1a','./ex1 -options_file go.fast',24,6,"00:05:00",'ex1a-p24.output')
 
 if __name__ == "__main__":
   test1()
