@@ -1,5 +1,6 @@
 
 import os
+import argparse
 import pth_test as pth
 
 
@@ -193,6 +194,12 @@ class zpthBatchQueuingSystem:
     self.queuingSystemType = []
     self.jobSubmissionCommand = []
     self.use_batch = False
+    
+    parser = argparse.ArgumentParser(description='Python Test Harness.')
+    parser.add_argument('-e', '--execute', help='Perform test execution', required=False, action='store_true')
+    parser.add_argument('-v', '--verify', help='Perform test verification', required=False, action='store_true')
+    self.args = parser.parse_args()
+    
     self.setup()
 
 #  def addIgnoreKeywords(self,d):
@@ -376,7 +383,11 @@ class zpthBatchQueuingSystem:
 
 
   def verifyTestSuite(self,registered_tests):
-    performTestSuite_verify(self,registered_tests)
+    if self.use_batch:
+      if self.args.verify:
+        performTestSuite_verify(self,registered_tests)
+    else:
+      performTestSuite_verify(self,registered_tests)
 
 
 # < end class >
