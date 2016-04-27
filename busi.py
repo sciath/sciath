@@ -70,14 +70,8 @@ def run_petsc_ex2a():
   expected_file = 'ex2.expected'
   
   def comparefunc(unittest):
-    expected,expected_flat = unittest.getExpected()
-    output,output_flat = unittest.getOutput()
-
     key = 'KSP Residual norm'
-    values_e = getKeyValuesAsFloat(expected_flat,key)
-    values   = getKeyValuesAsFloat(output_flat,key)
-    status,err = compareFloatingPoint(values,1.0e-5,values_e)
-    unittest.updateStatus(status,err)
+    unittest.compareFloatingPoint(key,1.0e-5)
 
   test = pth.UnitTest('ex2a',ranks,launch,expected_file)
   test.setVerifyMethod(comparefunc)
@@ -90,14 +84,8 @@ def run_petsc_ex2b():
   expected_file = 'ex2.expected'
   
   def comparefunc(unittest):
-    expected,expected_flat = unittest.getExpected()
-    output,output_flat = unittest.getOutput()
-    
     key = 'KSP Residual norm'
-    values_e = getKeyValuesAsFloat(expected_flat,key)
-    values   = getKeyValuesAsFloat(output_flat,key)
-    status,err = compareFloatingPoint(values,1.0e-5,values_e)
-    unittest.updateStatus(status,err)
+    unittest.compareFloatingPoint(key,1.0e-5)
   
   test = pth.UnitTest('ex2b',ranks,launch,expected_file)
   test.setVerifyMethod(comparefunc)
@@ -110,14 +98,8 @@ def run_petsc_ex2c():
   expected_file = 'ex2.expected'
   
   def comparefunc(unittest):
-    expected,expected_flat = unittest.getExpected()
-    output,output_flat = unittest.getOutput()
-    
     key = 'KSP Residual norm'
-    values_e = getKeyValuesAsFloat(expected_flat,key)
-    values   = getKeyValuesAsFloat(output_flat,key)
-    status,err = compareFloatingPoint(values,1.0e-5,values_e)
-    unittest.updateStatus(status,err)
+    unittest.compareFloatingPoint(key,1.0e-5)
   
   test = pth.UnitTest('ex2c',ranks,launch,expected_file)
   test.setVerifyMethod(comparefunc)
@@ -137,9 +119,13 @@ def run_my_tests():
     test.verifyOutput()
   
   print('-- Unit test report --')
+  counter = 0
   for test in registered_tests:
     test.report('summary')
-  
+    if test.passed == False:
+      counter = counter + 1
+  print(str(counter) + ' / ' + str(len(registered_tests)) + ' failed')
+
   print('-- Unit test error messages --')
   for test in registered_tests:
     test.report('log')
@@ -158,9 +144,16 @@ def run_my_tests_petsc():
     test.verifyOutput()
   
   print('-- Unit test report --')
+  counter = 0
   for test in registered_tests:
     test.report('summary')
-  
+    if test.passed == False:
+      counter = counter + 1
+  if counter > 0:
+    print('  ' + str(counter) + ' / ' + str(len(registered_tests)) + ' tests failed')
+  else:
+    print('  All tests passed')
+
   print('-- Unit test error messages --')
   for test in registered_tests:
     test.report('log')
