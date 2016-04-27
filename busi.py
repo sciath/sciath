@@ -143,7 +143,7 @@ def run_my_tests_petsc():
   for test in registered_tests:
     test.verifyOutput()
   
-  print('-- Unit test report --')
+  print('-- Unit test report summary --')
   counter = 0
   for test in registered_tests:
     test.report('summary')
@@ -158,6 +158,14 @@ def run_my_tests_petsc():
   for test in registered_tests:
     test.report('log')
 
+def run_my_tests_petsc_v2():
+  
+  registered_tests = [ run_petsc_ex2a() , run_petsc_ex2b() , run_petsc_ex2c() ]
+  #registered_tests = [ run_petsc_ex2b() ]
+  
+  launcher = batch.zpthBatchQueuingSystem()
+  launcher.executeTestSuite(registered_tests)
+  launcher.verifyTestSuite(registered_tests)
 
 if __name__ == "__main__":
   #test1()
@@ -165,4 +173,5 @@ if __name__ == "__main__":
   #test3()
   #test1_example()
   #run_my_tests()
-  run_my_tests_petsc()
+  #run_my_tests_petsc()
+  run_my_tests_petsc_v2()
