@@ -101,6 +101,9 @@ def run_petsc_ex2c():
     key = 'KSP Residual norm'
     unittest.compareFloatingPoint(key,1.0e-5)
   
+    key = 'Norm of error'
+    unittest.compareLiteral(key)
+  
   test = pth.UnitTest('ex2c',ranks,launch,expected_file)
   test.setVerifyMethod(comparefunc)
   return(test)
