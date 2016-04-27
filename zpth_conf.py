@@ -121,7 +121,7 @@ def performTestSuite_local(self,registered_tests):
   self.view()
 
   for test in registered_tests:
-    print('-- Performing test: ' + test.name + ' --')
+    print('-- Executing test: ' + test.name + ' --')
     launcher.submitJob(test)
     test.verifyOutput()
   
@@ -366,7 +366,9 @@ class zpthBatchQueuingSystem:
       os.system(launchCmd)
     else:
       launchfile = self.createSubmissionFile(unittest.name,unittest.execute,unittest.ranks,'',unittest.walltime,unittest.output_file)
-      print('[To launch execute] ' + self.jobSubmissionCommand + launchfile)
+      launchCmd = self.jobSubmissionCommand + launchfile
+      print('[Executing] ',launchCmd)
+      os.system(launchCmd)
 
 
   def executeTestSuite(self,registered_tests):
