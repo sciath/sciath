@@ -6,9 +6,9 @@ import pth_test as pth
 
 def generateLaunch_PBS(accountname,queuename,testname,mpiLaunch,executable,ranks,ranks_per_node,walltime,outfile):
   if not ranks:
-    print("<generateLaunch_PBS>: Requires the number of MPI-ranks be specified")
+    print("<generateLaunch_PBS>: Requires the number of MPI-ranks be specified" , flush=True)
   if not walltime:
-    print("<generateLaunch_PBS>: Requires the walltime be specified")
+    print("<generateLaunch_PBS>: Requires the walltime be specified" , flush=True)
   
   filename = testname + '-zpth.pbs'
   file = open(filename,"w")
@@ -33,9 +33,9 @@ def generateLaunch_PBS(accountname,queuename,testname,mpiLaunch,executable,ranks
 
 def generateLaunch_SLURM(accountname,queuename,testname,mpiLaunch,executable,ranks,ranks_per_node,walltime,outfile):
   if not ranks:
-    print("<generateLaunch_SLURM>: Requires the number of MPI-ranks be specified")
+    print("<generateLaunch_SLURM>: Requires the number of MPI-ranks be specified" , flush=True)
   if not walltime:
-    print("<generateLaunch_SLURM>: Requires the walltime be specified")
+    print("<generateLaunch_SLURM>: Requires the walltime be specified" , flush=True)
   
   filename = testname + '-zpth.slurm'
   file = open(filename,"w")
@@ -64,9 +64,9 @@ def generateLaunch_SLURM(accountname,queuename,testname,mpiLaunch,executable,ran
 
 def generateLaunch_LSF(accountname,queuename,testname,executable,ranks,rusage,walltime):
   if not ranks:
-    print("<generateLaunch_LSF>: Requires the number of MPI-ranks be specified")
+    print("<generateLaunch_LSF>: Requires the number of MPI-ranks be specified" , flush=True)
   if not walltime:
-    print("<generateLaunch_LSF>: Requires the walltime be specified")
+    print("<generateLaunch_LSF>: Requires the walltime be specified" , flush=True)
   
   print("#!/bin/sh")
   
@@ -92,9 +92,9 @@ def generateLaunch_LSF(accountname,queuename,testname,executable,ranks,rusage,wa
 
 def generateLaunch_LoadLevelerBG(accountname,queuename,testname,executable,total_ranks,machine_ranks_per_node,walltime):
   if not total_ranks:
-    print("<generateLaunch_LoadLeveler>: Requires the number of MPI-ranks be specified")
+    print("<generateLaunch_LoadLeveler>: Requires the number of MPI-ranks be specified" , flush=True)
   if not walltime:
-    print("<generateLaunch_LoadLeveler>: Requires the walltime be specified")
+    print("<generateLaunch_LoadLeveler>: Requires the walltime be specified" , flush=True)
   
   print("#!/bin/sh")
   print("# ZPTH: auto-generated llq file")
@@ -118,28 +118,28 @@ def generateLaunch_LoadLevelerBG(accountname,queuename,testname,executable,total
 def performTestSuite_local(self,registered_tests):
   launcher = self
   
-  print('')
+  print('' , flush=True)
   self.view()
 
   for test in registered_tests:
-    print('-- Executing test: ' + test.name + ' --')
+    print('-- Executing test: ' + test.name + ' --' , flush=True)
     launcher.submitJob(test)
     test.verifyOutput()
   
-  print('-- Unit test report summary --')
+  print('-- Unit test report summary --' , flush=True)
   counter = 0
   for test in registered_tests:
     test.report('summary')
     if test.passed == False:
       counter = counter + 1
   if counter > 0:
-    print('  ' + str(counter) + ' / ' + str(len(registered_tests)) + ' tests failed')
+    print('  ' + str(counter) + ' / ' + str(len(registered_tests)) + ' tests failed' , flush=True)
   else:
-    print('----------------------')
-    print('  All tests passed')
+    print('----------------------' , flush=True)
+    print('  All tests passed' , flush=True)
   
   if counter > 0:
-    print('-- Unit test error report --')
+    print('-- Unit test error report --' , flush=True)
     for test in registered_tests:
       test.report('log')
 
@@ -147,39 +147,39 @@ def performTestSuite_local(self,registered_tests):
 def performTestSuite_execute(self,registered_tests):
   launcher = self
 
-  print('')
+  print('' , flush=True)
   self.view()
 
-  print('')
+  print('' , flush=True)
   for test in registered_tests:
-    print('[-- Executing test: ' + test.name + ' --]')
+    print('[-- Executing test: ' + test.name + ' --]' , flush=True)
     launcher.submitJob(test)
 
 
 def performTestSuite_verify(self,registered_tests):
   launcher = self
   
-  print('')
+  print('' , flush=True)
   for test in registered_tests:
-    print('[-- Verifying test: ' + test.name + ' --]')
+    print('[-- Verifying test: ' + test.name + ' --]' , flush=True)
     test.verifyOutput()
   
-  print('')
-  print('[--------- Unit test summary ----------------------]')
+  print('' , flush=True)
+  print('[--------- Unit test summary ----------------------]' , flush=True)
   counter = 0
   for test in registered_tests:
     test.report('summary')
     if test.passed == False:
       counter = counter + 1
   if counter > 0:
-    print('\n  [status] ' + str(counter) + ' of ' + str(len(registered_tests)) + ' tests FAILED')
+    print('\n  [status] ' + str(counter) + ' of ' + str(len(registered_tests)) + ' tests FAILED' , flush=True)
   else:
-    print('----------------------')
-    print('\n  [status] All tests passed')
+    print('----------------------' , flush=True)
+    print('\n  [status] All tests passed' , flush=True)
   
   if counter > 0:
-    print('')
-    print('[--------- Unit test error report ----------------------]')
+    print('' , flush=True)
+    print('[--------- Unit test error report ----------------------]' , flush=True)
     for test in registered_tests:
       test.report('log')
 
@@ -252,7 +252,7 @@ class zpthBatchQueuingSystem:
       #print('No queuing system being used')
 
     else:
-      print('Value found: ' + type + ' ...')
+      print('Value found: ' + type + ' ...' , flush=True)
       raise ValueError('Error: Unknown or unsupported batch queuing system specified')
 
 
@@ -261,20 +261,20 @@ class zpthBatchQueuingSystem:
 
 
   def view(self):
-    print('pth: Batch queuing system configuration')
-    print('  Queue system:    ',self.queuingSystemType)
-    print('  MPI launcher:    ',self.mpiLaunch)
+    print('pth: Batch queuing system configuration' , flush=True)
+    print('  Queue system:    ',self.queuingSystemType , flush=True)
+    print('  MPI launcher:    ',self.mpiLaunch , flush=True)
     if self.use_batch:
-      print('  Submit command:', self.jobSubmissionCommand)
+      print('  Submit command:', self.jobSubmissionCommand , flush=True)
       if self.accountName:
-        print('  Account:       ',self.accountName)
+        print('  Account:       ',self.accountName , flush=True)
       if self.queueName:
-        print('  Queue:         ',self.queueName)
+        print('  Queue:         ',self.queueName , flush=True)
 
 
   def configure(self):
-    print('----------------------------------------------------------------')
-    print('Creating new zpthBatchQueuingSystem.conf file')
+    print('----------------------------------------------------------------' , flush=True)
+    print('Creating new zpthBatchQueuingSystem.conf file' , flush=True)
     v = input('[1] Batch queuing system type <pbs,lsf,slurm,llq,none>: ')
     if not v:
       raise ValueError('You must specify the type of queuing system')
@@ -294,12 +294,12 @@ class zpthBatchQueuingSystem:
       self.setQueueName(v)
     
     self.writeDefinition()
-    print('\n')
-    print('** If you wish to change the config for your batch system, either')
-    print('**   (i) delete the file zpthBatchQueuingSystem.conf, or')
-    print('**  (ii) re-run zpth2.configure()')
-    print('** (iii) re-run with the command line arg --configure')
-    print('----------------------------------------------------------------')
+    print('\n' , flush=True)
+    print('** If you wish to change the config for your batch system, either' , flush=True)
+    print('**   (i) delete the file zpthBatchQueuingSystem.conf, or' , flush=True)
+    print('**  (ii) re-run zpth2.configure()' , flush=True)
+    print('** (iii) re-run with the command line arg --configure' , flush=True)
+    print('----------------------------------------------------------------' , flush=True)
 
 
   def setup(self):
@@ -351,7 +351,7 @@ class zpthBatchQueuingSystem:
   def createSubmissionFile(self,testname,commnd,ranks,ranks_per_node,walltime,outfile):
     filename = ''
     if not self.use_batch:
-      print('Warning: no submission file creation required')
+      print('Warning: no submission file creation required' , flush=True)
       return(filename)
     
     if self.queuingSystemType == 'pbs':
@@ -366,19 +366,19 @@ class zpthBatchQueuingSystem:
     elif self.queuingSystemType == 'load_leveler':
       raise ValueError('Unsupported: LoadLeveler needs to be updated')
 
-    print('Created submission file:',filename)
+    print('Created submission file:',filename , flush=True)
     return(filename)
 
 
   def submitJob(self,unittest):
     if not self.use_batch:
       launchCmd = self.mpiLaunch + ' ' + str(unittest.ranks) + ' ' + unittest.execute + " > " + unittest.output_file
-      print('[Executing] ',launchCmd)
+      print('[Executing] ',launchCmd , flush=True)
       os.system(launchCmd)
     else:
       launchfile = self.createSubmissionFile(unittest.name,unittest.execute,unittest.ranks,'',unittest.walltime,unittest.output_file)
       launchCmd = self.jobSubmissionCommand + launchfile
-      print('[Executing] ',launchCmd)
+      print('[Executing] ',launchCmd , flush=True)
       os.system(launchCmd)
 
 
@@ -414,7 +414,7 @@ def test1():
   batch2.view()
 
   launchfile = batch2.createSubmissionFile('ex1a','./ex1 -options_file go.fast',24,'',"00:05:00",'ex1a-p24.output')
-  print('[To launch execute] ' + batch2.jobSubmissionCommand + launchfile)
+  print('[To launch execute] ' + batch2.jobSubmissionCommand + launchfile , flush=True)
 
 if __name__ == "__main__":
   test1()

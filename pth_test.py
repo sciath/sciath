@@ -83,7 +83,7 @@ def compareInteger(input,tolerance,expected):
 
 
 def parseFile(filename,keywords):
-  print('Parsing file: ',filename)
+  print('Parsing file: ',filename , flush=True)
   file = open(filename,"r")
 
   flat = ''
@@ -331,14 +331,14 @@ class UnitTest:
     if type == 'summary':
       
       if self.passed == False:
-        print(bcolors.FAIL,' [' + self.name + ']   *** FAILED *** ' + bcolors.ENDC)
+        print(bcolors.FAIL,' [' + self.name + ']   *** FAILED ***' + bcolors.ENDC , flush=True)
       else:
-        print(bcolors.OKGREEN,' [' + self.name + ']   passed ' + bcolors.ENDC)
+        print(bcolors.OKGREEN,' [' + self.name + ']   passed' + bcolors.ENDC , flush=True)
 
     if type == 'log':
       if self.passed == False:
-        #        print(bcolors.FAIL + '_______________________________________________\n' + '[' + self.name + '] reason for failure\n' + self.errormessage + ' ' + bcolors.ENDC)
-        print(bcolors.FAIL +  '[' + self.name + '] reason for failure\n' + '--------------------------------------------------------------\n' + self.errormessage + ' ' + bcolors.ENDC)
+        #        print(bcolors.FAIL + '_______________________________________________\n' + '[' + self.name + '] reason for failure\n' + self.errormessage + ' ' + bcolors.ENDC , flush=True)
+        print(bcolors.FAIL +  '[' + self.name + '] reason for failure\n' + '--------------------------------------------------------------\n' + self.errormessage + bcolors.ENDC , flush=True)
 
 
   def compareFloatingPoint(self,key,tolerance):
