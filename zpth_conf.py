@@ -25,37 +25,40 @@ def generateLaunch_PBS(accountname,queuename,testname,mpiLaunch,executable,ranks
   
   file.write("#PBS -l mppwidth=1024,walltime=" + str(walltime) + "\n")
   
-  file.write(mpiLaunch + " " + executable + " > " + outfile + "\n") # launch command
+  file.write(mpiLaunch + " " + executable + " > " + outfile + "\n\n") # launch command
   file.close()
   return(filename)
 
-def generateLaunch_SLURM(accountname,queuename,testname,executable,ranks,ranks_per_node,walltime):
+def generateLaunch_SLURM(accountname,queuename,testname,mpiLaunch,executable,ranks,ranks_per_node,walltime,outfile):
   if not ranks:
     print("<generateLaunch_SLURM>: Requires the number of MPI-ranks be specified")
   if not walltime:
     print("<generateLaunch_SLURM>: Requires the walltime be specified")
   
-  print("# ZPTH: auto-generated slurm file")
-  print("#!/bin/bash -l")
+  filename = testname + '-zpth.slurm'
+  file = open(filename,"w")
+  file.write("# ZPTH: auto-generated slurm file\n")
+  file.write("#!/bin/bash -l\n")
   
   if accountname:
-    print("#SBATCH --account=" + accountname + "") # account to charge
-  print("#SBATCH --job-name=\"" + testname + "\"") # jobname
+    file.write("#SBATCH --account=" + accountname + "\n") # account to charge
+  file.write("#SBATCH --job-name=\"" + testname + "\"" + "\n") # jobname
   
-  print("#SBATCH --output=" + testname + ".stdout") # jobname.stdout
-  print("#SBATCH --error=" + testname + ".stderr") # jobname.stderr
+  file.write("#SBATCH --output=" + testname + ".stdout" + "\n") # jobname.stdout
+  file.write("#SBATCH --error=" + testname + ".stderr" + "\n") # jobname.stderr
   
   if queuename:
-    print("#SBATCH --partition=" + queuename)
+    file.write("#SBATCH --partition=" + queuename + "\n")
   
-  print("#SBATCH --ntasks=" + str(ranks))
+  file.write("#SBATCH --ntasks=" + str(ranks) + "\n")
   if ranks_per_node:
-    print("#SBATCH --ntasks-per-node=" + str(ranks_per_node))
+    file.write("#SBATCH --ntasks-per-node=" + str(ranks_per_node) + "\n")
   
-  print("#SBATCH --time=" + walltime)
+  file.write("#SBATCH --time=" + walltime + "\n")
   
-  print("aprun -n " + executable) # launch command
-
+  file.write(mpiLaunch + " " + executable + " > " + outfile + "\n\n") # launch command
+  file.close()
+  return(filename)
 
 def generateLaunch_LSF(accountname,queuename,testname,executable,ranks,rusage,walltime):
   if not ranks:
@@ -334,25 +337,35 @@ class zpthBatchQueuingSystem:
 
 
   def createSubmissionFile(self,testname,commnd,ranks,ranks_per_node,walltime,outfile):
+    filename = ''
     if not self.use_batch:
       print('Warning: no submission file creation required')
-      filename = ''
       return(filename)
+    
     if self.queuingSystemType == 'pbs':
       filename = generateLaunch_PBS(self.accountName,self.queueName,testname,self.mpiLaunch,commnd,ranks,ranks_per_node,walltime,outfile)
-      print('Created submission file:',filename)
 
+    elif self.queuingSystemType == 'lsf':
+      raise ValueError('Unsupported: LSF needs to be updated')
+
+    elif self.queuingSystemType == 'slurm':
+      filename = generateLaunch_SLURM(self.accountName,self.queueName,testname,self.mpiLaunch,commnd,ranks,ranks_per_node,walltime,outfile)
+
+    elif self.queuingSystemType == 'load_leveler':
+      raise ValueError('Unsupported: LoadLeveler needs to be updated')
+
+    print('Created submission file:',filename)
     return(filename)
 
 
   def submitJob(self,unittest):
     if not self.use_batch:
       launchCmd = self.mpiLaunch + ' ' + str(unittest.ranks) + ' ' + unittest.execute + " > " + unittest.output_file
-      print('Execute ',launchCmd)
+      print('[Executing] ',launchCmd)
       os.system(launchCmd)
     else:
       launchfile = self.createSubmissionFile(unittest.name,unittest.execute,unittest.ranks,'',unittest.walltime,unittest.output_file)
-      print('To launch execute: ' + self.jobSubmissionCommand + launchfile)
+      print('[To launch execute] ' + self.jobSubmissionCommand + launchfile)
 
 
   def executeTestSuite(self,registered_tests):
@@ -382,7 +395,8 @@ def test1():
 
   batch2.view()
 
-  batch2.createSubmissionFile('ex1a','./ex1 -options_file go.fast',24,6,"00:05:00",'ex1a-p24.output')
+  launchfile = batch2.createSubmissionFile('ex1a','./ex1 -options_file go.fast',24,'',"00:05:00",'ex1a-p24.output')
+  print('[To launch execute] ' + batch2.jobSubmissionCommand + launchfile)
 
 if __name__ == "__main__":
   test1()
