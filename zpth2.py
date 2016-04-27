@@ -331,9 +331,9 @@ class UnitTest:
     if type == 'summary':
       
       if self.passed == False:
-        print(bcolors.FAIL,' [' + self.name + ']:   FAILED' + bcolors.ENDC)
+        print(bcolors.FAIL,' [' + self.name + ']:   *** FAILED ***' + bcolors.ENDC)
       else:
-        print(bcolors.OKBLUE,' [' + self.name + ']:   passed' + bcolors.ENDC)
+        print(bcolors.OKGREEN,' [' + self.name + ']:   passed' + bcolors.ENDC)
 
     if type == 'log':
       if self.passed == False:
@@ -416,7 +416,7 @@ def run_my_tests():
 
     test.verifyOutput()
 
-  print('-- Unit test report --')
+  print('-- Unit test report summary --')
   for test in registered_tests:
     test.report('summary')
 
