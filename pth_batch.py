@@ -139,7 +139,7 @@ def performTestSuite_local(self,registered_tests):
     print('  All tests passed')
   
   if counter > 0:
-    print('-- Unit test error messages --')
+    print('-- Unit test error report --')
     for test in registered_tests:
       test.report('log')
 
@@ -152,7 +152,7 @@ def performTestSuite_execute(self,registered_tests):
 
   print('')
   for test in registered_tests:
-    print('-- Executing test: ' + test.name + ' --')
+    print('[-- Executing test: ' + test.name + ' --]')
     launcher.submitJob(test)
 
 
@@ -161,26 +161,25 @@ def performTestSuite_verify(self,registered_tests):
   
   print('')
   for test in registered_tests:
-    print('-- Verifying test: ' + test.name + ' --')
+    print('[-- Verifying test: ' + test.name + ' --]')
     test.verifyOutput()
   
   print('')
-  print('-- Unit test report summary --')
+  print('[--------- Unit test summary ----------------------]')
   counter = 0
   for test in registered_tests:
     test.report('summary')
     if test.passed == False:
       counter = counter + 1
   if counter > 0:
-    print('----------------------')
-    print('  ' + str(counter) + ' / ' + str(len(registered_tests)) + ' tests failed')
+    print('\n  [status] ' + str(counter) + ' of ' + str(len(registered_tests)) + ' tests FAILED')
   else:
     print('----------------------')
-    print('  All tests passed')
+    print('\n  [status] All tests passed')
   
   if counter > 0:
     print('')
-    print('-- Unit test errors --')
+    print('[--------- Unit test error report ----------------------]')
     for test in registered_tests:
       test.report('log')
 

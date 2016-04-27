@@ -337,7 +337,8 @@ class UnitTest:
 
     if type == 'log':
       if self.passed == False:
-        print(bcolors.FAIL + '_______________________________________________\n' + '[' + self.name + '] reason for failure\n' + self.errormessage + ' ' + bcolors.ENDC)
+        #        print(bcolors.FAIL + '_______________________________________________\n' + '[' + self.name + '] reason for failure\n' + self.errormessage + ' ' + bcolors.ENDC)
+        print(bcolors.FAIL +  '[' + self.name + '] reason for failure\n' + '--------------------------------------------------------------\n' + self.errormessage + ' ' + bcolors.ENDC)
 
 
   def compareFloatingPoint(self,key,tolerance):
