@@ -113,13 +113,15 @@ def generateLaunch_LoadLevelerBG(accountname,queuename,testname,executable,total
 def performTestSuite_local(self,registered_tests):
   launcher = self
   
-  launcher = batch.zpthBatchQueuingSystem()
-  
+  print('')
+  self.view()
+
   for test in registered_tests:
+    print('-- Performing test: ' + test.name + ' --')
     launcher.submitJob(test)
     test.verifyOutput()
   
-  print('-- Unit test report --')
+  print('-- Unit test report summary --')
   counter = 0
   for test in registered_tests:
     test.report('summary')
@@ -128,40 +130,54 @@ def performTestSuite_local(self,registered_tests):
   if counter > 0:
     print('  ' + str(counter) + ' / ' + str(len(registered_tests)) + ' tests failed')
   else:
+    print('----------------------')
     print('  All tests passed')
   
-  print('-- Unit test error messages --')
-  for test in registered_tests:
-    test.report('log')
+  if counter > 0:
+    print('-- Unit test error messages --')
+    for test in registered_tests:
+      test.report('log')
 
 
-def performTestSuite_batch_launch(self,registered_tests):
+def performTestSuite_execute(self,registered_tests):
   launcher = self
 
+  print('')
+  self.view()
+
+  print('')
   for test in registered_tests:
+    print('-- Executing test: ' + test.name + ' --')
     launcher.submitJob(test)
 
 
-def performTestSuite_batch_verify(self,registered_tests):
+def performTestSuite_verify(self,registered_tests):
   launcher = self
   
+  print('')
   for test in registered_tests:
+    print('-- Verifying test: ' + test.name + ' --')
     test.verifyOutput()
   
-  print('-- Unit test report --')
+  print('')
+  print('-- Unit test report summary --')
   counter = 0
   for test in registered_tests:
     test.report('summary')
     if test.passed == False:
       counter = counter + 1
   if counter > 0:
+    print('----------------------')
     print('  ' + str(counter) + ' / ' + str(len(registered_tests)) + ' tests failed')
   else:
+    print('----------------------')
     print('  All tests passed')
   
-  print('-- Unit test error messages --')
-  for test in registered_tests:
-    test.report('log')
+  if counter > 0:
+    print('')
+    print('-- Unit test errors --')
+    for test in registered_tests:
+      test.report('log')
 
 
 class zpthBatchQueuingSystem:
@@ -173,7 +189,7 @@ class zpthBatchQueuingSystem:
     self.queuingSystemType = []
     self.jobSubmissionCommand = []
     self.use_batch = False
-
+    self.setup()
 
 #  def addIgnoreKeywords(self,d):
 #    self.ignoreKeywords.append(d)
@@ -196,34 +212,34 @@ class zpthBatchQueuingSystem:
       self.queuingSystemType = 'pbs'
       self.jobSubmissionCommand = 'qsub '
       self.use_batch = True
-      print('Recognized PBS queuing system')
+      #print('Recognized PBS queuing system')
 
     elif type in ['LSF','lsf']:
       self.queuingSystemType = 'lsf'
       self.jobSubmissionCommand = 'bsub < '
       self.use_batch = True
-      print('Recognized LSF queuing system')
+      #print('Recognized LSF queuing system')
 
     elif type in ['SLURM','slurm']:
       self.queuingSystemType = 'slurm'
       self.jobSubmissionCommand = 'sbatch '
       self.use_batch = True
-      print('Recognized Slurm queuing system')
+      #print('Recognized Slurm queuing system')
 
     elif type in ['LoadLeveler','load_leveler','loadleveler','llq']:
       self.queuingSystemType = 'load_leveler'
       self.jobSubmissionCommand = 'llsubmit '
       self.use_batch = True
-      print('Recognized IBM LoadLeveler queuing system')
+      #print('Recognized IBM LoadLeveler queuing system')
 
     elif type in ['none', 'None', 'local']:
       self.queuingSystemType = 'none'
       self.jobSubmissionCommand = ''
-      print('No queuing system being used')
+      #print('No queuing system being used')
 
     else:
       print('Value found: ' + type + ' ...')
-      raise ValueError('Unknown or unsupported batch queuing system specified')
+      raise ValueError('Error: Unknown or unsupported batch queuing system specified')
 
 
   def setQueueName(self,name):
@@ -231,14 +247,15 @@ class zpthBatchQueuingSystem:
 
 
   def view(self):
-    print('zpthBatchQueuingSystem:')
-    print('  System:        ',self.queuingSystemType)
-    print('  Submit command:', self.jobSubmissionCommand)
+    print('pth: Batch queuing system configuration')
+    print('  Queue system:    ',self.queuingSystemType)
     print('  MPI launcher:    ',self.mpiLaunch)
-    if self.accountName:
-      print('  Account:       ',self.accountName)
-    if self.queueName:
-      print('  Queue:         ',self.queueName)
+    if self.use_batch:
+      print('  Submit command:', self.jobSubmissionCommand)
+      if self.accountName:
+        print('  Account:       ',self.accountName)
+      if self.queueName:
+        print('  Queue:         ',self.queueName)
 
 
   def configure(self):
@@ -270,28 +287,12 @@ class zpthBatchQueuingSystem:
     print('----------------------------------------------------------------')
 
 
-  def reconfigure(self):
+  def setup(self):
     try:
       self.loadDefinition()
     
     except:
-      print('Creating new .conf file')
-      v = input('Batch queuing system type <pbs,lsf,slurm,llq,none>: ')
-      if not v:
-        raise ValueError('You must specify the type of queuing system')
-      self.setQueueSystemType(v)
-      
-      v = input('MPI launch command (required): ')
-      if not v:
-        raise ValueError('You must specify an MPI launch command')
-      self.setMPILaunch(v)
-      
-      v = input('Account to charge (optional - hit enter if not applicable): ')
-      self.setHPCAccountName(v)
-      
-      v = input('Queue name to submit tests to (optional - hit enter if not applicable): ')
-      self.setQueueName(v)
-      
+      self.configure()
       self.writeDefinition()
 
 
@@ -327,17 +328,22 @@ class zpthBatchQueuingSystem:
         v = file.readline()
         self.setHPCAccountName(v.rstrip())
 
-
       file.close()
     except:
       raise ValueError('Error: You must execute configure(), and or writeDefinition() first')
 
+
   def createSubmissionFile(self,testname,commnd,ranks,ranks_per_node,walltime,outfile):
+    if not self.use_batch:
+      print('Warning: no submission file creation required')
+      filename = ''
+      return(filename)
     if self.queuingSystemType == 'pbs':
       filename = generateLaunch_PBS(self.accountName,self.queueName,testname,self.mpiLaunch,commnd,ranks,ranks_per_node,walltime,outfile)
+      print('Created submission file:',filename)
 
-    print('To launch execute: ' + self.jobSubmissionCommand + filename)
     return(filename)
+
 
   def submitJob(self,unittest):
     if not self.use_batch:
@@ -345,9 +351,16 @@ class zpthBatchQueuingSystem:
       print('Execute ',launchCmd)
       os.system(launchCmd)
     else:
-      print('Call createSubmissionFile() then launch')
-      self.createSubmissionFile(unittest.name,unittest.execute,unittest.ranks,'',unittest.walltime,unittest.output_file)
+      launchfile = self.createSubmissionFile(unittest.name,unittest.execute,unittest.ranks,'',unittest.walltime,unittest.output_file)
+      print('To launch execute: ' + self.jobSubmissionCommand + launchfile)
 
+
+  def executeTestSuite(self,registered_tests):
+    performTestSuite_execute(self,registered_tests)
+
+
+  def verifyTestSuite(self,registered_tests):
+    performTestSuite_verify(self,registered_tests)
 
 
 # < end class >
@@ -358,7 +371,6 @@ def test1():
   batch.view()
 
   batch2 = zpthBatchQueuingSystem()
-  batch2.reconfigure()
 
   #conf.addIgnoreKeywords('**')
   #print(conf.ignoreKeywords)
