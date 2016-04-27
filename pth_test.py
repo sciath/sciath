@@ -331,13 +331,13 @@ class UnitTest:
     if type == 'summary':
       
       if self.passed == False:
-        print(bcolors.FAIL,' [' + self.name + ']   *** FAILED ***' + bcolors.ENDC)
+        print(bcolors.FAIL,' [' + self.name + ']   *** FAILED *** ' + bcolors.ENDC)
       else:
-        print(bcolors.OKGREEN,' [' + self.name + ']   passed' + bcolors.ENDC)
+        print(bcolors.OKGREEN,' [' + self.name + ']   passed ' + bcolors.ENDC)
 
     if type == 'log':
       if self.passed == False:
-        print(bcolors.FAIL + '_______________________________________________\n' + '[' + self.name + '] reason for failure\n' + self.errormessage + bcolors.ENDC)
+        print(bcolors.FAIL + '_______________________________________________\n' + '[' + self.name + '] reason for failure\n' + self.errormessage + ' ' + bcolors.ENDC)
 
 
   def compareFloatingPoint(self,key,tolerance):
