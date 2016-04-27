@@ -338,6 +338,21 @@ class UnitTest:
         print(bcolors.FAIL + '_______________________________________________\n' + '[' + self.name + ']: reason for failure\n' + self.errormessage + bcolors.ENDC)
 
 
+  def compareFloatingPoint(self,key,tolerance):
+    expected,expected_flat = self.getExpected()
+    output,output_flat = self.getOutput()
+    values_e = getKeyValuesAsFloat(expected_flat,key)
+    values   = getKeyValuesAsFloat(output_flat,key)
+    status,err = compareFloatingPoint(values,tolerance,values_e)
+    self.updateStatus(status,err)
+
+  def compareInteger(self,key,tolerance):
+    expected,expected_flat = self.getExpected()
+    output,output_flat = self.getOutput()
+    values_e = getKeyValuesAsInt(expected_flat,key)
+    values   = getKeyValuesAsInt(output_flat,key)
+    status,err = compareInteger(values,tolerance,values_e)
+    self.updateStatus(status,err)
 
 
 def test1_example():
