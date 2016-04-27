@@ -286,6 +286,7 @@ class UnitTest:
     self.keywords = [ '#', '!', '//' ]
     self.output_file = name + '-p' + str(ranks) + '.output'
 
+
   def verify(self,a):
     a = 0
 
@@ -325,6 +326,7 @@ class UnitTest:
       if err != '':
         self.errormessage = self.errormessage + err
 
+
   def report(self,type):
     if type == 'summary':
       
@@ -345,6 +347,7 @@ class UnitTest:
     values   = getKeyValuesAsFloat(output_flat,key)
     status,err = compareFloatingPoint(values,tolerance,values_e)
     self.updateStatus(status,err)
+
 
   def compareInteger(self,key,tolerance):
     expected,expected_flat = self.getExpected()
