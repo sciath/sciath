@@ -285,11 +285,13 @@ class UnitTest:
     self.expected_file = expected_file
     self.keywords = [ '#', '!', '//' ]
     self.output_file = name + '-p' + str(ranks) + '.output'
-
+    self.comparison_file = self.output_file
 
   def verify(self,a):
     a = 0
 
+  def setComparisonFile(self,fname):
+    self.comparison_file = fname
 
   def setVerifyMethod(self,verify):
     self.verify = verify
@@ -302,7 +304,7 @@ class UnitTest:
 
   def verifyOutput(self):
     (self.expected_contents,self.expected_flatcontents) = parseFile(self.expected_file,self.keywords)
-    (self.output_contents,self.output_flatcontents) = parseFile(self.output_file,self.keywords)
+    (self.output_contents,self.output_flatcontents) = parseFile(self.comparison_file,self.keywords)
     self.verify(self)
 
 
