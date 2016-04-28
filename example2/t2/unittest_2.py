@@ -1,0 +1,22 @@
+
+import os
+import pth_test as pth
+import pth_batch as batch
+
+def test():
+  
+  ranks = 1
+  launch = './t2/ex2'
+  expected_file = 'expectedoutput/ex2.expected'
+  
+  def comparefunc(unittest):
+    key = 'Residuals'
+    unittest.compareFloatingPoint(key,0.0001)
+  
+  # Create unit test object
+  test = pth.UnitTest('unit2',ranks,launch,expected_file)
+  test.setVerifyMethod(comparefunc)
+  test.appendKeywords('@')
+  test.setComparisonFile('output/ex2-residual.log')
+
+  return(test)
