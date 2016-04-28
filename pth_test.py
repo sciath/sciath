@@ -1,5 +1,5 @@
 
-
+import os
 import numpy as np
 import math as math
 import re
@@ -285,10 +285,14 @@ class UnitTest:
     self.expected_file = expected_file
     self.keywords = [ '#', '!', '//' ]
     self.output_file = name + '-p' + str(ranks) + '.output'
-    self.comparison_file = self.output_file
+    self.comparison_file = ''
+    self.output_path = ''
 
   def verify(self,a):
     a = 0
+
+  def setOutputPath(self,opath):
+    self.output_path = opath
 
   def setComparisonFile(self,fname):
     self.comparison_file = fname
@@ -303,6 +307,10 @@ class UnitTest:
 
 
   def verifyOutput(self):
+    
+    if self.comparison_file == '':
+      self.comparison_file = os.path.join(self.output_path,self.output_file)
+    
     (self.expected_contents,self.expected_flatcontents) = parseFile(self.expected_file,self.keywords)
     (self.output_contents,self.output_flatcontents) = parseFile(self.comparison_file,self.keywords)
     self.verify(self)

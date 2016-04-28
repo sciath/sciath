@@ -198,12 +198,14 @@ class zpthBatchQueuingSystem:
     self.queuingSystemType = []
     self.jobSubmissionCommand = []
     self.use_batch = False
+    self.output_path = ''
     
     parser = argparse.ArgumentParser(description='Python Test Harness.')
     parser.add_argument('-e', '--execute', help='Perform test execution', required=False, action='store_true')
     parser.add_argument('-v', '--verify', help='Perform test verification', required=False, action='store_true')
     parser.add_argument('-c', '--configure', help='Configure queuing system information', required=False, action='store_true')
     parser.add_argument('-t', '--test', help='List of test names', required=False)
+    parser.add_argument('-o', '--output_path', help='Directory to write stdout into', required=False)
     self.args = parser.parse_args()
 
     if self.args.configure:
@@ -388,19 +390,24 @@ class zpthBatchQueuingSystem:
         print('[Failed to launch test \"' + unittest.name + '\" as test uses > 1 MPI ranks and no MPI launcher was provided]')
       else:
         if self.mpiLaunch == 'none':
-          launchCmd = unittest.execute + " > " + unittest.output_file
+          launchCmd = unittest.execute + " > " + os.path.join(unittest.output_path,unittest.output_file)
         else:
-          launchCmd = mpiLaunch + ' ' + str(unittest.ranks) + ' ' + unittest.execute + " > " + unittest.output_file
+          launchCmd = mpiLaunch + ' ' + str(unittest.ranks) + ' ' + unittest.execute + " > " + os.path.join(unittest.output_path,unittest.output_file)
         print('[Executing] ',launchCmd , flush=True)
         os.system(launchCmd)
     else:
-      launchfile = self.createSubmissionFile(unittest.name,unittest.execute,unittest.ranks,'',unittest.walltime,unittest.output_file)
+      outfile = os.path.join(unittest.output_path,unittest.output_file)
+      launchfile = self.createSubmissionFile(unittest.name,unittest.execute,unittest.ranks,'',unittest.walltime,outfile)
       launchCmd = self.jobSubmissionCommand + launchfile
       print('[Executing] ',launchCmd , flush=True)
       os.system(launchCmd)
 
 
   def executeTestSuite(self,registered_tests):
+    if self.args.output_path:
+      for test in registered_tests:
+        test.setOutputPath(self.args.output_path)
+    
     performTestSuite_execute(self,registered_tests)
 
 
