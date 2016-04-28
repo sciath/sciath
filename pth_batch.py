@@ -162,13 +162,19 @@ def performTestSuite_verify(self,registered_tests):
   print('' , flush=True)
   for test in registered_tests:
     print('[-- Verifying test: ' + test.name + ' --]' , flush=True)
-    test.verifyOutput()
+    if self.mpiLaunch == 'none' and test.ranks != 1:
+      print('[Skipping verification for test \"' + test.name + '\" as test uses > 1 MPI ranks and no MPI launcher was provided]')
+    else:
+      test.verifyOutput()
   
   print('' , flush=True)
   print('[--------- Unit test summary ----------------------]' , flush=True)
   counter = 0
   for test in registered_tests:
-    test.report('summary')
+    if self.mpiLaunch == 'none' and test.ranks != 1:
+      print('  ['+test.name+']  skipped as ranks > 1 and no MPI launcher provided')
+    else:
+      test.report('summary')
     if test.passed == False:
       counter = counter + 1
   if counter > 0:
@@ -203,6 +209,10 @@ class zpthBatchQueuingSystem:
       self.configure()
     else:
       self.setup()
+
+    if self.use_batch == True:
+      if self.mpiLaunch == 'none':
+        raise ValueError('If using a queuing system, a valid mpi launch command must be provided')
 
 #  def addIgnoreKeywords(self,d):
 #    self.ignoreKeywords.append(d)
@@ -279,7 +289,7 @@ class zpthBatchQueuingSystem:
       raise ValueError('You must specify the type of queuing system')
     self.setQueueSystemType(v)
 
-    v = input('[2] MPI launch command with num. procs. flag (required): ')
+    v = input('[2] MPI launch command with num. procs. flag (required): <none>')
     if not v:
       raise ValueError('Error: You must specify an MPI launch command')
     self.setMPILaunch(v)
@@ -371,9 +381,17 @@ class zpthBatchQueuingSystem:
 
   def submitJob(self,unittest):
     if not self.use_batch:
-      launchCmd = self.mpiLaunch + ' ' + str(unittest.ranks) + ' ' + unittest.execute + " > " + unittest.output_file
-      print('[Executing] ',launchCmd , flush=True)
-      os.system(launchCmd)
+      mpiLaunch = self.mpiLaunch
+    
+      if self.mpiLaunch == 'none' and unittest.ranks != 1:
+        print('[Failed to launch test \"' + unittest.name + '\" as test uses > 1 MPI ranks and no MPI launcher was provided]')
+      else:
+        if self.mpiLaunch == 'none':
+          launchCmd = unittest.execute + " > " + unittest.output_file
+        else:
+          launchCmd = mpiLaunch + ' ' + str(unittest.ranks) + ' ' + unittest.execute + " > " + unittest.output_file
+        print('[Executing] ',launchCmd , flush=True)
+        os.system(launchCmd)
     else:
       launchfile = self.createSubmissionFile(unittest.name,unittest.execute,unittest.ranks,'',unittest.walltime,unittest.output_file)
       launchCmd = self.jobSubmissionCommand + launchfile
