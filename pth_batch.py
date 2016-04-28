@@ -215,7 +215,7 @@ class zpthBatchQueuingSystem:
 
     if self.use_batch == True:
       if self.mpiLaunch == 'none':
-        raise ValueError('If using a queuing system, a valid mpi launch command must be provided')
+        raise RuntimeError('[pth] If using a queuing system, a valid mpi launch command must be provided')
 
 #  def addIgnoreKeywords(self,d):
 #    self.ignoreKeywords.append(d)
@@ -265,7 +265,7 @@ class zpthBatchQueuingSystem:
 
     else:
       print('Value found: ' + type + ' ...' , flush=True)
-      raise ValueError('Error: Unknown or unsupported batch queuing system specified')
+      raise RuntimeError('[pth] Unknown or unsupported batch queuing system specified')
 
 
   def setQueueName(self,name):
@@ -289,12 +289,12 @@ class zpthBatchQueuingSystem:
     print('Creating new zpthBatchQueuingSystem.conf file' , flush=True)
     v = input('[1] Batch queuing system type <pbs,lsf,slurm,llq,none>: ')
     if not v:
-      raise ValueError('You must specify the type of queuing system')
+      raise ValueError('[pth] You must specify the type of queuing system')
     self.setQueueSystemType(v)
 
     v = input('[2] MPI launch command with num. procs. flag (required): <none>')
     if not v:
-      raise ValueError('Error: You must specify an MPI launch command')
+      raise ValueError('[pth] You must specify an MPI launch command')
     self.setMPILaunch(v)
 
     if self.use_batch == True:
@@ -357,7 +357,7 @@ class zpthBatchQueuingSystem:
 
       file.close()
     except:
-      raise ValueError('Error: You must execute configure(), and or writeDefinition() first')
+      raise RuntimeError('[pth] You must execute configure(), and or writeDefinition() first')
 
 
   def createSubmissionFile(self,testname,commnd,ranks,ranks_per_node,walltime,outfile):
@@ -370,13 +370,13 @@ class zpthBatchQueuingSystem:
       filename = generateLaunch_PBS(self.accountName,self.queueName,testname,self.mpiLaunch,commnd,ranks,ranks_per_node,walltime,outfile)
 
     elif self.queuingSystemType == 'lsf':
-      raise ValueError('Unsupported: LSF needs to be updated')
+      raise ValueError('[pth] Unsupported: LSF needs to be updated')
 
     elif self.queuingSystemType == 'slurm':
       filename = generateLaunch_SLURM(self.accountName,self.queueName,testname,self.mpiLaunch,commnd,ranks,ranks_per_node,walltime,outfile)
 
     elif self.queuingSystemType == 'load_leveler':
-      raise ValueError('Unsupported: LoadLeveler needs to be updated')
+      raise ValueError('[pth] Unsupported: LoadLeveler needs to be updated')
 
     print('Created submission file:',filename , flush=True)
     return(filename)
