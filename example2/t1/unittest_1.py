@@ -6,7 +6,7 @@ import pth_batch as batch
 def test():
   
   ranks = 1
-  launch = './t1/ex1'
+  launch = './t1/ex1' # This must be a relative path with respect to pth_example2.py
   expected_file = 'expectedoutput/ex1.expected'
   
   def comparefunc(unittest):

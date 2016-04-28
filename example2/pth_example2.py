@@ -14,23 +14,24 @@ import unittest_2 as ut2
 
 def run_unittests_example1():
   
-  print(sys.path)
-
-  os.mkdir('output')
+  if os.path.isdir('output') == False:
+    os.mkdir('output')
 
   # Register tests
   registeredTests = [ ut1.test() , ut2.test() ]
+
+  # Force output to written somewhere else, can be invoked using -o <path>
+  for test in registeredTests:
+    test.setOutputPath('output')
 
   # Build tests <should be done by make>
   os.system('gcc -o t1/ex1 t1/ex1.c')
   os.system('gcc -o t2/ex2 t2/ex2.c')
 
+  launcher = batch.zpthBatchQueuingSystem()
 
   # Filter tests <could be promoted into batch execute()/verify() methods
-  parser = argparse.ArgumentParser(description='Example unit test suite')
-  parser.add_argument('-t', '--test', help='List of test names', required=False)
-  args = parser.parse_args()
-
+  args = launcher.args
   subset = []
   if args.test:
     print(registeredTests)
@@ -47,7 +48,6 @@ def run_unittests_example1():
   else:
     subset = registeredTests
 
-  launcher = batch.zpthBatchQueuingSystem()
   launcher.executeTestSuite(subset)
   launcher.verifyTestSuite(subset)
 
