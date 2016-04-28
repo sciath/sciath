@@ -261,9 +261,9 @@ class zpthBatchQueuingSystem:
 
 
   def view(self):
-    print('pth: Batch queuing system configuration' , flush=True)
-    print('  Queue system:    ',self.queuingSystemType , flush=True)
-    print('  MPI launcher:    ',self.mpiLaunch , flush=True)
+    print('pth: Batch queueing system configuration [zpthBatchQueingSystem.conf]')
+    print('  Queue system:    ',self.queuingSystemType)
+    print('  MPI launcher:    ',self.mpiLaunch)
     if self.use_batch:
       print('  Submit command:', self.jobSubmissionCommand , flush=True)
       if self.accountName:
@@ -280,7 +280,7 @@ class zpthBatchQueuingSystem:
       raise ValueError('You must specify the type of queuing system')
     self.setQueueSystemType(v)
 
-    v = input('[2] MPI launch command (required): ')
+    v = input('[2] MPI launch command with num. procs. flag (required): ')
     if not v:
       raise ValueError('Error: You must specify an MPI launch command')
     self.setMPILaunch(v)

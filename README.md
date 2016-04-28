@@ -6,7 +6,7 @@ Testing code should be easy. The functionality required to launch, parse and per
 
 We provide
 
-* An object to define a single unit test
+* An object to define a single test consisting of running an executable and examining what it writes to stdout
 * A set of tools to parse / filter and query text files for verification purposes
 * An object to manage executing a unit test within a batch queuing system
 
