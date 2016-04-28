@@ -413,26 +413,3 @@ class zpthBatchQueuingSystem:
 
 
 # < end class >
-
-def test1():
-  batch = zpthBatchQueuingSystem()
-  batch.configure()
-  batch.view()
-
-  batch2 = zpthBatchQueuingSystem()
-
-  #conf.addIgnoreKeywords('**')
-  #print(conf.ignoreKeywords)
-
-  #batch.setQueueSystemType('llq')
-  #batch.setMPILaunch('mpiexec')
-  #batch.setHPCAccountName('geophys')
-  #batch.setQueueName('small')
-
-  batch2.view()
-
-  launchfile = batch2.createSubmissionFile('ex1a','./ex1 -options_file go.fast',24,'',"00:05:00",'ex1a-p24.output')
-  print('[To launch execute] ' + batch2.jobSubmissionCommand + launchfile , flush=True)
-
-if __name__ == "__main__":
-  test1()
