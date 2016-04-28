@@ -13,7 +13,8 @@ import unittest_2 as ut2
 
 
 def run_unittests_example1():
-  
+  os.environ['PYTHONUNBUFFERED'] = str('1')
+
   if os.path.isdir('output') == False:
     os.mkdir('output')
 

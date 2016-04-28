@@ -1,4 +1,5 @@
 
+import os
 import pth_test as pth
 import pth_batch as batch
 
@@ -52,6 +53,7 @@ def run_petsc_ex2c():
 
 def run_petsc_unittests_example3():
   
+  os.environ['PYTHONUNBUFFERED'] = str('1')
   registered_tests = [ run_petsc_ex2a() , run_petsc_ex2b() , run_petsc_ex2c() ]
   
   launcher = batch.zpthBatchQueuingSystem()

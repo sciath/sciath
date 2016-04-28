@@ -52,6 +52,7 @@ def test2():
   return(test)
 
 def run_unittests_example1():
+  os.environ['PYTHONUNBUFFERED'] = str('1')
   
   registered_tests = [ test1() , test2() ]
 
