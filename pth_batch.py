@@ -174,7 +174,6 @@ def performTestSuite_verify(self,registered_tests):
   if counter > 0:
     print('\n  [status] ' + str(counter) + ' of ' + str(len(registered_tests)) + ' tests FAILED' , flush=True)
   else:
-    print('----------------------' , flush=True)
     print('\n  [status] All tests passed' , flush=True)
   
   if counter > 0:
