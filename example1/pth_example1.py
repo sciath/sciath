@@ -6,9 +6,7 @@ import pth_batch as batch
 def test1():
   
   ranks = 1
-  
   launch = './ex1'
-  
   expected_file = 'ex1.expected'
   
   def comparefunc(unittest):
