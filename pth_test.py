@@ -288,8 +288,8 @@ class UnitTest:
     self.comparison_file = ''
     self.output_path = ''
 
-  def verify(self,a):
-    a = 0
+  def verify(self):
+    pass
 
   def setOutputPath(self,opath):
     self.output_path = opath
