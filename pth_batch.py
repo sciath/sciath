@@ -203,6 +203,7 @@ class zpthBatchQueuingSystem:
     parser.add_argument('-e', '--execute', help='Perform test execution', required=False, action='store_true')
     parser.add_argument('-v', '--verify', help='Perform test verification', required=False, action='store_true')
     parser.add_argument('-c', '--configure', help='Configure queuing system information', required=False, action='store_true')
+    parser.add_argument('-t', '--test', help='List of test names', required=False)
     self.args = parser.parse_args()
 
     if self.args.configure:
