@@ -288,8 +288,10 @@ class UnitTest:
     self.comparison_file = ''
     self.output_path = ''
 
-#  def verify(self):
-#    pass
+  def verify(self,junk):
+    raise RuntimeError('[pth] A valid verification method for unit-test \"' + self.name + '\" was not found.\n\
+              [pth] You must provide each unit-test with a method to verify the output.\n\
+              [pth] The method is set via calling test.setVerifyMethod()')
 
   def setOutputPath(self,opath):
     self.output_path = opath
