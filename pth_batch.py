@@ -2,6 +2,7 @@
 import os
 import argparse
 import pth_test as pth
+from bcolors import bcolors
 
 
 def generateLaunch_PBS(accountname,queuename,testname,mpiLaunch,executable,ranks,ranks_per_node,walltime,outfile):
@@ -126,22 +127,25 @@ def performTestSuite_local(self,registered_tests):
     launcher.submitJob(test)
     test.verifyOutput()
   
-  print('-- Unit test report summary --' , flush=True)
   counter = 0
   for test in registered_tests:
     test.report('summary')
     if test.passed == False:
       counter = counter + 1
   if counter > 0:
-    print('  ' + str(counter) + ' / ' + str(len(registered_tests)) + ' tests failed' , flush=True)
-  else:
-    print('----------------------' , flush=True)
-    print('  All tests passed' , flush=True)
-  
-  if counter > 0:
     print('-- Unit test error report --' , flush=True)
     for test in registered_tests:
       test.report('log')
+
+  print('-- Unit test report summary --' , flush=True)
+  for test in registered_tests:
+    test.report('summary')
+  if counter > 0:
+    print('  ' + str(counter) + ' / ' + str(len(registered_tests)) + ' tests ' + bcolors.FAIL + 'failed' + bcolors.ENDC , flush=True)
+  else:
+    print('----------------------' , flush=True)
+    print(bcolors.OKGREEN + ' All tests passed' + bcolors.ENDC , flush=True)
+  
 
 
 def performTestSuite_execute(self,registered_tests):
@@ -168,6 +172,16 @@ def performTestSuite_verify(self,registered_tests):
       test.verifyOutput()
   
   print('' , flush=True)
+  counter = 0
+  for test in registered_tests:
+    if test.passed == False:
+      counter = counter + 1
+  if counter > 0:
+    print('' , flush=True)
+    print('[--------- Unit test error report ----------------------]' , flush=True)
+    for test in registered_tests:
+      test.report('log')
+
   print('[--------- Unit test summary ----------------------]' , flush=True)
   counter = 0
   for test in registered_tests:
@@ -178,15 +192,10 @@ def performTestSuite_verify(self,registered_tests):
     if test.passed == False:
       counter = counter + 1
   if counter > 0:
-    print('\n  [status] ' + str(counter) + ' of ' + str(len(registered_tests)) + ' tests FAILED' , flush=True)
+    print('\n  [status] ' + str(counter) + ' of ' + str(len(registered_tests)) + bcolors.FAIL + ' tests FAILED' + bcolors.ENDC , flush=True)
   else:
-    print('\n  [status] All tests passed' , flush=True)
+    print('\n  ' + bcolors.OKGREEN + '[status] All tests passed' + bcolors.ENDC , flush=True)
   
-  if counter > 0:
-    print('' , flush=True)
-    print('[--------- Unit test error report ----------------------]' , flush=True)
-    for test in registered_tests:
-      test.report('log')
 
 
 class zpthBatchQueuingSystem:

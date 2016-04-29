@@ -4,6 +4,8 @@ import numpy as np
 import math as math
 import re
 
+from bcolors import bcolors
+
 def compareLiteral(input,expected):
   status = True
   err = ''
@@ -263,15 +265,6 @@ def test3():
   status,err = compareInteger(['4','3'],'2',['3'])
   print(err)
 
-class bcolors:
-  HEADER = '\033[95m'
-  OKBLUE = '\033[94m'
-  OKGREEN = '\033[92m'
-  WARNING = '\033[93m'
-  FAIL = '\033[91m'
-  ENDC = '\033[0m'
-  BOLD = '\033[1m'
-  UNDERLINE = '\033[4m'
 
 class UnitTest:
   
@@ -343,9 +336,9 @@ class UnitTest:
     if type == 'summary':
       
       if self.passed == False:
-        print(bcolors.FAIL,' [' + self.name + ']   *** FAILED ***' + bcolors.ENDC , flush=True)
+        print(bcolors.FAIL + ' [' + self.name + ']   *** FAILED ***' + bcolors.ENDC , flush=True)
       else:
-        print(bcolors.OKGREEN,' [' + self.name + ']   passed' + bcolors.ENDC , flush=True)
+        print(bcolors.OKGREEN + ' [' + self.name + ']   passed' + bcolors.ENDC , flush=True)
 
     if type == 'log':
       if self.passed == False:
