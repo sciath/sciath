@@ -54,6 +54,12 @@ def run_petsc_ex2c():
 def run_petsc_unittests_example3():
   
   os.environ['PYTHONUNBUFFERED'] = str('1')
+
+  # Build KSP example 2
+  if not os.environ.get('PETSC_ARCH') or not os.environ.get('PETSC_DIR') :
+    raise Exception('You must define PETSC_ARCH and PETSC_DIR to correspond to a working PETSc build')
+  os.system('cd ' + os.environ['PETSC_DIR'] + '/src/ksp/ksp/examples/tutorials && make ex2 && cd -')
+
   registered_tests = [ run_petsc_ex2a() , run_petsc_ex2b() , run_petsc_ex2c() ]
   
   launcher = batch.zpthBatchQueuingSystem()
