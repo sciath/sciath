@@ -18,7 +18,7 @@ def test1():
     unittest.compareFloatingPoint(key,1e-4)
   
   # Create unit test object
-  test = pth.UnitTest('ex',ranks,launch,expected_file)
+  test = pth.UnitTest('ex1',ranks,launch,expected_file)
   test.setVerifyMethod(comparefunc)
   test.appendKeywords('@')
   
@@ -36,7 +36,7 @@ def test2():
     unittest.compareInteger(key,0)
   
   # Create unit test object
-  test = pth.UnitTest('ex',ranks,launch,expected_file)
+  test = pth.UnitTest('ex2',ranks,launch,expected_file)
   test.setVerifyMethod(comparefunc)
   test.appendKeywords('@')
   
