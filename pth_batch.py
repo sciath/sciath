@@ -202,7 +202,7 @@ class zpthBatchQueuingSystem:
     
     parser = argparse.ArgumentParser(description='Python Test Harness.')
     parser.add_argument('-e', '--execute', help='Perform test execution', required=False, action='store_true')
-    parser.add_argument('-v', '--verify', help='Perform test verification', required=False, action='store_true')
+    parser.add_argument('-v', '--verify', help='Perform test verification (and not execution)', required=False, action='store_true')
     parser.add_argument('-c', '--configure', help='Configure queuing system information', required=False, action='store_true')
     parser.add_argument('-t', '--test', help='List of test names', required=False)
     parser.add_argument('-o', '--output_path', help='Directory to write stdout into', required=False)
@@ -408,14 +408,15 @@ class zpthBatchQueuingSystem:
       for test in registered_tests:
         test.setOutputPath(self.args.output_path)
     
-    performTestSuite_execute(self,registered_tests)
+    # Don't execute if we are verifying a batch run
+    if not (self.use_batch and self.args.verify) :
+      performTestSuite_execute(self,registered_tests)
 
 
   def verifyTestSuite(self,registered_tests):
-    if self.use_batch:
-      if self.args.verify:
-        performTestSuite_verify(self,registered_tests)
-    else:
+  
+    # Verify, unless we are running with a batch system and are not in verify(-only) mode
+    if not self.use_batch or self.args.verify :
       performTestSuite_verify(self,registered_tests)
 
 
