@@ -3,3 +3,5 @@ zpthBatchQueuingSystem.conf
 *.lsf
 *.slurm
 *.llq
+
+__pycache__
