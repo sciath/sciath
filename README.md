@@ -18,29 +18,26 @@ Make sure you set PYTHONPATH environment variable to include the directory where
 Features: 
 (i) comparison with data in a file
   
-  ```
+  `
   cd pth_example1
   python3.4 pth_example1.py
-
-  ```
-
+  `
 * Demonstration of basic unit-testing for serial tests.
 Features:
 (i) tests are in separate directories;
 (ii) tests can be optionally selected
   
-  ```
+  `
   cd example2
   python3.4 pth_example2.py
+  `
   
-  ```
 
 * Demonstration of parallel tests using PETSc code. 
 Features:
 (i) Batch queuing system with parallel runs
 
-  ```
+  `
   cd example3
   python3.4 pth_example3.py
-
-  ```
+  `
