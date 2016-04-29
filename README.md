@@ -19,7 +19,8 @@ Features:
 (i) comparison with data in a file
   
   ```
-  python3.4 example1/pth_example1.py
+  cd pth_example1
+  python3.4 pth_example1.py
 
   ```
 
@@ -29,7 +30,8 @@ Features:
 (ii) tests can be optionally selected
   
   ```
-  python3.4 example2/pth_example2.py
+  cd example2
+  python3.4 pth_example2.py
   
   ```
 
@@ -38,6 +40,7 @@ Features:
 (i) Batch queuing system with parallel runs
 
   ```
-  python3.4 example3/pth_example3.py
+  cd example3
+  python3.4 pth_example3.py
 
   ```

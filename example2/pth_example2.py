@@ -42,7 +42,7 @@ def run_unittests_example1():
         if name == t.name:
           subset.append(t)
     if subset == []:
-      raise RuntimeError('You requested to tests a subset of registered tests, \n',
+      raise RuntimeError('You requested to test a subset of registered tests, \n',
                          'but no registed test matched the name list provided')
     else:
       print(subset)
