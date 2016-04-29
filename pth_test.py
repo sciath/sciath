@@ -164,7 +164,11 @@ def getKeyValuesAsInt(contents,keyword):
 
 
 def getKeyValuesAsFloat(contents,keyword):
+  #print('DEBUG: contents = ',contents)
+
   result = getKeyValues(contents,keyword)
+
+  #print('DEBUG: result = ',result)
 
   flattened = []
   for r in result:
@@ -174,7 +178,8 @@ def getKeyValuesAsFloat(contents,keyword):
       if v != '':
         flattened.append(v)
 
-  #print('flattened = ',flattened)
+  #print('DEBUG: flattened = ',flattened)
+
   tmp = np.array(flattened)
   values = tmp.astype(np.float)
   return values
