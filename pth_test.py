@@ -106,36 +106,57 @@ def parseFile(filename,keywords):
 
 
 def getKeyValues(contents,keyword):
-  
+
   c1 = contents
+  f_c = []
+  f_r = []
+  f_s = []
 
-  f1 = re.findall("\s*" + keyword + "\s*=\s*[\[\(\{](.*?)[\}\)\]]", c1)
-  f2 = re.findall("\s*" + keyword + "\s+[\[\(\{](.*?)[\}\)\]]", c1)
+  # Look for arrays, then strip them out
+  #f1 = re.findall("\s*" + keyword + "\s*=\s*[\[\(\{].*?[\}\)\]]", c1)
+  find_curly  = re.findall("\s*" + keyword + "\s*=?\s*[\{].*?[\}]", c1)
+  if find_curly:
+    #print('find_curly',find_curly)
+    f_c  = re.findall("\s*" + keyword + "\s*=?\s*[\{](.*?)[\}]", c1)
+    #print(f_c)
+    for item in find_curly:
+      c1 = c1.replace(item,' ')
+  #print('c1 - curly:',c1)
 
-  f3 = re.findall("\s*" + keyword + "\s*=\s*([0-9a-zA-Z-\_\.]*)", c1)
-  f4 = re.findall("\s*" + keyword + "\s+([0-9a-zA-Z-\_\.]*)", c1)
+  find_round  = re.findall("\s*" + keyword + "\s*=?\s*[\(].*?[\)]", c1)
+  if find_round:
+    #print('find_round',find_round)
+    f_r  = re.findall("\s*" + keyword + "\s*=?\s*[\(](.*?)[\)]", c1)
+    #print(f_r)
+    for item in find_round:
+      c1 = c1.replace(item,' ')
+  #print('c1 - round:',c1)
+
+  find_square  = re.findall("\s*" + keyword + "\s*=?\s*[\[].*?[\]]", c1)
+  if find_square:
+    #print('find_square',find_square)
+    f_s  = re.findall("\s*" + keyword + "\s*=?\s*[\[](.*?)[\]]", c1)
+    #print(f_s)
+    for item in find_square:
+      c1 = c1.replace(item,' ')
+  #print('c1 - square:',c1)
+
+
+  # Look for singletons, then strip them out
+  #f3 = re.findall("\s*" + keyword + "\s*=\s*([0-9a-zA-Z-\_\.]*)", c1)
+  #f4 = re.findall("\s*" + keyword + "\s+([0-9a-zA-Z-\_\.]*)", c1)
+
+  find_single = []
+  #find_single = re.findall("\s*" + keyword + "\s*(.*\s)", c1)
+  f_single = re.findall("\s*" + keyword + "\s*=?\s*(.*?)\s", c1)
+  #print('f_single',f_single)
+
+
+  list = f_c + f_r + f_s + f_single
 
   filtered = []
-  if f1:
-    for item in f1:
-      if item != '':
-        trimmed = item.lstrip()
-        trimmed = trimmed.rstrip()
-        filtered.append(trimmed)
-  if f2:
-    for item in f2:
-      if item != '':
-        trimmed = item.lstrip()
-        trimmed = trimmed.rstrip()
-        filtered.append(trimmed)
-  if f3:
-    for item in f3:
-      if item != '':
-        trimmed = item.lstrip()
-        trimmed = trimmed.rstrip()
-        filtered.append(trimmed)
-  if f4:
-    for item in f4:
+  if list:
+    for item in list:
       if item != '':
         trimmed = item.lstrip()
         trimmed = trimmed.rstrip()
@@ -147,17 +168,24 @@ def getKeyValues(contents,keyword):
 def getKeyValuesAsInt(contents,keyword):
   result = getKeyValues(contents,keyword)
 
+  #print('result = ',result)
   flattened = []
   for sublist in result:
 
-    for val in sublist:
-      if val != '':
-        val = val.replace(',','')
-        ss = val.split(' ')
-        for num in ss:
+    if type(sublist) is list:
+        pass
+    else:
+      if sublist != '':
+        numlist = sublist.replace(',',' ')
+        numlist = numlist.replace(';',' ')
+        nums = numlist.split(' ')
+        #print(nums)
+        for num in nums:
           if num != '':
             flattened.append(num)
+    
 
+  #print('flat',flattened)
   tmp = np.array(flattened)
   values = tmp.astype(np.int)
   return values
@@ -173,6 +201,7 @@ def getKeyValuesAsFloat(contents,keyword):
   flattened = []
   for r in result:
     r = r.replace(',',' ')
+    r = r.replace(';',' ')
     val = r.split(' ')
     for v in val:
       if v != '':
