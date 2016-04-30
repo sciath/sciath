@@ -51,10 +51,30 @@ def test2():
 
   return(test)
 
+def test3():
+  
+  ranks = 1
+  launch = 'touch ex3.output'
+  expected_file = 'ex3.expected'
+  
+  def comparefunc(unittest):
+    key = 'kspit'
+    unittest.compareInteger(key,0)
+
+    key = 'res1'
+    unittest.compareFloatingPoint(key,1.0e-4)
+
+  # Create unit test object
+  test = pth.UnitTest('ex3',ranks,launch,expected_file)
+  test.setVerifyMethod(comparefunc)
+  
+  return(test)
+
 def run_unittests_example1():
   os.environ['PYTHONUNBUFFERED'] = str('1')
   
-  registered_tests = [ test1() , test2() ]
+  registered_tests = [ test1() , test2(), test3() ]
+  #registered_tests = [ test3() ]
 
   os.system('gcc -o ex1 ex1.c')
   os.system('gcc -o ex2 ex2.c')
