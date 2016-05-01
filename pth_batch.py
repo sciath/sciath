@@ -403,7 +403,7 @@ class zpthBatchQueuingSystem:
         else:
           launchCmd = mpiLaunch + ' ' + str(unittest.ranks) + ' ' + unittest.execute + " > " + os.path.join(unittest.output_path,unittest.output_file)
         print('[Executing] ',launchCmd , flush=True)
-        os.system(launchCmd)
+        unittest.errno = os.system(launchCmd) >> 8
     else:
       outfile = os.path.join(unittest.output_path,unittest.output_file)
       launchfile = self.createSubmissionFile(unittest.name,unittest.execute,unittest.ranks,'',unittest.walltime,outfile)

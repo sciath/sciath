@@ -306,6 +306,7 @@ class UnitTest:
     self.passed = -1
     self.walltime = "00:05:00"
     self.errormessage = ''
+    self.errno = -1
     self.name = name
     self.ranks = ranks
     self.execute = execute
@@ -334,6 +335,14 @@ class UnitTest:
     self.keywords.append(keywords)
   #print(self.keywords)
 
+  def getExitCode(self):
+    return self.errno
+
+  def getErrorReport(self):
+    return self.errormessage
+
+  def getErrorStatus(self):
+    return self.passed
 
   def verifyOutput(self):
     
