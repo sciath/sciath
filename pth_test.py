@@ -48,10 +48,10 @@ def compareFloatingPoint(input,tolerance,expected):
     absdiff = np.abs(i_f[index] - e_f[index]);
     if absdiff > tol_f:
       status = False
-      err = err + "compareFloatingPoint [failed]\nReason: tolerance " + str(tol_f) + " not satisifed\n"
+      err = err + "compareFloatingPoint [failed]\nReason: tolerance " + ("%1.4e" % tol_f) + " not satisifed\n"
       err = err + ("  expected: %s\n" % e_f)
       err = err + ("  input:    %s\n" % i_f)
-      err = err + "  index[" + str(index) + "]" + (" input \"%s\"" %  i_f[index])  + (" != expected \"%s\"" % e_f[index]) + " (+/-"+str(tol_f)+")\n"
+      err = err + "  index[" + str(index) + "]" + (" input \"%1.6e\"" %  i_f[index])  + (" != expected \"%1.6e\"" % e_f[index]) + " (+/-" + ("%1.4e" % tol_f)+")\n"
 
   return status,err
 
