@@ -34,6 +34,9 @@ def test2():
     
     key = 'kspits'
     unittest.compareInteger(key,0)
+
+    key = 'norm'
+    unittest.compareFloatingPoint(key,1e-4)
   
   # Create unit test object
   test = pth.UnitTest('ex2',ranks,launch,expected_file)
@@ -41,10 +44,31 @@ def test2():
   test.appendKeywords('@')
   
   return(test)
+
+def test3():
+  
+  ranks = 1
+  launch = './ex'
+  expected_file = 'ex.expected3'
+  
+  def comparefunc(unittest):
+    
+    key = 'kspits'
+    unittest.compareInteger(key,0)
+  
+    key = 'norm'
+    unittest.compareFloatingPoint(key,1e-4)
+  
+  # Create unit test object
+  test = pth.UnitTest('ex3',ranks,launch,expected_file)
+  test.setVerifyMethod(comparefunc)
+  test.appendKeywords('@')
+  
+  return(test)
 def run_unittests():
   os.environ['PYTHONUNBUFFERED'] = str('1')
   
-  registered_tests = [ test1(), test2() ]
+  registered_tests = [ test1(), test2(), test3() ]
 
   os.system('gcc -o ex ex.c')
 
