@@ -23,7 +23,7 @@ Features:
   
 ####Demonstration of basic unit-testing for serial tests.
 Features:
-(i) tests are in separate directories;
+(i) unit tests which are defined in separate directories;
 (ii) tests can be optionally selected
   
     cd example2
@@ -31,7 +31,7 @@ Features:
   
 ####Demonstration of parallel tests using PETSc code. 
 Features:
-(i) Batch queuing system with parallel runs
+(i) unit test execution of a parallel application which is submitted via a batch queuing system
 
   
     cd example3
