@@ -12,7 +12,11 @@ pyTH provides:
 
 ### How do I use this crap? ###
 
-Make sure you set PYTHONPATH environment variable to include the directory where the ```pth_{test,batch}.py``` files live.
+1. pyTH depends on python3
+
+2. It is recommended you set the environment variable PYTHONUNBUFFERED
+
+3. Make sure you set PYTHONPATH environment variable to include the directory where the ```pth_{test,batch}.py``` files live.
 
 ####Demonstration of basic unit-testing for serial tests. 
 Features: 
