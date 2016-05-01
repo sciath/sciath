@@ -1,6 +1,6 @@
 # pyTestHarness: The idea #
 
-Testing code should be easy. The functionality required to launch, parse and perform the verification should be light-weight and simple to migrate into existing projects. Support test codes which uses MPI, and which may be executed via a batch queuing system must be provided.
+Testing code should be easy. The functionality required to launch, parse and perform the verification should be light-weight and simple to migrate into existing projects. pyTestHarness supports unit-testing of sequential and MPI-parallel applications. Unit tests can be performed locally, or submitted via via batch queuing systems (PBS, LSF, Slurm or LoadLeveler).
 
 ### Key concepts ###
 
@@ -36,4 +36,3 @@ Features:
   
     cd example3
     python3.4 pth_example3.py
-  
