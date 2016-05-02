@@ -3,7 +3,7 @@ import os,sys
 import argparse
 
 import pth_unittest as pth
-import pth_batch as batch
+import pth_launch as launch
 
 
 sys.path.append(os.path.join(os.environ['PWD'], 't1'))
@@ -30,7 +30,7 @@ def run_unittests_example1():
   os.system('gcc -o t1/ex1 t1/ex1.c')
   os.system('gcc -o t2/ex2 t2/ex2.c')
 
-  launcher = batch.zpthBatchQueuingSystem()
+  launcher = launch.pthLaunch()
 
   # Filter tests <could be promoted into batch execute()/verify() methods
   args = launcher.args

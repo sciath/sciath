@@ -1,7 +1,7 @@
 
 import os
 import pth_unittest as pth
-import pth_batch as batch
+import pth_launch as launch
 
 def test1():
   
@@ -79,7 +79,7 @@ def run_unittests_example1():
   os.system('gcc -o ex1 ex1.c')
   os.system('gcc -o ex2 ex2.c')
 
-  launcher = batch.zpthBatchQueuingSystem()
+  launcher = launch.pthLaunch()
   launcher.executeTestSuite(registered_tests)
   launcher.verifyTestSuite(registered_tests)
 

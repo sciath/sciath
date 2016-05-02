@@ -1,4 +1,4 @@
-zpthBatchQueuingSystem.conf
+pthBatchQueuingSystem.conf
 *.pbs
 *.lsf
 *.slurm

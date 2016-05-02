@@ -1,7 +1,7 @@
 
 import os
 import pth_unittest as pth
-import pth_batch as batch
+import pth_launch as launch
 
 # /Users/dmay/software/petsc-3.6.0/arch-darwin-c-debug/bin/mpiexec
 def run_petsc_ex2a():
@@ -62,7 +62,7 @@ def run_petsc_unittests_example3():
 
   registered_tests = [ run_petsc_ex2a() , run_petsc_ex2b() , run_petsc_ex2c() ]
   
-  launcher = batch.zpthBatchQueuingSystem()
+  launcher = launcher.pthLaunch()
   launcher.executeTestSuite(registered_tests)
   launcher.verifyTestSuite(registered_tests)
 

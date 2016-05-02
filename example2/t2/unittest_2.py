@@ -1,7 +1,6 @@
 
 import os
 import pth_unittest as pth
-import pth_batch as batch
 
 def test():
   

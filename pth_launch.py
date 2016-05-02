@@ -11,11 +11,11 @@ def generateLaunch_PBS(accountname,queuename,testname,mpiLaunch,executable,ranks
   if not walltime:
     print("<generateLaunch_PBS>: Requires the walltime be specified" , flush=True)
   
-  filename = testname + '-zpth.pbs'
+  filename = testname + '-pth.pbs'
   file = open(filename,"w")
   file.write("#!/bin/bash\n")
   
-  file.write("# ZPTH: auto-generated pbs file\n")
+  file.write("# pyTH: auto-generated pbs file\n")
 
   if accountname:
     file.write("#PBS -A " + accountname + "\n") # account to charge
@@ -38,11 +38,11 @@ def generateLaunch_SLURM(accountname,queuename,testname,mpiLaunch,executable,ran
   if not walltime:
     print("<generateLaunch_SLURM>: Requires the walltime be specified" , flush=True)
   
-  filename = testname + '-zpth.slurm'
+  filename = testname + '-pth.slurm'
   file = open(filename,"w")
   file.write("#!/bin/bash -l\n")
   
-  file.write("# ZPTH: auto-generated slurm file\n")
+  file.write("# pyTH: auto-generated slurm file\n")
   if accountname:
     file.write("#SBATCH --account=" + accountname + "\n") # account to charge
   file.write("#SBATCH --job-name=\"" + testname + "\"" + "\n") # jobname
@@ -71,7 +71,7 @@ def generateLaunch_LSF(accountname,queuename,testname,executable,ranks,rusage,wa
   
   print("#!/bin/sh")
   
-  print("# ZPTH: auto-generated lsf file")
+  print("# pyTH: auto-generated lsf file")
 
   print("#BSUB -J " + testname ) # jobname
   
@@ -98,7 +98,7 @@ def generateLaunch_LoadLevelerBG(accountname,queuename,testname,executable,total
     print("<generateLaunch_LoadLeveler>: Requires the walltime be specified" , flush=True)
   
   print("#!/bin/sh")
-  print("# ZPTH: auto-generated llq file")
+  print("# pyTH: auto-generated llq file")
   print("# @ job_name = " + testname)
   print("# @ job_type = bluegene")
   print("# @ error = $(job_name)_$(jobid).stderr")
@@ -202,7 +202,7 @@ def performTestSuite_verify(self,registered_tests):
   
 
 
-class zpthBatchQueuingSystem:
+class pthLaunch:
 
   def __init__(self):
     self.accountName = []
@@ -286,7 +286,7 @@ class zpthBatchQueuingSystem:
 
 
   def view(self):
-    print('pth: Batch queueing system configuration [zpthBatchQueingSystem.conf]')
+    print('pth: Batch queueing system configuration [pthBatchQueingSystem.conf]')
     print('  Queue system:    ',self.queuingSystemType)
     print('  MPI launcher:    ',self.mpiLaunch)
     if self.use_batch:
@@ -299,7 +299,7 @@ class zpthBatchQueuingSystem:
 
   def configure(self):
     print('----------------------------------------------------------------' , flush=True)
-    print('Creating new zpthBatchQueuingSystem.conf file' , flush=True)
+    print('Creating new pthBatchQueuingSystem.conf file' , flush=True)
     v = input('[1] Batch queuing system type <pbs,lsf,slurm,llq,none>: ')
     if not v:
       raise ValueError('[pth] You must specify the type of queuing system')
@@ -321,8 +321,8 @@ class zpthBatchQueuingSystem:
     self.writeDefinition()
     print('\n' , flush=True)
     print('** If you wish to change the config for your batch system, either' , flush=True)
-    print('**   (i) delete the file zpthBatchQueuingSystem.conf, or' , flush=True)
-    print('**  (ii) re-run zpth2.configure()' , flush=True)
+    print('**   (i) delete the file pthBatchQueuingSystem.conf, or' , flush=True)
+    print('**  (ii) re-run pth2.configure()' , flush=True)
     print('** (iii) re-run with the command line arg --configure' , flush=True)
     print('----------------------------------------------------------------' , flush=True)
 
@@ -338,7 +338,7 @@ class zpthBatchQueuingSystem:
 
   def writeDefinition(self):
 
-    file = open('zpthBatchQueuingSystem.conf','w')
+    file = open('pthBatchQueuingSystem.conf','w')
     #    file.write('queuingSystemType = ' + self.queuingSystemType + '\n' )
     #    file.write('accountName = ' + self.accountName + '\n' )
     #    file.write('queueName = ' + self.queueName + '\n' )
@@ -353,7 +353,7 @@ class zpthBatchQueuingSystem:
 
   def loadDefinition(self):
     try:
-      file = open('zpthBatchQueuingSystem.conf','r')
+      file = open('pthBatchQueuingSystem.conf','r')
 
       v = file.readline()
       self.setQueueSystemType(v.rstrip())
