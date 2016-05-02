@@ -192,9 +192,13 @@ def performTestSuite_verify(self,registered_tests):
     if test.passed == False:
       counter = counter + 1
   if counter > 0:
-    print('\n  [status] ' + str(counter) + ' of ' + str(len(registered_tests)) + bcolors.FAIL + ' tests FAILED' + bcolors.ENDC , flush=True)
+    print('\n'         + bcolors.FAIL + '          ********************' + bcolors.ENDC , flush=True)
+    print(' [status] ' + bcolors.FAIL +  str(counter) + ' of ' + str(len(registered_tests)) + ' tests FAILED' + bcolors.ENDC , flush=True)
+    print(               bcolors.FAIL + '          ********************' + bcolors.ENDC , flush=True)
   else:
-    print('\n  ' + bcolors.OKGREEN + '[status] All tests passed' + bcolors.ENDC , flush=True)
+    print('\n' + bcolors.OKGREEN + '          ****************' + bcolors.ENDC , flush=True)
+    print(       bcolors.OKGREEN + ' [status] All tests passed' + bcolors.ENDC , flush=True)
+    print(       bcolors.OKGREEN + '          ****************' + bcolors.ENDC , flush=True)
   
 
 
