@@ -1,0 +1,9 @@
+@ -- 
+@ -- Output from fake application code 
+@ -- comment lines 
+@ -- 
+$cputime = { 2.2 }
+$residuals { 33.33, 6.6 }
+kspits 42
+$norm = 99.9
+$rms 51.0
