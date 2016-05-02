@@ -4,7 +4,7 @@ import numpy as np
 import math as math
 import re
 
-from bcolors import bcolors
+from pth_colors import NamedColors as bcolors
 
 def compareLiteral(input,expected):
   status = True
