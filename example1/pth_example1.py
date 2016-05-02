@@ -17,7 +17,7 @@ def test1():
     key = '\$residuals'
     unittest.compareFloatingPoint(key,0.000001)
     
-    key = '\$kspits'
+    key = 'kspits'
     unittest.compareInteger(key,0)
 
     key = '\$norm'
