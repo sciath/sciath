@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 import os,sys
 import argparse
-import pth_test as pth
+
+import pth_unittest as pth
 import pth_batch as batch
 
 

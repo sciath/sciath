@@ -1,6 +1,6 @@
 
 import os
-import pth_test as pth
+import pth_unittest as pth
 import pth_batch as batch
 
 # /Users/dmay/software/petsc-3.6.0/arch-darwin-c-debug/bin/mpiexec

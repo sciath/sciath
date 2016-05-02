@@ -1,6 +1,6 @@
 
 import os
-import pth_test as pth
+import pth_unittest as pth
 import pth_batch as batch
 
 def test():
@@ -17,7 +17,7 @@ def test():
     key = '\$residuals'
     unittest.compareFloatingPoint(key,0.000001)
     
-    key = '\$kspits'
+    key = 'kspits'
     unittest.compareInteger(key,0)
 
     key = '\$norm'

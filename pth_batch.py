@@ -2,7 +2,7 @@
 import os
 import argparse
 
-import pth_test as pth
+import pth_unittest as pth
 from pth_colors import NamedColors as bcolors
 
 def generateLaunch_PBS(accountname,queuename,testname,mpiLaunch,executable,ranks,ranks_per_node,walltime,outfile):
