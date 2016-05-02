@@ -75,7 +75,7 @@ def launcherReportAll(launcher,testList):
     print(bcolors.OKGREEN + '          ***********************************' + bcolors.ENDC)
 
 
-class pthHarnesss:
+class pthHarness:
   def __init__(self,registeredTests):
     self.registeredTests = registeredTests
     self.testDescription = []
