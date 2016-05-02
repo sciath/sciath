@@ -2,8 +2,8 @@
 import os
 import argparse
 
-import pth_unittest as pth
-from pth_colors import NamedColors as bcolors
+import pyTestHarness.unittest as pth
+from   pyTestHarness.colors import pthNamedColors as bcolors
 
 def generateLaunch_PBS(accountname,queuename,testname,mpiLaunch,executable,ranks,ranks_per_node,walltime,outfile):
   if not ranks:

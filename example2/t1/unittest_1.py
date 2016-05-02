@@ -1,6 +1,6 @@
 
 import os
-import pth_unittest as pth
+import pyTestHarness.unittest as pth
 
 def test():
   
@@ -26,7 +26,7 @@ def test():
     unittest.compareFloatingPoint(key,0.01)
   
   # Create unit test object
-  ex1 = pth.UnitTest('unit1',ranks,launch,expected_file)
+  ex1 = pth.pthUnitTest('unit1',ranks,launch,expected_file)
   ex1.setVerifyMethod(comparefunc)
   ex1.appendKeywords('@')
   

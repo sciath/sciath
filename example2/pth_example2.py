@@ -2,10 +2,11 @@
 import os,sys
 import argparse
 
-import pth_unittest as pth
-import pth_launch as launch
+import pyTestHarness.unittest as pth
+import pyTestHarness.launch as launch
 
 
+# Import separate tests
 sys.path.append(os.path.join(os.environ['PWD'], 't1'))
 sys.path.append(os.path.join(os.environ['PWD'], 't2'))
 import unittest_1 as ut1

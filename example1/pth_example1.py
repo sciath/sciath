@@ -1,7 +1,7 @@
 
 import os
-import pth_unittest as pth
-import pth_launch as launch
+import pyTestHarness.unittest as pth
+import pyTestHarness.launch as launch
 
 def test1():
   
@@ -27,7 +27,7 @@ def test1():
     unittest.compareFloatingPoint(key,0.01)
   
   # Create unit test object
-  test = pth.UnitTest('ex1',ranks,launch,expected_file)
+  test = pth.pthUnitTest('ex1',ranks,launch,expected_file)
   test.setVerifyMethod(comparefunc)
   test.appendKeywords('@')
   
@@ -44,7 +44,7 @@ def test2():
     unittest.compareFloatingPoint(key,0.0001)
   
   # Create unit test object
-  test = pth.UnitTest('ex2',ranks,launch,expected_file)
+  test = pth.pthUnitTest('ex2',ranks,launch,expected_file)
   test.setVerifyMethod(comparefunc)
   test.appendKeywords('@')
   test.setComparisonFile('ex2-residual.log')
@@ -65,7 +65,7 @@ def test3():
     unittest.compareFloatingPoint(key,1.0e-4)
 
   # Create unit test object
-  test = pth.UnitTest('ex3',ranks,launch,expected_file)
+  test = pth.pthUnitTest('ex3',ranks,launch,expected_file)
   test.setVerifyMethod(comparefunc)
   
   return(test)

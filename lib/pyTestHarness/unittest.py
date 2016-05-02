@@ -4,7 +4,7 @@ import numpy as np
 import math as math
 import re
 
-from pth_colors import NamedColors as bcolors
+from pyTestHarness.colors import pthNamedColors as bcolors
 
 def compareLiteral(input,expected):
   status = True
@@ -300,7 +300,7 @@ def test3():
   print(err)
 
 
-class UnitTest:
+class pthUnitTest:
   
   def __init__(self, name,ranks,execute,expected_file):
     self.passed = -1

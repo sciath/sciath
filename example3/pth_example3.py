@@ -1,7 +1,7 @@
 
 import os
-import pth_unittest as pth
-import pth_launch as launch
+import pyTestHarness.unittest as pth
+import pyTestHarness.launch as launch
 
 # /Users/dmay/software/petsc-3.6.0/arch-darwin-c-debug/bin/mpiexec
 def run_petsc_ex2a():
@@ -14,7 +14,7 @@ def run_petsc_ex2a():
     key = 'KSP Residual norm'
     unittest.compareFloatingPoint(key,1.0e-5)
 
-  test = pth.UnitTest('ex2a',ranks,launch,expected_file)
+  test = pth.pthUnitTest('ex2a',ranks,launch,expected_file)
   test.setVerifyMethod(comparefunc)
   return(test)
 
@@ -29,7 +29,7 @@ def run_petsc_ex2b():
     key = 'KSP Residual norm'
     unittest.compareFloatingPoint(key,1.0e-5)
   
-  test = pth.UnitTest('ex2b',ranks,launch,expected_file)
+  test = pth.pthUnitTest('ex2b',ranks,launch,expected_file)
   test.setVerifyMethod(comparefunc)
   return(test)
 
@@ -47,7 +47,7 @@ def run_petsc_ex2c():
     key = 'Norm of error'
     unittest.compareLiteral(key)
   
-  test = pth.UnitTest('ex2c',ranks,launch,expected_file)
+  test = pth.pthUnitTest('ex2c',ranks,launch,expected_file)
   test.setVerifyMethod(comparefunc)
   return(test)
 
@@ -62,7 +62,7 @@ def run_petsc_unittests_example3():
 
   registered_tests = [ run_petsc_ex2a() , run_petsc_ex2b() , run_petsc_ex2c() ]
   
-  launcher = launcher.pthLaunch()
+  launcher = launch.pthLaunch()
   launcher.executeTestSuite(registered_tests)
   launcher.verifyTestSuite(registered_tests)
 
