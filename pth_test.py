@@ -403,7 +403,9 @@ class UnitTest:
     
     values   = getKeyValuesAsFloat(output_flat,key)
     status,err = compareFloatingPoint(values,tolerance,values_e)
-    kerr = 'Key = \"' + key + '\" --> ' + err
+    kerr = ''
+    if status == False:
+      kerr = 'Key = \"' + key + '\" --> ' + err
     self.updateStatus(status,kerr)
 
 
@@ -416,7 +418,9 @@ class UnitTest:
 
     values   = getKeyValuesAsInt(output_flat,key)
     status,err = compareInteger(values,tolerance,values_e)
-    kerr = 'Key = \"' + key + '\" --> ' + err
+    kerr = ''
+    if status == False:
+      kerr = 'Key = \"' + key + '\" --> ' + err
     self.updateStatus(status,kerr)
 
   def compareLiteral(self,key):
@@ -428,6 +432,8 @@ class UnitTest:
     
     values   = getKeyValues(output_flat,key)
     status,err = compareLiteral(values,values_e)
-    kerr = 'Key = \"' + key + '\" --> ' + err
+    kerr = ''
+    if status == False:
+      kerr = 'Key = \"' + key + '\" --> ' + err
     self.updateStatus(status,kerr)
 
