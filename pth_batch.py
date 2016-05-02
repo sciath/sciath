@@ -418,7 +418,7 @@ class zpthBatchQueuingSystem:
         test.setOutputPath(self.args.output_path)
     
     # Don't execute if we are verifying a batch run
-    if not (self.use_batch and self.args.verify) :
+    if not self.use_batch and not self.args.verify:
       performTestSuite_execute(self,registered_tests)
 
 
