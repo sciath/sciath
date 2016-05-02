@@ -398,6 +398,9 @@ class UnitTest:
     expected,expected_flat = self.getExpected()
     output,output_flat = self.getOutput()
     values_e = getKeyValuesAsFloat(expected_flat,key)
+    if len(values_e) == 0:
+      raise RuntimeError('[pth][VerificationError] Test \"' + self.name + '\" queried the expected file \"' + self.comparison_file + '\" for key \"' + key + '\" which was not found. \n\t\t    Users verification code is likely incorrect (contains a typo in the key name)' )
+    
     values   = getKeyValuesAsFloat(output_flat,key)
     status,err = compareFloatingPoint(values,tolerance,values_e)
     kerr = 'Key = \"' + key + '\" --> ' + err
@@ -408,6 +411,9 @@ class UnitTest:
     expected,expected_flat = self.getExpected()
     output,output_flat = self.getOutput()
     values_e = getKeyValuesAsInt(expected_flat,key)
+    if len(values_e) == 0:
+      raise RuntimeError('[pth][VerificationError] Test \"' + self.name + '\" queried the expected file \"' + self.comparison_file + '\" for key \"' + key + '\" which was not found. \n\t\t    Users verification code is likely incorrect (contains a typo in the key name)' )
+
     values   = getKeyValuesAsInt(output_flat,key)
     status,err = compareInteger(values,tolerance,values_e)
     kerr = 'Key = \"' + key + '\" --> ' + err
@@ -417,6 +423,9 @@ class UnitTest:
     expected,expected_flat = self.getExpected()
     output,output_flat = self.getOutput()
     values_e = getKeyValues(expected_flat,key)
+    if len(values_e) == 0:
+      raise RuntimeError('[pth][VerificationError] Test \"' + self.name + '\" queried the expected file \"' + self.comparison_file + '\" for key \"' + key + '\" which was not found. \n\t\t    Users verification code is likely incorrect (contains a typo in the key name)' )
+    
     values   = getKeyValues(output_flat,key)
     status,err = compareLiteral(values,values_e)
     kerr = 'Key = \"' + key + '\" --> ' + err
