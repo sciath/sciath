@@ -40,11 +40,14 @@ def launcherReportAll(launcher,testList):
   print('' , flush=True)
   failCounter = 0
   execCounter = 0
+  skipCounter = 0
   for test in testList:
     if test.ignore == False:
       execCounter = execCounter + 1
       if test.passed == False:
         failCounter = failCounter + 1
+    else:
+      skipCounter = skipCounter + 1
   if failCounter > 0:
     print('' , flush=True)
     print('[--------- Unit test error report ----------------------]' , flush=True)
@@ -56,14 +59,20 @@ def launcherReportAll(launcher,testList):
   for test in testList:
     test.report('summary')
 
-  if failCounter > 0:
-    print(bcolors.FAIL + '          ********************************' + bcolors.ENDC)
-    print(bcolors.FAIL + ' [status] ' + str(failCounter) + ' of ' + str(execCounter) + bcolors.FAIL + ' tests executed FAILED' + bcolors.ENDC , flush=True)
-    print(bcolors.FAIL + '          ********************************' + bcolors.ENDC)
+  if execCounter == 0:
+    print(bcolors.WARNING + '          *******************************' + bcolors.ENDC)
+    print(bcolors.WARNING + ' [status] UNKNOWN: All tests were skipped' + bcolors.ENDC , flush=True)
+    print(bcolors.WARNING + '          *******************************' + bcolors.ENDC)
+
+  elif failCounter > 0:
+    print(bcolors.FAIL + '          *************************************' + bcolors.ENDC)
+    print(bcolors.FAIL + ' [status] FAIL: ' + str(failCounter) + ' of ' + str(execCounter) + bcolors.FAIL + ' tests executed FAILED' + bcolors.ENDC , flush=True)
+    print(bcolors.FAIL + '          *************************************' + bcolors.ENDC)
+
   else:
-    print(bcolors.OKGREEN + '          *************************' + bcolors.ENDC)
-    print(bcolors.OKGREEN + ' [status] All executed tests passed' + bcolors.ENDC , flush=True)
-    print(bcolors.OKGREEN + '          *************************' + bcolors.ENDC)
+    print(bcolors.OKGREEN + '          ***********************************' + bcolors.ENDC)
+    print(bcolors.OKGREEN + ' [status] SUCCESS: All executed tests passed' + bcolors.ENDC , flush=True)
+    print(bcolors.OKGREEN + '          ***********************************' + bcolors.ENDC)
 
 
 class pthHarnesss:
