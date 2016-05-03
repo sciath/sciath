@@ -1,5 +1,5 @@
 
-import os
+import os,sys
 import argparse
 
 import pyTestHarness.unittest as unittest
@@ -10,6 +10,15 @@ def launcherExecuteAll(launcher,testList,description):
   
   print('' , flush=True)
   launcher.view()
+  
+  skipCounter = 0
+  for t in testList:
+    if launcher.mpiLaunch == 'none' and t.ranks != 1:
+      if t.ignore == True:
+        skipCounter = skipCounter + 1
+
+  if skipCounter != 0:
+    print('\n' + bcolors.WARNING + 'Warning: ' + str(skipCounter) + ' MPI parallel jobs are being skipped as a valid MPI launcher was not provided'+ bcolors.ENDC)
   
   print('' , flush=True)
   counter = 0
@@ -48,12 +57,22 @@ def launcherReportAll(launcher,testList):
         failCounter = failCounter + 1
     else:
       skipCounter = skipCounter + 1
+
+
+
   if failCounter > 0:
     print('' , flush=True)
     print('[--------- Unit test error report ----------------------]' , flush=True)
+    print(bcolors.FAIL + ' ' + str(failCounter) + ' tests failed - please refer to the file pthErrorReport.log further details\n' + bcolors.ENDC)
+
+    file = open('pthErrorReport.log','w')
+    sys.stdout = file
+
     for test in testList:
       test.report('log')
 
+    file.close()
+    sys.stdout = sys.__stdout__
 
   print('[--------- Unit test summary ----------------------]' , flush=True)
   for test in testList:
@@ -77,13 +96,19 @@ def launcherReportAll(launcher,testList):
 
 class pthHarnesss:
   def __init__(self,registeredTests):
-    self.registeredTests = registeredTests
+    self.testsRegistered = 0
+    self.testsExecuted = 0
+    self.testsSkipped = 0
+    self.testsPassed = 0
+    self.testsFailed = 0
+
     self.testDescription = []
+    self.registeredTests = registeredTests
 
     for t in self.registeredTests:
       if not isinstance(t,unittest.pthUnitTest):
         raise ValueError('[pth]: Registered tests must be of type UnitTest')
-
+    self.testsRegistered = len(self.registeredTests)
 
     self.launcher = launch.pthLaunch()
 
@@ -99,12 +124,14 @@ class pthHarnesss:
     for i in range(0,len(self.registeredTests)):
       self.testDescription.append('Registered')
 
-    # Exclude parallel tests if mpiLauncher = 'none' and test uses more than 4 ranks
+    # Exclude parallel tests if mpiLauncher = 'none' and test uses more than 1 rank
     counter = 0
+    skipCounter = 0
     for t in self.registeredTests:
       if self.launcher.mpiLaunch == 'none' and t.ranks != 1:
         self.registeredTests[counter].ignore = True
         self.testDescription[counter] = 'No MPI launcher was provided and test requested > 1 MPI rank'
+        skipCounter = skipCounter + 1
       counter = counter + 1
 
     # Exclude tests based on command line option
@@ -127,8 +154,9 @@ class pthHarnesss:
       for t in self.registeredTests:
         # skip tests already marked to be ignored (e.g. due to mpiLaunch = none and test.ranks != 1
         if t.ignore == True:
+          counter = counter + 1
           continue
-        
+      
         if t not in subList:
           t.ignore = True
           self.testDescription[counter] = 'Excluded based on users command line arg -t'

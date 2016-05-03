@@ -390,8 +390,8 @@ class pthUnitTest:
     if type == 'log':
       if self.ignore == False:
         if self.passed == False:
-          #        print(bcolors.FAIL + '_______________________________________________\n' + '[' + self.name + '] reason for failure\n' + self.errormessage + ' ' + bcolors.ENDC , flush=True)
-          print(bcolors.FAIL +  '[' + self.name + '] reason for failure\n' + '--------------------------------------------------------------\n' + self.errormessage + bcolors.ENDC , flush=True)
+          #print(bcolors.FAIL +  '[' + self.name + '] reason for failure\n' + '--------------------------------------------------------------\n' + self.errormessage + bcolors.ENDC , flush=True)
+          print('[' + self.name + '] reason for failure\n' + '--------------------------------------------------------------\n' + self.errormessage, flush=True)
 
 
   def compareFloatingPoint(self,key,tolerance):
