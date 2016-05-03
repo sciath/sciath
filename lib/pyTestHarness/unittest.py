@@ -86,22 +86,23 @@ def compareInteger(input,tolerance,expected):
 
 def parseFile(filename,keywords):
   print('Parsing file: ',filename)
-  file = open(filename,"r")
 
   flat = ''
   contents = []
-  for line in file:
-    if line.rstrip():
-      if not any(keywords in line for keywords in keywords):
-        rm_lb = line.lstrip()
-        rm_lb = rm_lb.rstrip()
-        flat = flat + (rm_lb + ' ')
+  if filename:
+    file = open(filename,"r")
+    for line in file:
+      if line.rstrip():
+        if not any(keywords in line for keywords in keywords):
+          rm_lb = line.lstrip()
+          rm_lb = rm_lb.rstrip()
+          flat = flat + (rm_lb + ' ')
 
-        stripped_line = line.rstrip()
-        stripped_line = stripped_line.lstrip()
-        contents.append(stripped_line)
+          stripped_line = line.rstrip()
+          stripped_line = stripped_line.lstrip()
+          contents.append(stripped_line)
 
-  file.close()
+    file.close()
   return(contents,flat)
 
 
