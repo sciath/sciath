@@ -304,7 +304,7 @@ class pthUnitTest:
   
   def __init__(self, name,ranks,execute,expected_file):
     self.passed = -1
-    self.walltime = "00:05:00"
+    self.walltime = 2.0 # minutes
     self.errormessage = ''
     self.errno = -1
     self.name = name
@@ -331,6 +331,8 @@ class pthUnitTest:
   def setVerifyMethod(self,verify):
     self.verify = verify
 
+  def setWalltime(self,mins):
+    self.walltime = mins
 
   def appendKeywords(self,keywords):
     self.keywords.append(keywords)
