@@ -268,6 +268,7 @@ class pthLaunch:
     parser.add_argument('-c', '--configure', help='Configure queuing system information', required=False, action='store_true')
     parser.add_argument('-t', '--test', help='List of test names', required=False)
     parser.add_argument('-o', '--output_path', help='Directory to write stdout into', required=False)
+    parser.add_argument('-p', '--purge_output', help='Delete generated output', required=False, action='store_true')
     self.args = parser.parse_args()
 
     if self.args.configure:
@@ -500,6 +501,21 @@ class pthLaunch:
     # Verify, unless we are running with a batch system and are not in verify(-only) mode
     if not self.use_batch or self.args.verify :
       performTestSuite_verify(self,registered_tests)
+
+  def clean(self,registered_tests):
+    if self.use_batch:
+      for test in registered_tests:
+        print('<launch> rm -f ' + test.name + '.stdout')
+        print('<launch> rm -f ' + test.name + '.stderr')
+        if self.queuingSystemType == 'pbs':
+          print('<launch> rm -f ' + test.name + '-pth.pbs')
+        elif self.queuingSystemType == 'lsf':
+          print('<launch> rm -f ' + test.name + '-pth.lsf')
+        elif self.queuingSystemType == 'slurm':
+          print('<launch> rm -f ' + test.name + '-pth.slurm')
+        elif self.queuingSystemType == 'load_leveler':
+          print('<launch> rm -f ' + test.name + '-pth.llq')
+
 
 
 # < end class >

@@ -82,6 +82,7 @@ def run_unittests_example5():
   launcher = harness.pthHarness(registered_tests)
   launcher.execute()
   launcher.verify()
+  launcher.clean()
 
 if __name__ == "__main__":
   run_unittests_example5()

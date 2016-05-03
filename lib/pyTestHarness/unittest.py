@@ -439,3 +439,11 @@ class pthUnitTest:
       kerr = 'Key = \"' + key + '\" --> ' + err
     self.updateStatus(status,kerr)
 
+  def clean(self):
+    outfile = os.path.join(self.output_path,self.output_file)
+    cmpfile = self.comparison_file
+    print('<test> rm -f ' + outfile)
+    if outfile != cmpfile and cmpfile:
+      print('<test> rm -f ' + cmpfile)
+
+
