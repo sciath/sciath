@@ -47,51 +47,93 @@ def launcherVerifyAll(launcher,testList,description):
 def launcherReportAll(launcher,testList):
 
   print('' , flush=True)
+  nTests = len(testList)
   failCounter = 0
   execCounter = 0
   skipCounter = 0
+  seqCounter = 0
+  mpiCounter  = 0
+  seqPassedCounter = 0
+  mpiPassedCounter  = 0
+  seqExecCounter = 0
+  mpiExecCounter  = 0
+
   for test in testList:
+    if test.ranks == 1:
+      seqCounter = seqCounter + 1
+    else:
+      mpiCounter = mpiCounter + 1
+
     if test.ignore == False:
       execCounter = execCounter + 1
+
+      if test.ranks == 1:
+        seqExecCounter = seqExecCounter + 1
+      else:
+        mpiExecCounter = mpiExecCounter + 1
+
       if test.passed == False:
         failCounter = failCounter + 1
     else:
       skipCounter = skipCounter + 1
 
+  for test in testList:
+    if test.ignore == False:
+      if test.ranks == 1 and test.passed == True:
+        seqPassedCounter = seqPassedCounter + 1
+      elif test.ranks >= 1 and test.passed == True:
+        mpiPasedCounter = mpiPassedCounter + 1
 
-
-  if failCounter > 0:
-    print('' , flush=True)
-    print('[--------- Unit test error report ----------------------]' , flush=True)
-    print(bcolors.FAIL + ' ' + str(failCounter) + ' tests failed - please refer to the file pthErrorReport.log further details\n' + bcolors.ENDC)
-
-    file = open('pthErrorReport.log','w')
-    sys.stdout = file
-
-    for test in testList:
-      test.report('log')
-
-    file.close()
-    sys.stdout = sys.__stdout__
-
-  print('[--------- Unit test summary ----------------------]' , flush=True)
+  print('[--------- UnitTest status ----------------------]' , flush=True)
   for test in testList:
     test.report('summary')
 
+
+  print('' , flush=True)
+  print('[--------- UnitTest report ----------------------]' , flush=True)
+  print('  ' + ("%.4d" % nTests) + ' ' + 'UnitTests registered')
+  print('  ' + ("%.4d" % seqCounter) + ' Sequential UnitTests')
+  print('  ' + ("%.4d" % mpiCounter) + ' MPI UnitTests')
+  print('  ' + ("%.4d" % execCounter) + ' of ' +("%.4d" % nTests)+ ' UnitTests executed')
+
+  print('')
   if execCounter == 0:
-    print(bcolors.WARNING + '          *******************************' + bcolors.ENDC)
     print(bcolors.WARNING + ' [status] UNKNOWN: All tests were skipped' + bcolors.ENDC , flush=True)
-    print(bcolors.WARNING + '          *******************************' + bcolors.ENDC)
 
   elif failCounter > 0:
-    print(bcolors.FAIL + '          *************************************' + bcolors.ENDC)
     print(bcolors.FAIL + ' [status] FAIL: ' + str(failCounter) + ' of ' + str(execCounter) + bcolors.FAIL + ' tests executed FAILED' + bcolors.ENDC , flush=True)
-    print(bcolors.FAIL + '          *************************************' + bcolors.ENDC)
-
+    
+    print(bcolors.FAIL +'          ' + ("%.4d" % (seqExecCounter-seqPassedCounter)) + ' of ' +("%.4d" % seqExecCounter)+ ' executed Sequential tests failed'+bcolors.ENDC)
+    print(bcolors.FAIL +'          ' + ("%.4d" % (mpiExecCounter-mpiPassedCounter)) + ' of ' +("%.4d" % mpiExecCounter)+ ' executed MPI tests failed'+bcolors.ENDC)
   else:
-    print(bcolors.OKGREEN + '          ***********************************' + bcolors.ENDC)
-    print(bcolors.OKGREEN + ' [status] SUCCESS: All executed tests passed' + bcolors.ENDC , flush=True)
-    print(bcolors.OKGREEN + '          ***********************************' + bcolors.ENDC)
+    if skipCounter == 0:
+      print(bcolors.OKGREEN + ' [status] SUCCESS: All registered tests passed' + bcolors.ENDC , flush=True)
+    else:
+      print(bcolors.WARNING + ' [status] SUCCESS (partial): All executed tests passed' + bcolors.ENDC , flush=True)
+
+  if seqExecCounter + mpiExecCounter != nTests:
+    print(bcolors.WARNING+'          Warning: Not all UnitTests were executed!'+ bcolors.ENDC)
+  if seqExecCounter != seqCounter:
+    print(bcolors.WARNING+'          Warning: '+("%.4d" % (seqCounter-seqExecCounter))+' sequential UnitTests were skipped'+ bcolors.ENDC)
+  if mpiExecCounter != mpiCounter:
+    print(bcolors.WARNING+'          Warning: '+("%.4d" % (mpiCounter-mpiExecCounter))+' MPI UnitTests were skipped!'+ bcolors.ENDC)
+
+  if failCounter > 0:
+    file = open('pthErrorReport.log','w')
+    sys.stdout = file
+    
+    for test in testList:
+      test.report('log')
+    
+    file.close()
+    sys.stdout = sys.__stdout__
+
+    print('xxx============================================================================xxx')
+    print('     UnitTests failed - Full error report written to pthErrorReport.log')
+    print('                      - Inspect the error log file and resolve failed tests')
+    print('     vi pthErrorReport.log')
+    print('xxx============================================================================xxx')
+
 
 
 class pthHarnesss:
