@@ -371,6 +371,8 @@ class pthLaunch:
         print('  mpiexec -n <ranks>','(local machine)')
         print('  aprun -B','(slurm)')
         print('  /users/myname/petsc/bin/petscmpiexec -n <ranks>','(typical PETSc MPI wrapper)')
+        print(' Note that the value \"<ranks>\" should be included in your launch command.')
+        print(' This keyword will be replaced by the actual number of MPI ranks when a test is launched')
     self.setMPILaunch(v)
 
     if self.use_batch == True:
