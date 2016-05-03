@@ -119,7 +119,8 @@ def launcherReportAll(launcher,testList):
     print(bcolors.WARNING+'          Warning: '+("%.4d" % (mpiCounter-mpiExecCounter))+' MPI UnitTests were skipped!'+ bcolors.ENDC)
 
   if failCounter > 0:
-    file = open('pthErrorReport.log','w')
+    pthErrorReportFileName = 'pthErrorReport.log'
+    file = open(pthErrorReportFileName,'w')
     sys.stdout = file
     
     for test in testList:
@@ -131,7 +132,7 @@ def launcherReportAll(launcher,testList):
     print('xxx============================================================================xxx')
     print('     UnitTests failed - Full error report written to pthErrorReport.log')
     print('                      - Inspect the error log file and resolve failed tests')
-    print('     vi pthErrorReport.log')
+    print('     cat ' + os.path.realpath(__file__) + '/' + pthErrorReportFileName) 
     print('xxx============================================================================xxx')
 
 
