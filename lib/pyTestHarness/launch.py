@@ -63,33 +63,36 @@ def generateLaunch_SLURM(accountname,queuename,testname,mpiLaunch,executable,ran
   file.close()
   return(filename)
 
-def generateLaunch_LSF(accountname,queuename,testname,executable,ranks,rusage,walltime):
+def generateLaunch_LSF(accountname,queuename,testname,mpiLaunch,executable,ranks,rusage,walltime):
   if not ranks:
     print("<generateLaunch_LSF>: Requires the number of MPI-ranks be specified" , flush=True)
   if not walltime:
     print("<generateLaunch_LSF>: Requires the walltime be specified" , flush=True)
   
-  print("#!/bin/sh")
+  filename = testname + '-pth.lsf'
+  file = open(filename,"w")
+  file.write("#!/bin/sh\n")
   
-  print("# pyTH: auto-generated lsf file")
+  file.write("# pyTH: auto-generated lsf file\n")
 
-  print("#BSUB -J " + testname ) # jobname
+  file.write("#BSUB -J " + testname + "\n") # jobname
   
-  print("#BSUB -o " + testname + ".stdout") # jobname.stdout
-  print("#BSUB -e " + testname + ".stderr") # jobname.stderr
+  file.write("#BSUB -o " + testname + ".stdout\n") # jobname.stdout
+  file.write("#BSUB -e " + testname + ".stderr\n") # jobname.stderr
   
   if queuename:
-    print("#BSUB -q " + queuename)
+    file.write("#BSUB -q " + queuename + "\n")
   
-  print("#BSUB -n " + str(ranks))
+  file.write("#BSUB -n " + str(ranks) + "\n")
   
   if rusage:
-    print("#BSUB -R \'" + rusage + "\'")
+    file.write("#BSUB -R \'" + rusage + "\'" + "\n")
   
-  print("#BSUB -W " + walltime)
+  file.write("#BSUB -W " + walltime + "\n")
   
-  print("aprun -n " + executable) # launch command
-
+  file.write(mpiLaunch + " " + executable + "\n") # launch command
+  file.close()
+  return(filename)
 
 def generateLaunch_LoadLevelerBG(accountname,queuename,testname,executable,total_ranks,machine_ranks_per_node,walltime):
   if not total_ranks:
@@ -307,13 +310,14 @@ class pthLaunch:
 
     v = None
     while not v :
-      v = input('[2] MPI launch command with num. procs. flag (required - hit enter for examples): <none>')
+      v = input('[2] MPI launch command with num. procs. flag (required - hit enter for examples): ')
       if not v :
         print(' Required. Some example MPI launch commands:')
-        print('  mpirun -np')
-        print('  mpiexec -n')
-        print('  aprun -B')
-        print('  /users/myname/petsc/bin/petscmpiexec -n')
+        print('  none','(if your tests do not use MPI)')
+        print('  mpirun -np','(local machine)')
+        print('  mpiexec -n','(local machine)')
+        print('  aprun -B','(slurm)')
+        print('  /users/myname/petsc/bin/petscmpiexec -n','(typical PETSc MPI wrapper)')
     self.setMPILaunch(v)
 
     if self.use_batch == True:
@@ -389,7 +393,7 @@ class pthLaunch:
       filename = generateLaunch_PBS(self.accountName,self.queueName,testname,self.mpiLaunch,commnd,ranks,ranks_per_node,walltime,outfile)
 
     elif self.queuingSystemType == 'lsf':
-      raise ValueError('[pth] Unsupported: LSF needs to be updated')
+      filename = generateLaunch_LSF(self.accountName,self.queueName,testname,self.mpiLaunch,commnd,ranks,None,walltime)
 
     elif self.queuingSystemType == 'slurm':
       filename = generateLaunch_SLURM(self.accountName,self.queueName,testname,self.mpiLaunch,commnd,ranks,ranks_per_node,walltime,outfile)
