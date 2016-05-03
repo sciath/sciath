@@ -8,7 +8,7 @@ from   pyTestHarness.colors import pthNamedColors as bcolors
 
 def launcherExecuteAll(launcher,testList,description):
   
-  print('' , flush=True)
+  print('')
   launcher.view()
   
   skipCounter = 0
@@ -20,33 +20,33 @@ def launcherExecuteAll(launcher,testList,description):
   if skipCounter != 0:
     print('\n' + bcolors.WARNING + 'Warning: ' + str(skipCounter) + ' MPI parallel jobs are being skipped as a valid MPI launcher was not provided'+ bcolors.ENDC)
   
-  print('' , flush=True)
+  print('')
   counter = 0
   for test in testList:
     if test.ignore == False:
-      print('[-- Executing test: ' + test.name + ' --]' , flush=True)
+      print('[-- Executing test: ' + test.name + ' --]')
       launcher.submitJob(test)
     else:
-      print('[-- Skipping test: ' + test.name + ' --] Reason: ' + description[counter] , flush=True)
+      print('[-- Skipping test: ' + test.name + ' --] Reason: ' + description[counter])
     counter = counter + 1
 
 
 def launcherVerifyAll(launcher,testList,description):
   
-  print('' , flush=True)
+  print('')
   counter = 0
   for test in testList:
     if test.ignore == False:
-      print('[-- Verifying test: ' + test.name + ' --]' , flush=True)
+      print('[-- Verifying test: ' + test.name + ' --]')
       test.verifyOutput()
     else:
-      print('[-- Skipping test: ' + test.name + ' --] Reason: ' + description[counter] , flush=True)
+      print('[-- Skipping test: ' + test.name + ' --] Reason: ' + description[counter])
     counter = counter + 1
 
 
 def launcherReportAll(launcher,testList):
 
-  print('' , flush=True)
+  print('')
   nTests = len(testList)
   failCounter = 0
   execCounter = 0
@@ -84,13 +84,13 @@ def launcherReportAll(launcher,testList):
       elif test.ranks >= 1 and test.passed == True:
         mpiPasedCounter = mpiPassedCounter + 1
 
-  print('[--------- UnitTest status ----------------------]' , flush=True)
+  print('[--------- UnitTest status ----------------------]')
   for test in testList:
     test.report('summary')
 
 
-  print('' , flush=True)
-  print('[--------- UnitTest report ----------------------]' , flush=True)
+  print('')
+  print('[--------- UnitTest report ----------------------]')
   print('  ' + ("%.4d" % nTests) + ' ' + 'UnitTests registered')
   print('  ' + ("%.4d" % seqCounter) + ' Sequential UnitTests')
   print('  ' + ("%.4d" % mpiCounter) + ' MPI UnitTests')
@@ -98,18 +98,18 @@ def launcherReportAll(launcher,testList):
 
   print('')
   if execCounter == 0:
-    print(bcolors.WARNING + ' [status] UNKNOWN: All tests were skipped' + bcolors.ENDC , flush=True)
+    print(bcolors.WARNING + ' [status] UNKNOWN: All tests were skipped' + bcolors.ENDC)
 
   elif failCounter > 0:
-    print(bcolors.FAIL + ' [status] FAIL: ' + str(failCounter) + ' of ' + str(execCounter) + bcolors.FAIL + ' tests executed FAILED' + bcolors.ENDC , flush=True)
+    print(bcolors.FAIL + ' [status] FAIL: ' + str(failCounter) + ' of ' + str(execCounter) + bcolors.FAIL + ' tests executed FAILED' + bcolors.ENDC)
     
     print(bcolors.FAIL +'          ' + ("%.4d" % (seqExecCounter-seqPassedCounter)) + ' of ' +("%.4d" % seqExecCounter)+ ' executed Sequential tests failed'+bcolors.ENDC)
     print(bcolors.FAIL +'          ' + ("%.4d" % (mpiExecCounter-mpiPassedCounter)) + ' of ' +("%.4d" % mpiExecCounter)+ ' executed MPI tests failed'+bcolors.ENDC)
   else:
     if skipCounter == 0:
-      print(bcolors.OKGREEN + ' [status] SUCCESS: All registered tests passed' + bcolors.ENDC , flush=True)
+      print(bcolors.OKGREEN + ' [status] SUCCESS: All registered tests passed' + bcolors.ENDC)
     else:
-      print(bcolors.WARNING + ' [status] SUCCESS (partial): All executed tests passed' + bcolors.ENDC , flush=True)
+      print(bcolors.WARNING + ' [status] SUCCESS (partial): All executed tests passed' + bcolors.ENDC)
 
   if seqExecCounter + mpiExecCounter != nTests:
     print(bcolors.WARNING+'          Warning: Not all UnitTests were executed!'+ bcolors.ENDC)
