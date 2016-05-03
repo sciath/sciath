@@ -85,7 +85,7 @@ def compareInteger(input,tolerance,expected):
 
 
 def parseFile(filename,keywords):
-  print('Parsing file: ',filename , flush=True)
+  print('Parsing file: ',filename)
   file = open(filename,"r")
 
   flat = ''
@@ -380,18 +380,18 @@ class pthUnitTest:
     if type == 'summary':
       
       if self.ignore == True:
-        print(bcolors.WARNING + ' [' + self.name + ']   skipped' + bcolors.ENDC , flush=True)
+        print(bcolors.WARNING + ' [' + self.name + ']   skipped' + bcolors.ENDC)
       else:
         if self.passed == False:
-          print(bcolors.FAIL + ' [' + self.name + ']   *** FAILED ***' + bcolors.ENDC , flush=True)
+          print(bcolors.FAIL + ' [' + self.name + ']   *** FAILED ***' + bcolors.ENDC)
         else:
-          print(bcolors.OKGREEN + ' [' + self.name + ']   passed' + bcolors.ENDC , flush=True)
+          print(bcolors.OKGREEN + ' [' + self.name + ']   passed' + bcolors.ENDC)
 
     if type == 'log':
       if self.ignore == False:
         if self.passed == False:
-          #print(bcolors.FAIL +  '[' + self.name + '] reason for failure\n' + '--------------------------------------------------------------\n' + self.errormessage + bcolors.ENDC , flush=True)
-          print('[' + self.name + '] reason for failure\n' + '--------------------------------------------------------------\n' + self.errormessage, flush=True)
+          #print(bcolors.FAIL +  '[' + self.name + '] reason for failure\n' + '--------------------------------------------------------------\n' + self.errormessage + bcolors.ENDC)
+          print('[' + self.name + '] reason for failure\n' + '--------------------------------------------------------------\n' + self.errormessage)
 
 
   def compareFloatingPoint(self,key,tolerance):

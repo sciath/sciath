@@ -7,9 +7,9 @@ from   pyTestHarness.colors import pthNamedColors as bcolors
 
 def generateLaunch_PBS(accountname,queuename,testname,mpiLaunch,executable,ranks,ranks_per_node,walltime,outfile):
   if not ranks:
-    print("<generateLaunch_PBS>: Requires the number of MPI-ranks be specified" , flush=True)
+    print("<generateLaunch_PBS>: Requires the number of MPI-ranks be specified")
   if not walltime:
-    print("<generateLaunch_PBS>: Requires the walltime be specified" , flush=True)
+    print("<generateLaunch_PBS>: Requires the walltime be specified")
   
   filename = testname + '-pth.pbs'
   file = open(filename,"w")
@@ -34,9 +34,9 @@ def generateLaunch_PBS(accountname,queuename,testname,mpiLaunch,executable,ranks
 
 def generateLaunch_SLURM(accountname,queuename,testname,mpiLaunch,executable,ranks,ranks_per_node,walltime,outfile):
   if not ranks:
-    print("<generateLaunch_SLURM>: Requires the number of MPI-ranks be specified" , flush=True)
+    print("<generateLaunch_SLURM>: Requires the number of MPI-ranks be specified")
   if not walltime:
-    print("<generateLaunch_SLURM>: Requires the walltime be specified" , flush=True)
+    print("<generateLaunch_SLURM>: Requires the walltime be specified")
   
   filename = testname + '-pth.slurm'
   file = open(filename,"w")
@@ -65,9 +65,9 @@ def generateLaunch_SLURM(accountname,queuename,testname,mpiLaunch,executable,ran
 
 def generateLaunch_LSF(accountname,queuename,testname,mpiLaunch,executable,ranks,rusage,walltime):
   if not ranks:
-    print("<generateLaunch_LSF>: Requires the number of MPI-ranks be specified" , flush=True)
+    print("<generateLaunch_LSF>: Requires the number of MPI-ranks be specified")
   if not walltime:
-    print("<generateLaunch_LSF>: Requires the walltime be specified" , flush=True)
+    print("<generateLaunch_LSF>: Requires the walltime be specified")
   
   filename = testname + '-pth.lsf'
   file = open(filename,"w")
@@ -96,9 +96,9 @@ def generateLaunch_LSF(accountname,queuename,testname,mpiLaunch,executable,ranks
 
 def generateLaunch_LoadLevelerBG(accountname,queuename,testname,executable,total_ranks,machine_ranks_per_node,walltime):
   if not total_ranks:
-    print("<generateLaunch_LoadLeveler>: Requires the number of MPI-ranks be specified" , flush=True)
+    print("<generateLaunch_LoadLeveler>: Requires the number of MPI-ranks be specified")
   if not walltime:
-    print("<generateLaunch_LoadLeveler>: Requires the walltime be specified" , flush=True)
+    print("<generateLaunch_LoadLeveler>: Requires the walltime be specified")
   
   print("#!/bin/sh")
   print("# pyTH: auto-generated llq file")
@@ -122,11 +122,11 @@ def generateLaunch_LoadLevelerBG(accountname,queuename,testname,executable,total
 def performTestSuite_local(self,registered_tests):
   launcher = self
   
-  print('' , flush=True)
+  print('')
   self.view()
 
   for test in registered_tests:
-    print('-- Executing test: ' + test.name + ' --' , flush=True)
+    print('-- Executing test: ' + test.name + ' --')
     launcher.submitJob(test)
     test.verifyOutput()
   
@@ -136,56 +136,56 @@ def performTestSuite_local(self,registered_tests):
     if test.passed == False:
       counter = counter + 1
   if counter > 0:
-    print('-- Unit test error report --' , flush=True)
+    print('-- Unit test error report --')
     for test in registered_tests:
       test.report('log')
 
-  print('-- Unit test report summary --' , flush=True)
+  print('-- Unit test report summary --')
   for test in registered_tests:
     test.report('summary')
   if counter > 0:
-    print('  ' + str(counter) + ' / ' + str(len(registered_tests)) + ' tests ' + bcolors.FAIL + 'failed' + bcolors.ENDC , flush=True)
+    print('  ' + str(counter) + ' / ' + str(len(registered_tests)) + ' tests ' + bcolors.FAIL + 'failed' + bcolors.ENDC)
   else:
-    print('----------------------' , flush=True)
-    print(bcolors.OKGREEN + ' All tests passed' + bcolors.ENDC , flush=True)
+    print('----------------------')
+    print(bcolors.OKGREEN + ' All tests passed' + bcolors.ENDC)
   
 
 
 def performTestSuite_execute(self,registered_tests):
   launcher = self
 
-  print('' , flush=True)
+  print('')
   self.view()
 
-  print('' , flush=True)
+  print('')
   for test in registered_tests:
-    print('[-- Executing test: ' + test.name + ' --]' , flush=True)
+    print('[-- Executing test: ' + test.name + ' --]')
     launcher.submitJob(test)
 
 
 def performTestSuite_verify(self,registered_tests):
   launcher = self
   
-  print('' , flush=True)
+  print('')
   for test in registered_tests:
-    print('[-- Verifying test: ' + test.name + ' --]' , flush=True)
+    print('[-- Verifying test: ' + test.name + ' --]')
     if self.mpiLaunch == 'none' and test.ranks != 1:
       print('[Skipping verification for test \"' + test.name + '\" as test uses > 1 MPI ranks and no MPI launcher was provided]')
     else:
       test.verifyOutput()
   
-  print('' , flush=True)
+  print('')
   counter = 0
   for test in registered_tests:
     if test.passed == False:
       counter = counter + 1
   if counter > 0:
-    print('' , flush=True)
-    print('[--------- Unit test error report ----------------------]' , flush=True)
+    print('')
+    print('[--------- Unit test error report ----------------------]')
     for test in registered_tests:
       test.report('log')
 
-  print('[--------- Unit test summary ----------------------]' , flush=True)
+  print('[--------- Unit test summary ----------------------]')
   counter = 0
   for test in registered_tests:
     if self.mpiLaunch == 'none' and test.ranks != 1:
@@ -195,13 +195,13 @@ def performTestSuite_verify(self,registered_tests):
     if test.passed == False:
       counter = counter + 1
   if counter > 0:
-    print(bcolors.FAIL + '          ********************' + bcolors.ENDC , flush=True)
-    print(bcolors.FAIL +  ' [status] ' + str(counter) + ' of ' + str(len(registered_tests)) + ' tests FAILED' + bcolors.ENDC , flush=True)
-    print(bcolors.FAIL + '          ********************' + bcolors.ENDC , flush=True)
+    print(bcolors.FAIL + '          ********************' + bcolors.ENDC)
+    print(bcolors.FAIL +  ' [status] ' + str(counter) + ' of ' + str(len(registered_tests)) + ' tests FAILED' + bcolors.ENDC)
+    print(bcolors.FAIL + '          ********************' + bcolors.ENDC)
   else:
-    print(bcolors.OKGREEN + '          ****************' + bcolors.ENDC , flush=True)
-    print(bcolors.OKGREEN + ' [status] All tests passed' + bcolors.ENDC , flush=True)
-    print(bcolors.OKGREEN + '          ****************' + bcolors.ENDC , flush=True)
+    print(bcolors.OKGREEN + '          ****************' + bcolors.ENDC)
+    print(bcolors.OKGREEN + ' [status] All tests passed' + bcolors.ENDC)
+    print(bcolors.OKGREEN + '          ****************' + bcolors.ENDC)
   
 
 
@@ -280,7 +280,7 @@ class pthLaunch:
       #print('No queuing system being used')
 
     else:
-      print('Value found: ' + type + ' ...' , flush=True)
+      print('Value found: ' + type + ' ...')
       raise RuntimeError('[pth] Unknown or unsupported batch queuing system specified')
 
 
@@ -293,16 +293,16 @@ class pthLaunch:
     print('  Queue system:    ',self.queuingSystemType)
     print('  MPI launcher:    ',self.mpiLaunch)
     if self.use_batch:
-      print('  Submit command:', self.jobSubmissionCommand , flush=True)
+      print('  Submit command:', self.jobSubmissionCommand)
       if self.accountName:
-        print('  Account:       ',self.accountName , flush=True)
+        print('  Account:       ',self.accountName)
       if self.queueName:
-        print('  Queue:         ',self.queueName , flush=True)
+        print('  Queue:         ',self.queueName)
 
 
   def configure(self):
-    print('----------------------------------------------------------------' , flush=True)
-    print('Creating new pthBatchQueuingSystem.conf file' , flush=True)
+    print('----------------------------------------------------------------')
+    print('Creating new pthBatchQueuingSystem.conf file')
     v = input('[1] Batch queuing system type <pbs,lsf,slurm,llq,none>: ')
     if not v:
       raise ValueError('[pth] You must specify the type of queuing system')
@@ -329,12 +329,12 @@ class pthLaunch:
       self.setQueueName(v)
     
     self.writeDefinition()
-    print('\n' , flush=True)
-    print('** If you wish to change the config for your batch system, either' , flush=True)
-    print('**   (i) delete the file pthBatchQueuingSystem.conf, or' , flush=True)
-    print('**  (ii) re-run pth2.configure()' , flush=True)
-    print('** (iii) re-run with the command line arg --configure' , flush=True)
-    print('----------------------------------------------------------------' , flush=True)
+    print('\n')
+    print('** If you wish to change the config for your batch system, either')
+    print('**   (i) delete the file pthBatchQueuingSystem.conf, or')
+    print('**  (ii) re-run pth2.configure()')
+    print('** (iii) re-run with the command line arg --configure')
+    print('----------------------------------------------------------------')
 
 
   def setup(self):
@@ -386,7 +386,7 @@ class pthLaunch:
   def createSubmissionFile(self,testname,commnd,ranks,ranks_per_node,walltime,outfile):
     filename = ''
     if not self.use_batch:
-      print('Warning: no submission file creation required' , flush=True)
+      print('Warning: no submission file creation required')
       return(filename)
     
     if self.queuingSystemType == 'pbs':
@@ -401,7 +401,7 @@ class pthLaunch:
     elif self.queuingSystemType == 'load_leveler':
       raise ValueError('[pth] Unsupported: LoadLeveler needs to be updated')
 
-    print('Created submission file:',filename , flush=True)
+    print('Created submission file:',filename)
     return(filename)
 
 
@@ -416,13 +416,13 @@ class pthLaunch:
           launchCmd = unittest.execute + " > " + os.path.join(unittest.output_path,unittest.output_file)
         else:
           launchCmd = mpiLaunch + ' ' + str(unittest.ranks) + ' ' + unittest.execute + " > " + os.path.join(unittest.output_path,unittest.output_file)
-        print('[Executing] ',launchCmd , flush=True)
+        print('[Executing] ',launchCmd)
         unittest.errno = os.system(launchCmd) >> 8
     else:
       outfile = os.path.join(unittest.output_path,unittest.output_file)
       launchfile = self.createSubmissionFile(unittest.name,unittest.execute,unittest.ranks,'',unittest.walltime,outfile)
       launchCmd = self.jobSubmissionCommand + launchfile
-      print('[Executing] ',launchCmd , flush=True)
+      print('[Executing] ',launchCmd)
       os.system(launchCmd)
 
 
