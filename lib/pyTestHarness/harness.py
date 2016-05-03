@@ -136,7 +136,7 @@ def launcherReportAll(launcher,testList):
 
 
 
-class pthHarnesss:
+class pthHarness:
   def __init__(self,registeredTests):
     self.testsRegistered = 0
     self.testsExecuted = 0
@@ -212,8 +212,8 @@ class pthHarnesss:
       for test in self.allTests:
         test.setOutputPath(self.args.output_path)
 
-    # Don't execute if we are verifying a batch run
-    if not launcher.use_batch and not self.args.verify:
+    # Don't execute if we are verifying (only)
+    if not self.args.verify:
       launcherExecuteAll(launcher,self.registeredTests,self.testDescription)
     
 

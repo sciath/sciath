@@ -305,9 +305,15 @@ class pthLaunch:
       raise ValueError('[pth] You must specify the type of queuing system')
     self.setQueueSystemType(v)
 
-    v = input('[2] MPI launch command with num. procs. flag (required): <none>')
-    if not v:
-      raise ValueError('[pth] You must specify an MPI launch command')
+    v = None
+    while not v :
+      v = input('[2] MPI launch command with num. procs. flag (required - hit enter for examples): <none>')
+      if not v :
+        print(' Required. Some example MPI launch commands:')
+        print('  mpirun -np')
+        print('  mpiexec -n')
+        print('  aprun -B')
+        print('  /users/myname/petsc/bin/petscmpiexec -n')
     self.setMPILaunch(v)
 
     if self.use_batch == True:

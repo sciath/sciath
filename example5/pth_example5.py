@@ -79,7 +79,7 @@ def run_unittests_example5():
   os.system('gcc -o ex1 ex1.c')
   os.system('gcc -o ex2 ex2.c')
 
-  launcher = harness.pthHarnesss(registered_tests)
+  launcher = harness.pthHarness(registered_tests)
   launcher.execute()
   launcher.verify()
 
