@@ -12,7 +12,7 @@ pyTH provides:
 
 ### How do I use this crap? ###
 
-1. pyTH depends on python3
+1. pyTH depends on python3 and numpy
 
 2. It is recommended you set the environment variable PYTHONUNBUFFERED
 
