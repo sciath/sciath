@@ -86,7 +86,7 @@ def generateLaunch_SLURM(accountname,queuename,testname,mpiLaunch,executable,ran
   file.close()
   return(filename)
 
-def generateLaunch_LSF(accountname,queuename,testname,mpiLaunch,executable,ranks,rusage,walltime):
+def generateLaunch_LSF(accountname,queuename,testname,mpiLaunch,executable,ranks,rusage,walltime,outfile):
   if not ranks:
     print("<generateLaunch_LSF>: Requires the number of MPI-ranks be specified")
   if not walltime:
@@ -114,7 +114,7 @@ def generateLaunch_LSF(accountname,queuename,testname,mpiLaunch,executable,ranks
   wt = FormattedHourMin(walltime*60.0) 
   file.write("#BSUB -W " + wt + "\n")
   
-  file.write(mpiLaunch + " " + executable + "\n") # launch command
+  file.write(mpiLaunch + " " + executable + " > " + outfile + "\n\n") # launch command
   file.close()
   return(filename)
 
@@ -430,7 +430,7 @@ class pthLaunch:
       filename = generateLaunch_PBS(self.accountName,self.queueName,testname,self.mpiLaunch,commnd,ranks,ranks_per_node,walltime,outfile)
 
     elif self.queuingSystemType == 'lsf':
-      filename = generateLaunch_LSF(self.accountName,self.queueName,testname,self.mpiLaunch,commnd,ranks,None,walltime)
+      filename = generateLaunch_LSF(self.accountName,self.queueName,testname,self.mpiLaunch,commnd,ranks,None,walltime,outfile)
 
     elif self.queuingSystemType == 'slurm':
       filename = generateLaunch_SLURM(self.accountName,self.queueName,testname,self.mpiLaunch,commnd,ranks,ranks_per_node,walltime,outfile)
