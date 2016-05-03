@@ -231,7 +231,7 @@ class pthHarness:
 
   def clean(self):
     if self.args.purge_output:
-      print('[pth] Deleting generated output from all tests')
+      print('[pth] Deleting output generated from all tests')
       self.launcher.clean(self.registeredTests)
       for test in self.registeredTests:
         test.clean()
