@@ -12,6 +12,20 @@ if sys.version_info[0] == 2:
 if sys.version_info[0] == 3:
   isPython3 = True;
 
+def FormattedHourMin(seconds):
+  m, s = divmod(int(seconds), 60)
+  h, m = divmod(m, 60)
+  wt = "%02d:%02d" % (h, m)
+  return(wt)
+
+
+def FormattedHourMinSec(seconds):
+  m, s = divmod(seconds, 60)
+  h, m = divmod(m, 60)
+  wt = "%02d:%02d:%02d" % (h, m,s)
+  return(wt)
+
+
 def generateLaunch_PBS(accountname,queuename,testname,mpiLaunch,executable,ranks,ranks_per_node,walltime,outfile):
   if not ranks:
     print("<generateLaunch_PBS>: Requires the number of MPI-ranks be specified")
@@ -32,8 +46,9 @@ def generateLaunch_PBS(accountname,queuename,testname,mpiLaunch,executable,ranks
   
   if queuename:
     file.write("#PBS -q " + queuename + "\n")
-  
-  file.write("#PBS -l mppwidth=1024,walltime=" + str(walltime) + "\n")
+
+  wt = FormattedHourMinSec(walltime*60.0)  
+  file.write("#PBS -l mppwidth=1024,walltime=" + wt + "\n")
   
   file.write(mpiLaunch + " " + executable + " > " + outfile + "\n\n") # launch command
   file.close()
@@ -64,7 +79,8 @@ def generateLaunch_SLURM(accountname,queuename,testname,mpiLaunch,executable,ran
   if ranks_per_node:
     file.write("#SBATCH --ntasks-per-node=" + str(ranks_per_node) + "\n")
   
-  file.write("#SBATCH --time=" + walltime + "\n")
+  wt = FormattedHourMinSec(walltime*60.0)
+  file.write("#SBATCH --time=" + wt + "\n")
   
   file.write(mpiLaunch + " " + executable + " > " + outfile + "\n\n") # launch command
   file.close()
@@ -94,8 +110,9 @@ def generateLaunch_LSF(accountname,queuename,testname,mpiLaunch,executable,ranks
   
   if rusage:
     file.write("#BSUB -R \'" + rusage + "\'" + "\n")
-  
-  file.write("#BSUB -W " + walltime + "\n")
+ 
+  wt = FormattedHourMin(walltime*60.0) 
+  file.write("#BSUB -W " + wt + "\n")
   
   file.write(mpiLaunch + " " + executable + "\n") # launch command
   file.close()
@@ -114,7 +131,8 @@ def generateLaunch_LoadLevelerBG(accountname,queuename,testname,executable,total
   print("# @ error = $(job_name)_$(jobid).stderr")
   print("# @ output = $(job_name)_$(jobid).stdout")
   print("# @ environment = COPY_ALL;")
-  print("# @ wall_clock_limit = " + str(walltime))
+  wt = FormattedHourMinSec(walltime*60.0)
+  print("# @ wall_clock_limit = " + wt)
   print("# @ notification = never")
   print("# @ class = " + queuename)
   
