@@ -1,9 +1,16 @@
 
-import os
+import os,sys
 import argparse
 
 import pyTestHarness.unittest as pth
 from   pyTestHarness.colors import pthNamedColors as bcolors
+
+isPython2 = False
+isPython3 = False
+if sys.version_info[0] == 2:
+  isPython2 = True;
+if sys.version_info[0] == 3:
+  isPython3 = True;
 
 def generateLaunch_PBS(accountname,queuename,testname,mpiLaunch,executable,ranks,ranks_per_node,walltime,outfile):
   if not ranks:
@@ -303,14 +310,20 @@ class pthLaunch:
   def configure(self):
     print('----------------------------------------------------------------')
     print('Creating new pthBatchQueuingSystem.conf file')
-    v = input('[1] Batch queuing system type <pbs,lsf,slurm,llq,none>: ')
+    if isPython2:
+      v = raw_input('[1] Batch queuing system type <pbs,lsf,slurm,llq,none>: ')
+    if isPython3:
+      v = input('[1] Batch queuing system type <pbs,lsf,slurm,llq,none>: ')
     if not v:
       raise ValueError('[pth] You must specify the type of queuing system')
     self.setQueueSystemType(v)
 
     v = None
-    while not v :
-      v = input('[2] MPI launch command with num. procs. flag (required - hit enter for examples): ')
+    while not v:
+      if isPython2:
+        v = raw_input('[2] MPI launch command with num. procs. flag (required - hit enter for examples): ')
+      if isPython3:
+        v = input('[2] MPI launch command with num. procs. flag (required - hit enter for examples): ')
       if not v :
         print(' Required. Some example MPI launch commands:')
         print('  none','(if your tests do not use MPI)')
@@ -322,10 +335,16 @@ class pthLaunch:
 
     if self.use_batch == True:
 
-      v = input('[3] Account to charge (optional - hit enter if not applicable): ')
+      if isPython2:
+        v = raw_input('[3] Account to charge (optional - hit enter if not applicable): ')
+      if isPython3:
+        v = input('[3] Account to charge (optional - hit enter if not applicable): ')
       self.setHPCAccountName(v)
 
-      v = input('[4] Name of queue to submit tests to (optional - hit enter if not applicable): ')
+      if isPython2:
+        v = raw_input('[4] Name of queue to submit tests to (optional - hit enter if not applicable): ')
+      if isPython3:
+        v = input('[4] Name of queue to submit tests to (optional - hit enter if not applicable): ')
       self.setQueueName(v)
     
     self.writeDefinition()
