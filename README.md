@@ -20,13 +20,16 @@ pyTestHarness (pyTH) provides:
 3. Make sure you modify your PYTHONPATH environment variable to include the directory ```${PWD}/lib``` (relative to this README file)
 
 ####Demonstration of basic unit-testing for serial tests 
+
+1. ```
+    cd pth_example1
+    python pth_example1.py
+   ```
+
 Features: 
 (i) comparison with data in a file;
 (ii) multiple tests;
 (iii) report summary and error log files 
-  
-    cd pth_example1
-    python pth_example1.py
   
 ####Demonstration of basic unit-testing for serial tests
 Features:
