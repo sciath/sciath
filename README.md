@@ -21,7 +21,9 @@ pyTestHarness (pyTH) provides:
 
 ####Demonstration of basic unit-testing for serial tests 
 Features: 
-(i) comparison with data in a file
+(i) comparison with data in a file;
+(ii) multiple tests;
+(iii) report summary and error log files 
   
     cd pth_example1
     python pth_example1.py
@@ -41,3 +43,11 @@ Features:
   
     cd example3
     python pth_example3.py
+
+####Demonstration of the test harness 
+Features:
+(i) defining a test which does not an expected output file for the verification
+
+  
+    cd example5
+    python pth_example5.py
