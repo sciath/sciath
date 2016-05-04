@@ -19,38 +19,60 @@ pyTestHarness (pyTH) provides:
 
 3. Make sure you modify your PYTHONPATH environment variable to include the directory ```${PWD}/lib``` (relative to this README file)
 
-####Demonstration of basic unit-testing for serial tests 
+####Demonstration of basic unit-testing of serial applications using the test harness 
 
-1. ```
-    cd pth_example1
-    python pth_example1.py
-   ```
 
-Features: 
+*	**Example 1, Example 4**  
+Execute the test(s): 
+
+	```
+	cd example1;
+	python pth_example1.py
+```
+	```
+	cd example4;
+	python pth_example4.py
+```
+Features:  
 (i) comparison with data in a file;
 (ii) multiple tests;
 (iii) report summary and error log files 
-  
-####Demonstration of basic unit-testing for serial tests
-Features:
+
+*	**Example 2**  
+Execute the test: 
+
+	```
+    cd example2;
+    python pth_example2.py
+```  
+Features:  
 (i) unit tests which are defined in separate directories;
 (ii) tests can be optionally selected
-  
-    cd example2
-    python pth_example2.py
-  
-####Demonstration of parallel tests using PETSc code 
-Features:
-(i) unit test execution of a parallel application which is submitted via a batch queuing system
 
-  
-    cd example3
-    python pth_example3.py
+* **Example 5**  
+Execute the test: 
 
-####Demonstration of the test harness 
-Features:
+	```
+    cd example5;
+    python pth_example5.py
+```  
+Features:  
 (i) defining a test which does not an expected output file for the verification
 
   
-    cd example5
-    python pth_example5.py
+      
+####Demonstration of parallel tests using a PETSc code 
+
+* **Example 3**  
+Requires the environment variables ```PETSC_DIR``` and ```PETSC_ARCH``` to be defined. Execute the test:  
+
+	```
+    cd example3;
+    python pth_example3.py
+```  
+Features:  
+(i) unit test defined using an MPI parallel application; 
+(ii) unit test submission through a batch queuing system
+
+  
+
