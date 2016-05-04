@@ -132,7 +132,7 @@ def launcherReportAll(launcher,testList):
     print('xxx============================================================================xxx')
     print('     UnitTests failed - Full error report written to pthErrorReport.log')
     print('                      - Inspect the error log file and resolve failed tests')
-    print('     cat ' + os.path.realpath(__file__) + '/' + pthErrorReportFileName) 
+    print('     cat ' + os.path.abspath(pthErrorReportFileName))
     print('xxx============================================================================xxx')
 
 
