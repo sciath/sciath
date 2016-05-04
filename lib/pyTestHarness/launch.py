@@ -26,6 +26,24 @@ def FormattedHourMinSec(seconds):
   return(wt)
 
 
+def pthFormatMPILaunchCommand(mpiLaunch,ranks,corespernode):
+  launch = mpiLaunch
+  launch = launch.replace("<ranks>",str(ranks))
+  launch = launch.replace("<cores>",str(ranks))
+  launch = launch.replace("<tasks>",str(ranks))
+  launch = launch.replace("<RANKS>",str(ranks))
+  if corespernode:
+    launch = launch.replace("<corespernode>",str(corespernode))
+    launch = launch.replace("<cores_per_node>",str(corespernode))
+    launch = launch.replace("<CORESPERNODE>",str(corespernode))
+    launch = launch.replace("<CORES_PER_NODE>",str(corespernode))
+    launch = launch.replace("<rankspernode>",str(corespernode))
+    launch = launch.replace("<ranks_per_node>",str(corespernode))
+    launch = launch.replace("<RANKSPERNODE>",str(corespernode))
+    launch = launch.replace("<RANKS_PER_NODE>",str(corespernode))
+  return(launch)
+
+
 def generateLaunch_PBS(accountname,queuename,testname,mpiLaunch,executable,ranks,ranks_per_node,walltime,outfile):
   if not ranks:
     print("<generateLaunch_PBS>: Requires the number of MPI-ranks be specified")
@@ -49,8 +67,9 @@ def generateLaunch_PBS(accountname,queuename,testname,mpiLaunch,executable,ranks
 
   wt = FormattedHourMinSec(walltime*60.0)  
   file.write("#PBS -l mppwidth=1024,walltime=" + wt + "\n")
-  
-  file.write(mpiLaunch + " " + executable + " > " + outfile + "\n\n") # launch command
+
+  launch = pthFormatMPILaunchCommand(mpiLaunch,ranks,ranks_per_node)
+  file.write(launch + " " + executable + " > " + outfile + "\n\n") # launch command
   file.close()
   return(filename)
 
@@ -82,11 +101,12 @@ def generateLaunch_SLURM(accountname,queuename,testname,mpiLaunch,executable,ran
   wt = FormattedHourMinSec(walltime*60.0)
   file.write("#SBATCH --time=" + wt + "\n")
   
-  file.write(mpiLaunch + " " + executable + " > " + outfile + "\n\n") # launch command
+  launch = pthFormatMPILaunchCommand(mpiLaunch,ranks,ranks_per_node)
+  file.write(launch + " " + executable + " > " + outfile + "\n\n") # launch command
   file.close()
   return(filename)
 
-def generateLaunch_LSF(accountname,queuename,testname,mpiLaunch,executable,ranks,rusage,walltime):
+def generateLaunch_LSF(accountname,queuename,testname,mpiLaunch,executable,ranks,rusage,walltime,outfile):
   if not ranks:
     print("<generateLaunch_LSF>: Requires the number of MPI-ranks be specified")
   if not walltime:
@@ -114,7 +134,8 @@ def generateLaunch_LSF(accountname,queuename,testname,mpiLaunch,executable,ranks
   wt = FormattedHourMin(walltime*60.0) 
   file.write("#BSUB -W " + wt + "\n")
   
-  file.write(mpiLaunch + " " + executable + "\n") # launch command
+  launch = pthFormatMPILaunchCommand(mpiLaunch,ranks,None)
+  file.write(launch + " " + executable + " > " + outfile + "\n\n") # launch command
   file.close()
   return(filename)
 
@@ -247,6 +268,7 @@ class pthLaunch:
     parser.add_argument('-c', '--configure', help='Configure queuing system information', required=False, action='store_true')
     parser.add_argument('-t', '--test', help='List of test names', required=False)
     parser.add_argument('-o', '--output_path', help='Directory to write stdout into', required=False)
+    parser.add_argument('-p', '--purge_output', help='Delete generated output', required=False, action='store_true')
     self.args = parser.parse_args()
 
     if self.args.configure:
@@ -345,10 +367,12 @@ class pthLaunch:
       if not v :
         print(' Required. Some example MPI launch commands:')
         print('  none','(if your tests do not use MPI)')
-        print('  mpirun -np','(local machine)')
-        print('  mpiexec -n','(local machine)')
+        print('  mpirun -np <ranks>','(local machine)')
+        print('  mpiexec -n <ranks>','(local machine)')
         print('  aprun -B','(slurm)')
-        print('  /users/myname/petsc/bin/petscmpiexec -n','(typical PETSc MPI wrapper)')
+        print('  /users/myname/petsc/bin/petscmpiexec -n <ranks>','(typical PETSc MPI wrapper)')
+        print(' Note that the value \"<ranks>\" should be included in your launch command.')
+        print(' This keyword will be replaced by the actual number of MPI ranks when a test is launched')
     self.setMPILaunch(v)
 
     if self.use_batch == True:
@@ -430,7 +454,7 @@ class pthLaunch:
       filename = generateLaunch_PBS(self.accountName,self.queueName,testname,self.mpiLaunch,commnd,ranks,ranks_per_node,walltime,outfile)
 
     elif self.queuingSystemType == 'lsf':
-      filename = generateLaunch_LSF(self.accountName,self.queueName,testname,self.mpiLaunch,commnd,ranks,None,walltime)
+      filename = generateLaunch_LSF(self.accountName,self.queueName,testname,self.mpiLaunch,commnd,ranks,None,walltime,outfile)
 
     elif self.queuingSystemType == 'slurm':
       filename = generateLaunch_SLURM(self.accountName,self.queueName,testname,self.mpiLaunch,commnd,ranks,ranks_per_node,walltime,outfile)
@@ -452,7 +476,8 @@ class pthLaunch:
         if self.mpiLaunch == 'none':
           launchCmd = unittest.execute + " > " + os.path.join(unittest.output_path,unittest.output_file)
         else:
-          launchCmd = mpiLaunch + ' ' + str(unittest.ranks) + ' ' + unittest.execute + " > " + os.path.join(unittest.output_path,unittest.output_file)
+          launch = pthFormatMPILaunchCommand(mpiLaunch,unittest.ranks,None)
+          launchCmd = launch + ' ' + unittest.execute + " > " + os.path.join(unittest.output_path,unittest.output_file)
         print('[Executing] ',launchCmd)
         unittest.errno = os.system(launchCmd) >> 8
     else:
@@ -478,6 +503,21 @@ class pthLaunch:
     # Verify, unless we are running with a batch system and are not in verify(-only) mode
     if not self.use_batch or self.args.verify :
       performTestSuite_verify(self,registered_tests)
+
+  def clean(self,registered_tests):
+    if self.use_batch:
+      for test in registered_tests:
+        print('<launch> rm -f ' + test.name + '.stdout')
+        print('<launch> rm -f ' + test.name + '.stderr')
+        if self.queuingSystemType == 'pbs':
+          print('<launch> rm -f ' + test.name + '-pth.pbs')
+        elif self.queuingSystemType == 'lsf':
+          print('<launch> rm -f ' + test.name + '-pth.lsf')
+        elif self.queuingSystemType == 'slurm':
+          print('<launch> rm -f ' + test.name + '-pth.slurm')
+        elif self.queuingSystemType == 'load_leveler':
+          print('<launch> rm -f ' + test.name + '-pth.llq')
+
 
 
 # < end class >

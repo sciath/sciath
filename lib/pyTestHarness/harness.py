@@ -132,7 +132,8 @@ def launcherReportAll(launcher,testList):
     print('xxx============================================================================xxx')
     print('     UnitTests failed - Full error report written to pthErrorReport.log')
     print('                      - Inspect the error log file and resolve failed tests')
-    print('     cat ' + os.path.abspath(pthErrorReportFileName))
+    pthErrorReportFileLocation = os.path.realpath(pthErrorReportFileName)
+    print('     cat ' + pthErrorReportFileLocation)
     print('xxx============================================================================xxx')
 
 
@@ -161,6 +162,7 @@ class pthHarness:
     parser.add_argument('-c', '--configure', help='Configure queuing system information', required=False, action='store_true')
     parser.add_argument('-t', '--test', help='List of test names', required=False)
     parser.add_argument('-o', '--output_path', help='Directory to write stdout into', required=False)
+    parser.add_argument('-p', '--purge_output', help='Delete generated output', required=False, action='store_true')
     self.args = parser.parse_args()
 
     # Label tests as Registered or Excluded:Reason
@@ -205,6 +207,9 @@ class pthHarness:
           self.testDescription[counter] = 'Excluded based on users command line arg -t'
         counter = counter + 1
 
+#    if self.args.purge_output:
+#      print('[pth] Deleting generated output from all tests')
+#      self.clean()
 
   def execute(self):
     launcher = self.launcher
@@ -214,7 +219,7 @@ class pthHarness:
         test.setOutputPath(self.args.output_path)
 
     # Don't execute if we are verifying (only)
-    if not self.args.verify:
+    if not self.args.verify and not self.args.purge_output:
       launcherExecuteAll(launcher,self.registeredTests,self.testDescription)
     
 
@@ -225,3 +230,12 @@ class pthHarness:
     if not launcher.use_batch or self.args.verify :
       launcherVerifyAll(self,self.registeredTests,self.testDescription)
       launcherReportAll(self,self.registeredTests)
+
+  def clean(self):
+    if self.args.purge_output:
+      print('[pth] Deleting output generated from all tests')
+      self.launcher.clean(self.registeredTests)
+      for test in self.registeredTests:
+        test.clean()
+
+

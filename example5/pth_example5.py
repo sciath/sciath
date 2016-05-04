@@ -3,6 +3,7 @@ import os
 import pyTestHarness.harness as harness
 import pyTestHarness.unittest as putest
 
+
 def test1():
   
   ranks = 1
@@ -70,10 +71,37 @@ def test3():
   
   return(test)
 
+# Define test which doesn't use an expected file
+from pyTestHarness.unittest import getKeyValuesAsInt
+
+def test4():
+  def comparefunc(unittest):
+    output,output_flat = unittest.getOutput()
+
+    key = '\$kspits'
+    value = getKeyValuesAsInt(output_flat,key)
+    print(value)
+    if value:
+      if value[0] != 43:
+        status = False
+        kerr = 'Key = \"' + key + '\" --> ' + 'Expected the value 43, found ' + str(value[0])
+      else:
+        status == True
+        kerr = ''
+    else:
+      status = False
+      kerr = 'Key = \"' + key + '\" --> was not found in output file'
+    unittest.updateStatus(status,kerr)
+
+  test = putest.pthUnitTest('ex4',1,'./ex1',None)
+  test.setVerifyMethod(comparefunc)
+  test.setComparisonFile('ex1-p1.output')
+  return(test)
+
 def run_unittests_example5():
   os.environ['PYTHONUNBUFFERED'] = str('1')
   
-  registered_tests = [ test1() , test2(), test3() ]
+  registered_tests = [ test1() , test2(), test3(), test4() ]
   #registered_tests = [ test3() ]
 
   os.system('gcc -o ex1 ex1.c')
@@ -82,6 +110,7 @@ def run_unittests_example5():
   launcher = harness.pthHarness(registered_tests)
   launcher.execute()
   launcher.verify()
+  launcher.clean()
 
 if __name__ == "__main__":
   run_unittests_example5()
