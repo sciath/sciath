@@ -33,8 +33,7 @@ Execute the test(s):
 	cd example4;
 	python pth_example4.py
 ```
-Features:  
-(i) comparison with data in a file;
+Features: (i) comparison with data in a file;
 (ii) multiple tests;
 (iii) report summary and error log files 
 
@@ -45,8 +44,7 @@ Execute the test:
 	cd example2;
 	python pth_example2.py
 ```  
-Features:  
-(i) unit tests which are defined in separate directories;
+Features:  (i) unit tests which are defined in separate directories;
 (ii) tests can be optionally selected
 
 * **Example 5**  
@@ -56,8 +54,7 @@ Execute the test:
 	cd example5;
 	python pth_example5.py
 ```  
-Features:  
-(i) defining a test which does not an expected output file for the verification
+Features: (i) defining a test which does not an expected output file for the verification
 
   
       
@@ -70,6 +67,5 @@ Requires the environment variables ```PETSC_DIR``` and ```PETSC_ARCH``` to be de
 	cd example3;
 	python pth_example3.py
 ```  
-Features:  
-(i) unit test defined using an MPI parallel application; 
+Features: (i) unit test defined using an MPI parallel application; 
 (ii) unit test submission through a batch queuing system
