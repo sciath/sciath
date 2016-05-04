@@ -14,7 +14,7 @@ pyTH provides:
 
 1. pyTH depends on python3 (or python2) and numpy
 
-2. When using python3, it is highly ecommended you set the environment variable PYTHONUNBUFFERED
+2. When using python3, it is highly recommended you set the environment variable PYTHONUNBUFFERED
 
 3. Make sure you modify your PYTHONPATH environment variable to include the directory ```${PWD}/lib``` (relative to this README file)
 
