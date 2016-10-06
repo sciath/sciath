@@ -69,3 +69,13 @@ Requires the environment variables ```PETSC_DIR``` and ```PETSC_ARCH``` to be de
 ```  
 Features: (i) unit test defined using an MPI parallel application; 
 (ii) unit test submission through a batch queuing system
+
+####Tips for building tests
+
+* The verification process involves parsing expected output and searching for keywords. If your output generates strings requiring escape characters, for example the string "|a.b|_2", the keyword provided to pyTH needs to be expressed as "\|a.b\|\_2". This is awkward so we recommend using the regular expression utilities which provide a method to add the backslash automatically. E.g.
+```
+#!python
+
+import re
+keyword = re.escape("|a.b|_2")
+```
