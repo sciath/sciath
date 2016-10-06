@@ -10,7 +10,7 @@ pyTestHarness (pyTH) provides:
 * A set of tools to parse / filter and query text files for verification purposes
 * An object to manage launching a serial (or MPI) unit test locally, or via a batch queuing system
 
-### How do I use this crap? ###
+### How do I use this pyTH? ###
 
 1. pyTH depends on python3 (or python2) and numpy
 
