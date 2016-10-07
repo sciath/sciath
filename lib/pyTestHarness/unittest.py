@@ -440,6 +440,17 @@ class pthUnitTest:
       kerr = 'Key = \"' + key + '\" --> ' + err
     self.updateStatus(status,kerr)
 
+  def compareUnixDiff(self):
+    expected,expected_flat = self.getExpected()
+    output,output_flat = self.getOutput()
+    
+    status,err = compareLiteral(expected,output)
+    kerr = ''
+    if status == False:
+      kerr = 'Key = \"' + '<entire file>' + '\" --> ' + err
+    self.updateStatus(status,kerr)
+  
+
   def clean(self):
     outfile = os.path.join(self.output_path,self.output_file)
     cmpfile = self.comparison_file
