@@ -483,14 +483,14 @@ class pthLaunch:
         else:
           launch = pthFormatMPILaunchCommand(mpiLaunch,unittest.ranks,None)
           launchCmd = launch + ' ' + unittest.execute + " > " + os.path.join(unittest.output_path,unittest.output_file)
-        if self.verbosity_level > 1:
+        if self.verbosity_level > 0:
           print('[Executing]',launchCmd)
         unittest.errno = os.system(launchCmd) >> 8
     else:
       outfile = os.path.join(unittest.output_path,unittest.output_file)
       launchfile = self.createSubmissionFile(unittest.name,unittest.execute,unittest.ranks,'',unittest.walltime,outfile)
       launchCmd = self.jobSubmissionCommand + launchfile
-      if self.verbosity_level > 1:
+      if self.verbosity_level > 0:
         print('[Executing]',launchCmd)
       os.system(launchCmd)
 
