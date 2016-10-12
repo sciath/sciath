@@ -145,6 +145,7 @@ class pthHarness:
     self.testsSkipped = 0
     self.testsPassed = 0
     self.testsFailed = 0
+    self.verbosity_level = 0
 
     self.testDescription = []
     self.registeredTests = registeredTests
@@ -211,8 +212,12 @@ class pthHarness:
 #      print('[pth] Deleting generated output from all tests')
 #      self.clean()
 
+  def setVerbosityLevel(self,value):
+    self.verbosity_level = value
+
   def execute(self):
     launcher = self.launcher
+    launcher.setVerbosityLevel(self.verbosity_level)
     # Set output path on all tests if different to the current working directory
     if self.args.output_path:
       for test in self.allTests:

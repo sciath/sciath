@@ -85,7 +85,6 @@ def compareInteger(input,tolerance,expected):
 
 
 def parseFile(filename,keywords):
-  print('Parsing file: ',filename)
 
   flat = ''
   contents = []
@@ -317,7 +316,11 @@ class pthUnitTest:
     self.comparison_file = ''
     self.output_path = ''
     self.ignore = False
+    self.verbosity_level = 0
 
+  def setVerbosityLevel(self,value):
+    self.verbosity_level = value
+  
   def verify(self,junk):
     raise RuntimeError('[pth] A valid verification method for unit-test \"' + self.name + '\" was not found.\n\
               [pth] You must provide each unit-test with a method to verify the output.\n\
@@ -353,7 +356,12 @@ class pthUnitTest:
     if self.comparison_file == '':
       self.comparison_file = os.path.join(self.output_path,self.output_file)
     
+    if self.verbosity_level > 0:
+      print('[Parsing file]',self.expected_file)
     (self.expected_contents,self.expected_flatcontents) = parseFile(self.expected_file,self.keywords)
+    
+    if self.verbosity_level > 0:
+      print('[Parsing file]',self.comparison_file)
     (self.output_contents,self.output_flatcontents) = parseFile(self.comparison_file,self.keywords)
     self.verify(self)
 

@@ -201,9 +201,9 @@ def performTestSuite_execute(self,registered_tests):
   launcher = self
 
   print('')
-  self.view()
+  if self.verbosity_level > 0:
+    self.view()
 
-  print('')
   for test in registered_tests:
     print('[-- Executing test: ' + test.name + ' --]')
     launcher.submitJob(test)
@@ -214,6 +214,7 @@ def performTestSuite_verify(self,registered_tests):
   
   print('')
   for test in registered_tests:
+    test.setVerbosityLevel(self.verbosity_level)
     print('[-- Verifying test: ' + test.name + ' --]')
     if self.mpiLaunch == 'none' and test.ranks != 1:
       print('[Skipping verification for test \"' + test.name + '\" as test uses > 1 MPI ranks and no MPI launcher was provided]')
@@ -261,6 +262,7 @@ class pthLaunch:
     self.jobSubmissionCommand = []
     self.use_batch = False
     self.output_path = ''
+    self.verbosity_level = 0
     
     parser = argparse.ArgumentParser(description='Python Test Harness.')
     parser.add_argument('-e', '--execute', help='Perform test execution', required=False, action='store_true')
@@ -283,6 +285,8 @@ class pthLaunch:
 #  def addIgnoreKeywords(self,d):
 #    self.ignoreKeywords.append(d)
 
+  def setVerbosityLevel(self,value):
+    self.verbosity_level = value
 
   def setQueueName(self,name):
     self.queueName = name
@@ -479,19 +483,22 @@ class pthLaunch:
         else:
           launch = pthFormatMPILaunchCommand(mpiLaunch,unittest.ranks,None)
           launchCmd = launch + ' ' + unittest.execute + " > " + os.path.join(unittest.output_path,unittest.output_file)
-        print('[Executing] ',launchCmd)
+        if self.verbosity_level > 1:
+          print('[Executing]',launchCmd)
         unittest.errno = os.system(launchCmd) >> 8
     else:
       outfile = os.path.join(unittest.output_path,unittest.output_file)
       launchfile = self.createSubmissionFile(unittest.name,unittest.execute,unittest.ranks,'',unittest.walltime,outfile)
       launchCmd = self.jobSubmissionCommand + launchfile
-      print('[Executing] ',launchCmd)
+      if self.verbosity_level > 1:
+        print('[Executing]',launchCmd)
       os.system(launchCmd)
 
 
   def executeTestSuite(self,registered_tests):
     if self.args.output_path:
       for test in registered_tests:
+        test.setVerbosityLevel(self.verbosity_level)
         test.setOutputPath(self.args.output_path)
     
     # Don't execute if we are verifying a batch run
