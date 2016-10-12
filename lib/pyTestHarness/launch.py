@@ -214,7 +214,6 @@ def performTestSuite_verify(self,registered_tests):
   
   print('')
   for test in registered_tests:
-    test.setVerbosityLevel(self.verbosity_level)
     print('[-- Verifying test: ' + test.name + ' --]')
     if self.mpiLaunch == 'none' and test.ranks != 1:
       print('[Skipping verification for test \"' + test.name + '\" as test uses > 1 MPI ranks and no MPI launcher was provided]')
@@ -472,6 +471,7 @@ class pthLaunch:
 
 
   def submitJob(self,unittest):
+    unittest.setVerbosityLevel(self.verbosity_level)
     if not self.use_batch:
       mpiLaunch = self.mpiLaunch
     
@@ -498,7 +498,6 @@ class pthLaunch:
   def executeTestSuite(self,registered_tests):
     if self.args.output_path:
       for test in registered_tests:
-        test.setVerbosityLevel(self.verbosity_level)
         test.setOutputPath(self.args.output_path)
     
     # Don't execute if we are verifying a batch run

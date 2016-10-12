@@ -8,8 +8,8 @@ from   pyTestHarness.colors import pthNamedColors as bcolors
 
 def launcherExecuteAll(launcher,testList,description):
   
-  print('')
-  launcher.view()
+  if launcher.verbosity_level > 0:
+    launcher.view()
   
   skipCounter = 0
   for t in testList:
@@ -20,7 +20,6 @@ def launcherExecuteAll(launcher,testList,description):
   if skipCounter != 0:
     print('\n' + bcolors.WARNING + 'Warning: ' + str(skipCounter) + ' MPI parallel jobs are being skipped as a valid MPI launcher was not provided'+ bcolors.ENDC)
   
-  print('')
   counter = 0
   for test in testList:
     if test.ignore == False:
@@ -36,6 +35,7 @@ def launcherVerifyAll(launcher,testList,description):
   print('')
   counter = 0
   for test in testList:
+    test.setVerbosityLevel(launcher.verbosity_level)
     if test.ignore == False:
       print('[-- Verifying test: ' + test.name + ' --]')
       test.verifyOutput()
