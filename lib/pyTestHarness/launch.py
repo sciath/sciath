@@ -262,7 +262,7 @@ class pthLaunch:
     self.jobSubmissionCommand = []
     self.use_batch = False
     self.output_path = ''
-    self.verbosity_level = 0
+    self.verbosity_level = 1
     
     parser = argparse.ArgumentParser(description='Python Test Harness.')
     parser.add_argument('-e', '--execute', help='Perform test execution', required=False, action='store_true')

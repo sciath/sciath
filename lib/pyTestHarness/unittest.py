@@ -316,7 +316,7 @@ class pthUnitTest:
     self.comparison_file = ''
     self.output_path = ''
     self.ignore = False
-    self.verbosity_level = 0
+    self.verbosity_level = 1
 
   def setVerbosityLevel(self,value):
     self.verbosity_level = value

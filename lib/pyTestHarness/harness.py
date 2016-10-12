@@ -145,7 +145,7 @@ class pthHarness:
     self.testsSkipped = 0
     self.testsPassed = 0
     self.testsFailed = 0
-    self.verbosity_level = 0
+    self.verbosity_level = 1
 
     self.testDescription = []
     self.registeredTests = registeredTests
