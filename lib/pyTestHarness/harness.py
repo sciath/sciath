@@ -118,6 +118,7 @@ def launcherReportAll(launcher,testList):
   if mpiExecCounter != mpiCounter:
     print(bcolors.WARNING+'          Warning: '+("%.4d" % (mpiCounter-mpiExecCounter))+' MPI UnitTests were skipped!'+ bcolors.ENDC)
 
+  errfile = []
   if failCounter > 0:
     pthErrorReportFileName = 'pthErrorReport.log'
     file = open(pthErrorReportFileName,'w')
@@ -135,8 +136,8 @@ def launcherReportAll(launcher,testList):
     pthErrorReportFileLocation = os.path.realpath(pthErrorReportFileName)
     print('     cat ' + pthErrorReportFileLocation)
     print('xxx============================================================================xxx')
-
-
+    errfile = pthErrorReportFileLocation
+  return(errfile)
 
 class pthHarness:
   def __init__(self,registeredTests):
@@ -235,8 +236,11 @@ class pthHarness:
     # Verify, unless we are running with a batch system and are not in verify(-only) mode
     if not launcher.use_batch or self.args.verify :
       launcherVerifyAll(self,self.registeredTests,self.testDescription)
-      ierr = launcherReportAll(self,self.registeredTests)
+      errfile = launcherReportAll(self,self.registeredTests)
       if self.args.error_on_test_failure:
+        print('\n')
+        print('Contents of "' + errfile +'"')
+        os.system('cat ' + errfile)
         sys.exit(1)
       return(ierr)
 
