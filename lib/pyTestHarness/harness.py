@@ -237,12 +237,11 @@ class pthHarness:
     if not launcher.use_batch or self.args.verify :
       launcherVerifyAll(self,self.registeredTests,self.testDescription)
       errfile = launcherReportAll(self,self.registeredTests)
-      if self.args.error_on_test_failure:
+      if errfile and self.args.error_on_test_failure:
         print('\n')
         print('Contents of "' + errfile +'"')
         os.system('cat ' + errfile)
         sys.exit(1)
-      return(ierr)
 
   def clean(self):
     if self.args.purge_output:
