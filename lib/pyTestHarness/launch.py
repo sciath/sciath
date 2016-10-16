@@ -270,10 +270,16 @@ class pthLaunch:
     parser.add_argument('-t', '--test', help='List of test names', required=False)
     parser.add_argument('-o', '--output_path', help='Directory to write stdout into', required=False)
     parser.add_argument('-p', '--purge_output', help='Delete generated output', required=False, action='store_true')
+    parser.add_argument('-f', '--error_on_test_failure', help='Return exit code of 1 if any test failed', required=False, action='store_true')
+    parser.add_argument('-d', '--configure_default', help='Write default queuing system config file (no mpi, no queuing system)', required=False, action='store_true')
     self.args = parser.parse_args()
 
     if self.args.configure:
       self.configure()
+      sys.exit(0)
+    elif self.args.configure_default:
+      self.writeDefaultDefinition()
+      sys.exit(0)
     else:
       self.setup()
 
@@ -410,6 +416,11 @@ class pthLaunch:
       self.configure()
       self.writeDefinition()
 
+  def writeDefaultDefinition(self):
+    file = open('pthBatchQueuingSystem.conf','w')
+    file.write( 'none' + '\n' )
+    file.write( 'none' + '\n' )
+    file.close()
 
   def writeDefinition(self):
 

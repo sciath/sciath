@@ -164,6 +164,7 @@ class pthHarness:
     parser.add_argument('-t', '--test', help='List of test names', required=False)
     parser.add_argument('-o', '--output_path', help='Directory to write stdout into', required=False)
     parser.add_argument('-p', '--purge_output', help='Delete generated output', required=False, action='store_true')
+    parser.add_argument('-f', '--error_on_test_failure', help='Return exit code of 1 if any test failed', required=False, action='store_true')
     self.args = parser.parse_args()
 
     # Label tests as Registered or Excluded:Reason
@@ -234,7 +235,10 @@ class pthHarness:
     # Verify, unless we are running with a batch system and are not in verify(-only) mode
     if not launcher.use_batch or self.args.verify :
       launcherVerifyAll(self,self.registeredTests,self.testDescription)
-      launcherReportAll(self,self.registeredTests)
+      ierr = launcherReportAll(self,self.registeredTests)
+      if self.args.error_on_test_failure:
+        sys.exit(1)
+      return(ierr)
 
   def clean(self):
     if self.args.purge_output:
