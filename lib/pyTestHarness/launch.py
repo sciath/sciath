@@ -381,8 +381,8 @@ class pthLaunch:
         print('  aprun -B','(slurm with aprun)')
         print('  srun -n $SLURM_NTASKS','(native slurm)')
         print('  /users/myname/petsc/bin/petscmpiexec -n <ranks>','(typical PETSc MPI wrapper)')
-        print(' Note that the value \"<ranks>\" should be included in your launch command.')
-        print(' This keyword will be replaced by the actual number of MPI ranks when a test is launched')
+        print(' Note that the string \"<ranks>\" must be included in your launch command.')
+        print(' The keyword <ranks> will be replaced by the actual number of MPI ranks (defined by a given test) when the test is launched.')
     self.setMPILaunch(v)
 
     if self.use_batch == True:
