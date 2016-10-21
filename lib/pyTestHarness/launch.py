@@ -303,7 +303,18 @@ class pthLaunch:
 
   def setMPILaunch(self,name):
     self.mpiLaunch = name
-
+    # check for existence of "rank" keyword in the string "name"
+    if self.queuingSystemType in ['none', 'None', 'local'] and name != 'none':
+      keywordlist = [ '<ranks>', '<cores>', '<tasks>', '<RANKS>' ]
+      # check of any of keywordlist[i] appears in name
+      valid_launcher = False
+      for kword in keywordlist:
+        if kword in name:
+          valid_launcher = True
+          break
+      
+      if valid_launcher == False:
+        raise RuntimeError('[pth] Your MPI launch command must contain the keyword \"<ranks>\"')
 
   def setQueueSystemType(self,type):
     if type in ['PBS','pbs']:
