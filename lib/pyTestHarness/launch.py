@@ -6,6 +6,9 @@ import pyTestHarness.unittest as pth
 from   pyTestHarness.colors import pthNamedColors as bcolors
 from   pyTestHarness.version import getVersion
 
+class PthTestHarnessLoadException(Exception) :
+  pass
+
 isPython2 = False
 isPython3 = False
 if sys.version_info[0] == 2:
@@ -438,11 +441,12 @@ class pthLaunch:
     print('----------------------------------------------------------------')
 
 
+
   def setup(self):
     try:
       self.loadDefinition()
     
-    except:
+    except PthTestHarnessLoadException :
       self.configure()
       self.writeDefinition()
 
@@ -499,15 +503,15 @@ class pthLaunch:
             self.setHPCAccountName(value)
       file.close()
     except:
-      raise RuntimeError('[pth] You must execute configure(), and or writeDefinition() first')
+      raise PthTestHarnessLoadException('[pth] You must execute configure(), and or writeDefinition() first')
 
     # Do not accept conf files if the major.minor version is stale, or if versions are missing
     major,minor,patch = getVersion()
     if majorFile < major or (minorFile < minor and majorFile == major) or \
          majorFile==None or minorFile==None or patchFile==None :
-      print('[pth] Incompatible outdated .conf file detected. Please follow the instructions to define a new one.')
-      raise RuntimeError('[pth] Outdated pthBatchQueuingSystem.conf detected. Please delete it and regenerate.')
-
+      message = '[pth] Incompatible outdated pthBatchQueuingSystem.conf file detected. Please delete it and run again to generate a new one.'
+      print(message)
+      raise RuntimeError(message)
 
   def createSubmissionFile(self,testname,commnd,ranks,ranks_per_node,walltime,outfile):
     filename = ''
