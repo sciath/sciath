@@ -443,7 +443,6 @@ class pthLaunch:
       self.loadDefinition()
     
     except:
-      raise # !!
       self.configure()
       self.writeDefinition()
 
@@ -506,7 +505,7 @@ class pthLaunch:
     major,minor,patch = getVersion()
     if majorFile < major or (minorFile < minor and majorFile == major) or \
          majorFile==None or minorFile==None or patchFile==None :
-      print('[pth] Incompatible outdated .conf file detected. Please delete it and regenerate.')
+      print('[pth] Incompatible outdated .conf file detected. Please follow the instructions to define a new one.')
       raise RuntimeError('[pth] Outdated pthBatchQueuingSystem.conf detected. Please delete it and regenerate.')
 
 
