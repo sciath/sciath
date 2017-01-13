@@ -4,6 +4,7 @@ import argparse
 
 import pyTestHarness.unittest as pth
 from   pyTestHarness.colors import pthNamedColors as bcolors
+from   pyTestHarness.version import getVersion
 
 isPython2 = False
 isPython3 = False
@@ -258,6 +259,7 @@ class pthLaunch:
     self.queueName = []
     self.mpiLaunch = []
     self.queuingSystemType = []
+    self.batchLaunchArgs=[]
     self.jobSubmissionCommand = []
     self.use_batch = False
     self.output_path = ''
@@ -296,6 +298,8 @@ class pthLaunch:
   def setQueueName(self,name):
     self.queueName = name
 
+  def setBatchLaunchArgs(self,argstring):
+    self.batchLaunchArgs=argstring
 
   def setHPCAccountName(self,name):
     self.accountName = name
@@ -360,7 +364,10 @@ class pthLaunch:
     print('  Queue system:    ',self.queuingSystemType)
     print('  MPI launcher:    ',self.mpiLaunch)
     if self.use_batch:
-      print('  Submit command:', self.jobSubmissionCommand)
+      if self.batchLaunchArgs:
+        print('  Submit command (with custom args):', self.jobSubmissionCommand + self.batchLaunchArgs)
+      else:
+        print('  Submit command:', self.jobSubmissionCommand)
       if self.accountName:
         print('  Account:       ',self.accountName)
       if self.queueName:
@@ -370,20 +377,22 @@ class pthLaunch:
   def configure(self):
     print('----------------------------------------------------------------')
     print('Creating new pthBatchQueuingSystem.conf file')
+    prompt = '[1] Batch queuing system type <pbs,lsf,slurm,llq,none>: '
     if isPython2:
-      v = raw_input('[1] Batch queuing system type <pbs,lsf,slurm,llq,none>: ')
+      v = raw_input(prompt)
     if isPython3:
-      v = input('[1] Batch queuing system type <pbs,lsf,slurm,llq,none>: ')
+      v = input(prompt)
     if not v:
       raise ValueError('[pth] You must specify the type of queuing system')
     self.setQueueSystemType(v)
 
     v = None
     while not v:
+      prompt = '[2] MPI launch command with num. procs. flag (required - hit enter for examples): '
       if isPython2:
-        v = raw_input('[2] MPI launch command with num. procs. flag (required - hit enter for examples): ')
+        v = raw_input(prompt)
       if isPython3:
-        v = input('[2] MPI launch command with num. procs. flag (required - hit enter for examples): ')
+        v = input(prompt)
       if not v :
         print(' Required. Some example MPI launch commands:')
         print('  none','(if your tests do not use MPI)')
@@ -397,17 +406,27 @@ class pthLaunch:
     self.setMPILaunch(v)
 
     if self.use_batch == True:
-
+      prompt = '[3] specify any special arguments for the batch launch command (such as "-C gpu" on Piz Daint) (optional - hit enter if not applicable):'
+      v = None
       if isPython2:
-        v = raw_input('[3] Account to charge (optional - hit enter if not applicable): ')
+        v = raw_input(prompt)
       if isPython3:
-        v = input('[3] Account to charge (optional - hit enter if not applicable): ')
+        v = input(prompt)
+      if v :
+        self.setBatchLaunchArgs(v)
+
+      prompt = '[4] Account to charge (optional - hit enter if not applicable): '
+      if isPython2:
+        v = raw_input(prompt)
+      if isPython3:
+        v = input(prompt)
       self.setHPCAccountName(v)
 
+      prompt = '[5] Name of queue to submit tests to (optional - hit enter if not applicable): '
       if isPython2:
-        v = raw_input('[4] Name of queue to submit tests to (optional - hit enter if not applicable): ')
+        v = raw_input(prompt)
       if isPython3:
-        v = input('[4] Name of queue to submit tests to (optional - hit enter if not applicable): ')
+        v = input(prompt)
       self.setQueueName(v)
     
     self.writeDefinition()
@@ -424,50 +443,71 @@ class pthLaunch:
       self.loadDefinition()
     
     except:
+      raise # !!
       self.configure()
       self.writeDefinition()
 
   def writeDefaultDefinition(self):
     file = open('pthBatchQueuingSystem.conf','w')
-    file.write( 'none' + '\n' )
-    file.write( 'none' + '\n' )
+    major,minor,patch=getVersion()
+    file.write('majorVersion=' + str(major) + '\n')
+    file.write('minorVersion=' + str(minor) + '\n')
+    file.write('patchVersion=' + str(patch) + '\n')
+    file.write('queuingSystemType=none\n' )
+    file.write('mpiLaunch=none\n' )
     file.close()
 
   def writeDefinition(self):
 
     file = open('pthBatchQueuingSystem.conf','w')
-    #    file.write('queuingSystemType = ' + self.queuingSystemType + '\n' )
-    #    file.write('accountName = ' + self.accountName + '\n' )
-    #    file.write('queueName = ' + self.queueName + '\n' )
-    #    file.write('mpiLaunch = ' + self.mpiLaunch + '\n' )
-    file.write( self.queuingSystemType + '\n' )
-    file.write( self.mpiLaunch + '\n' )
+    major,minor,patch=getVersion()
+    file.write('majorVersion=' + str(major) + '\n')
+    file.write('minorVersion=' + str(minor) + '\n')
+    file.write('patchVersion=' + str(patch) + '\n')
+    file.write('queuingSystemType=' + self.queuingSystemType + '\n')
+    file.write('accountName=' + self.accountName + '\n')
     if self.use_batch == True:
-      file.write( self.queueName + '\n' )
-      file.write( self.accountName + '\n' )
+      file.write('batchLaunchArgs=' + self.batchLaunchArgs + '\n')
+      file.write('queueName=' + self.queueName + '\n')
+      file.write('mpiLaunch=' + self.mpiLaunch + '\n')
     file.close()
-
 
   def loadDefinition(self):
     try:
+      majorFile = None
+      minorFile = None
+      patchFile = None
       file = open('pthBatchQueuingSystem.conf','r')
-
-      v = file.readline()
-      self.setQueueSystemType(v.rstrip())
-
-      v = file.readline()
-      self.setMPILaunch(v.rstrip())
-
-      if self.use_batch == True:
-        v = file.readline()
-        self.setQueueName(v.rstrip())
-
-        v = file.readline()
-        self.setHPCAccountName(v.rstrip())
-
+      for v in file :
+        key,value = v.split('=',1)
+        value = value.rstrip()
+        if key == 'majorVersion' :
+          majorFile = int(value)
+        if key == 'minorVersion' :
+          minorFile = int(value)
+        if key == 'patchVersion' :
+          patchFile = int(value)
+        if key == 'queuingSystemType' :
+          self.setQueueSystemType(value)
+        if key == 'MPILaunch' :
+          self.setMPILaunch(value)
+        if self.use_batch == True:
+          if key == 'batchLaunchArgs' :
+            self.setBatchLaunchArgs(value)
+          if key == 'queueName' :
+            self.setQueueName(value)
+          if key == 'HPCAccountName' :
+            self.setHPCAccountName(value)
       file.close()
     except:
       raise RuntimeError('[pth] You must execute configure(), and or writeDefinition() first')
+
+    # Do not accept conf files if the major.minor version is stale, or if versions are missing
+    major,minor,patch = getVersion()
+    if majorFile < major or (minorFile < minor and majorFile == major) or \
+         majorFile==None or minorFile==None or patchFile==None :
+      print('[pth] Incompatible outdated .conf file detected. Please delete it and regenerate.')
+      raise RuntimeError('[pth] Outdated pthBatchQueuingSystem.conf detected. Please delete it and regenerate.')
 
 
   def createSubmissionFile(self,testname,commnd,ranks,ranks_per_node,walltime,outfile):
@@ -511,7 +551,7 @@ class pthLaunch:
     else:
       outfile = os.path.join(unittest.output_path,unittest.output_file)
       launchfile = self.createSubmissionFile(unittest.name,unittest.execute,unittest.ranks,'',unittest.walltime,outfile)
-      launchCmd = self.jobSubmissionCommand + launchfile
+      launchCmd = self.jobSubmissionCommand + ' ' + self.batchLaunchArgs + ' ' + launchfile
       if self.verbosity_level > 0:
         print('[Executing]',launchCmd)
       os.system(launchCmd)
