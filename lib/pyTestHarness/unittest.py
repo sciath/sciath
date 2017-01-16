@@ -452,7 +452,7 @@ class pthUnitTest:
     expected,expected_flat = self.getExpected()
     output,output_flat = self.getOutput()
     
-    status,err = compareLiteral(expected,output)
+    status,err = compareLiteral(output,expected)
     kerr = ''
     if status == False:
       kerr = 'Key = \"' + '<entire file>' + '\" --> ' + err
