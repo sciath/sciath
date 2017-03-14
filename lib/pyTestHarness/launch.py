@@ -272,7 +272,7 @@ class pthLaunch:
     parser.add_argument('-p', '--purge_output', help='Delete generated output', required=False, action='store_true')
     parser.add_argument('-f', '--error_on_test_failure', help='Return exit code of 1 if any test failed', required=False, action='store_true')
     parser.add_argument('-d', '--configure_default', help='Write default queuing system config file (no mpi, no queuing system)', required=False, action='store_true')
-    self.args = parser.parse_args()
+    self.args, self.unknown = parser.parse_known_args()
 
     if self.args.configure:
       self.configure()

@@ -166,7 +166,7 @@ class pthHarness:
     parser.add_argument('-o', '--output_path', help='Directory to write stdout into', required=False)
     parser.add_argument('-p', '--purge_output', help='Delete generated output', required=False, action='store_true')
     parser.add_argument('-f', '--error_on_test_failure', help='Return exit code of 1 if any test failed', required=False, action='store_true')
-    self.args = parser.parse_args()
+    self.args, self.unknown = parser.parse_known_args()
 
     # Label tests as Registered or Excluded:Reason
     for i in range(0,len(self.registeredTests)):
