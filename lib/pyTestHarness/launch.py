@@ -211,9 +211,11 @@ def performTestSuite_execute(self,registered_tests):
 
 def performTestSuite_verify(self,registered_tests):
   launcher = self
-  
+
   print('')
   for test in registered_tests:
+    if self.args.sandbox :
+        test.sandbox_path = test.name + self.sandbox_postfix 
     print('[-- Verifying test: ' + test.name + ' --]')
     if self.mpiLaunch == 'none' and test.ranks != 1:
       print('[Skipping verification for test \"' + test.name + '\" as test uses > 1 MPI ranks and no MPI launcher was provided]')
@@ -262,6 +264,7 @@ class pthLaunch:
     self.use_batch = False
     self.output_path = ''
     self.verbosity_level = 1
+    self.sandbox_postfix = '_sandbox'
     
     parser = argparse.ArgumentParser(description='Python Test Harness.')
     parser.add_argument('-e', '--execute', help='Perform test execution', required=False, action='store_true')
@@ -272,6 +275,7 @@ class pthLaunch:
     parser.add_argument('-p', '--purge_output', help='Delete generated output', required=False, action='store_true')
     parser.add_argument('-f', '--error_on_test_failure', help='Return exit code of 1 if any test failed', required=False, action='store_true')
     parser.add_argument('-d', '--configure_default', help='Write default queuing system config file (no mpi, no queuing system)', required=False, action='store_true')
+    parser.add_argument('-s', '--sandbox', help='Execute tests in separate directories. Will not work unless you supply absolute paths to executables.', required=False, action='store_true')
     self.args, self.unknown = parser.parse_known_args()
 
     if self.args.configure:
@@ -493,6 +497,12 @@ class pthLaunch:
 
 
   def submitJob(self,unittest):
+    if self.args.sandbox :
+        unittest.sandbox_path = unittest.name + self.sandbox_postfix
+        cwd = os.getcwd()
+        if not os.path.exists(unittest.sandbox_path) :
+            os.mkdir(unittest.sandbox_path)
+        os.chdir(unittest.sandbox_path)
     unittest.setVerbosityLevel(self.verbosity_level)
     if not self.use_batch:
       mpiLaunch = self.mpiLaunch
@@ -506,16 +516,24 @@ class pthLaunch:
           launch = pthFormatMPILaunchCommand(mpiLaunch,unittest.ranks,None)
           launchCmd = launch + ' ' + unittest.execute + " > " + os.path.join(unittest.output_path,unittest.output_file)
         if self.verbosity_level > 0:
-          print('[Executing]',launchCmd)
+          if self.args.sandbox :
+            print('[Executing from ' + unittest.sandbox_path + ']',launchCmd)
+          else :
+            print('[Executing]',launchCmd)
         unittest.errno = os.system(launchCmd) >> 8
     else:
       outfile = os.path.join(unittest.output_path,unittest.output_file)
       launchfile = self.createSubmissionFile(unittest.name,unittest.execute,unittest.ranks,'',unittest.walltime,outfile)
       launchCmd = self.jobSubmissionCommand + launchfile
       if self.verbosity_level > 0:
-        print('[Executing]',launchCmd)
+        if self.args.sandbox :
+          print('[Executing from ' + unittest.sandbox_path + ']',launchCmd)
+        else :
+          print('[Executing]',launchCmd)
       os.system(launchCmd)
 
+    if self.args.sandbox :
+        os.chdir(cwd)
 
   def executeTestSuite(self,registered_tests):
     if self.args.output_path:

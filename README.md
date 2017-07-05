@@ -56,8 +56,16 @@ Execute the test:
 ```  
 Features: (i) defining a test which does not an expected output file for the verification
 
-  
-      
+* **Example 6**
+Execute the test :
+```
+  cd example6
+  ./pth_example6.py -s
+```
+Features: (i) Running each test in a "sandbox" directory, allowing one to run tests which (may) produce identically-named output files.
+
+
+
 ####Demonstration of parallel tests using a PETSc code 
 
 * **Example 3**  

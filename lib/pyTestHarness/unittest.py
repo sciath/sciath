@@ -315,6 +315,7 @@ class pthUnitTest:
     self.output_file = name + '-p' + str(ranks) + '.output'
     self.comparison_file = ''
     self.output_path = ''
+    self.sandbox_path = ''
     self.ignore = False
     self.verbosity_level = 1
 
@@ -352,19 +353,25 @@ class pthUnitTest:
     return self.passed
 
   def verifyOutput(self):
+
+    if self.sandbox_path != '' :
+      cwd = os.getcwd()
+      os.chdir(self.sandbox_path)
     
     if self.comparison_file == '':
       self.comparison_file = os.path.join(self.output_path,self.output_file)
-    
-    if self.verbosity_level > 0:
-      print('[Parsing file]',self.expected_file)
-    (self.expected_contents,self.expected_flatcontents) = parseFile(self.expected_file,self.keywords)
-    
+
     if self.verbosity_level > 0:
       print('[Parsing file]',self.comparison_file)
     (self.output_contents,self.output_flatcontents) = parseFile(self.comparison_file,self.keywords)
-    self.verify(self)
 
+    if self.sandbox_path != '' :
+      os.chdir(cwd)
+
+    if self.verbosity_level > 0:
+      print('[Parsing file]',self.expected_file)
+    (self.expected_contents,self.expected_flatcontents) = parseFile(self.expected_file,self.keywords)
+    self.verify(self)
 
   def getOutput(self):
     return self.output_contents,self.output_flatcontents
