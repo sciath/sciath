@@ -30,19 +30,8 @@ def launcherExecuteAll(launcher,testList,description):
     counter = counter + 1
 
 
-def launcherVerifyAll(launcher,testList,description):
-  
-  print('')
-  counter = 0
-  for test in testList:
-    test.setVerbosityLevel(launcher.verbosity_level)
-    if test.ignore == False:
-      print('[-- Verifying test: ' + test.name + ' --]')
-      test.verifyOutput()
-    else:
-      print('[-- Skipping test: ' + test.name + ' --] Reason: ' + description[counter])
-    counter = counter + 1
-
+def launcherVerifyAll(launcher,testList):
+  launcher.verifyTestSuite(testList) 
 
 def launcherReportAll(launcher,testList):
 
@@ -235,8 +224,8 @@ class pthHarness:
     
     # Verify, unless we are running with a batch system and are not in verify(-only) mode
     if not launcher.use_batch or self.args.verify :
-      launcherVerifyAll(self,self.registeredTests,self.testDescription)
-      errfile = launcherReportAll(self,self.registeredTests)
+      launcherVerifyAll(launcher,self.registeredTests)
+      errfile = launcherReportAll(launcher,self.registeredTests)
       if errfile and self.args.error_on_test_failure:
         print('\n')
         print('Contents of "' + errfile +'"')

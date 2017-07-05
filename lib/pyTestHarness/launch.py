@@ -213,19 +213,23 @@ def performTestSuite_verify(self,registered_tests):
   launcher = self
 
   print('')
+  tests_not_skipped = 0
   for test in registered_tests:
     if self.args.sandbox :
-        test.sandbox_path = test.name + self.sandbox_postfix 
+      test.sandbox_path = test.name + self.sandbox_postfix 
     print('[-- Verifying test: ' + test.name + ' --]')
-    if self.mpiLaunch == 'none' and test.ranks != 1:
+    if test.ignore :
+      print('[Skipping verification for test \"' + test.name + '\"]')
+    elif self.mpiLaunch == 'none' and test.ranks != 1:
       print('[Skipping verification for test \"' + test.name + '\" as test uses > 1 MPI ranks and no MPI launcher was provided]')
     else:
+      tests_not_skipped = tests_not_skipped + 1 
       test.verifyOutput()
-  
+
   print('')
   counter = 0
   for test in registered_tests:
-    if test.passed == False:
+    if not test.ignore and not test.passed :
       counter = counter + 1
   if counter > 0:
     print('')
@@ -240,11 +244,11 @@ def performTestSuite_verify(self,registered_tests):
       print('  ['+test.name+']  skipped as ranks > 1 and no MPI launcher provided')
     else:
       test.report('summary')
-    if test.passed == False:
+    if not test.ignore and not test.passed :
       counter = counter + 1
   if counter > 0:
     print(bcolors.FAIL + '          ********************' + bcolors.ENDC)
-    print(bcolors.FAIL +  ' [status] ' + str(counter) + ' of ' + str(len(registered_tests)) + ' tests FAILED' + bcolors.ENDC)
+    print(bcolors.FAIL +  ' [status] ' + str(counter) + ' of ' + str(tests_not_skipped) + ' tests FAILED' + bcolors.ENDC)
     print(bcolors.FAIL + '          ********************' + bcolors.ENDC)
   else:
     print(bcolors.OKGREEN + '          ****************' + bcolors.ENDC)
