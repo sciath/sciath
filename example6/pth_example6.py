@@ -43,14 +43,14 @@ def test2():
 
   return(test)
 
-def run_example6():
+def run_tests():
   os.environ['PYTHONUNBUFFERED'] = str('1')
 
-  registered_tests = [test1(), test2()] 
+  registeredTests = [test1(), test2()] 
 
-  h = harness.pthHarness(registered_tests)
+  h = harness.pthHarness(registeredTests)
   h.execute()
   h.verify()
 
 if __name__ == "__main__":
-  run_example6()
+  run_tests()

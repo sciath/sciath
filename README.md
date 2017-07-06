@@ -43,6 +43,7 @@ Execute the test:
 ```
 	cd example2;
 	python pth_example2.py
+	python pth_example2.py -t unit1
 ```  
 Features:  (i) unit tests which are defined in separate directories;
 (ii) tests can be optionally selected
@@ -54,7 +55,7 @@ Execute the test:
 	cd example5;
 	python pth_example5.py
 ```  
-Features: (i) defining a test which does not an expected output file for the verification
+Features: (i) defining a test which does not an expected output file for the verification (ii) Calling a cleanup function to delete output once tests are complete.
 
 * **Example 6**
 Execute the test :
