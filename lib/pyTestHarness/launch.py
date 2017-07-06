@@ -1,7 +1,5 @@
-
 import os,sys
 import argparse
-
 import pyTestHarness.unittest as pth
 from   pyTestHarness.colors import pthNamedColors as bcolors
 
@@ -18,13 +16,11 @@ def FormattedHourMin(seconds):
   wt = "%02d:%02d" % (h, m)
   return(wt)
 
-
 def FormattedHourMinSec(seconds):
   m, s = divmod(seconds, 60)
   h, m = divmod(m, 60)
   wt = "%02d:%02d:%02d" % (h, m,s)
   return(wt)
-
 
 def pthFormatMPILaunchCommand(mpiLaunch,ranks,corespernode):
   launch = mpiLaunch
@@ -43,17 +39,16 @@ def pthFormatMPILaunchCommand(mpiLaunch,ranks,corespernode):
     launch = launch.replace("<RANKS_PER_NODE>",str(corespernode))
   return(launch)
 
-
 def generateLaunch_PBS(accountname,queuename,testname,mpiLaunch,executable,ranks,ranks_per_node,walltime,outfile):
   if not ranks:
     print("<generateLaunch_PBS>: Requires the number of MPI-ranks be specified")
   if not walltime:
     print("<generateLaunch_PBS>: Requires the walltime be specified")
-  
+
   filename = testname + '-pth.pbs'
   file = open(filename,"w")
   file.write("#!/bin/bash\n")
-  
+
   file.write("# pyTH: auto-generated pbs file\n")
 
   if accountname:
@@ -61,11 +56,11 @@ def generateLaunch_PBS(accountname,queuename,testname,mpiLaunch,executable,ranks
   file.write("#PBS -N \"" + testname + "\"" + "\n") # jobname
   file.write("#PBS -o " + testname + ".stdout" + "\n")
   file.write("#PBS -e " + testname + ".stderr" + "\n")
-  
+
   if queuename:
     file.write("#PBS -q " + queuename + "\n")
 
-  wt = FormattedHourMinSec(walltime*60.0)  
+  wt = FormattedHourMinSec(walltime*60.0)
   file.write("#PBS -l mppwidth=1024,walltime=" + wt + "\n")
 
   launch = pthFormatMPILaunchCommand(mpiLaunch,ranks,ranks_per_node)
@@ -78,29 +73,29 @@ def generateLaunch_SLURM(accountname,queuename,testname,mpiLaunch,executable,ran
     print("<generateLaunch_SLURM>: Requires the number of MPI-ranks be specified")
   if not walltime:
     print("<generateLaunch_SLURM>: Requires the walltime be specified")
-  
+
   filename = testname + '-pth.slurm'
   file = open(filename,"w")
   file.write("#!/bin/bash -l\n")
-  
+
   file.write("# pyTH: auto-generated slurm file\n")
   if accountname:
     file.write("#SBATCH --account=" + accountname + "\n") # account to charge
   file.write("#SBATCH --job-name=\"" + testname + "\"" + "\n") # jobname
-  
+
   file.write("#SBATCH --output=" + testname + ".stdout" + "\n") # jobname.stdout
   file.write("#SBATCH --error=" + testname + ".stderr" + "\n") # jobname.stderr
-  
+
   if queuename:
     file.write("#SBATCH --partition=" + queuename + "\n")
-  
+
   file.write("#SBATCH --ntasks=" + str(ranks) + "\n")
   if ranks_per_node:
     file.write("#SBATCH --ntasks-per-node=" + str(ranks_per_node) + "\n")
-  
+
   wt = FormattedHourMinSec(walltime*60.0)
   file.write("#SBATCH --time=" + wt + "\n")
-  
+
   launch = pthFormatMPILaunchCommand(mpiLaunch,ranks,ranks_per_node)
   file.write(launch + " " + executable + " > " + outfile + "\n\n") # launch command
   file.close()
@@ -111,29 +106,29 @@ def generateLaunch_LSF(accountname,queuename,testname,mpiLaunch,executable,ranks
     print("<generateLaunch_LSF>: Requires the number of MPI-ranks be specified")
   if not walltime:
     print("<generateLaunch_LSF>: Requires the walltime be specified")
-  
+
   filename = testname + '-pth.lsf'
   file = open(filename,"w")
   file.write("#!/bin/sh\n")
-  
+
   file.write("# pyTH: auto-generated lsf file\n")
 
   file.write("#BSUB -J " + testname + "\n") # jobname
-  
+
   file.write("#BSUB -o " + testname + ".stdout\n") # jobname.stdout
   file.write("#BSUB -e " + testname + ".stderr\n") # jobname.stderr
-  
+
   if queuename:
     file.write("#BSUB -q " + queuename + "\n")
-  
+
   file.write("#BSUB -n " + str(ranks) + "\n")
-  
+
   if rusage:
     file.write("#BSUB -R \'" + rusage + "\'" + "\n")
- 
+
   wt = FormattedHourMin(walltime*60.0) 
   file.write("#BSUB -W " + wt + "\n")
-  
+
   launch = pthFormatMPILaunchCommand(mpiLaunch,ranks,None)
   file.write(launch + " " + executable + " > " + outfile + "\n\n") # launch command
   file.close()
@@ -144,7 +139,7 @@ def generateLaunch_LoadLevelerBG(accountname,queuename,testname,executable,total
     print("<generateLaunch_LoadLeveler>: Requires the number of MPI-ranks be specified")
   if not walltime:
     print("<generateLaunch_LoadLeveler>: Requires the walltime be specified")
-  
+
   print("#!/bin/sh")
   print("# pyTH: auto-generated llq file")
   print("# @ job_name = " + testname)
@@ -156,18 +151,17 @@ def generateLaunch_LoadLevelerBG(accountname,queuename,testname,executable,total
   print("# @ wall_clock_limit = " + wt)
   print("# @ notification = never")
   print("# @ class = " + queuename)
-  
+
   bgsize = math.ceil(total_ranks/machine_ranks_per_node)
   print("# @ bg_size = " + str(bgsize))
   print("# @ bg_connection = TORUS")
   print("# @ queue")
-  
-  print("runjob -n " + executable) # launch command
 
+  print("runjob -n " + executable) # launch command
 
 def performTestSuite_local(self,registered_tests):
   launcher = self
-  
+
   print('')
   self.view()
 
@@ -175,7 +169,7 @@ def performTestSuite_local(self,registered_tests):
     print('-- Executing test: ' + test.name + ' --')
     launcher.submitJob(test)
     test.verifyOutput()
-  
+
   counter = 0
   for test in registered_tests:
     test.report('summary')
@@ -194,8 +188,6 @@ def performTestSuite_local(self,registered_tests):
   else:
     print('----------------------')
     print(bcolors.OKGREEN + ' All tests passed' + bcolors.ENDC)
-  
-
 
 def performTestSuite_execute(self,registered_tests):
   launcher = self
@@ -207,7 +199,6 @@ def performTestSuite_execute(self,registered_tests):
   for test in registered_tests:
     print('[-- Executing test: ' + test.name + ' --]')
     launcher.submitJob(test)
-
 
 def performTestSuite_verify(self,registered_tests):
   launcher = self
@@ -254,11 +245,8 @@ def performTestSuite_verify(self,registered_tests):
     print(bcolors.OKGREEN + '          ****************' + bcolors.ENDC)
     print(bcolors.OKGREEN + ' [status] All tests passed' + bcolors.ENDC)
     print(bcolors.OKGREEN + '          ****************' + bcolors.ENDC)
-  
-
 
 class pthLaunch:
-
   def __init__(self):
     self.accountName = []
     self.queueName = []
@@ -269,7 +257,7 @@ class pthLaunch:
     self.output_path = ''
     self.verbosity_level = 1
     self.sandbox_postfix = '_sandbox'
-    
+
     parser = argparse.ArgumentParser(description='Python Test Harness.')
     parser.add_argument('-e', '--execute', help='Perform test execution', required=False, action='store_true')
     parser.add_argument('-v', '--verify', help='Perform test verification (and not execution)', required=False, action='store_true')
@@ -291,12 +279,9 @@ class pthLaunch:
     else:
       self.setup()
 
-    if self.use_batch == True:
+    if self.use_batch :
       if self.mpiLaunch == 'none':
         raise RuntimeError('[pth] If using a queuing system, a valid mpi launch command must be provided')
-
-#  def addIgnoreKeywords(self,d):
-#    self.ignoreKeywords.append(d)
 
   def setVerbosityLevel(self,value):
     self.verbosity_level = value
@@ -304,10 +289,8 @@ class pthLaunch:
   def setQueueName(self,name):
     self.queueName = name
 
-
   def setHPCAccountName(self,name):
     self.accountName = name
-
 
   def setMPILaunch(self,name):
     self.mpiLaunch = name
@@ -320,7 +303,7 @@ class pthLaunch:
         if kword in name:
           valid_launcher = True
           break
-      
+
       if valid_launcher == False:
         raise RuntimeError('[pth] Your MPI launch command must contain the keyword \"<ranks>\"')
 
@@ -358,10 +341,8 @@ class pthLaunch:
       print('Value found: ' + type + ' ...')
       raise RuntimeError('[pth] Unknown or unsupported batch queuing system specified')
 
-
   def setQueueName(self,name):
     self.queueName = name
-
 
   def view(self):
     print('pth: Batch queueing system configuration [pthBatchQueingSystem.conf]')
@@ -373,7 +354,6 @@ class pthLaunch:
         print('  Account:       ',self.accountName)
       if self.queueName:
         print('  Queue:         ',self.queueName)
-
 
   def configure(self):
     print('----------------------------------------------------------------')
@@ -417,7 +397,7 @@ class pthLaunch:
       if isPython3:
         v = input('[4] Name of queue to submit tests to (optional - hit enter if not applicable): ')
       self.setQueueName(v)
-    
+
     self.writeDefinition()
     print('\n')
     print('** If you wish to change the config for your batch system, either')
@@ -426,11 +406,10 @@ class pthLaunch:
     print('** (iii) re-run with the command line arg --configure')
     print('----------------------------------------------------------------')
 
-
   def setup(self):
     try:
       self.loadDefinition()
-    
+ 
     except:
       self.configure()
       self.writeDefinition()
@@ -442,19 +421,13 @@ class pthLaunch:
     file.close()
 
   def writeDefinition(self):
-
     file = open('pthBatchQueuingSystem.conf','w')
-    #    file.write('queuingSystemType = ' + self.queuingSystemType + '\n' )
-    #    file.write('accountName = ' + self.accountName + '\n' )
-    #    file.write('queueName = ' + self.queueName + '\n' )
-    #    file.write('mpiLaunch = ' + self.mpiLaunch + '\n' )
     file.write( self.queuingSystemType + '\n' )
     file.write( self.mpiLaunch + '\n' )
     if self.use_batch == True:
       file.write( self.queueName + '\n' )
       file.write( self.accountName + '\n' )
     file.close()
-
 
   def loadDefinition(self):
     try:
@@ -477,13 +450,12 @@ class pthLaunch:
     except:
       raise RuntimeError('[pth] You must execute configure(), and or writeDefinition() first')
 
-
   def createSubmissionFile(self,testname,commnd,ranks,ranks_per_node,walltime,outfile):
     filename = ''
     if not self.use_batch:
       print('Warning: no submission file creation required')
       return(filename)
-    
+
     if self.queuingSystemType == 'pbs':
       filename = generateLaunch_PBS(self.accountName,self.queueName,testname,self.mpiLaunch,commnd,ranks,ranks_per_node,walltime,outfile)
 
@@ -499,7 +471,6 @@ class pthLaunch:
     print('Created submission file:',filename)
     return(filename)
 
-
   def submitJob(self,unittest):
     if self.args.sandbox :
         unittest.sandbox_path = unittest.name + self.sandbox_postfix
@@ -510,7 +481,7 @@ class pthLaunch:
     unittest.setVerbosityLevel(self.verbosity_level)
     if not self.use_batch:
       mpiLaunch = self.mpiLaunch
-    
+
       if self.mpiLaunch == 'none' and unittest.ranks != 1:
         print('[Failed to launch test \"' + unittest.name + '\" as test uses > 1 MPI ranks and no MPI launcher was provided]')
       else:
@@ -543,14 +514,12 @@ class pthLaunch:
     if self.args.output_path:
       for test in registered_tests:
         test.setOutputPath(self.args.output_path)
-    
+
     # Don't execute if we are verifying a batch run
     if not self.use_batch and not self.args.verify:
       performTestSuite_execute(self,registered_tests)
 
-
   def verifyTestSuite(self,registered_tests):
-  
     # Verify, unless we are running with a batch system and are not in verify(-only) mode
     if not self.use_batch or self.args.verify :
       performTestSuite_verify(self,registered_tests)
