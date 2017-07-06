@@ -1,5 +1,6 @@
 import os,sys
 import argparse
+import shutil
 import pyTestHarness.unittest as pth
 from   pyTestHarness.colors import pthNamedColors as bcolors
 
@@ -525,19 +526,45 @@ class pthLaunch:
       performTestSuite_verify(self,registered_tests)
 
   def clean(self,registered_tests):
-    if self.use_batch:
-      for test in registered_tests:
-        print('<launch> rm -f ' + test.name + '.stdout')
-        print('<launch> rm -f ' + test.name + '.stderr')
+    for test in registered_tests:
+      print('[ removing output for ' + test.name +' ]')
+      if self.args.sandbox :
+        test.sandbox_path = test.name + self.sandbox_postfix
+        cwd = os.getcwd()
+        if not os.path.isdir(test.sandbox_path) :
+            os.mkdir(test.sandbox_path)
+        os.chdir(test.sandbox_path)
+      outfile = os.path.join(test.output_path,test.output_file)
+      if os.path.isfile(outfile) :
+        os.remove(outfile)
+      if test.comparison_file != outfile and os.path.isfile(test.comparison_file) :
+        os.remove(test.comparison_file) # TODO : is this too dangerous?
+      if self.use_batch:
+        stderrFile = test.name + '.stderr'
+        if os.isfile(stderrFile) :
+          os.remove(stderrFile)
+        stdoutFile = test.name + '.stdout'
+        if os.isfile(stdoutFile) :
+          os.remove(stdoutFile)
         if self.queuingSystemType == 'pbs':
-          print('<launch> rm -f ' + test.name + '-pth.pbs')
+          pbsFile = test.name + '-pth.pbs'
+          if os.isfile(pbsFile) :
+            os.remove(pbsFile)
         elif self.queuingSystemType == 'lsf':
-          print('<launch> rm -f ' + test.name + '-pth.lsf')
+          lsfFile = test.name + '-pth.lsf'
+          if os.isfile(lsfFile) :
+            os.remove(lsfFile)
         elif self.queuingSystemType == 'slurm':
-          print('<launch> rm -f ' + test.name + '-pth.slurm')
+          slurmFile = test.name + '-pth.slurm'
+          if os.isfile(slurmFile) :
+            os.remove(slurmFile)
         elif self.queuingSystemType == 'load_leveler':
-          print('<launch> rm -f ' + test.name + '-pth.llq')
+          llqFile = test.name + '-pth.llq'
+          if os.isfile(llqFile) :
+            os.remove(llqFile)
 
-
+      if self.args.sandbox :
+        os.chdir(cwd)
+        shutil.rmtree(test.sandbox_path) # TODO : is this too dangerous?
 
 # < end class >

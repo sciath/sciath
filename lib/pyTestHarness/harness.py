@@ -34,6 +34,16 @@ class pthHarness:
     parser.add_argument('-f', '--error_on_test_failure', help='Return exit code of 1 if any test failed', required=False, action='store_true')
     self.args, self.unknown = parser.parse_known_args()
 
+    # Clean all output unless we are verifying (only)
+    if not self.args.verify :
+      self.clean()
+
+    # If -p was supplied, stop after cleaning
+    if self.args.verify and self.args.purge_output :
+      raise RuntimeError('-p (--purge_output) and -v (--verify) are not supported together')
+    if self.args.purge_output :
+      exit(0);
+
     # Label tests as Registered or Excluded:Reason
     for i in range(0,len(self.registeredTests)):
       self.testDescription.append('Registered')
@@ -88,7 +98,7 @@ class pthHarness:
       for test in self.allTests:
         test.setOutputPath(self.args.output_path)
 
-    # Don't execute if we are verifying (only)
+    # Don't execute if we are verifying (only) or purging output (only)
     if not self.args.verify and not self.args.purge_output:
       self.executeAll()
 
@@ -107,11 +117,11 @@ class pthHarness:
         sys.exit(1)
 
   def clean(self):
-    if self.args.purge_output:
-      print('[pth] Deleting output generated from all tests')
-      self.launcher.clean(self.registeredTests)
-      for test in self.registeredTests:
-        test.clean()
+    print(bcolors.HEADER + '[ -- Deleting output generated from all tests -- ]' + bcolors.ENDC)
+    if os.path.isfile(self.pthErrorReportFileName) :
+        os.remove(self.pthErrorReportFileName)
+    self.launcher.clean(self.registeredTests)
+
   def reportAll(self):
     launcher = self.launcher
     testList = self.registeredTests
