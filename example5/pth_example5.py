@@ -94,7 +94,6 @@ def test4():
 
   test = putest.pthUnitTest('ex4',1,makeLocalPathAbsolute('./ex1'),None)
   test.setVerifyMethod(comparefunc)
-  test.setComparisonFile('ex1-p1.output')
   return(test)
 
 def run_tests():
