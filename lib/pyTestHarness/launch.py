@@ -541,26 +541,26 @@ class pthLaunch:
         os.remove(test.comparison_file) # TODO : is this too dangerous?
       if self.use_batch:
         stderrFile = test.name + '.stderr'
-        if os.isfile(stderrFile) :
+        if os.path.isfile(stderrFile) :
           os.remove(stderrFile)
         stdoutFile = test.name + '.stdout'
-        if os.isfile(stdoutFile) :
+        if os.path.isfile(stdoutFile) :
           os.remove(stdoutFile)
         if self.queuingSystemType == 'pbs':
           pbsFile = test.name + '-pth.pbs'
-          if os.isfile(pbsFile) :
+          if os.path.isfile(pbsFile) :
             os.remove(pbsFile)
         elif self.queuingSystemType == 'lsf':
           lsfFile = test.name + '-pth.lsf'
-          if os.isfile(lsfFile) :
+          if os.path.isfile(lsfFile) :
             os.remove(lsfFile)
         elif self.queuingSystemType == 'slurm':
           slurmFile = test.name + '-pth.slurm'
-          if os.isfile(slurmFile) :
+          if os.path.isfile(slurmFile) :
             os.remove(slurmFile)
         elif self.queuingSystemType == 'load_leveler':
           llqFile = test.name + '-pth.llq'
-          if os.isfile(llqFile) :
+          if os.path.isfile(llqFile) :
             os.remove(llqFile)
 
       if self.args.sandbox :
