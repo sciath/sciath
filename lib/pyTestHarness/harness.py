@@ -184,7 +184,8 @@ class pthHarness:
             break
 
         if found == False:
-          raise RuntimeError('[pth] You requested to test a subset of registered tests, \n\t\t  but no registed test matched the name \"' + name + '\"' )
+          errstr= '[pth] You requested to test a subset of registered tests, \n\t\t  but no registered test matched the name \"' + name + '\"' 
+          raise RuntimeError(errstr)
 
     if self.args.test:
       counter = 0
