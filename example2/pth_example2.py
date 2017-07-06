@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 import os,sys
 import argparse
-
 import pyTestHarness.unittest as pth
 import pyTestHarness.harness as harness
 
@@ -11,6 +10,9 @@ sys.path.append(os.path.join(os.environ['PWD'], 't2'))
 import unittest_1 as ut1
 import unittest_2 as ut2
 
+def makeLocalPathAbsolute(localRelPath) :
+  thisDir = os.path.split(os.path.abspath(__file__))[0]
+  return(os.path.join(thisDir,localRelPath))
 
 def run_tests():
   os.environ['PYTHONUNBUFFERED'] = str('1')
@@ -21,9 +23,9 @@ def run_tests():
   # Register tests
   registeredTests = [ ut1.test() , ut2.test() ]
 
-  # Force output to written somewhere else, can be invoked using -o <path>
+  # Force output to be written somewhere else, can be invoked using -o <path>
   for test in registeredTests:
-    test.setOutputPath('output')
+    test.setOutputPath(makeLocalPathAbsolute('output'))
 
   # Build tests <should be done by make>
   os.system('gcc -o t1/ex1 t1/ex1.c')

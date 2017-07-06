@@ -1,11 +1,13 @@
-
 import os
 import pyTestHarness.unittest as pth
 
+def makeLocalPathAbsolute(localRelPath) :
+  thisDir = os.path.split(os.path.abspath(__file__))[0]
+  return(os.path.join(thisDir,localRelPath))
+
 def test():
-  
   ranks = 1
-  launch = './t2/ex2' # This must be a relative path with respect to pth_example2.py
+  launch = makeLocalPathAbsolute('./ex2')
   expected_file = 'expectedoutput/ex2.expected'
   
   def comparefunc(unittest):

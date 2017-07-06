@@ -3,9 +3,13 @@ import os
 import pyTestHarness.harness as harness
 import pyTestHarness.unittest as putest
 
+def makeLocalPathAbsolute(localRelPath) :
+  thisDir = os.path.split(os.path.abspath(__file__))[0]
+  return(os.path.join(thisDir,localRelPath))
+
 def test1():
   ranks = 1
-  launch = './ex1'
+  launch = makeLocalPathAbsolute('./ex1')
   expected_file = 'ex1.expected'
 
   def comparefunc(unittest):
@@ -33,7 +37,7 @@ def test1():
 
 def test2():
   ranks = 1
-  launch = './ex2'
+  launch = makeLocalPathAbsolute('./ex2')
   expected_file = 'ex2.expected'
 
   def comparefunc(unittest):
@@ -88,7 +92,7 @@ def test4():
       kerr = 'Key = \"' + key + '\" --> was not found in output file'
     unittest.updateStatus(status,kerr)
 
-  test = putest.pthUnitTest('ex4',1,'./ex1',None)
+  test = putest.pthUnitTest('ex4',1,makeLocalPathAbsolute('./ex1'),None)
   test.setVerifyMethod(comparefunc)
   test.setComparisonFile('ex1-p1.output')
   return(test)

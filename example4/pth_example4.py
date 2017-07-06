@@ -3,9 +3,13 @@ import os
 import pyTestHarness.unittest as pth
 import pyTestHarness.harness as harness
 
+def makeLocalPathAbsolute(localRelPath) :
+  thisDir = os.path.split(os.path.abspath(__file__))[0]
+  return(os.path.join(thisDir,localRelPath))
+
 def test1():
   ranks = 1
-  launch = './ex'
+  launch = makeLocalPathAbsolute('./ex')
   expected_file = 'ex.expected'
 
   def comparefunc(unittest):
@@ -24,7 +28,7 @@ def test1():
 
 def test2():
   ranks = 1
-  launch = './ex'
+  launch = makeLocalPathAbsolute('./ex')
   expected_file = 'ex.expected2'
 
   def comparefunc(unittest):
@@ -43,7 +47,7 @@ def test2():
 
 def test3():
   ranks = 1
-  launch = './ex'
+  launch = makeLocalPathAbsolute('./ex')
   expected_file = 'ex.expected3'
 
   def comparefunc(unittest):

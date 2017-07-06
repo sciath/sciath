@@ -1,15 +1,16 @@
-
 import os
 import pyTestHarness.unittest as pth
 
+def makeLocalPathAbsolute(localRelPath) :
+  thisDir = os.path.split(os.path.abspath(__file__))[0]
+  return(os.path.join(thisDir,localRelPath))
+
 def test():
-  
   ranks = 1
-  launch = './t1/ex1' # This must be a relative path with respect to pth_example2.py
+  launch = makeLocalPathAbsolute('./ex1')
   expected_file = 'expectedoutput/ex1.expected'
   
   def comparefunc(unittest):
-    
     key = '\$cputime'
     unittest.compareFloatingPoint(key,0.01)
     
