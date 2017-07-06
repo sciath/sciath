@@ -54,8 +54,11 @@ Execute the test:
 ```
 	cd example5;
 	python pth_example5.py
+  python pth_example5.ph -p # or --purge_output
 ```  
-Features: (i) defining a test which does not an expected output file for the verification (ii) Calling a cleanup function to delete output once tests are complete.
+Features: 
+(i) defining a test which does not an expected output file for the verification 
+(ii) Calling a cleanup function to delete output once tests are complete.
 
 * **Example 6**
 Execute the test :

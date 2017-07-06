@@ -107,8 +107,7 @@ def run_tests():
 
   h = harness.pthHarness(registeredTests)
   h.execute()
-  h.verify()
-  h.clean()
+  h.verify() 
 
 if __name__ == "__main__":
   run_tests()
