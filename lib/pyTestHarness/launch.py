@@ -492,14 +492,14 @@ class pthLaunch:
           patchFile = int(value)
         if key == 'queuingSystemType' :
           self.setQueueSystemType(value)
-        if key == 'MPILaunch' :
+        if key == 'mpiLaunch' :
           self.setMPILaunch(value)
         if self.use_batch == True:
           if key == 'batchLaunchArgs' :
             self.setBatchLaunchArgs(value)
           if key == 'queueName' :
             self.setQueueName(value)
-          if key == 'HPCAccountName' :
+          if key == 'accountName' :
             self.setHPCAccountName(value)
       file.close()
     except:
