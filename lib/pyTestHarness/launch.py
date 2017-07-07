@@ -464,11 +464,11 @@ class pthLaunch:
     file.write('minorVersion=' + str(minor) + '\n')
     file.write('patchVersion=' + str(patch) + '\n')
     file.write('queuingSystemType=' + self.queuingSystemType + '\n')
-    file.write('accountName=' + self.accountName + '\n')
+    file.write('mpiLaunch=' + self.mpiLaunch + '\n')
     if self.use_batch == True:
+      file.write('accountName=' + self.accountName + '\n')
       file.write('batchConstraint=' + self.batchConstraint + '\n')
       file.write('queueName=' + self.queueName + '\n')
-      file.write('mpiLaunch=' + self.mpiLaunch + '\n')
     file.close()
 
   def loadDefinition(self):
