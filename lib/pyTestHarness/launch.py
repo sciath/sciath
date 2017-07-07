@@ -592,7 +592,20 @@ class pthLaunch:
       if os.path.isfile(outfile) :
         os.remove(outfile)
       if test.comparison_file != outfile and os.path.isfile(test.comparison_file) :
-        os.remove(test.comparison_file) # TODO : is this too dangerous?
+        foundInLocalTree = False
+        cwd = os.getcwd()
+        for (root, dirs, files) in os.walk(cwd) :
+          for f in files :
+            if os.path.abspath(test.comparison_file) == os.path.abspath(os.path.join(root,f)) :
+              foundInLocalTree = True
+              break
+          if foundInLocalTree :
+            break
+        if foundInLocalTree :
+          os.remove(test.comparison_file)
+        else :
+          message = "Refusing to remove output file " + test.comparison_file + " since it does not live in the local subtree. If you really wanted to compare with this file, please delete it yourself to proceed"
+          raise RuntimeError(message)
       if self.use_batch:
         stderrFile = test.name + '.stderr'
         if os.path.isfile(stderrFile) :
@@ -619,6 +632,6 @@ class pthLaunch:
 
       if self.args.sandbox :
         os.chdir(cwd)
-        shutil.rmtree(test.sandbox_path) # TODO : is this too dangerous?
+        shutil.rmtree(test.sandbox_path) # remove entire subtree
 
 # < end class >
