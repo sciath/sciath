@@ -77,7 +77,7 @@ def generateLaunch_PBS(accountname,queuename,testname,mpiLaunch,executable,ranks
   file.close()
   return(filename)
 
-def generateLaunch_SLURM(accountname,queuename,testname,mpiLaunch,executable,ranks,ranks_per_node,walltime,outfile):
+def generateLaunch_SLURM(accountname,queuename,testname,constraint,mpiLaunch,executable,ranks,ranks_per_node,walltime,outfile):
   if not ranks:
     print("<generateLaunch_SLURM>: Requires the number of MPI-ranks be specified")
   if not walltime:
@@ -104,6 +104,8 @@ def generateLaunch_SLURM(accountname,queuename,testname,mpiLaunch,executable,ran
   
   wt = FormattedHourMinSec(walltime*60.0)
   file.write("#SBATCH --time=" + wt + "\n")
+  if constraint :
+    file.write("#SBATCH --constraint=" + constraint + "\n")
   
   launch = pthFormatMPILaunchCommand(mpiLaunch,ranks,ranks_per_node)
   file.write(launch + " " + executable + " > " + outfile + "\n\n") # launch command
@@ -252,8 +254,6 @@ def performTestSuite_verify(self,registered_tests):
     print(bcolors.OKGREEN + '          ****************' + bcolors.ENDC)
     print(bcolors.OKGREEN + ' [status] All tests passed' + bcolors.ENDC)
     print(bcolors.OKGREEN + '          ****************' + bcolors.ENDC)
-  
-
 
 class pthLaunch:
 
@@ -262,12 +262,12 @@ class pthLaunch:
     self.queueName = []
     self.mpiLaunch = []
     self.queuingSystemType = []
-    self.batchLaunchArgs=[]
+    self.batchConstraint=[]
     self.jobSubmissionCommand = []
     self.use_batch = False
     self.output_path = ''
     self.verbosity_level = 1
-    
+
     parser = argparse.ArgumentParser(description='Python Test Harness.')
     parser.add_argument('-e', '--execute', help='Perform test execution', required=False, action='store_true')
     parser.add_argument('-v', '--verify', help='Perform test verification (and not execution)', required=False, action='store_true')
@@ -301,12 +301,11 @@ class pthLaunch:
   def setQueueName(self,name):
     self.queueName = name
 
-  def setBatchLaunchArgs(self,argstring):
-    self.batchLaunchArgs=argstring
+  def setBatchConstraint(self,argstring):
+    self.batchConstraint=argstring
 
   def setHPCAccountName(self,name):
     self.accountName = name
-
 
   def setMPILaunch(self,name):
     self.mpiLaunch = name
@@ -367,15 +366,13 @@ class pthLaunch:
     print('  Queue system:    ',self.queuingSystemType)
     print('  MPI launcher:    ',self.mpiLaunch)
     if self.use_batch:
-      if self.batchLaunchArgs:
-        print('  Submit command (with custom args):', self.jobSubmissionCommand + self.batchLaunchArgs)
-      else:
-        print('  Submit command:', self.jobSubmissionCommand)
+      print('  Submit command:', self.jobSubmissionCommand)
       if self.accountName:
         print('  Account:       ',self.accountName)
       if self.queueName:
         print('  Queue:         ',self.queueName)
-
+      if self.batchConstraint :
+        print('  Constraint:    ', self.batchConstraint)
 
   def configure(self):
     print('----------------------------------------------------------------')
@@ -409,14 +406,14 @@ class pthLaunch:
     self.setMPILaunch(v)
 
     if self.use_batch == True:
-      prompt = '[3] specify any special arguments for the batch launch command (such as "-C gpu" on Piz Daint) (optional - hit enter if not applicable):'
+      prompt = '[3] specify a constraint (e.g. "gpu" on Piz Daint) (optional - hit enter if not applicable):'
       v = None
       if isPython2:
         v = raw_input(prompt)
       if isPython3:
         v = input(prompt)
       if v :
-        self.setBatchLaunchArgs(v)
+        self.setBatchConstraint(v)
 
       prompt = '[4] Account to charge (optional - hit enter if not applicable): '
       if isPython2:
@@ -445,7 +442,6 @@ class pthLaunch:
   def setup(self):
     try:
       self.loadDefinition()
-    
     except PthTestHarnessLoadException :
       self.configure()
       self.writeDefinition()
@@ -470,7 +466,7 @@ class pthLaunch:
     file.write('queuingSystemType=' + self.queuingSystemType + '\n')
     file.write('accountName=' + self.accountName + '\n')
     if self.use_batch == True:
-      file.write('batchLaunchArgs=' + self.batchLaunchArgs + '\n')
+      file.write('batchConstraint=' + self.batchConstraint + '\n')
       file.write('queueName=' + self.queueName + '\n')
       file.write('mpiLaunch=' + self.mpiLaunch + '\n')
     file.close()
@@ -495,8 +491,8 @@ class pthLaunch:
         if key == 'mpiLaunch' :
           self.setMPILaunch(value)
         if self.use_batch == True:
-          if key == 'batchLaunchArgs' :
-            self.setBatchLaunchArgs(value)
+          if key == 'batchConstraint' :
+            self.setBatchConstraint(value)
           if key == 'queueName' :
             self.setQueueName(value)
           if key == 'accountName' :
@@ -518,6 +514,10 @@ class pthLaunch:
     if not self.use_batch:
       print('Warning: no submission file creation required')
       return(filename)
+
+    if self.batchConstraint and self.queuingSystemType != 'slurm' :
+      message = '[pth] Constraints are only currently supported with SLURM'
+      raise RuntimeError(message)
     
     if self.queuingSystemType == 'pbs':
       filename = generateLaunch_PBS(self.accountName,self.queueName,testname,self.mpiLaunch,commnd,ranks,ranks_per_node,walltime,outfile)
@@ -526,7 +526,7 @@ class pthLaunch:
       filename = generateLaunch_LSF(self.accountName,self.queueName,testname,self.mpiLaunch,commnd,ranks,None,walltime,outfile)
 
     elif self.queuingSystemType == 'slurm':
-      filename = generateLaunch_SLURM(self.accountName,self.queueName,testname,self.mpiLaunch,commnd,ranks,ranks_per_node,walltime,outfile)
+      filename = generateLaunch_SLURM(self.accountName,self.queueName,testname,self.batchConstraint,self.mpiLaunch,commnd,ranks,ranks_per_node,walltime,outfile)
 
     elif self.queuingSystemType == 'load_leveler':
       raise ValueError('[pth] Unsupported: LoadLeveler needs to be updated')
@@ -554,7 +554,7 @@ class pthLaunch:
     else:
       outfile = os.path.join(unittest.output_path,unittest.output_file)
       launchfile = self.createSubmissionFile(unittest.name,unittest.execute,unittest.ranks,'',unittest.walltime,outfile)
-      launchCmd = self.jobSubmissionCommand + ' ' + self.batchLaunchArgs + ' ' + launchfile
+      launchCmd = self.jobSubmissionCommand + launchfile
       if self.verbosity_level > 0:
         print('[Executing]',launchCmd)
       os.system(launchCmd)
