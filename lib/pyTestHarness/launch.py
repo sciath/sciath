@@ -474,9 +474,8 @@ class pthLaunch:
   def submitJob(self,unittest):
     if self.args.sandbox :
         unittest.use_sandbox = True
-        cwd = os.getcwd()
-        if not os.path.exists(unittest.sandbox_path) :
-            os.mkdir(unittest.sandbox_path)
+        sandboxBack = os.getcwd()
+        os.mkdir(unittest.sandbox_path) # error if  it already exists
         os.chdir(unittest.sandbox_path)
     unittest.setVerbosityLevel(self.verbosity_level)
     if not self.use_batch:
@@ -508,7 +507,7 @@ class pthLaunch:
       os.system(launchCmd)
 
     if self.args.sandbox :
-        os.chdir(cwd)
+        os.chdir(sandboxBack)
 
   def executeTestSuite(self,registered_tests):
     if self.args.output_path:
@@ -529,7 +528,7 @@ class pthLaunch:
       print('[ removing output for ' + test.name +' ]')
       if self.args.sandbox :
         test.use_sandbox = True
-        cwd = os.getcwd()
+        sandboxBack = os.getcwd()
         if not os.path.isdir(test.sandbox_path) :
             os.mkdir(test.sandbox_path)
         os.chdir(test.sandbox_path)
@@ -576,7 +575,7 @@ class pthLaunch:
             os.remove(llqFile)
 
       if self.args.sandbox :
-        os.chdir(cwd)
+        os.chdir(sandboxBack)
         shutil.rmtree(test.sandbox_path) # remove entire subtree
 
 # < end class >
