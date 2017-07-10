@@ -357,7 +357,7 @@ class pthUnitTest:
 
   def verifyOutput(self):
     if self.use_sandbox :
-      cwd = os.getcwd()
+      sandboxBack = os.getcwd()
       os.chdir(self.sandbox_path)
     
     if self.comparison_file == '':
@@ -368,7 +368,7 @@ class pthUnitTest:
     (self.output_contents,self.output_flatcontents) = parseFile(self.comparison_file,self.keywords)
 
     if self.use_sandbox :
-      os.chdir(cwd)
+      os.chdir(sandboxBack)
 
     if self.verbosity_level > 0:
       print('[Parsing file]',self.expected_file)
