@@ -528,7 +528,7 @@ class pthLaunch:
     for test in registered_tests:
       print('[ removing output for ' + test.name +' ]')
       if self.args.sandbox :
-        test.sandbox_path = test.name + self.sandbox_postfix
+        test.use_sandbox = True
         cwd = os.getcwd()
         if not os.path.isdir(test.sandbox_path) :
             os.mkdir(test.sandbox_path)
