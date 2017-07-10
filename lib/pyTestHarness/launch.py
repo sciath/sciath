@@ -208,7 +208,7 @@ def performTestSuite_verify(self,registered_tests):
   tests_not_skipped = 0
   for test in registered_tests:
     if self.args.sandbox :
-      test.sandbox_path = test.name + self.sandbox_postfix 
+      test.use_sandbox = True
     print('[-- Verifying test: ' + test.name + ' --]')
     if test.ignore :
       print('[Skipping verification for test \"' + test.name + '\"]')
@@ -257,7 +257,6 @@ class pthLaunch:
     self.use_batch = False
     self.output_path = ''
     self.verbosity_level = 1
-    self.sandbox_postfix = '_sandbox'
 
     parser = argparse.ArgumentParser(description='Python Test Harness.')
     parser.add_argument('-e', '--execute', help='Perform test execution', required=False, action='store_true')
@@ -474,7 +473,7 @@ class pthLaunch:
 
   def submitJob(self,unittest):
     if self.args.sandbox :
-        unittest.sandbox_path = unittest.name + self.sandbox_postfix
+        unittest.use_sandbox = True
         cwd = os.getcwd()
         if not os.path.exists(unittest.sandbox_path) :
             os.mkdir(unittest.sandbox_path)
