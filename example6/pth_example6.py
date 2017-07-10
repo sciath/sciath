@@ -16,7 +16,7 @@ def makeLocalPathAbsolute(localRelPath) :
 def test1() :
   ranks = 1
   launch = makeLocalPathAbsolute('ex.sh') + ' 1'
-  expected_file = 'ex1.expected'
+  expected_file = makeLocalPathAbsolute('ex1.expected')
 
   def comparefunc(unittest):
     key = 'testkey'
@@ -31,7 +31,7 @@ def test1() :
 def test2():
   ranks = 1
   launch = makeLocalPathAbsolute('ex.sh') + ' 2'
-  expected_file = 'ex2.expected'
+  expected_file = makeLocalPathAbsolute('ex2.expected')
 
   def comparefunc(unittest):
     key = 'testkey'
