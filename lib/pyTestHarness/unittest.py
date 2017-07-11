@@ -1,8 +1,8 @@
-
 import os
 import numpy as np
 import math as math
 import re
+import hashlib
 
 from pyTestHarness.colors import pthNamedColors as bcolors
 
@@ -302,12 +302,14 @@ def test3():
 
 class pthUnitTest:
   
-  def __init__(self, name,ranks,execute,expected_file):
+  def __init__(self,name,ranks,execute,expected_file):
     self.passed = -1
     self.walltime = 2.0 # minutes
     self.errormessage = ''
     self.errno = -1
     self.name = name
+    if not name or len(name) == 0 :
+        raise RuntimeError('Tests must be named')
     self.ranks = ranks
     self.execute = execute
     self.expected_file = expected_file
@@ -315,6 +317,8 @@ class pthUnitTest:
     self.output_file = name + '-p' + str(ranks) + '.output'
     self.comparison_file = ''
     self.output_path = ''
+    self.sandbox_path = self.name + '_sandbox_' +  hashlib.sha1(self.name.encode('utf-8')).hexdigest()[1:8]
+    self.use_sandbox = False
     self.ignore = False
     self.verbosity_level = 1
 
@@ -352,19 +356,24 @@ class pthUnitTest:
     return self.passed
 
   def verifyOutput(self):
+    if self.use_sandbox :
+      sandboxBack = os.getcwd()
+      os.chdir(self.sandbox_path)
     
     if self.comparison_file == '':
       self.comparison_file = os.path.join(self.output_path,self.output_file)
-    
-    if self.verbosity_level > 0:
-      print('[Parsing file]',self.expected_file)
-    (self.expected_contents,self.expected_flatcontents) = parseFile(self.expected_file,self.keywords)
-    
+
     if self.verbosity_level > 0:
       print('[Parsing file]',self.comparison_file)
     (self.output_contents,self.output_flatcontents) = parseFile(self.comparison_file,self.keywords)
-    self.verify(self)
 
+    if self.use_sandbox :
+      os.chdir(sandboxBack)
+
+    if self.verbosity_level > 0:
+      print('[Parsing file]',self.expected_file)
+    (self.expected_contents,self.expected_flatcontents) = parseFile(self.expected_file,self.keywords)
+    self.verify(self)
 
   def getOutput(self):
     return self.output_contents,self.output_flatcontents
@@ -465,5 +474,3 @@ class pthUnitTest:
     print('<test> rm -f ' + outfile)
     if outfile != cmpfile and cmpfile:
       print('<test> rm -f ' + cmpfile)
-
-

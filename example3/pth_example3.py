@@ -1,15 +1,13 @@
-
+#!/usr/bin/env python
 import os
 import pyTestHarness.unittest as pth
-import pyTestHarness.launch as launch
+import pyTestHarness.harness as harness
 
-# /Users/dmay/software/petsc-3.6.0/arch-darwin-c-debug/bin/mpiexec
 def run_petsc_ex2a():
-
   launch = '${PETSC_DIR}/src/ksp/ksp/examples/tutorials/ex2'
   ranks = 4
   expected_file = 'ex2.expected'
-  
+
   def comparefunc(unittest):
     key = 'KSP Residual norm'
     unittest.compareFloatingPoint(key,1.0e-5)
@@ -18,41 +16,36 @@ def run_petsc_ex2a():
   test.setVerifyMethod(comparefunc)
   return(test)
 
-
 def run_petsc_ex2b():
-  
   launch = '${PETSC_DIR}/src/ksp/ksp/examples/tutorials/ex2 -ksp_monitor_short'
   ranks = 4
   expected_file = 'ex2.expected'
-  
+
   def comparefunc(unittest):
     key = 'KSP Residual norm'
     unittest.compareFloatingPoint(key,1.0e-5)
-  
+
   test = pth.pthUnitTest('ex2b',ranks,launch,expected_file)
   test.setVerifyMethod(comparefunc)
   return(test)
 
-
 def run_petsc_ex2c():
-  
   launch = '${PETSC_DIR}/src/ksp/ksp/examples/tutorials/ex2 -ksp_type gcr -ksp_monitor_short'
   ranks = 4
   expected_file = 'ex2.expected'
-  
+
   def comparefunc(unittest):
     key = 'KSP Residual norm'
     unittest.compareFloatingPoint(key,1.0e-5)
-  
+
     key = 'Norm of error'
     unittest.compareLiteral(key)
-  
+
   test = pth.pthUnitTest('ex2c',ranks,launch,expected_file)
   test.setVerifyMethod(comparefunc)
   return(test)
 
-def run_petsc_unittests_example3():
-  
+def run_petsc_tests():
   os.environ['PYTHONUNBUFFERED'] = str('1')
 
   # Build KSP example 2
@@ -60,11 +53,11 @@ def run_petsc_unittests_example3():
     raise Exception('You must define PETSC_ARCH and PETSC_DIR to correspond to a working PETSc build')
   os.system('cd ' + os.environ['PETSC_DIR'] + '/src/ksp/ksp/examples/tutorials && make ex2 && cd -')
 
-  registered_tests = [ run_petsc_ex2a() , run_petsc_ex2b() , run_petsc_ex2c() ]
-  
-  launcher = launch.pthLaunch()
-  launcher.executeTestSuite(registered_tests)
-  launcher.verifyTestSuite(registered_tests)
+  registeredTests = [ run_petsc_ex2a() , run_petsc_ex2b() , run_petsc_ex2c() ]
+
+  h = harness.pthHarness(registeredTests)
+  h.execute()
+  h.verify()
 
 if __name__ == "__main__":
-  run_petsc_unittests_example3()
+  run_petsc_tests()
