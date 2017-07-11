@@ -545,7 +545,7 @@ class pthLaunch:
           launchCmd = launch + ' ' + unittest.execute + " > " + os.path.join(unittest.output_path,unittest.output_file)
         if self.verbosity_level > 0:
           if self.args.sandbox :
-            print('[Executing from ' + unittest.sandbox_path + ']',launchCmd)
+            print('[Executing from ' + os.getcwd() + ']',launchCmd)
           else :
             print('[Executing]',launchCmd)
         unittest.errno = os.system(launchCmd) >> 8
@@ -555,7 +555,7 @@ class pthLaunch:
       launchCmd = self.jobSubmissionCommand + launchfile
       if self.verbosity_level > 0:
         if self.args.sandbox :
-          print('[Executing from ' + unittest.sandbox_path + ']',launchCmd)
+          print('[Executing from ' + os.getcwd() + ']',launchCmd)
         else :
           print('[Executing]',launchCmd)
       os.system(launchCmd)
