@@ -276,6 +276,7 @@ class pthLaunch:
     parser.add_argument('-f', '--error_on_test_failure', help='Return exit code of 1 if any test failed', required=False, action='store_true')
     parser.add_argument('-d', '--configure_default', help='Write default queuing system config file (no mpi, no queuing system)', required=False, action='store_true')
     parser.add_argument('-s', '--sandbox', help='Execute tests in separate directories. Will not work unless you supply absolute paths to executables.', required=False, action='store_true')
+    parser.add_argument('-l', '--list', help='List all registered tests and exit', required=False, action='store_true')
     self.args, self.unknown = parser.parse_known_args()
 
     if self.args.configure:

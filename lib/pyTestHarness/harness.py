@@ -32,7 +32,14 @@ class pthHarness:
     parser.add_argument('-o', '--output_path', help='Directory to write stdout into', required=False)
     parser.add_argument('-p', '--purge_output', help='Delete generated output', required=False, action='store_true')
     parser.add_argument('-f', '--error_on_test_failure', help='Return exit code of 1 if any test failed', required=False, action='store_true')
+    parser.add_argument('-l', '--list', help='List all registered tests and exit', required=False, action='store_true')
     self.args, self.unknown = parser.parse_known_args()
+
+    # If "list" option supplied, simply print out all the tests' names and exit
+    if self.args.list :
+      for test in registeredTests :
+        print(test.name)
+      sys.exit(0)
 
     # Clean all output unless we are verifying (only)
     if not self.args.verify :
