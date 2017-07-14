@@ -310,9 +310,8 @@ class pthLaunch:
     self.writeDefinition()
     print('\n')
     print('** If you wish to change the config for your batch system, either')
-    print('**   (i) delete the file',self.confFileName,' or')
-    print('**  (ii) re-run pth2.configure()')
-    print('** (iii) re-run with the command line arg --configure')
+    print('**  (i) delete the file',self.confFileName,' or')
+    print('** (ii) re-run with the command line arg --configure')
     print('----------------------------------------------------------------')
 
   def setup(self):
