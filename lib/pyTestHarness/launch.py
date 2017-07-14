@@ -499,5 +499,3 @@ class pthLaunch:
       if self.args.sandbox :
         os.chdir(sandboxBack)
         shutil.rmtree(test.sandbox_path) # remove entire subtree
-
-# < end class >
