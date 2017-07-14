@@ -171,7 +171,6 @@ class pthLaunch:
     self.batchConstraint=[]
     self.jobSubmissionCommand = []
     self.useBatch = False
-    self.output_path = ''
     self.verbosity_level = 1
     self.confFileName = 'pthBatchQueuingSystem.conf'
 
