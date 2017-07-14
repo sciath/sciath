@@ -60,6 +60,11 @@ class pthHarness:
         for test in registeredTests :
             test.use_sandbox = True
 
+    # Set output path on all tests if --output_path option was included
+    if self.args.output_path:
+      for test in self.registeredTests:
+        test.setOutputPath(self.args.output_path)
+
     # Label tests as Registered or Excluded:Reason
     for i in range(0,len(self.registeredTests)):
       self.testDescription.append('Registered')
@@ -113,21 +118,38 @@ class pthHarness:
     if self.args.purge_output :
       exit(0);
 
-
   def setVerbosityLevel(self,value):
     self.verbosity_level = value
     self.launcher.setVerbosityLevel(self.verbosity_level)
 
   def execute(self):
-    launcher = self.launcher
-    # Set output path on all tests if different to the current working directory
-    if self.args.output_path:
-      for test in self.allTests:
-        test.setOutputPath(self.args.output_path)
-
-    # Don't execute if we are verifying (only) or purging output (only)
+    '''Execute tests unless verifying (only) or purging output (only)'''
     if not self.args.verify and not self.args.purge_output:
-      self.executeAll()
+      print('')
+      print(bcolors.HEADER + '[ *** Executing Tests *** ]' + bcolors.ENDC)
+      launcher = self.launcher
+      testList = self.registeredTests
+      description = self.testDescription
+      if launcher.verbosity_level > 0:
+        launcher.view()
+
+      skipCounter = 0
+      for t in testList:
+        if launcher.mpiLaunch == 'none' and t.ranks != 1:
+          if t.ignore == True:
+            skipCounter = skipCounter + 1
+
+      if skipCounter != 0:
+        print('\n' + bcolors.WARNING + 'Warning: ' + str(skipCounter) + ' MPI parallel jobs are being skipped as a valid MPI launcher was not provided'+ bcolors.ENDC)
+
+      counter = 0
+      for test in testList:
+        if test.ignore == False:
+          print('[-- Executing test: ' + test.name + ' --]')
+          launcher.submitJob(test)
+        else:
+          print('[-- Skipping test: ' + test.name + ' --] Reason: ' + description[counter])
+        counter = counter + 1
 
   def verify(self):
     '''Verify, unless we are running with a batch system and are not in verify(-only) mode'''
@@ -284,30 +306,3 @@ class pthHarness:
       print('xxx============================================================================xxx')
       errfile = pthErrorReportFileLocation
     return(errfile)
-
-  def executeAll(self):
-    print('')
-    print(bcolors.HEADER + '[ *** Executing Tests *** ]' + bcolors.ENDC)
-    launcher = self.launcher
-    testList = self.registeredTests
-    description = self.testDescription
-    if launcher.verbosity_level > 0:
-      launcher.view()
-
-    skipCounter = 0
-    for t in testList:
-      if launcher.mpiLaunch == 'none' and t.ranks != 1:
-        if t.ignore == True:
-          skipCounter = skipCounter + 1
-
-    if skipCounter != 0:
-      print('\n' + bcolors.WARNING + 'Warning: ' + str(skipCounter) + ' MPI parallel jobs are being skipped as a valid MPI launcher was not provided'+ bcolors.ENDC)
-
-    counter = 0
-    for test in testList:
-      if test.ignore == False:
-        print('[-- Executing test: ' + test.name + ' --]')
-        launcher.submitJob(test)
-      else:
-        print('[-- Skipping test: ' + test.name + ' --] Reason: ' + description[counter])
-      counter = counter + 1
