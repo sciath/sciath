@@ -436,7 +436,7 @@ class pthLaunch:
         os.chdir(sandboxBack)
 
   def clean(self,test):
-    print('[ removing output for ' + test.name +' ]')
+    print('[ -- removing output for test:',test.name,'-- ]')
     if test.use_sandbox:
       sandboxBack = os.getcwd()
       if not os.path.isdir(test.sandbox_path) :

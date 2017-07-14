@@ -1,5 +1,5 @@
 class pthNamedColors:
-  HEADER = '\033[95m'
+  HEADER = '\033[35m'
   OKBLUE = '\033[94m'
   OKGREEN = '\033[32m'
   WARNING = '\033[93m'

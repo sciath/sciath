@@ -132,6 +132,7 @@ class pthHarness:
     '''Verify, unless we are running with a batch system and are not in verify(-only) mode'''
     if not self.launcher.useBatch or self.args.verify :
       print('')
+      print(bcolors.HEADER + '[ *** Verifying Test Output *** ]' + bcolors.ENDC)
       tests_not_skipped = 0
       for test in self.registeredTests:
         print('[-- Verifying test: ' + test.name + ' --]')
@@ -179,7 +180,8 @@ class pthHarness:
         sys.exit(1)
 
   def clean(self):
-    print(bcolors.HEADER + '[ -- Deleting output generated from all tests -- ]' + bcolors.ENDC)
+    print('')
+    print(bcolors.HEADER + '[ *** Deleting Existing Test Output *** ]' + bcolors.ENDC)
     if os.path.isfile(self.pthErrorReportFileName) :
         os.remove(self.pthErrorReportFileName)
     for test in self.registeredTests:
@@ -280,6 +282,8 @@ class pthHarness:
     return(errfile)
 
   def executeAll(self):
+    print('')
+    print(bcolors.HEADER + '[ *** Executing Tests *** ]' + bcolors.ENDC)
     launcher = self.launcher
     testList = self.registeredTests
     description = self.testDescription
