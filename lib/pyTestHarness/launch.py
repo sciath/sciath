@@ -167,17 +167,6 @@ def generateLaunch_LoadLevelerBG(accountname,queuename,testname,executable,total
 
   print("runjob -n " + executable) # launch command
 
-def performTestSuite_execute(self,registered_tests):
-  launcher = self
-
-  print('')
-  if self.verbosity_level > 0:
-    self.view()
-
-  for test in registered_tests:
-    print('[-- Executing test: ' + test.name + ' --]')
-    launcher.submitJob(test)
-
 def performTestSuite_verify(self,registered_tests):
   launcher = self
 
