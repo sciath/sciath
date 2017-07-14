@@ -445,57 +445,55 @@ class pthLaunch:
     if self.args.sandbox :
         os.chdir(sandboxBack)
 
-  def clean(self,registered_tests):
-    for test in registered_tests:
-      print('[ removing output for ' + test.name +' ]')
-      if self.args.sandbox :
-        test.use_sandbox = True
-        sandboxBack = os.getcwd()
-        if not os.path.isdir(test.sandbox_path) :
-            os.mkdir(test.sandbox_path)
-        os.chdir(test.sandbox_path)
-      outfile = os.path.join(test.output_path,test.output_file)
-      if os.path.isfile(outfile) :
-        os.remove(outfile)
-      if test.comparison_file != outfile and os.path.isfile(test.comparison_file) :
-        foundInLocalTree = False
-        cwd = os.getcwd()
-        for (root, dirs, files) in os.walk(cwd) :
-          for f in files :
-            if os.path.abspath(test.comparison_file) == os.path.abspath(os.path.join(root,f)) :
-              foundInLocalTree = True
-              break
-          if foundInLocalTree :
+  def clean(self,test):
+    print('[ removing output for ' + test.name +' ]')
+    if test.use_sandbox:
+      sandboxBack = os.getcwd()
+      if not os.path.isdir(test.sandbox_path) :
+          os.mkdir(test.sandbox_path)
+      os.chdir(test.sandbox_path)
+    outfile = os.path.join(test.output_path,test.output_file)
+    if os.path.isfile(outfile) :
+      os.remove(outfile)
+    if test.comparison_file != outfile and os.path.isfile(test.comparison_file) :
+      foundInLocalTree = False
+      cwd = os.getcwd()
+      for (root, dirs, files) in os.walk(cwd) :
+        for f in files :
+          if os.path.abspath(test.comparison_file) == os.path.abspath(os.path.join(root,f)) :
+            foundInLocalTree = True
             break
         if foundInLocalTree :
-          os.remove(test.comparison_file)
-        else :
-          message = "Refusing to remove output file " + test.comparison_file + " since it does not live in the local subtree. If you really wanted to compare with this file, please delete it yourself to proceed"
-          raise RuntimeError(message)
-      if self.use_batch:
-        stderrFile = test.name + '.stderr'
-        if os.path.isfile(stderrFile) :
-          os.remove(stderrFile)
-        stdoutFile = test.name + '.stdout'
-        if os.path.isfile(stdoutFile) :
-          os.remove(stdoutFile)
-        if self.queuingSystemType == 'pbs':
-          pbsFile = test.name + '-pth.pbs'
-          if os.path.isfile(pbsFile) :
-            os.remove(pbsFile)
-        elif self.queuingSystemType == 'lsf':
-          lsfFile = test.name + '-pth.lsf'
-          if os.path.isfile(lsfFile) :
-            os.remove(lsfFile)
-        elif self.queuingSystemType == 'slurm':
-          slurmFile = test.name + '-pth.slurm'
-          if os.path.isfile(slurmFile) :
-            os.remove(slurmFile)
-        elif self.queuingSystemType == 'load_leveler':
-          llqFile = test.name + '-pth.llq'
-          if os.path.isfile(llqFile) :
-            os.remove(llqFile)
+          break
+      if foundInLocalTree :
+        os.remove(test.comparison_file)
+      else :
+        message = "Refusing to remove output file " + test.comparison_file + " since it does not live in the local subtree. If you really wanted to compare with this file, please delete it yourself to proceed"
+        raise RuntimeError(message)
+    if self.use_batch:
+      stderrFile = test.name + '.stderr'
+      if os.path.isfile(stderrFile) :
+        os.remove(stderrFile)
+      stdoutFile = test.name + '.stdout'
+      if os.path.isfile(stdoutFile) :
+        os.remove(stdoutFile)
+      if self.queuingSystemType == 'pbs':
+        pbsFile = test.name + '-pth.pbs'
+        if os.path.isfile(pbsFile) :
+          os.remove(pbsFile)
+      elif self.queuingSystemType == 'lsf':
+        lsfFile = test.name + '-pth.lsf'
+        if os.path.isfile(lsfFile) :
+          os.remove(lsfFile)
+      elif self.queuingSystemType == 'slurm':
+        slurmFile = test.name + '-pth.slurm'
+        if os.path.isfile(slurmFile) :
+          os.remove(slurmFile)
+      elif self.queuingSystemType == 'load_leveler':
+        llqFile = test.name + '-pth.llq'
+        if os.path.isfile(llqFile) :
+          os.remove(llqFile)
 
-      if self.args.sandbox :
-        os.chdir(sandboxBack)
-        shutil.rmtree(test.sandbox_path) # remove entire subtree
+    if test.use_sandbox:
+      os.chdir(sandboxBack)
+      shutil.rmtree(test.sandbox_path) # remove entire subtree

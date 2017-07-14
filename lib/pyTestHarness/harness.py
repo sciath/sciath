@@ -169,7 +169,10 @@ class pthHarness:
     print(bcolors.HEADER + '[ -- Deleting output generated from all tests -- ]' + bcolors.ENDC)
     if os.path.isfile(self.pthErrorReportFileName) :
         os.remove(self.pthErrorReportFileName)
-    self.launcher.clean(self.registeredTests)
+    for test in self.registeredTests:
+        if self.args.sandbox :
+            test.use_sandbox = True
+        self.launcher.clean(test)
 
   def reportAll(self):
     launcher = self.launcher
