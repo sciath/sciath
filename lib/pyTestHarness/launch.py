@@ -224,6 +224,7 @@ class pthLaunch:
     self.use_batch = False
     self.output_path = ''
     self.verbosity_level = 1
+    self.confFileName = 'pthBatchQueuingSystem.conf'
 
     self.args = args
 
@@ -305,7 +306,7 @@ class pthLaunch:
     self.queueName = name
 
   def view(self):
-    print('pth: Batch queueing system configuration [pthBatchQueingSystem.conf]')
+    print('pth: Batch queueing system configuration [',self.confFileName,']')
     print('  Queue system:    ',self.queuingSystemType)
     print('  MPI launcher:    ',self.mpiLaunch)
     if self.use_batch:
@@ -319,7 +320,7 @@ class pthLaunch:
 
   def configure(self):
     print('----------------------------------------------------------------')
-    print('Creating new pthBatchQueuingSystem.conf file')
+    print('Creating new',self.confFileName,'file')
     prompt = '[1] Batch queuing system type <pbs,lsf,slurm,llq,none>: '
     if isPython2:
       v = raw_input(prompt)
@@ -375,7 +376,7 @@ class pthLaunch:
     self.writeDefinition()
     print('\n')
     print('** If you wish to change the config for your batch system, either')
-    print('**   (i) delete the file pthBatchQueuingSystem.conf, or')
+    print('**   (i) delete the file',self.confFileName,' or')
     print('**  (ii) re-run pth2.configure()')
     print('** (iii) re-run with the command line arg --configure')
     print('----------------------------------------------------------------')
@@ -388,7 +389,7 @@ class pthLaunch:
       self.writeDefinition()
 
   def writeDefaultDefinition(self):
-    file = open('pthBatchQueuingSystem.conf','w')
+    file = open(self.confFileName,'w')
     major,minor,patch=getVersion()
     file.write('majorVersion=' + str(major) + '\n')
     file.write('minorVersion=' + str(minor) + '\n')
@@ -398,7 +399,7 @@ class pthLaunch:
     file.close()
 
   def writeDefinition(self):
-    file = open('pthBatchQueuingSystem.conf','w')
+    file = open(self.confFileName,'w')
     major,minor,patch=getVersion()
     file.write('majorVersion=' + str(major) + '\n')
     file.write('minorVersion=' + str(minor) + '\n')
@@ -416,7 +417,7 @@ class pthLaunch:
       majorFile = None
       minorFile = None
       patchFile = None
-      file = open('pthBatchQueuingSystem.conf','r')
+      file = open(self.confFileName,'r')
       for v in file :
         key,value = v.split('=',1)
         value = value.rstrip()
@@ -445,8 +446,7 @@ class pthLaunch:
     major,minor,patch = getVersion()
     if majorFile < major or (minorFile < minor and majorFile == major) or \
          majorFile==None or minorFile==None or patchFile==None :
-      message = '[pth] Incompatible outdated pthBatchQueuingSystem.conf file detected. Please delete it and run again to generate a new one.'
-      print(message)
+      print('[pth] Incompatible outdated,',self.confFileName,'file detected. Please delete it and run again to generate a new one.')
       raise RuntimeError(message)
 
   def createSubmissionFile(self,testname,commnd,ranks,ranks_per_node,walltime,outfile):
