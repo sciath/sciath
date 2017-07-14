@@ -467,15 +467,6 @@ class pthLaunch:
     if self.args.sandbox :
         os.chdir(sandboxBack)
 
-  def executeTestSuite(self,registered_tests):
-    if self.args.output_path:
-      for test in registered_tests:
-        test.setOutputPath(self.args.output_path)
-
-    # Don't execute if we are verifying a batch run
-    if not self.use_batch and not self.args.verify:
-      performTestSuite_execute(self,registered_tests)
-
   def clean(self,registered_tests):
     for test in registered_tests:
       print('[ removing output for ' + test.name +' ]')
