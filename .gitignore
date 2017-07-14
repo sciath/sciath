@@ -5,3 +5,4 @@ pthBatchQueuingSystem.conf
 *.llq
 
 __pycache__
+*.pyc
