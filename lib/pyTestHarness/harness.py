@@ -120,7 +120,7 @@ class pthHarness:
 
   def verify(self):
     '''Verify, unless we are running with a batch system and are not in verify(-only) mode'''
-    if not self.launcher.use_batch or self.args.verify :
+    if not self.launcher.useBatch or self.args.verify :
       print('')
       tests_not_skipped = 0
       for test in self.registeredTests:
@@ -173,8 +173,6 @@ class pthHarness:
     if os.path.isfile(self.pthErrorReportFileName) :
         os.remove(self.pthErrorReportFileName)
     for test in self.registeredTests:
-        if self.args.sandbox :
-            test.use_sandbox = True
         self.launcher.clean(test)
 
   def reportAll(self):

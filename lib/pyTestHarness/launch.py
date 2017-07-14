@@ -170,7 +170,7 @@ class pthLaunch:
     self.queuingSystemType = []
     self.batchConstraint=[]
     self.jobSubmissionCommand = []
-    self.use_batch = False
+    self.useBatch = False
     self.output_path = ''
     self.verbosity_level = 1
     self.confFileName = 'pthBatchQueuingSystem.conf'
@@ -186,7 +186,7 @@ class pthLaunch:
     else:
       self.setup()
 
-    if self.use_batch :
+    if self.useBatch :
       if self.mpiLaunch == 'none':
         raise RuntimeError('[pth] If using a queuing system, a valid mpi launch command must be provided')
 
@@ -221,25 +221,25 @@ class pthLaunch:
     if type in ['PBS','pbs']:
       self.queuingSystemType = 'pbs'
       self.jobSubmissionCommand = 'qsub '
-      self.use_batch = True
+      self.useBatch = True
       #print('Recognized PBS queuing system')
 
     elif type in ['LSF','lsf']:
       self.queuingSystemType = 'lsf'
       self.jobSubmissionCommand = 'bsub < '
-      self.use_batch = True
+      self.useBatch = True
       #print('Recognized LSF queuing system')
 
     elif type in ['SLURM','slurm']:
       self.queuingSystemType = 'slurm'
       self.jobSubmissionCommand = 'sbatch '
-      self.use_batch = True
+      self.useBatch = True
       #print('Recognized Slurm queuing system')
 
     elif type in ['LoadLeveler','load_leveler','loadleveler','llq']:
       self.queuingSystemType = 'load_leveler'
       self.jobSubmissionCommand = 'llsubmit '
-      self.use_batch = True
+      self.useBatch = True
       #print('Recognized IBM LoadLeveler queuing system')
 
     elif type in ['none', 'None', 'local']:
@@ -258,7 +258,7 @@ class pthLaunch:
     print('pth: Batch queueing system configuration [',self.confFileName,']')
     print('  Queue system:    ',self.queuingSystemType)
     print('  MPI launcher:    ',self.mpiLaunch)
-    if self.use_batch:
+    if self.useBatch:
       print('  Submit command:', self.jobSubmissionCommand)
       if self.accountName:
         print('  Account:       ',self.accountName)
@@ -292,7 +292,7 @@ class pthLaunch:
         print(' The keyword <ranks> will be replaced by the actual number of MPI ranks (defined by a given test) when the test is launched.')
     self.setMPILaunch(v)
 
-    if self.use_batch == True:
+    if self.useBatch == True:
       prompt = '[3] specify a constraint (e.g. "gpu" on Piz Daint) (optional - hit enter if not applicable):'
       v = None
       v = py23input(prompt)
@@ -339,7 +339,7 @@ class pthLaunch:
     file.write('patchVersion=' + str(patch) + '\n')
     file.write('queuingSystemType=' + self.queuingSystemType + '\n')
     file.write('mpiLaunch=' + self.mpiLaunch + '\n')
-    if self.use_batch == True:
+    if self.useBatch == True:
       file.write('accountName=' + self.accountName + '\n')
       file.write('batchConstraint=' + self.batchConstraint + '\n')
       file.write('queueName=' + self.queueName + '\n')
@@ -364,7 +364,7 @@ class pthLaunch:
           self.setQueueSystemType(value)
         if key == 'mpiLaunch' :
           self.setMPILaunch(value)
-        if self.use_batch == True:
+        if self.useBatch == True:
           if key == 'batchConstraint' :
             self.setBatchConstraint(value)
           if key == 'queueName' :
@@ -384,7 +384,7 @@ class pthLaunch:
 
   def createSubmissionFile(self,testname,commnd,ranks,ranks_per_node,walltime,outfile):
     filename = ''
-    if not self.use_batch:
+    if not self.useBatch:
       print('Warning: no submission file creation required')
       return(filename)
 
@@ -413,7 +413,7 @@ class pthLaunch:
         os.mkdir(unittest.sandbox_path) # error if  it already exists
         os.chdir(unittest.sandbox_path)
     unittest.setVerbosityLevel(self.verbosity_level)
-    if not self.use_batch:
+    if not self.useBatch:
       mpiLaunch = self.mpiLaunch
 
       if self.mpiLaunch == 'none' and unittest.ranks != 1:
@@ -469,7 +469,7 @@ class pthLaunch:
       else :
         message = "Refusing to remove output file " + test.comparison_file + " since it does not live in the local subtree. If you really wanted to compare with this file, please delete it yourself to proceed"
         raise RuntimeError(message)
-    if self.use_batch:
+    if self.useBatch:
       stderrFile = test.name + '.stderr'
       if os.path.isfile(stderrFile) :
         os.remove(stderrFile)
