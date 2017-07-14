@@ -100,10 +100,10 @@ class pthHarness:
 
   def setVerbosityLevel(self,value):
     self.verbosity_level = value
+    self.launcher.setVerbosityLevel(self.verbosity_level)
 
   def execute(self):
     launcher = self.launcher
-    launcher.setVerbosityLevel(self.verbosity_level)
     # Set output path on all tests if different to the current working directory
     if self.args.output_path:
       for test in self.allTests:
