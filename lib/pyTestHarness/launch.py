@@ -167,51 +167,6 @@ def generateLaunch_LoadLevelerBG(accountname,queuename,testname,executable,total
 
   print("runjob -n " + executable) # launch command
 
-def performTestSuite_verify(self,registered_tests):
-  launcher = self
-
-  print('')
-  tests_not_skipped = 0
-  for test in registered_tests:
-    if self.args.sandbox :
-      test.use_sandbox = True
-    print('[-- Verifying test: ' + test.name + ' --]')
-    if test.ignore :
-      print('[Skipping verification for test \"' + test.name + '\"]')
-    elif self.mpiLaunch == 'none' and test.ranks != 1:
-      print('[Skipping verification for test \"' + test.name + '\" as test uses > 1 MPI ranks and no MPI launcher was provided]')
-    else:
-      tests_not_skipped = tests_not_skipped + 1 
-      test.verifyOutput()
-
-  print('')
-  counter = 0
-  for test in registered_tests:
-    if not test.ignore and not test.passed :
-      counter = counter + 1
-  if counter > 0:
-    print('')
-    print('[--------- Unit test error report ----------------------]')
-    for test in registered_tests:
-      test.report('log')
-
-  print('[--------- Unit test summary ----------------------]')
-  counter = 0
-  for test in registered_tests:
-    if self.mpiLaunch == 'none' and test.ranks != 1:
-      print('  ['+test.name+']  skipped as ranks > 1 and no MPI launcher provided')
-    else:
-      test.report('summary')
-    if not test.ignore and not test.passed :
-      counter = counter + 1
-  if counter > 0:
-    print(bcolors.FAIL + '          ********************' + bcolors.ENDC)
-    print(bcolors.FAIL +  ' [status] ' + str(counter) + ' of ' + str(tests_not_skipped) + ' tests FAILED' + bcolors.ENDC)
-    print(bcolors.FAIL + '          ********************' + bcolors.ENDC)
-  else:
-    print(bcolors.OKGREEN + '          ****************' + bcolors.ENDC)
-    print(bcolors.OKGREEN + ' [status] All tests passed' + bcolors.ENDC)
-    print(bcolors.OKGREEN + '          ****************' + bcolors.ENDC)
 
 class pthLaunch:
   def __init__(self,args):
@@ -520,11 +475,6 @@ class pthLaunch:
     # Don't execute if we are verifying a batch run
     if not self.use_batch and not self.args.verify:
       performTestSuite_execute(self,registered_tests)
-
-  def verifyTestSuite(self,registered_tests):
-    # Verify, unless we are running with a batch system and are not in verify(-only) mode
-    if not self.use_batch or self.args.verify :
-      performTestSuite_verify(self,registered_tests)
 
   def clean(self,registered_tests):
     for test in registered_tests:
