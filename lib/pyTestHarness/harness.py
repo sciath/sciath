@@ -60,16 +60,6 @@ class pthHarness:
         for test in registeredTests :
             test.use_sandbox = True
 
-    # Clean all output unless we are verifying (only)
-    if not self.args.verify :
-      self.clean()
-
-    # If -p was supplied, stop after cleaning
-    if self.args.verify and self.args.purge_output :
-      raise RuntimeError('-p (--purge_output) and -v (--verify) are not supported together')
-    if self.args.purge_output :
-      exit(0);
-
     # Label tests as Registered or Excluded:Reason
     for i in range(0,len(self.registeredTests)):
       self.testDescription.append('Registered')
@@ -112,6 +102,17 @@ class pthHarness:
           t.ignore = True
           self.testDescription[counter] = 'Excluded based on users command line arg -t'
         counter = counter + 1
+
+    # Clean all output unless we are verifying (only)
+    if not self.args.verify :
+      self.clean()
+
+    # If -p was supplied, stop after cleaning
+    if self.args.verify and self.args.purge_output :
+      raise RuntimeError('-p (--purge_output) and -v (--verify) are not supported together')
+    if self.args.purge_output :
+      exit(0);
+
 
   def setVerbosityLevel(self,value):
     self.verbosity_level = value
@@ -185,7 +186,10 @@ class pthHarness:
     if os.path.isfile(self.pthErrorReportFileName) :
         os.remove(self.pthErrorReportFileName)
     for test in self.registeredTests:
-        self.launcher.clean(test)
+        if test.ignore:
+          print('[ -- Skipping test:',test.name,'--]')
+        else:
+          self.launcher.clean(test)
 
   def reportAll(self):
     launcher = self.launcher
