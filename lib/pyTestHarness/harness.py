@@ -47,7 +47,7 @@ class pthHarness:
       launch.pthLaunch.writeDefaultDefinition()
       sys.exit(0)
 
-    # Create the launcher, passing the arguments object
+    # Create the launcher
     self.launcher = launch.pthLaunch()
 
     # If --configure is specified, (re)generate the configuration file and exit
