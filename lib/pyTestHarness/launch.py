@@ -255,7 +255,7 @@ def performTestSuite_verify(self,registered_tests):
     print(bcolors.OKGREEN + '          ****************' + bcolors.ENDC)
 
 class pthLaunch:
-  def __init__(self):
+  def __init__(self,args):
     self.accountName = []
     self.queueName = []
     self.mpiLaunch = []
@@ -266,18 +266,7 @@ class pthLaunch:
     self.output_path = ''
     self.verbosity_level = 1
 
-    parser = argparse.ArgumentParser(description='Python Test Harness.')
-    parser.add_argument('-e', '--execute', help='Perform test execution', required=False, action='store_true')
-    parser.add_argument('-v', '--verify', help='Perform test verification (and not execution)', required=False, action='store_true')
-    parser.add_argument('-c', '--configure', help='Configure queuing system information', required=False, action='store_true')
-    parser.add_argument('-t', '--test', help='List of test names', required=False)
-    parser.add_argument('-o', '--output_path', help='Directory to write stdout into', required=False)
-    parser.add_argument('-p', '--purge_output', help='Delete generated output', required=False, action='store_true')
-    parser.add_argument('-f', '--error_on_test_failure', help='Return exit code of 1 if any test failed', required=False, action='store_true')
-    parser.add_argument('-d', '--configure_default', help='Write default queuing system config file (no mpi, no queuing system)', required=False, action='store_true')
-    parser.add_argument('-s', '--sandbox', help='Execute tests in separate directories. Will not work unless you supply absolute paths to executables.', required=False, action='store_true')
-    parser.add_argument('-l', '--list', help='List all registered tests and exit', required=False, action='store_true')
-    self.args, self.unknown = parser.parse_known_args()
+    self.args = args
 
     if self.args.configure:
       self.configure()

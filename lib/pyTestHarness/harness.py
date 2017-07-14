@@ -22,8 +22,6 @@ class pthHarness:
         raise ValueError('[pth]: Registered tests must be of type UnitTest')
     self.testsRegistered = len(self.registeredTests)
 
-    self.launcher = launch.pthLaunch()
-
     parser = argparse.ArgumentParser(description='Python Test Harness.')
     parser.add_argument('-e', '--execute', help='Execute all tests', required=False, action='store_true')
     parser.add_argument('-v', '--verify', help='Perform test verification only (and not execution)', required=False, action='store_true')
@@ -32,6 +30,8 @@ class pthHarness:
     parser.add_argument('-o', '--output_path', help='Directory to write stdout into', required=False)
     parser.add_argument('-p', '--purge_output', help='Delete generated output', required=False, action='store_true')
     parser.add_argument('-f', '--error_on_test_failure', help='Return exit code of 1 if any test failed', required=False, action='store_true')
+    parser.add_argument('-d', '--configure_default', help='Write default queuing system config file (no mpi, no queuing system)', required=False, action='store_true')
+    parser.add_argument('-s', '--sandbox', help='Execute tests in separate directories. Will not work unless you supply absolute paths to executables.', required=False, action='store_true')
     parser.add_argument('-l', '--list', help='List all registered tests and exit', required=False, action='store_true')
     self.args, self.unknown = parser.parse_known_args()
 
@@ -40,6 +40,9 @@ class pthHarness:
       for test in registeredTests :
         print(test.name)
       sys.exit(0)
+
+    # Create the launcher, passing the arguments object
+    self.launcher = launch.pthLaunch(self.args)
 
     # Clean all output unless we are verifying (only)
     if not self.args.verify :
