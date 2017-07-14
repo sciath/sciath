@@ -45,6 +45,11 @@ class pthHarness:
     # Create the launcher, passing the arguments object
     self.launcher = launch.pthLaunch(self.args)
 
+    # Instruct tests to use sandboxes if requested
+    if self.args.sandbox :
+        for test in registeredTests :
+            test.use_sandbox = True
+
     # Clean all output unless we are verifying (only)
     if not self.args.verify :
       self.clean()
@@ -119,8 +124,6 @@ class pthHarness:
       print('')
       tests_not_skipped = 0
       for test in self.registeredTests:
-        if self.args.sandbox :
-          test.use_sandbox = True
         print('[-- Verifying test: ' + test.name + ' --]')
         if test.ignore :
           print('[Skipping verification for test \"' + test.name + '\"]')

@@ -408,8 +408,7 @@ class pthLaunch:
     return(filename)
 
   def submitJob(self,unittest):
-    if self.args.sandbox :
-        unittest.use_sandbox = True
+    if unittest.use_sandbox:
         sandboxBack = os.getcwd()
         os.mkdir(unittest.sandbox_path) # error if  it already exists
         os.chdir(unittest.sandbox_path)
@@ -426,7 +425,7 @@ class pthLaunch:
           launch = pthFormatMPILaunchCommand(mpiLaunch,unittest.ranks,None)
           launchCmd = launch + ' ' + unittest.execute + " > " + os.path.join(unittest.output_path,unittest.output_file)
         if self.verbosity_level > 0:
-          if self.args.sandbox :
+          if unittest.use_sandbox:
             print('[Executing from ' + os.getcwd() + ']',launchCmd)
           else :
             print('[Executing]',launchCmd)
@@ -436,13 +435,13 @@ class pthLaunch:
       launchfile = self.createSubmissionFile(unittest.name,unittest.execute,unittest.ranks,'',unittest.walltime,outfile)
       launchCmd = self.jobSubmissionCommand + launchfile
       if self.verbosity_level > 0:
-        if self.args.sandbox :
+        if unittest.use_sandbox:
           print('[Executing from ' + os.getcwd() + ']',launchCmd)
         else :
           print('[Executing]',launchCmd)
       os.system(launchCmd)
 
-    if self.args.sandbox :
+    if unittest.use_sandbox:
         os.chdir(sandboxBack)
 
   def clean(self,test):
