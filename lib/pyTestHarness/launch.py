@@ -163,6 +163,18 @@ def generateLaunch_LoadLevelerBG(accountname,queuename,testname,executable,total
 
 
 class pthLaunch:
+  confFileName = 'pthBatchQueuingSystem.conf'
+
+  @staticmethod
+  def writeDefaultDefinition():
+    file = open(pthLaunch.confFileName,'w')
+    major,minor,patch=getVersion()
+    file.write('majorVersion=' + str(major) + '\n')
+    file.write('minorVersion=' + str(minor) + '\n')
+    file.write('patchVersion=' + str(patch) + '\n')
+    file.write('queuingSystemType=none\n' )
+    file.write('mpiLaunch=none\n' )
+    file.close()
   def __init__(self,args):
     self.accountName = []
     self.queueName = []
@@ -172,7 +184,6 @@ class pthLaunch:
     self.jobSubmissionCommand = []
     self.useBatch = False
     self.verbosity_level = 1
-    self.confFileName = 'pthBatchQueuingSystem.conf'
 
     self.args = args
 
@@ -254,7 +265,7 @@ class pthLaunch:
     self.queueName = name
 
   def view(self):
-    print('pth: Batch queueing system configuration [',self.confFileName,']')
+    print('pth: Batch queueing system configuration [',pthLaunch.confFileName,']')
     print('  Queue system:    ',self.queuingSystemType)
     print('  MPI launcher:    ',self.mpiLaunch)
     if self.useBatch:
@@ -268,7 +279,7 @@ class pthLaunch:
 
   def configure(self):
     print('----------------------------------------------------------------')
-    print('Creating new',self.confFileName,'file')
+    print('Creating new',pthLaunch.confFileName,'file')
     prompt = '[1] Batch queuing system type <pbs,lsf,slurm,llq,none>: '
     v = py23input(prompt)
     if not v:
@@ -309,7 +320,7 @@ class pthLaunch:
     self.writeDefinition()
     print('\n')
     print('** If you wish to change the config for your batch system, either')
-    print('**  (i) delete the file',self.confFileName,' or')
+    print('**  (i) delete the file',pthLaunch.confFileName,' or')
     print('** (ii) re-run with the command line arg --configure')
     print('----------------------------------------------------------------')
 
@@ -320,18 +331,8 @@ class pthLaunch:
       self.configure()
       self.writeDefinition()
 
-  def writeDefaultDefinition(self):
-    file = open(self.confFileName,'w')
-    major,minor,patch=getVersion()
-    file.write('majorVersion=' + str(major) + '\n')
-    file.write('minorVersion=' + str(minor) + '\n')
-    file.write('patchVersion=' + str(patch) + '\n')
-    file.write('queuingSystemType=none\n' )
-    file.write('mpiLaunch=none\n' )
-    file.close()
-
   def writeDefinition(self):
-    file = open(self.confFileName,'w')
+    file = open(pthLaunch.confFileName,'w')
     major,minor,patch=getVersion()
     file.write('majorVersion=' + str(major) + '\n')
     file.write('minorVersion=' + str(minor) + '\n')
@@ -349,7 +350,7 @@ class pthLaunch:
       majorFile = None
       minorFile = None
       patchFile = None
-      file = open(self.confFileName,'r')
+      file = open(pthLaunch.confFileName,'r')
       for v in file :
         key,value = v.split('=',1)
         value = value.rstrip()
@@ -378,7 +379,7 @@ class pthLaunch:
     major,minor,patch = getVersion()
     if majorFile < major or (minorFile < minor and majorFile == major) or \
          majorFile==None or minorFile==None or patchFile==None :
-      print('[pth] Incompatible outdated,',self.confFileName,'file detected. Please delete it and run again to generate a new one.')
+      print('[pth] Incompatible outdated,',pthLaunch.confFileName,'file detected. Please delete it and run again to generate a new one.')
       raise RuntimeError(message)
 
   def createSubmissionFile(self,testname,commnd,ranks,ranks_per_node,walltime,outfile):

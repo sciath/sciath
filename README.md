@@ -12,9 +12,9 @@ pyTestHarness (pyTH) provides:
 
 ### How do I use this pyTH? ###
 
-1. pyTH depends on python3 (or python2) and numpy
+1. pyTH depends on Python 3 (or Python 2.4+) and numpy
 
-2. When using python3, it is highly recommended you set the environment variable PYTHONUNBUFFERED, e.g.
+2. When using Python 3, it is highly recommended you set the environment variable PYTHONUNBUFFERED, e.g.
 ```export PYTHONUNBUFFERED```
 
 3. Make sure you modify your PYTHONPATH environment variable to include the directory ```${PWD}/lib``` (relative to this README file)
