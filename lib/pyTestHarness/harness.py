@@ -42,8 +42,18 @@ class pthHarness:
         print(test.name)
       sys.exit(0)
 
+    # If --configure_default is specified, write the default file and exit
+    if self.args.configure_default:
+      launch.pthLaunch.writeDefaultDefinition()
+      sys.exit(0)
+
     # Create the launcher, passing the arguments object
-    self.launcher = launch.pthLaunch(self.args)
+    self.launcher = launch.pthLaunch()
+
+    # If --configure is specified, (re)generate the configuration file and exit
+    if self.args.configure:
+      self.launcher.configure()
+      sys.exit(0)
 
     # Instruct tests to use sandboxes if requested
     if self.args.sandbox :

@@ -1,5 +1,4 @@
 import os,sys
-import argparse
 import shutil
 import pyTestHarness.unittest as pth
 from   pyTestHarness.colors import pthNamedColors as bcolors
@@ -175,7 +174,8 @@ class pthLaunch:
     file.write('queuingSystemType=none\n' )
     file.write('mpiLaunch=none\n' )
     file.close()
-  def __init__(self,args):
+
+  def __init__(self):
     self.accountName = []
     self.queueName = []
     self.mpiLaunch = []
@@ -185,16 +185,7 @@ class pthLaunch:
     self.useBatch = False
     self.verbosity_level = 1
 
-    self.args = args
-
-    if self.args.configure:
-      self.configure()
-      sys.exit(0)
-    elif self.args.configure_default:
-      self.writeDefaultDefinition()
-      sys.exit(0)
-    else:
-      self.setup()
+    self.setup()
 
     if self.useBatch :
       if self.mpiLaunch == 'none':
