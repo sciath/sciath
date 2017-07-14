@@ -167,36 +167,6 @@ def generateLaunch_LoadLevelerBG(accountname,queuename,testname,executable,total
 
   print("runjob -n " + executable) # launch command
 
-def performTestSuite_local(self,registered_tests):
-  launcher = self
-
-  print('')
-  self.view()
-
-  for test in registered_tests:
-    print('-- Executing test: ' + test.name + ' --')
-    launcher.submitJob(test)
-    test.verifyOutput()
-
-  counter = 0
-  for test in registered_tests:
-    test.report('summary')
-    if test.passed == False:
-      counter = counter + 1
-  if counter > 0:
-    print('-- Unit test error report --')
-    for test in registered_tests:
-      test.report('log')
-
-  print('-- Unit test report summary --')
-  for test in registered_tests:
-    test.report('summary')
-  if counter > 0:
-    print('  ' + str(counter) + ' / ' + str(len(registered_tests)) + ' tests ' + bcolors.FAIL + 'failed' + bcolors.ENDC)
-  else:
-    print('----------------------')
-    print(bcolors.OKGREEN + ' All tests passed' + bcolors.ENDC)
-
 def performTestSuite_execute(self,registered_tests):
   launcher = self
 
