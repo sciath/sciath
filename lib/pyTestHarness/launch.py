@@ -4,16 +4,10 @@ import shutil
 import pyTestHarness.unittest as pth
 from   pyTestHarness.colors import pthNamedColors as bcolors
 from   pyTestHarness.version import getVersion
+from   pyTestHarness.utils import py23input
 
 class PthTestHarnessLoadException(Exception) :
   pass
-
-isPython2 = False
-isPython3 = False
-if sys.version_info[0] == 2:
-  isPython2 = True;
-if sys.version_info[0] == 3:
-  isPython3 = True;
 
 def FormattedHourMin(seconds):
   m, s = divmod(int(seconds), 60)
@@ -277,10 +271,7 @@ class pthLaunch:
     print('----------------------------------------------------------------')
     print('Creating new',self.confFileName,'file')
     prompt = '[1] Batch queuing system type <pbs,lsf,slurm,llq,none>: '
-    if isPython2:
-      v = raw_input(prompt)
-    if isPython3:
-      v = input(prompt)
+    v = py23input(prompt)
     if not v:
       raise ValueError('[pth] You must specify the type of queuing system')
     self.setQueueSystemType(v)
@@ -288,10 +279,7 @@ class pthLaunch:
     v = None
     while not v:
       prompt = '[2] MPI launch command with num. procs. flag (required - hit enter for examples): '
-      if isPython2:
-        v = raw_input(prompt)
-      if isPython3:
-        v = input(prompt)
+      v = py23input(prompt)
       if not v :
         print(' Required. Some example MPI launch commands:')
         print('  none','(if your tests do not use MPI)')
@@ -307,25 +295,16 @@ class pthLaunch:
     if self.use_batch == True:
       prompt = '[3] specify a constraint (e.g. "gpu" on Piz Daint) (optional - hit enter if not applicable):'
       v = None
-      if isPython2:
-        v = raw_input(prompt)
-      if isPython3:
-        v = input(prompt)
+      v = py23input(prompt)
       if v :
         self.setBatchConstraint(v)
 
       prompt = '[4] Account to charge (optional - hit enter if not applicable): '
-      if isPython2:
-        v = raw_input(prompt)
-      if isPython3:
-        v = input(prompt)
+      v = py23input(prompt)
       self.setHPCAccountName(v)
 
       prompt = '[5] Name of queue to submit tests to (optional - hit enter if not applicable): '
-      if isPython2:
-        v = raw_input(prompt)
-      if isPython3:
-        v = input(prompt)
+      v = py23input(prompt)
       self.setQueueName(v)
 
     self.writeDefinition()
