@@ -400,9 +400,9 @@ class pthLaunch:
 
   def submitJob(self,unittest):
     if unittest.use_sandbox:
-        sandboxBack = os.getcwd()
-        os.mkdir(unittest.sandbox_path) # error if  it already exists
-        os.chdir(unittest.sandbox_path)
+      sandboxBack = os.getcwd()
+      os.mkdir(unittest.sandbox_path) # error if  it already exists
+      os.chdir(unittest.sandbox_path)
     unittest.setVerbosityLevel(self.verbosity_level)
     if not self.useBatch:
       mpiLaunch = self.mpiLaunch

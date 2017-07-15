@@ -57,8 +57,8 @@ class pthHarness:
 
     # Instruct tests to use sandboxes if requested
     if self.args.sandbox :
-        for test in registeredTests :
-            test.use_sandbox = True
+      for test in registeredTests :
+        test.use_sandbox = True
 
     # Set output path on all tests if --output_path option was included
     if self.args.output_path:
@@ -206,12 +206,12 @@ class pthHarness:
     print('')
     print(bcolors.HEADER + '[ *** Deleting Existing Test Output *** ]' + bcolors.ENDC)
     if os.path.isfile(self.pthErrorReportFileName) :
-        os.remove(self.pthErrorReportFileName)
+      os.remove(self.pthErrorReportFileName)
     for test in self.registeredTests:
-        if test.ignore:
-          print('[ -- Skipping test:',test.name,'--]')
-        else:
-          self.launcher.clean(test)
+      if test.ignore:
+        print('[ -- Skipping test:',test.name,'--]')
+      else:
+        self.launcher.clean(test)
 
   def reportAll(self):
     launcher = self.launcher
