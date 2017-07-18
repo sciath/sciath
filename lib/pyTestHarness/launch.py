@@ -260,7 +260,7 @@ class pthLaunch:
     self.queueName = []
     self.mpiLaunch = []
     self.queuingSystemType = []
-    self.batchConstraint=[]
+    self.batchConstraint=None
     self.jobSubmissionCommand = []
     self.use_batch = False
     self.output_path = ''
