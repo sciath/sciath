@@ -1,19 +1,12 @@
 import os,sys
-import argparse
 import shutil
 import pyTestHarness.unittest as pth
 from   pyTestHarness.colors import pthNamedColors as bcolors
 from   pyTestHarness.version import getVersion
+from   pyTestHarness.utils import py23input
 
 class PthTestHarnessLoadException(Exception) :
   pass
-
-isPython2 = False
-isPython3 = False
-if sys.version_info[0] == 2:
-  isPython2 = True;
-if sys.version_info[0] == 3:
-  isPython3 = True;
 
 def FormattedHourMin(seconds):
   m, s = divmod(int(seconds), 60)
@@ -167,117 +160,34 @@ def generateLaunch_LoadLevelerBG(accountname,queuename,testname,executable,total
 
   print("runjob -n " + executable) # launch command
 
-def performTestSuite_local(self,registered_tests):
-  launcher = self
-
-  print('')
-  self.view()
-
-  for test in registered_tests:
-    print('-- Executing test: ' + test.name + ' --')
-    launcher.submitJob(test)
-    test.verifyOutput()
-
-  counter = 0
-  for test in registered_tests:
-    test.report('summary')
-    if test.passed == False:
-      counter = counter + 1
-  if counter > 0:
-    print('-- Unit test error report --')
-    for test in registered_tests:
-      test.report('log')
-
-  print('-- Unit test report summary --')
-  for test in registered_tests:
-    test.report('summary')
-  if counter > 0:
-    print('  ' + str(counter) + ' / ' + str(len(registered_tests)) + ' tests ' + bcolors.FAIL + 'failed' + bcolors.ENDC)
-  else:
-    print('----------------------')
-    print(bcolors.OKGREEN + ' All tests passed' + bcolors.ENDC)
-
-def performTestSuite_execute(self,registered_tests):
-  launcher = self
-
-  print('')
-  if self.verbosity_level > 0:
-    self.view()
-
-  for test in registered_tests:
-    print('[-- Executing test: ' + test.name + ' --]')
-    launcher.submitJob(test)
-
-def performTestSuite_verify(self,registered_tests):
-  launcher = self
-
-  print('')
-  tests_not_skipped = 0
-  for test in registered_tests:
-    if self.args.sandbox :
-      test.use_sandbox = True
-    print('[-- Verifying test: ' + test.name + ' --]')
-    if test.ignore :
-      print('[Skipping verification for test \"' + test.name + '\"]')
-    elif self.mpiLaunch == 'none' and test.ranks != 1:
-      print('[Skipping verification for test \"' + test.name + '\" as test uses > 1 MPI ranks and no MPI launcher was provided]')
-    else:
-      tests_not_skipped = tests_not_skipped + 1 
-      test.verifyOutput()
-
-  print('')
-  counter = 0
-  for test in registered_tests:
-    if not test.ignore and not test.passed :
-      counter = counter + 1
-  if counter > 0:
-    print('')
-    print('[--------- Unit test error report ----------------------]')
-    for test in registered_tests:
-      test.report('log')
-
-  print('[--------- Unit test summary ----------------------]')
-  counter = 0
-  for test in registered_tests:
-    if self.mpiLaunch == 'none' and test.ranks != 1:
-      print('  ['+test.name+']  skipped as ranks > 1 and no MPI launcher provided')
-    else:
-      test.report('summary')
-    if not test.ignore and not test.passed :
-      counter = counter + 1
-  if counter > 0:
-    print(bcolors.FAIL + '          ********************' + bcolors.ENDC)
-    print(bcolors.FAIL +  ' [status] ' + str(counter) + ' of ' + str(tests_not_skipped) + ' tests FAILED' + bcolors.ENDC)
-    print(bcolors.FAIL + '          ********************' + bcolors.ENDC)
-  else:
-    print(bcolors.OKGREEN + '          ****************' + bcolors.ENDC)
-    print(bcolors.OKGREEN + ' [status] All tests passed' + bcolors.ENDC)
-    print(bcolors.OKGREEN + '          ****************' + bcolors.ENDC)
 
 class pthLaunch:
-  def __init__(self,args):
+  confFileName = 'pthBatchQueuingSystem.conf'
+
+  @staticmethod
+  def writeDefaultDefinition():
+    file = open(pthLaunch.confFileName,'w')
+    major,minor,patch=getVersion()
+    file.write('majorVersion=' + str(major) + '\n')
+    file.write('minorVersion=' + str(minor) + '\n')
+    file.write('patchVersion=' + str(patch) + '\n')
+    file.write('queuingSystemType=none\n' )
+    file.write('mpiLaunch=none\n' )
+    file.close()
+
+  def __init__(self):
     self.accountName = []
     self.queueName = []
     self.mpiLaunch = []
     self.queuingSystemType = []
     self.batchConstraint=None
     self.jobSubmissionCommand = []
-    self.use_batch = False
-    self.output_path = ''
+    self.useBatch = False
     self.verbosity_level = 1
 
-    self.args = args
+    self.setup()
 
-    if self.args.configure:
-      self.configure()
-      sys.exit(0)
-    elif self.args.configure_default:
-      self.writeDefaultDefinition()
-      sys.exit(0)
-    else:
-      self.setup()
-
-    if self.use_batch :
+    if self.useBatch :
       if self.mpiLaunch == 'none':
         raise RuntimeError('[pth] If using a queuing system, a valid mpi launch command must be provided')
 
@@ -312,25 +222,25 @@ class pthLaunch:
     if type in ['PBS','pbs']:
       self.queuingSystemType = 'pbs'
       self.jobSubmissionCommand = 'qsub '
-      self.use_batch = True
+      self.useBatch = True
       #print('Recognized PBS queuing system')
 
     elif type in ['LSF','lsf']:
       self.queuingSystemType = 'lsf'
       self.jobSubmissionCommand = 'bsub < '
-      self.use_batch = True
+      self.useBatch = True
       #print('Recognized LSF queuing system')
 
     elif type in ['SLURM','slurm']:
       self.queuingSystemType = 'slurm'
       self.jobSubmissionCommand = 'sbatch '
-      self.use_batch = True
+      self.useBatch = True
       #print('Recognized Slurm queuing system')
 
     elif type in ['LoadLeveler','load_leveler','loadleveler','llq']:
       self.queuingSystemType = 'load_leveler'
       self.jobSubmissionCommand = 'llsubmit '
-      self.use_batch = True
+      self.useBatch = True
       #print('Recognized IBM LoadLeveler queuing system')
 
     elif type in ['none', 'None', 'local']:
@@ -346,10 +256,10 @@ class pthLaunch:
     self.queueName = name
 
   def view(self):
-    print('pth: Batch queueing system configuration [pthBatchQueingSystem.conf]')
+    print('pth: Batch queueing system configuration [',pthLaunch.confFileName,']')
     print('  Queue system:    ',self.queuingSystemType)
     print('  MPI launcher:    ',self.mpiLaunch)
-    if self.use_batch:
+    if self.useBatch:
       print('  Submit command:', self.jobSubmissionCommand)
       if self.accountName:
         print('  Account:       ',self.accountName)
@@ -360,12 +270,9 @@ class pthLaunch:
 
   def configure(self):
     print('----------------------------------------------------------------')
-    print('Creating new pthBatchQueuingSystem.conf file')
+    print('Creating new',pthLaunch.confFileName,'file')
     prompt = '[1] Batch queuing system type <pbs,lsf,slurm,llq,none>: '
-    if isPython2:
-      v = raw_input(prompt)
-    if isPython3:
-      v = input(prompt)
+    v = py23input(prompt)
     if not v:
       raise ValueError('[pth] You must specify the type of queuing system')
     self.setQueueSystemType(v)
@@ -373,10 +280,7 @@ class pthLaunch:
     v = None
     while not v:
       prompt = '[2] MPI launch command with num. procs. flag (required - hit enter for examples): '
-      if isPython2:
-        v = raw_input(prompt)
-      if isPython3:
-        v = input(prompt)
+      v = py23input(prompt)
       if not v :
         print(' Required. Some example MPI launch commands:')
         print('  none','(if your tests do not use MPI)')
@@ -389,36 +293,26 @@ class pthLaunch:
         print(' The keyword <ranks> will be replaced by the actual number of MPI ranks (defined by a given test) when the test is launched.')
     self.setMPILaunch(v)
 
-    if self.use_batch == True:
+    if self.useBatch == True:
       prompt = '[3] specify a constraint (e.g. "gpu" on Piz Daint) (optional - hit enter if not applicable):'
       v = None
-      if isPython2:
-        v = raw_input(prompt)
-      if isPython3:
-        v = input(prompt)
+      v = py23input(prompt)
       if v :
         self.setBatchConstraint(v)
 
       prompt = '[4] Account to charge (optional - hit enter if not applicable): '
-      if isPython2:
-        v = raw_input(prompt)
-      if isPython3:
-        v = input(prompt)
+      v = py23input(prompt)
       self.setHPCAccountName(v)
 
       prompt = '[5] Name of queue to submit tests to (optional - hit enter if not applicable): '
-      if isPython2:
-        v = raw_input(prompt)
-      if isPython3:
-        v = input(prompt)
+      v = py23input(prompt)
       self.setQueueName(v)
 
     self.writeDefinition()
     print('\n')
     print('** If you wish to change the config for your batch system, either')
-    print('**   (i) delete the file pthBatchQueuingSystem.conf, or')
-    print('**  (ii) re-run pth2.configure()')
-    print('** (iii) re-run with the command line arg --configure')
+    print('**  (i) delete the file',pthLaunch.confFileName,' or')
+    print('** (ii) re-run with the command line arg --configure')
     print('----------------------------------------------------------------')
 
   def setup(self):
@@ -428,25 +322,15 @@ class pthLaunch:
       self.configure()
       self.writeDefinition()
 
-  def writeDefaultDefinition(self):
-    file = open('pthBatchQueuingSystem.conf','w')
-    major,minor,patch=getVersion()
-    file.write('majorVersion=' + str(major) + '\n')
-    file.write('minorVersion=' + str(minor) + '\n')
-    file.write('patchVersion=' + str(patch) + '\n')
-    file.write('queuingSystemType=none\n' )
-    file.write('mpiLaunch=none\n' )
-    file.close()
-
   def writeDefinition(self):
-    file = open('pthBatchQueuingSystem.conf','w')
+    file = open(pthLaunch.confFileName,'w')
     major,minor,patch=getVersion()
     file.write('majorVersion=' + str(major) + '\n')
     file.write('minorVersion=' + str(minor) + '\n')
     file.write('patchVersion=' + str(patch) + '\n')
     file.write('queuingSystemType=' + self.queuingSystemType + '\n')
     file.write('mpiLaunch=' + self.mpiLaunch + '\n')
-    if self.use_batch == True:
+    if self.useBatch == True:
       file.write('accountName=' + self.accountName + '\n')
       file.write('batchConstraint=' + self.batchConstraint + '\n')
       file.write('queueName=' + self.queueName + '\n')
@@ -457,7 +341,7 @@ class pthLaunch:
       majorFile = None
       minorFile = None
       patchFile = None
-      file = open('pthBatchQueuingSystem.conf','r')
+      file = open(pthLaunch.confFileName,'r')
       for v in file :
         key,value = v.split('=',1)
         value = value.rstrip()
@@ -471,7 +355,7 @@ class pthLaunch:
           self.setQueueSystemType(value)
         if key == 'mpiLaunch' :
           self.setMPILaunch(value)
-        if self.use_batch == True:
+        if self.useBatch == True:
           if key == 'batchConstraint' :
             self.setBatchConstraint(value)
           if key == 'queueName' :
@@ -486,13 +370,12 @@ class pthLaunch:
     major,minor,patch = getVersion()
     if majorFile < major or (minorFile < minor and majorFile == major) or \
          majorFile==None or minorFile==None or patchFile==None :
-      message = '[pth] Incompatible outdated pthBatchQueuingSystem.conf file detected. Please delete it and run again to generate a new one.'
-      print(message)
+      print('[pth] Incompatible outdated,',pthLaunch.confFileName,'file detected. Please delete it and run again to generate a new one.')
       raise RuntimeError(message)
 
   def createSubmissionFile(self,testname,commnd,ranks,ranks_per_node,walltime,outfile):
     filename = ''
-    if not self.use_batch:
+    if not self.useBatch:
       print('Warning: no submission file creation required')
       return(filename)
 
@@ -516,13 +399,12 @@ class pthLaunch:
     return(filename)
 
   def submitJob(self,unittest):
-    if self.args.sandbox :
-        unittest.use_sandbox = True
-        sandboxBack = os.getcwd()
-        os.mkdir(unittest.sandbox_path) # error if  it already exists
-        os.chdir(unittest.sandbox_path)
+    if unittest.use_sandbox:
+      sandboxBack = os.getcwd()
+      os.mkdir(unittest.sandbox_path) # error if  it already exists
+      os.chdir(unittest.sandbox_path)
     unittest.setVerbosityLevel(self.verbosity_level)
-    if not self.use_batch:
+    if not self.useBatch:
       mpiLaunch = self.mpiLaunch
 
       if self.mpiLaunch == 'none' and unittest.ranks != 1:
@@ -534,7 +416,7 @@ class pthLaunch:
           launch = pthFormatMPILaunchCommand(mpiLaunch,unittest.ranks,None)
           launchCmd = launch + ' ' + unittest.execute + " > " + os.path.join(unittest.output_path,unittest.output_file)
         if self.verbosity_level > 0:
-          if self.args.sandbox :
+          if unittest.use_sandbox:
             print('[Executing from ' + os.getcwd() + ']',launchCmd)
           else :
             print('[Executing]',launchCmd)
@@ -544,82 +426,64 @@ class pthLaunch:
       launchfile = self.createSubmissionFile(unittest.name,unittest.execute,unittest.ranks,'',unittest.walltime,outfile)
       launchCmd = self.jobSubmissionCommand + launchfile
       if self.verbosity_level > 0:
-        if self.args.sandbox :
+        if unittest.use_sandbox:
           print('[Executing from ' + os.getcwd() + ']',launchCmd)
         else :
           print('[Executing]',launchCmd)
       os.system(launchCmd)
 
-    if self.args.sandbox :
+    if unittest.use_sandbox:
         os.chdir(sandboxBack)
 
-  def executeTestSuite(self,registered_tests):
-    if self.args.output_path:
-      for test in registered_tests:
-        test.setOutputPath(self.args.output_path)
-
-    # Don't execute if we are verifying a batch run
-    if not self.use_batch and not self.args.verify:
-      performTestSuite_execute(self,registered_tests)
-
-  def verifyTestSuite(self,registered_tests):
-    # Verify, unless we are running with a batch system and are not in verify(-only) mode
-    if not self.use_batch or self.args.verify :
-      performTestSuite_verify(self,registered_tests)
-
-  def clean(self,registered_tests):
-    for test in registered_tests:
-      print('[ removing output for ' + test.name +' ]')
-      if self.args.sandbox :
-        test.use_sandbox = True
-        sandboxBack = os.getcwd()
-        if not os.path.isdir(test.sandbox_path) :
-            os.mkdir(test.sandbox_path)
-        os.chdir(test.sandbox_path)
-      outfile = os.path.join(test.output_path,test.output_file)
-      if os.path.isfile(outfile) :
-        os.remove(outfile)
-      if test.comparison_file != outfile and os.path.isfile(test.comparison_file) :
-        foundInLocalTree = False
-        cwd = os.getcwd()
-        for (root, dirs, files) in os.walk(cwd) :
-          for f in files :
-            if os.path.abspath(test.comparison_file) == os.path.abspath(os.path.join(root,f)) :
-              foundInLocalTree = True
-              break
-          if foundInLocalTree :
+  def clean(self,test):
+    print('[ -- Removing output for test:',test.name,'-- ]')
+    if test.use_sandbox:
+      sandboxBack = os.getcwd()
+      if not os.path.isdir(test.sandbox_path) :
+          os.mkdir(test.sandbox_path)
+      os.chdir(test.sandbox_path)
+    outfile = os.path.join(test.output_path,test.output_file)
+    if os.path.isfile(outfile) :
+      os.remove(outfile)
+    if test.comparison_file != outfile and os.path.isfile(test.comparison_file) :
+      foundInLocalTree = False
+      cwd = os.getcwd()
+      for (root, dirs, files) in os.walk(cwd) :
+        for f in files :
+          if os.path.abspath(test.comparison_file) == os.path.abspath(os.path.join(root,f)) :
+            foundInLocalTree = True
             break
         if foundInLocalTree :
-          os.remove(test.comparison_file)
-        else :
-          message = "Refusing to remove output file " + test.comparison_file + " since it does not live in the local subtree. If you really wanted to compare with this file, please delete it yourself to proceed"
-          raise RuntimeError(message)
-      if self.use_batch:
-        stderrFile = test.name + '.stderr'
-        if os.path.isfile(stderrFile) :
-          os.remove(stderrFile)
-        stdoutFile = test.name + '.stdout'
-        if os.path.isfile(stdoutFile) :
-          os.remove(stdoutFile)
-        if self.queuingSystemType == 'pbs':
-          pbsFile = test.name + '-pth.pbs'
-          if os.path.isfile(pbsFile) :
-            os.remove(pbsFile)
-        elif self.queuingSystemType == 'lsf':
-          lsfFile = test.name + '-pth.lsf'
-          if os.path.isfile(lsfFile) :
-            os.remove(lsfFile)
-        elif self.queuingSystemType == 'slurm':
-          slurmFile = test.name + '-pth.slurm'
-          if os.path.isfile(slurmFile) :
-            os.remove(slurmFile)
-        elif self.queuingSystemType == 'load_leveler':
-          llqFile = test.name + '-pth.llq'
-          if os.path.isfile(llqFile) :
-            os.remove(llqFile)
+          break
+      if foundInLocalTree :
+        os.remove(test.comparison_file)
+      else :
+        message = "Refusing to remove output file " + test.comparison_file + " since it does not live in the local subtree. If you really wanted to compare with this file, please delete it yourself to proceed"
+        raise RuntimeError(message)
+    if self.useBatch:
+      stderrFile = test.name + '.stderr'
+      if os.path.isfile(stderrFile) :
+        os.remove(stderrFile)
+      stdoutFile = test.name + '.stdout'
+      if os.path.isfile(stdoutFile) :
+        os.remove(stdoutFile)
+      if self.queuingSystemType == 'pbs':
+        pbsFile = test.name + '-pth.pbs'
+        if os.path.isfile(pbsFile) :
+          os.remove(pbsFile)
+      elif self.queuingSystemType == 'lsf':
+        lsfFile = test.name + '-pth.lsf'
+        if os.path.isfile(lsfFile) :
+          os.remove(lsfFile)
+      elif self.queuingSystemType == 'slurm':
+        slurmFile = test.name + '-pth.slurm'
+        if os.path.isfile(slurmFile) :
+          os.remove(slurmFile)
+      elif self.queuingSystemType == 'load_leveler':
+        llqFile = test.name + '-pth.llq'
+        if os.path.isfile(llqFile) :
+          os.remove(llqFile)
 
-      if self.args.sandbox :
-        os.chdir(sandboxBack)
-        shutil.rmtree(test.sandbox_path) # remove entire subtree
-
-# < end class >
+    if test.use_sandbox:
+      os.chdir(sandboxBack)
+      shutil.rmtree(test.sandbox_path) # remove entire subtree
