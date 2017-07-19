@@ -370,7 +370,7 @@ class pthLaunch:
     major,minor,patch = getVersion()
     if majorFile < major or (minorFile < minor and majorFile == major) or \
          majorFile==None or minorFile==None or patchFile==None :
-      message = '[pth] Incompatible, outdated ' + pthLaunch.confFileName + ' file detected. Please reconfigure (run with -c).'
+      message = '[pth] Incompatible, outdated ' + pthLaunch.confFileName + ' file detected. Please delete it and re-run to reconfigure.'
       raise RuntimeError(message)
 
   def createSubmissionFile(self,testname,commnd,ranks,ranks_per_node,walltime,outfile):
