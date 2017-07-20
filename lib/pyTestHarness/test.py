@@ -341,6 +341,3 @@ class Test:
     print('<test> rm -f ' + outfile)
     if outfile != cmpfile and cmpfile:
       print('<test> rm -f ' + cmpfile)
-
-# A deprecated alias, for backwards compatibility
-pthUnitTest = Test
