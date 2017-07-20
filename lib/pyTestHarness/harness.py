@@ -1,6 +1,7 @@
-import os,sys
+import os
+import sys
 import argparse
-import pyTestHarness.unittest as unittest
+import pyTestHarness.test as pthtest
 import pyTestHarness.launch as launch
 from   pyTestHarness.colors import pthNamedColors as bcolors
 
@@ -19,8 +20,8 @@ class pthHarness:
     self.registeredTests = registeredTests
 
     for t in self.registeredTests:
-      if not isinstance(t,unittest.pthUnitTest):
-        raise ValueError('[pth]: Registered tests must be of type UnitTest')
+      if not isinstance(t,pthtest.Test):
+        raise ValueError('[pth]: Registered tests must be of type test')
     self.testsRegistered = len(self.registeredTests)
 
     parser = argparse.ArgumentParser(description='Python Test Harness.')
@@ -174,7 +175,7 @@ class pthHarness:
           counter = counter + 1
       if counter > 0:
         print('')
-        print('[--------- Unit test error report ----------------------]')
+        print('[--------- Test Error Report ----------------------]')
         for test in self.registeredTests:
           test.report('log')
 
@@ -237,16 +238,16 @@ class pthHarness:
         elif test.ranks >= 1 and test.passed == True:
           mpiPassedCounter = mpiPassedCounter + 1
 
-    print('[--------- UnitTest status ----------------------]')
+    print('[--------- test status ----------------------]')
     for test in testList:
       test.report('summary')
 
     print('')
-    print('[--------- UnitTest report ----------------------]')
-    print('  ' + ("%.4d" % nTests) + ' ' + 'UnitTests registered')
-    print('  ' + ("%.4d" % seqCounter) + ' Sequential UnitTests')
-    print('  ' + ("%.4d" % mpiCounter) + ' MPI UnitTests')
-    print('  ' + ("%.4d" % execCounter) + ' of ' +("%.4d" % nTests)+ ' UnitTests executed')
+    print('[--------- test report ----------------------]')
+    print('  ' + ("%.4d" % nTests) + ' ' + 'tests registered')
+    print('  ' + ("%.4d" % seqCounter) + ' Sequential tests')
+    print('  ' + ("%.4d" % mpiCounter) + ' MPI tests')
+    print('  ' + ("%.4d" % execCounter) + ' of ' +("%.4d" % nTests)+ ' tests executed')
 
     print('')
     if execCounter == 0:
@@ -264,11 +265,11 @@ class pthHarness:
         print(bcolors.WARNING + ' [status] SUCCESS (partial): All executed tests passed' + bcolors.ENDC)
 
     if seqExecCounter + mpiExecCounter != nTests:
-      print(bcolors.WARNING+'          Warning: Not all UnitTests were executed!'+ bcolors.ENDC)
+      print(bcolors.WARNING+'          Warning: Not all tests were executed!'+ bcolors.ENDC)
     if seqExecCounter != seqCounter:
-      print(bcolors.WARNING+'          Warning: '+("%.4d" % (seqCounter-seqExecCounter))+' sequential UnitTests were skipped'+ bcolors.ENDC)
+      print(bcolors.WARNING+'          Warning: '+("%.4d" % (seqCounter-seqExecCounter))+' sequential tests were skipped'+ bcolors.ENDC)
     if mpiExecCounter != mpiCounter:
-      print(bcolors.WARNING+'          Warning: '+("%.4d" % (mpiCounter-mpiExecCounter))+' MPI UnitTests were skipped!'+ bcolors.ENDC)
+      print(bcolors.WARNING+'          Warning: '+("%.4d" % (mpiCounter-mpiExecCounter))+' MPI tests were skipped!'+ bcolors.ENDC)
 
     errfile = []
     if failCounter > 0:
@@ -282,7 +283,7 @@ class pthHarness:
       sys.stdout = sys.__stdout__
 
       print('xxx============================================================================xxx')
-      print('     UnitTests failed - Full error report written to ' + self.pthErrorReportFileName)
+      print('     tests failed - Full error report written to ' + self.pthErrorReportFileName)
       print('                      - Inspect the error log file and resolve failed tests')
       pthErrorReportFileLocation = os.path.realpath(self.pthErrorReportFileName)
       print('     cat ' + pthErrorReportFileLocation)

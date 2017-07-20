@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import os
-import pyTestHarness.unittest as pth
+import pyTestHarness.test as pthtest
 import pyTestHarness.harness as harness
 
 def makeLocalPathAbsolute(localRelPath) :
@@ -12,15 +12,15 @@ def test1():
   launch = makeLocalPathAbsolute('./ex')
   expected_file = 'ex.expected'
 
-  def comparefunc(unittest):
+  def comparefunc(test):
     key = 'kspits'
-    unittest.compareInteger(key,0)
+    test.compareInteger(key,0)
 
     key = 'norm'
-    unittest.compareFloatingPoint(key,1e-4)
+    test.compareFloatingPoint(key,1e-4)
 
-  # Create unit test object
-  test = pth.pthUnitTest('ex1',ranks,launch,expected_file)
+  # Create test object
+  test = pthtest.Test('ex1',ranks,launch,expected_file)
   test.setVerifyMethod(comparefunc)
   test.appendKeywords('@')
 
@@ -31,15 +31,15 @@ def test2():
   launch = makeLocalPathAbsolute('./ex')
   expected_file = 'ex.expected2'
 
-  def comparefunc(unittest):
+  def comparefunc(test):
     key = 'kspits'
-    unittest.compareInteger(key,0)
+    test.compareInteger(key,0)
 
     key = 'norm'
-    unittest.compareFloatingPoint(key,1e-4)
+    test.compareFloatingPoint(key,1e-4)
 
-  # Create unit test object
-  test = pth.pthUnitTest('ex2',ranks,launch,expected_file)
+  # Create test object
+  test = pthtest.Test('ex2',ranks,launch,expected_file)
   test.setVerifyMethod(comparefunc)
   test.appendKeywords('@')
 
@@ -50,15 +50,15 @@ def test3():
   launch = makeLocalPathAbsolute('./ex')
   expected_file = 'ex.expected3'
 
-  def comparefunc(unittest):
+  def comparefunc(test):
     key = 'kspits'
-    unittest.compareInteger(key,0)
+    test.compareInteger(key,0)
 
     key = 'norm'
-    unittest.compareFloatingPoint(key,1e-4)
+    test.compareFloatingPoint(key,1e-4)
 
   # Create test object
-  test = pth.pthUnitTest('ex3',ranks,launch,expected_file)
+  test = pthtest.Test('ex3',ranks,launch,expected_file)
   test.setVerifyMethod(comparefunc)
   test.appendKeywords('@')
 

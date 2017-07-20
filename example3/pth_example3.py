@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import os
-import pyTestHarness.unittest as pth
+import pyTestHarness.test as pthtest
 import pyTestHarness.harness as harness
 
 def run_petsc_ex2a():
@@ -8,11 +8,11 @@ def run_petsc_ex2a():
   ranks = 4
   expected_file = 'ex2.expected'
 
-  def comparefunc(unittest):
+  def comparefunc(test):
     key = 'KSP Residual norm'
-    unittest.compareFloatingPoint(key,1.0e-5)
+    test.compareFloatingPoint(key,1.0e-5)
 
-  test = pth.pthUnitTest('ex2a',ranks,launch,expected_file)
+  test = pthtest.Test('ex2a',ranks,launch,expected_file)
   test.setVerifyMethod(comparefunc)
   return(test)
 
@@ -21,11 +21,11 @@ def run_petsc_ex2b():
   ranks = 4
   expected_file = 'ex2.expected'
 
-  def comparefunc(unittest):
+  def comparefunc(test):
     key = 'KSP Residual norm'
-    unittest.compareFloatingPoint(key,1.0e-5)
+    test.compareFloatingPoint(key,1.0e-5)
 
-  test = pth.pthUnitTest('ex2b',ranks,launch,expected_file)
+  test = pthtest.Test('ex2b',ranks,launch,expected_file)
   test.setVerifyMethod(comparefunc)
   return(test)
 
@@ -34,14 +34,14 @@ def run_petsc_ex2c():
   ranks = 4
   expected_file = 'ex2.expected'
 
-  def comparefunc(unittest):
+  def comparefunc(test):
     key = 'KSP Residual norm'
-    unittest.compareFloatingPoint(key,1.0e-5)
+    test.compareFloatingPoint(key,1.0e-5)
 
     key = 'Norm of error'
-    unittest.compareLiteral(key)
+    test.compareLiteral(key)
 
-  test = pth.pthUnitTest('ex2c',ranks,launch,expected_file)
+  test = pthtest.Test('ex2c',ranks,launch,expected_file)
   test.setVerifyMethod(comparefunc)
   return(test)
 

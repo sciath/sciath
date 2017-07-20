@@ -1,14 +1,15 @@
 #!/usr/bin/env python
-import os,sys
+import os
+import sys
 import argparse
-import pyTestHarness.unittest as pth
+import pyTestHarness.test as pth
 import pyTestHarness.harness as harness
 
 # Import separate tests
 sys.path.append(os.path.join(os.environ['PWD'], 't1'))
 sys.path.append(os.path.join(os.environ['PWD'], 't2'))
-import unittest_1 as ut1
-import unittest_2 as ut2
+import test1 as t1
+import test2 as t2
 
 def makeLocalPathAbsolute(localRelPath) :
   thisDir = os.path.split(os.path.abspath(__file__))[0]
@@ -21,7 +22,7 @@ def run_tests():
     os.mkdir('output')
 
   # Register tests
-  registeredTests = [ ut1.test() , ut2.test() ]
+  registeredTests = [ t1.test() , t2.test() ]
 
   # Force output to be written somewhere else, can be invoked using -o <path>
   for test in registeredTests:

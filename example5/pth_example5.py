@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import os
+import pyTestHarness.test as pthtest
 import pyTestHarness.harness as harness
-import pyTestHarness.unittest as putest
 
 def makeLocalPathAbsolute(localRelPath) :
   thisDir = os.path.split(os.path.abspath(__file__))[0]
@@ -12,24 +12,24 @@ def test1():
   launch = makeLocalPathAbsolute('./ex1')
   expected_file = 'ex1.expected'
 
-  def comparefunc(unittest):
+  def comparefunc(test):
     key = '\$cputime'
-    unittest.compareFloatingPoint(key,0.01)
+    test.compareFloatingPoint(key,0.01)
 
     key = '\$residuals'
-    unittest.compareFloatingPoint(key,0.000001)
+    test.compareFloatingPoint(key,0.000001)
 
     key = '\$kspits'
-    unittest.compareInteger(key,0)
+    test.compareInteger(key,0)
 
     key = '\$norm'
-    unittest.compareFloatingPoint(key,0.01)
+    test.compareFloatingPoint(key,0.01)
 
     key = '\$rms'
-    unittest.compareFloatingPoint(key,0.01)
+    test.compareFloatingPoint(key,0.01)
 
-  # Create unit test object
-  test = putest.pthUnitTest('ex1',ranks,launch,expected_file)
+  # Create test object
+  test = pthtest.Test('ex1',ranks,launch,expected_file)
   test.setVerifyMethod(comparefunc)
   test.appendKeywords('@')
 
@@ -40,12 +40,12 @@ def test2():
   launch = makeLocalPathAbsolute('./ex2')
   expected_file = 'ex2.expected'
 
-  def comparefunc(unittest):
+  def comparefunc(test):
     key = 'Residuals'
-    unittest.compareFloatingPoint(key,0.0001)
+    test.compareFloatingPoint(key,0.0001)
 
-  # Create unit test object
-  test = putest.pthUnitTest('ex2',ranks,launch,expected_file)
+  # Create test object
+  test = pthtest.Test('ex2',ranks,launch,expected_file)
   test.setVerifyMethod(comparefunc)
   test.appendKeywords('@')
   test.setComparisonFile('ex2-residual.log')
@@ -57,25 +57,25 @@ def test3():
   launch = 'touch ex3.output'
   expected_file = 'ex3.expected'
 
-  def comparefunc(unittest):
+  def comparefunc(test):
     key = 'kspit'
-    unittest.compareInteger(key,0)
+    test.compareInteger(key,0)
 
     key = 'res1'
-    unittest.compareFloatingPoint(key,1.0e-4)
+    test.compareFloatingPoint(key,1.0e-4)
 
-  # Create unit test object
-  test = putest.pthUnitTest('ex3',ranks,launch,expected_file)
+  # Create test object
+  test = pthtest.Test('ex3',ranks,launch,expected_file)
   test.setVerifyMethod(comparefunc)
 
   return(test)
 
 # Define test which doesn't use an expected file
-from pyTestHarness.unittest import getKeyValuesAsInt
+from pyTestHarness.test import getKeyValuesAsInt
 
 def test4():
-  def comparefunc(unittest):
-    output,output_flat = unittest.getOutput()
+  def comparefunc(test):
+    output,output_flat = test.getOutput()
 
     key = '\$kspits'
     value = getKeyValuesAsInt(output_flat,key)
@@ -90,9 +90,9 @@ def test4():
     else:
       status = False
       kerr = 'Key = \"' + key + '\" --> was not found in output file'
-    unittest.updateStatus(status,kerr)
+    test.updateStatus(status,kerr)
 
-  test = putest.pthUnitTest('ex4',1,makeLocalPathAbsolute('./ex1'),None)
+  test = pthtest.Test('ex4',1,makeLocalPathAbsolute('./ex1'),None)
   test.setVerifyMethod(comparefunc)
   return(test)
 

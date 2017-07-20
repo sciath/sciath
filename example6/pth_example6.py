@@ -6,7 +6,7 @@
 # Note: We define executables relative to the absolute path of this file
 
 import os
-import pyTestHarness.unittest as pth
+import pyTestHarness.test as pthtest
 import pyTestHarness.harness as harness
 
 def makeLocalPathAbsolute(localRelPath) :
@@ -18,11 +18,11 @@ def test1() :
   launch = makeLocalPathAbsolute('ex.sh') + ' 1'
   expected_file = makeLocalPathAbsolute('ex1.expected')
 
-  def comparefunc(unittest):
+  def comparefunc(test):
     key = 'testkey'
-    unittest.compareInteger(key,0)
+    test.compareInteger(key,0)
 
-  test = pth.pthUnitTest('ex1',ranks,launch,expected_file)
+  test = pthtest.Test('ex1',ranks,launch,expected_file)
   test.setVerifyMethod(comparefunc)
   test.setComparisonFile('out.txt')
 
@@ -33,11 +33,11 @@ def test2():
   launch = makeLocalPathAbsolute('ex.sh') + ' 2'
   expected_file = makeLocalPathAbsolute('ex2.expected')
 
-  def comparefunc(unittest):
+  def comparefunc(test):
     key = 'testkey'
-    unittest.compareInteger(key,0)
+    test.compareInteger(key,0)
 
-  test = pth.pthUnitTest('ex2',ranks,launch,expected_file)
+  test = pthtest.Test('ex2',ranks,launch,expected_file)
   test.setVerifyMethod(comparefunc)
   test.setComparisonFile('out.txt')
 

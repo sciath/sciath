@@ -1,6 +1,6 @@
 import os,sys
 import shutil
-import pyTestHarness.unittest as pth
+import pyTestHarness.test
 from   pyTestHarness.colors import pthNamedColors as bcolors
 from   pyTestHarness.version import getVersion
 from   pyTestHarness.utils import py23input
@@ -398,41 +398,41 @@ class pthLaunch:
     print('Created submission file:',filename)
     return(filename)
 
-  def submitJob(self,unittest):
-    if unittest.use_sandbox:
+  def submitJob(self,test):
+    if test.use_sandbox:
       sandboxBack = os.getcwd()
-      os.mkdir(unittest.sandbox_path) # error if  it already exists
-      os.chdir(unittest.sandbox_path)
-    unittest.setVerbosityLevel(self.verbosity_level)
+      os.mkdir(test.sandbox_path) # error if  it already exists
+      os.chdir(test.sandbox_path)
+    test.setVerbosityLevel(self.verbosity_level)
     if not self.useBatch:
       mpiLaunch = self.mpiLaunch
 
-      if self.mpiLaunch == 'none' and unittest.ranks != 1:
-        print('[Failed to launch test \"' + unittest.name + '\" as test uses > 1 MPI ranks and no MPI launcher was provided]')
+      if self.mpiLaunch == 'none' and test.ranks != 1:
+        print('[Failed to launch test \"' + test.name + '\" as test uses > 1 MPI ranks and no MPI launcher was provided]')
       else:
         if self.mpiLaunch == 'none':
-          launchCmd = unittest.execute + " > " + os.path.join(unittest.output_path,unittest.output_file)
+          launchCmd = test.execute + " > " + os.path.join(test.output_path,test.output_file)
         else:
-          launch = pthFormatMPILaunchCommand(mpiLaunch,unittest.ranks,None)
-          launchCmd = launch + ' ' + unittest.execute + " > " + os.path.join(unittest.output_path,unittest.output_file)
+          launch = pthFormatMPILaunchCommand(mpiLaunch,test.ranks,None)
+          launchCmd = launch + ' ' + test.execute + " > " + os.path.join(test.output_path,test.output_file)
         if self.verbosity_level > 0:
-          if unittest.use_sandbox:
+          if test.use_sandbox:
             print('[Executing from ' + os.getcwd() + ']',launchCmd)
           else :
             print('[Executing]',launchCmd)
-        unittest.errno = os.system(launchCmd) >> 8
+        test.errno = os.system(launchCmd) >> 8
     else:
-      outfile = os.path.join(unittest.output_path,unittest.output_file)
-      launchfile = self.createSubmissionFile(unittest.name,unittest.execute,unittest.ranks,'',unittest.walltime,outfile)
+      outfile = os.path.join(test.output_path,test.output_file)
+      launchfile = self.createSubmissionFile(test.name,test.execute,test.ranks,'',test.walltime,outfile)
       launchCmd = self.jobSubmissionCommand + launchfile
       if self.verbosity_level > 0:
-        if unittest.use_sandbox:
+        if test.use_sandbox:
           print('[Executing from ' + os.getcwd() + ']',launchCmd)
         else :
           print('[Executing]',launchCmd)
       os.system(launchCmd)
 
-    if unittest.use_sandbox:
+    if test.use_sandbox:
         os.chdir(sandboxBack)
 
   def clean(self,test):

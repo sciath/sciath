@@ -9,7 +9,7 @@ from pyTestHarness.colors import pthNamedColors as bcolors
 def compareLiteral(input,expected):
   status = True
   err = ''
-  
+
   if len(input) != len(expected):
     status = False
     err = err + "compareLiteral [failed]\nReason: input and expected are of different length\n"
@@ -245,63 +245,8 @@ def getKeyValuesNLinesExclusive(contents,keyword,numlines):
   
   return result
 
-def test1():
-  (contents,flatcontents) = parseFile('test.std',['!'])
-  print('File')
-  for row in contents:
-    print(row)
 
-  #print(flatcontents)
-  key = '\$verify'
-
-  values = getKeyValues(flatcontents,key)
-  print('values')
-  print(values)
-
-  values = getKeyValuesAsFloat(flatcontents,key)
-  print(values)
-
-def test2():
-  (contents,flatcontents) = parseFile('test03c.expected',['!'])
-  
-  #print(flatcontents)
-  key = 'KSP Residual norm'
-  
-  values = getKeyValues(flatcontents,key)
-  print('values')
-  print(values)
-  
-  values = getKeyValuesAsFloat(flatcontents,key)
-  print(values)
-
-  key = 'dt_courant ='
-  values = getKeyValues(flatcontents,key)
-  print('values')
-  print(values)
-
-  values = getKeyValuesNLinesInclusive(contents,'_DataExCompleteCommunicationMap',8)
-  print(values)
-  values = getKeyValuesNLinesExclusive(contents,'_DataExCompleteCommunicationMap',7)
-  print(values)
-
-def test3():
-  (contents,flatcontents) = parseFile('test03c.expected',['!'])
-  
-  expected = getKeyValuesNLinesExclusive(contents,'_DataExCompleteCommunicationMap',7)
-  output = getKeyValuesNLinesExclusive(contents,'_DataExCompleteCommunicationMap',7)
-  output[2] = 'aaa'
-  status,err = compareLiteral(output,expected)
-  print(err)
-
-  status,err = compareFloatingPoint([4.4,3.3],0.01,[4.4,3.4])
-  print(err)
-
-  status,err = compareInteger(['4','3'],'2',['3'])
-  print(err)
-
-
-class pthUnitTest:
-  
+class Test:
   def __init__(self,name,ranks,execute,expected_file):
     self.passed = -1
     self.walltime = 2.0 # minutes
@@ -326,8 +271,8 @@ class pthUnitTest:
     self.verbosity_level = value
   
   def verify(self,junk):
-    raise RuntimeError('[pth] A valid verification method for unit-test \"' + self.name + '\" was not found.\n\
-              [pth] You must provide each unit-test with a method to verify the output.\n\
+    raise RuntimeError('[pth] A valid verification method for test \"' + self.name + '\" was not found.\n\
+              [pth] You must provide each test with a method to verify the output.\n\
               [pth] The method is set via calling test.setVerifyMethod()')
 
   def setOutputPath(self,opath):
@@ -474,3 +419,6 @@ class pthUnitTest:
     print('<test> rm -f ' + outfile)
     if outfile != cmpfile and cmpfile:
       print('<test> rm -f ' + cmpfile)
+
+# A deprecated alias, for backwards-compatibility
+pthUnitTest = Test

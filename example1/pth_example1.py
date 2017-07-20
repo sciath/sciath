@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import os
-import pyTestHarness.unittest as pth
+import pyTestHarness.test as pth
 import pyTestHarness.harness as harness
 
 def makeLocalPathAbsolute(localRelPath) :
@@ -12,24 +12,24 @@ def test1():
   launch = makeLocalPathAbsolute('./ex1')
   expected_file = 'ex1.expected'
 
-  def comparefunc(unittest):
+  def comparefunc(test):
     key = '\$cputime'
-    unittest.compareFloatingPoint(key,0.01)
+    test.compareFloatingPoint(key,0.01)
 
     key = '\$residuals'
-    unittest.compareFloatingPoint(key,0.000001)
+    test.compareFloatingPoint(key,0.000001)
 
     key = 'kspits'
-    unittest.compareInteger(key,0)
+    test.compareInteger(key,0)
 
     key = '\$norm'
-    unittest.compareFloatingPoint(key,0.01)
+    test.compareFloatingPoint(key,0.01)
 
     key = '\$rms'
-    unittest.compareFloatingPoint(key,0.01)
+    test.compareFloatingPoint(key,0.01)
 
-  # Create unit test object
-  test = pth.pthUnitTest('ex1',ranks,launch,expected_file)
+  # Create test object
+  test = pth.Test('ex1',ranks,launch,expected_file)
   test.setVerifyMethod(comparefunc)
   test.appendKeywords('@')
 
@@ -39,12 +39,12 @@ def test2():
   ranks = 1
   launch = makeLocalPathAbsolute('./ex2')
   expected_file = 'ex2.expected'
-  def comparefunc(unittest):
+  def comparefunc(test):
     key = 'Residuals'
-    unittest.compareFloatingPoint(key,0.0001)
+    test.compareFloatingPoint(key,0.0001)
 
-  # Create unit test object
-  test = pth.pthUnitTest('ex2',ranks,launch,expected_file)
+  # Create test object
+  test = pth.Test('ex2',ranks,launch,expected_file)
   test.setVerifyMethod(comparefunc)
   test.appendKeywords('@')
   test.setComparisonFile('ex2-residual.log')
@@ -56,15 +56,15 @@ def test3():
   launch = 'echo' # produce no output
   expected_file = 'ex3.expected'
 
-  def comparefunc(unittest):
+  def comparefunc(test):
     key = 'kspit'
-    unittest.compareInteger(key,0)
+    test.compareInteger(key,0)
 
     key = 'res1'
-    unittest.compareFloatingPoint(key,1.0e-4)
+    test.compareFloatingPoint(key,1.0e-4)
 
-  # Create unit test object
-  test = pth.pthUnitTest('ex3',ranks,launch,expected_file)
+  # Create test object
+  test = pth.Test('ex3',ranks,launch,expected_file)
   test.setVerifyMethod(comparefunc)
 
   return(test)
