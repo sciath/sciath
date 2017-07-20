@@ -178,23 +178,6 @@ class pthHarness:
         for test in self.registeredTests:
           test.report('log')
 
-      print('[--------- Unit test summary ----------------------]')
-      counter = 0
-      for test in self.registeredTests:
-        if self.launcher.mpiLaunch == 'none' and test.ranks != 1:
-          print('  ['+test.name+']  skipped as ranks > 1 and no MPI launcher provided')
-        else:
-          test.report('summary')
-        if not test.ignore and not test.passed :
-          counter = counter + 1
-      if counter > 0:
-        print(bcolors.FAIL + '          ********************' + bcolors.ENDC)
-        print(bcolors.FAIL +  ' [status] ' + str(counter) + ' of ' + str(tests_not_skipped) + ' tests FAILED' + bcolors.ENDC)
-        print(bcolors.FAIL + '          ********************' + bcolors.ENDC)
-      else:
-        print(bcolors.OKGREEN + '          ****************' + bcolors.ENDC)
-        print(bcolors.OKGREEN + ' [status] All tests passed' + bcolors.ENDC)
-        print(bcolors.OKGREEN + '          ****************' + bcolors.ENDC)
       errfile = self.reportAll()
       if errfile and self.args.error_on_test_failure:
         print('\n')
