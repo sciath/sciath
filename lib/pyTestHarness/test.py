@@ -8,14 +8,12 @@ from pyTestHarness.colors import NamedColors as pthcolors
 def compareLiteral(input,expected):
   status = True
   err = ''
-
   if len(input) != len(expected):
     status = False
     err = err + "compareLiteral [failed]\nReason: input and expected are of different length\n"
     err = err + ("  expected: %s\n" % expected)
     err = err + ("  input:    %s\n" % input)
     return status,err
-
   for index in range(0,len(expected)):
     if input[index] != expected[index]:
       status = False
@@ -23,26 +21,22 @@ def compareLiteral(input,expected):
       err = err + ("  expected: %s\n" % expected)
       err = err + ("  input:    %s\n" % input)
       err = err + "  index[" + str(index) +  "]" + " input \"" +  input[index] + "\" != expected \"" + expected[index] + "\"\n"
-
   return status,err
 
 def compareFloatingPoint(input,tolerance,expected):
   status = True
   err = ''
-
   tmp = np.array(input)
   i_f = tmp.astype(np.float)
   tmp = np.array(expected)
   e_f = tmp.astype(np.float)
   tol_f = float(tolerance)
-
   if len(input) != len(expected):
     status = False
     err = err + "compareFloatingPoint [failed]\nReason: input and expected are of different length\n"
     err = err + ("  expected: %s\n" % e_f)
     err = err + ("  input:    %s\n" % i_f)
     return status,err
-
   for index in range(0,len(e_f)):
     absdiff = np.abs(i_f[index] - e_f[index]);
     if absdiff > tol_f:
@@ -51,26 +45,22 @@ def compareFloatingPoint(input,tolerance,expected):
       err = err + ("  expected: %s\n" % e_f)
       err = err + ("  input:    %s\n" % i_f)
       err = err + "  index[" + str(index) + "]" + (" input \"%1.6e\"" %  i_f[index])  + (" != expected \"%1.6e\"" % e_f[index]) + " (+/-" + ("%1.4e" % tol_f)+")\n"
-
   return status,err
 
 def compareInteger(input,tolerance,expected):
   status = True
   err = ''
-
   tmp = np.array(input)
   i_i = tmp.astype(np.int)
   tmp = np.array(expected)
   e_i = tmp.astype(np.int)
   tol_i = int(tolerance)
-
   if len(input) != len(expected):
     status = False
     err = err + "compareInteger [failed]\nReason: input and expected are of different length\n"
     err = err + ("  expected: %s\n" % e_i)
     err = err + ("  input:    %s\n" % i_i)
     return status,err
-  
   for index in range(0,len(e_i)):
     absdiff = np.abs(i_i[index] - e_i[index]);
     if absdiff > tol_i:
@@ -79,12 +69,9 @@ def compareInteger(input,tolerance,expected):
       err = err + ("  expected: %s\n" % e_i)
       err = err + ("  input:    %s\n" % i_i)
       err = err + "  index[" + str(index) + "]" + (" input \"%s\"" %  i_i[index]) + (" != expected \"%s\"" % e_i[index]) + " (+/-"+str(tol_i)+")\n"
-
   return status,err
 
-
 def parseFile(filename,keywords):
-
   flat = ''
   contents = []
   if filename:
@@ -95,64 +82,37 @@ def parseFile(filename,keywords):
           rm_lb = line.lstrip()
           rm_lb = rm_lb.rstrip()
           flat = flat + (rm_lb + ' ')
-
           stripped_line = line.rstrip()
           stripped_line = stripped_line.lstrip()
           contents.append(stripped_line)
-
     file.close()
   return(contents,flat)
 
-
 def getKeyValues(contents,keyword):
-
   c1 = contents
   f_c = []
   f_r = []
   f_s = []
 
   # Look for arrays, then strip them out
-  #f1 = re.findall("\s*" + keyword + "\s*=\s*[\[\(\{].*?[\}\)\]]", c1)
   find_curly  = re.findall("\s*" + keyword + "\s*=?\s*[\{].*?[\}]", c1)
   if find_curly:
-    #print('find_curly',find_curly)
     f_c  = re.findall("\s*" + keyword + "\s*=?\s*[\{](.*?)[\}]", c1)
-    #print(f_c)
     for item in find_curly:
       c1 = c1.replace(item,' ')
-  #print('c1 - curly:',c1)
-
   find_round  = re.findall("\s*" + keyword + "\s*=?\s*[\(].*?[\)]", c1)
   if find_round:
-    #print('find_round',find_round)
     f_r  = re.findall("\s*" + keyword + "\s*=?\s*[\(](.*?)[\)]", c1)
-    #print(f_r)
     for item in find_round:
       c1 = c1.replace(item,' ')
-  #print('c1 - round:',c1)
-
   find_square  = re.findall("\s*" + keyword + "\s*=?\s*[\[].*?[\]]", c1)
   if find_square:
-    #print('find_square',find_square)
     f_s  = re.findall("\s*" + keyword + "\s*=?\s*[\[](.*?)[\]]", c1)
-    #print(f_s)
     for item in find_square:
       c1 = c1.replace(item,' ')
-  #print('c1 - square:',c1)
-
-
-  # Look for singletons, then strip them out
-  #f3 = re.findall("\s*" + keyword + "\s*=\s*([0-9a-zA-Z-\_\.]*)", c1)
-  #f4 = re.findall("\s*" + keyword + "\s+([0-9a-zA-Z-\_\.]*)", c1)
-
   find_single = []
-  #find_single = re.findall("\s*" + keyword + "\s*(.*\s)", c1)
   f_single = re.findall("\s*" + keyword + "\s*=?\s*(.*?)\s", c1)
-  #print('f_single',f_single)
-
-
   list = f_c + f_r + f_s + f_single
-
   filtered = []
   if list:
     for item in list:
@@ -160,17 +120,12 @@ def getKeyValues(contents,keyword):
         trimmed = item.lstrip()
         trimmed = trimmed.rstrip()
         filtered.append(trimmed)
-
   return filtered
-
 
 def getKeyValuesAsInt(contents,keyword):
   result = getKeyValues(contents,keyword)
-
-  #print('result = ',result)
   flattened = []
   for sublist in result:
-
     if type(sublist) is list:
         pass
     else:
@@ -182,21 +137,12 @@ def getKeyValuesAsInt(contents,keyword):
         for num in nums:
           if num != '':
             flattened.append(num)
-    
-
-  #print('flat',flattened)
   tmp = np.array(flattened)
   values = tmp.astype(np.int)
   return values
 
-
 def getKeyValuesAsFloat(contents,keyword):
-  #print('DEBUG: contents = ',contents)
-
   result = getKeyValues(contents,keyword)
-
-  #print('DEBUG: result = ',result)
-
   flattened = []
   for r in result:
     r = r.replace(',',' ')
@@ -205,9 +151,6 @@ def getKeyValuesAsFloat(contents,keyword):
     for v in val:
       if v != '':
         flattened.append(v)
-
-  #print('DEBUG: flattened = ',flattened)
-
   tmp = np.array(flattened)
   values = tmp.astype(np.float)
   return values
@@ -222,10 +165,8 @@ def getKeyValuesNLinesInclusive(contents,keyword,numlines):
       start = counter
       break
     counter = counter + 1
-
   for index in range(start,start+numlines):
     result.append(contents[index])
-
   return result
 
 def getKeyValuesNLinesExclusive(contents,keyword,numlines):
@@ -238,10 +179,8 @@ def getKeyValuesNLinesExclusive(contents,keyword,numlines):
       start = counter + 1
       break
     counter = counter + 1
-  
   for index in range(start,start+numlines):
     result.append(contents[index])
-  
   return result
 
 
@@ -268,7 +207,7 @@ class Test:
 
   def setVerbosityLevel(self,value):
     self.verbosity_level = value
-  
+
   def verify(self,junk):
     raise RuntimeError('[pth] A valid verification method for test \"' + self.name + '\" was not found.\n\
               [pth] You must provide each test with a method to verify the output.\n\
@@ -303,17 +242,13 @@ class Test:
     if self.use_sandbox :
       sandboxBack = os.getcwd()
       os.chdir(self.sandbox_path)
-    
     if self.comparison_file == '':
       self.comparison_file = os.path.join(self.output_path,self.output_file)
-
     if self.verbosity_level > 0:
       print('[Parsing file]',self.comparison_file)
     (self.output_contents,self.output_flatcontents) = parseFile(self.comparison_file,self.keywords)
-
     if self.use_sandbox :
       os.chdir(sandboxBack)
-
     if self.verbosity_level > 0:
       print('[Parsing file]',self.expected_file)
     (self.expected_contents,self.expected_flatcontents) = parseFile(self.expected_file,self.keywords)
@@ -322,10 +257,8 @@ class Test:
   def getOutput(self):
     return self.output_contents,self.output_flatcontents
 
-
   def getExpected(self):
     return self.expected_contents,self.expected_flatcontents
-
 
   def updateStatus(self,status,err):
     if self.passed == -1:
@@ -333,30 +266,24 @@ class Test:
       if err != '':
         self.errormessage = self.errormessage + err
       return
-
     if status == False:
       self.passed = False
       if err != '':
         self.errormessage = self.errormessage + err
 
-
   def report(self,type):
     if type == 'summary':
-      
       if self.ignore == True:
-        print(bcolors.WARNING + ' [' + self.name + ']   skipped' + bcolors.ENDC)
+        print(pthcolors.WARNING + ' [' + self.name + ']   skipped' + pthcolors.ENDC)
       else:
         if self.passed == False:
-          print(bcolors.FAIL + ' [' + self.name + ']   *** FAILED ***' + bcolors.ENDC)
+          print(pthcolors.FAIL + ' [' + self.name + ']   *** FAILED ***' + pthcolors.ENDC)
         else:
-          print(bcolors.OKGREEN + ' [' + self.name + ']   passed' + bcolors.ENDC)
-
+          print(pthcolors.OKGREEN + ' [' + self.name + ']   passed' + pthcolors.ENDC)
     if type == 'log':
       if self.ignore == False:
         if self.passed == False:
-          #print(bcolors.FAIL +  '[' + self.name + '] reason for failure\n' + '--------------------------------------------------------------\n' + self.errormessage + bcolors.ENDC)
           print('[' + self.name + '] reason for failure\n' + '--------------------------------------------------------------\n' + self.errormessage)
-
 
   def compareFloatingPoint(self,key,tolerance):
     expected,expected_flat = self.getExpected()
@@ -364,14 +291,12 @@ class Test:
     values_e = getKeyValuesAsFloat(expected_flat,key)
     if len(values_e) == 0:
       raise RuntimeError('[pth][VerificationError] Test \"' + self.name + '\" queried the expected file \"' + self.comparison_file + '\" for key \"' + key + '\" which was not found. \n\t\t    Users verification code is likely incorrect (contains a typo in the key name)' )
-    
     values   = getKeyValuesAsFloat(output_flat,key)
     status,err = compareFloatingPoint(values,tolerance,values_e)
     kerr = ''
     if status == False:
       kerr = 'Key = \"' + key + '\" --> ' + err
     self.updateStatus(status,kerr)
-
 
   def compareInteger(self,key,tolerance):
     expected,expected_flat = self.getExpected()
@@ -393,7 +318,6 @@ class Test:
     values_e = getKeyValues(expected_flat,key)
     if len(values_e) == 0:
       raise RuntimeError('[pth][VerificationError] Test \"' + self.name + '\" queried the expected file \"' + self.comparison_file + '\" for key \"' + key + '\" which was not found. \n\t\t    Users verification code is likely incorrect (contains a typo in the key name)' )
-    
     values   = getKeyValues(output_flat,key)
     status,err = compareLiteral(values,values_e)
     kerr = ''
@@ -404,13 +328,11 @@ class Test:
   def compareUnixDiff(self):
     expected,expected_flat = self.getExpected()
     output,output_flat = self.getOutput()
-    
     status,err = compareLiteral(output,expected)
     kerr = ''
     if status == False:
       kerr = 'Key = \"' + '<entire file>' + '\" --> ' + err
     self.updateStatus(status,kerr)
-  
 
   def clean(self):
     outfile = os.path.join(self.output_path,self.output_file)
@@ -419,5 +341,5 @@ class Test:
     if outfile != cmpfile and cmpfile:
       print('<test> rm -f ' + cmpfile)
 
-# A deprecated alias, for backwards-compatibility
+# A deprecated alias, for backwards compatibility
 pthUnitTest = Test
