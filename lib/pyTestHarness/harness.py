@@ -2,11 +2,10 @@ import os
 import sys
 import argparse
 import pyTestHarness.test as pthtest
-import pyTestHarness.launch as launch
-from   pyTestHarness.colors import pthNamedColors as bcolors
+import pyTestHarness.launcher as pthlauncher
+from   pyTestHarness.colors import NamedColors as pthcolors
 
-
-class pthHarness:
+class Harness:
   def __init__(self,registeredTests):
     self.testsRegistered = 0
     self.testsExecuted = 0
@@ -45,11 +44,11 @@ class pthHarness:
 
     # If --configure_default is specified, write the default file and exit
     if self.args.configure_default:
-      launch.pthLaunch.writeDefaultDefinition()
+      pthlauncher.Launcher.writeDefaultDefinition()
       sys.exit(0)
 
     # Create the launcher
-    self.launcher = launch.pthLaunch()
+    self.launcher = pthlauncher.Launcher()
 
     # If --configure is specified, (re)generate the configuration file and exit
     if self.args.configure:
@@ -127,7 +126,7 @@ class pthHarness:
     '''Execute tests unless verifying (only) or purging output (only)'''
     if not self.args.verify and not self.args.purge_output:
       print('')
-      print(bcolors.HEADER + '[ *** Executing Tests *** ]' + bcolors.ENDC)
+      print(pthcolors.HEADER + '[ *** Executing Tests *** ]' + pthcolors.ENDC)
       launcher = self.launcher
       testList = self.registeredTests
       description = self.testDescription
@@ -141,7 +140,7 @@ class pthHarness:
             skipCounter = skipCounter + 1
 
       if skipCounter != 0:
-        print('\n' + bcolors.WARNING + 'Warning: ' + str(skipCounter) + ' MPI parallel jobs are being skipped as a valid MPI launcher was not provided'+ bcolors.ENDC)
+        print('\n' + pthcolors.WARNING + 'Warning: ' + str(skipCounter) + ' MPI parallel jobs are being skipped as a valid MPI launcher was not provided'+ pthcolors.ENDC)
 
       counter = 0
       for test in testList:
@@ -156,7 +155,7 @@ class pthHarness:
     '''Verify, unless we are running with a batch system and are not in verify(-only) mode'''
     if not self.launcher.useBatch or self.args.verify :
       print('')
-      print(bcolors.HEADER + '[ *** Verifying Test Output *** ]' + bcolors.ENDC)
+      print(pthcolors.HEADER + '[ *** Verifying Test Output *** ]' + pthcolors.ENDC)
       tests_not_skipped = 0
       for test in self.registeredTests:
         print('[-- Verifying test: ' + test.name + ' --]')
@@ -188,7 +187,7 @@ class pthHarness:
 
   def clean(self):
     print('')
-    print(bcolors.HEADER + '[ *** Deleting Existing Test Output *** ]' + bcolors.ENDC)
+    print(pthcolors.HEADER + '[ *** Deleting Existing Test Output *** ]' + pthcolors.ENDC)
     if os.path.isfile(self.pthErrorReportFileName) :
       os.remove(self.pthErrorReportFileName)
     for test in self.registeredTests:
@@ -251,25 +250,25 @@ class pthHarness:
 
     print('')
     if execCounter == 0:
-      print(bcolors.WARNING + ' [status] UNKNOWN: All tests were skipped' + bcolors.ENDC)
+      print(pthcolors.WARNING + ' [status] UNKNOWN: All tests were skipped' + pthcolors.ENDC)
 
     elif failCounter > 0:
-      print(bcolors.FAIL + ' [status] FAIL: ' + str(failCounter) + ' of ' + str(execCounter) + bcolors.FAIL + ' tests executed FAILED' + bcolors.ENDC)
+      print(pthcolors.FAIL + ' [status] FAIL: ' + str(failCounter) + ' of ' + str(execCounter) + pthcolors.FAIL + ' tests executed FAILED' + pthcolors.ENDC)
 
-      print(bcolors.FAIL +'          ' + ("%.4d" % (seqExecCounter-seqPassedCounter)) + ' of ' +("%.4d" % seqExecCounter)+ ' executed Sequential tests failed'+bcolors.ENDC)
-      print(bcolors.FAIL +'          ' + ("%.4d" % (mpiExecCounter-mpiPassedCounter)) + ' of ' +("%.4d" % mpiExecCounter)+ ' executed MPI tests failed'+bcolors.ENDC)
+      print(pthcolors.FAIL +'          ' + ("%.4d" % (seqExecCounter-seqPassedCounter)) + ' of ' +("%.4d" % seqExecCounter)+ ' executed Sequential tests failed'+pthcolors.ENDC)
+      print(pthcolors.FAIL +'          ' + ("%.4d" % (mpiExecCounter-mpiPassedCounter)) + ' of ' +("%.4d" % mpiExecCounter)+ ' executed MPI tests failed'+pthcolors.ENDC)
     else:
       if skipCounter == 0:
-        print(bcolors.OKGREEN + ' [status] SUCCESS: All registered tests passed' + bcolors.ENDC)
+        print(pthcolors.OKGREEN + ' [status] SUCCESS: All registered tests passed' + pthcolors.ENDC)
       else:
-        print(bcolors.WARNING + ' [status] SUCCESS (partial): All executed tests passed' + bcolors.ENDC)
+        print(pthcolors.WARNING + ' [status] SUCCESS (partial): All executed tests passed' + pthcolors.ENDC)
 
     if seqExecCounter + mpiExecCounter != nTests:
-      print(bcolors.WARNING+'          Warning: Not all tests were executed!'+ bcolors.ENDC)
+      print(pthcolors.WARNING+'          Warning: Not all tests were executed!'+ pthcolors.ENDC)
     if seqExecCounter != seqCounter:
-      print(bcolors.WARNING+'          Warning: '+("%.4d" % (seqCounter-seqExecCounter))+' sequential tests were skipped'+ bcolors.ENDC)
+      print(pthcolors.WARNING+'          Warning: '+("%.4d" % (seqCounter-seqExecCounter))+' sequential tests were skipped'+ pthcolors.ENDC)
     if mpiExecCounter != mpiCounter:
-      print(bcolors.WARNING+'          Warning: '+("%.4d" % (mpiCounter-mpiExecCounter))+' MPI tests were skipped!'+ bcolors.ENDC)
+      print(pthcolors.WARNING+'          Warning: '+("%.4d" % (mpiCounter-mpiExecCounter))+' MPI tests were skipped!'+ pthcolors.ENDC)
 
     errfile = []
     if failCounter > 0:
@@ -290,3 +289,6 @@ class pthHarness:
       print('xxx============================================================================xxx')
       errfile = pthErrorReportFileLocation
     return(errfile)
+
+# Deprecated alias for backwards compatibility
+pthHarness = Harness

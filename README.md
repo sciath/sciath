@@ -4,7 +4,7 @@ Testing code should be easy. The functionality required to launch, parse and per
 
 ### Key concepts ###
 
-pyTestHarness (pyTH) provides:
+pyTestHarness (pth) provides:
 
 * An object to define a test. A "test" consists of:
 (i) a textual name;
@@ -14,9 +14,9 @@ pyTestHarness (pyTH) provides:
 * A set of tools to parse / filter and query text files for verification purposes
 * An object to manage launching a serial (or MPI) test locally, or via a batch queuing system
 
-### How do I use this pyTH? ###
+### How do I use this ? ###
 
-1. pyTH depends on Python 3 (or Python 2.4+) and numpy
+1. pyTestHarness depends on Python 3 (or Python 2.4+) and numpy
 
 2. When using Python 3, it is highly recommended you set the environment variable PYTHONUNBUFFERED, e.g.
 ```export PYTHONUNBUFFERED```
@@ -73,8 +73,6 @@ Execute the test :
 ```
 Features: (i) Running each test in a "sandbox" directory, allowing one to run tests which (may) produce identically-named output files.
 
-
-
 ####Demonstration of parallel tests using a PETSc code
 
 * **Example 3**
@@ -90,7 +88,7 @@ Features:
 
 ####Tips for building tests
 
-* The verification process involves parsing expected output and searching for keywords. If your output generates strings requiring escape characters, for example the string "|a.b|_2", the keyword provided to pyTH needs to be expressed as "\|a.b\|\_2". This is awkward so we recommend using the regular expression utilities which provide a method to add the backslash automatically. E.g.
+* The verification process involves parsing expected output and searching for keywords. If your output generates strings requiring escape characters, for example the string "|a.b|_2", the keyword provided to pyTestHarness needs to be expressed as "\|a.b\|\_2". This is awkward so we recommend using the regular expression utilities which provide a method to add the backslash automatically. E.g.
 ```
 #!python
 

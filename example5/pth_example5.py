@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import os
 import pyTestHarness.test as pthtest
-import pyTestHarness.harness as harness
+import pyTestHarness.harness as pthharness
 
 def makeLocalPathAbsolute(localRelPath) :
   thisDir = os.path.split(os.path.abspath(__file__))[0]
@@ -104,7 +104,7 @@ def run_tests():
   os.system('gcc -o ex1 ex1.c')
   os.system('gcc -o ex2 ex2.c')
 
-  h = harness.pthHarness(registeredTests)
+  h = pthharness.Harness(registeredTests)
   h.execute()
   h.verify() 
 

@@ -3,8 +3,7 @@ import numpy as np
 import math as math
 import re
 import hashlib
-
-from pyTestHarness.colors import pthNamedColors as bcolors
+from pyTestHarness.colors import NamedColors as pthcolors
 
 def compareLiteral(input,expected):
   status = True

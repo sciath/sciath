@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import os
 import pyTestHarness.test as pthtest
-import pyTestHarness.harness as harness
+import pyTestHarness.harness as pthharness
 
 def run_petsc_ex2a():
   launch = '${PETSC_DIR}/src/ksp/ksp/examples/tutorials/ex2'
@@ -55,7 +55,7 @@ def run_petsc_tests():
 
   registeredTests = [ run_petsc_ex2a() , run_petsc_ex2b() , run_petsc_ex2c() ]
 
-  h = harness.pthHarness(registeredTests)
+  h = pthharness.Harness(registeredTests)
   h.execute()
   h.verify()
 

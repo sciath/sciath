@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import os
-import pyTestHarness.test as pth
-import pyTestHarness.harness as harness
+import pyTestHarness.test as pthtest
+import pyTestHarness.harness as pthharness
 
 def makeLocalPathAbsolute(localRelPath) :
   thisDir = os.path.split(os.path.abspath(__file__))[0]
@@ -29,7 +29,7 @@ def test1():
     test.compareFloatingPoint(key,0.01)
 
   # Create test object
-  test = pth.Test('ex1',ranks,launch,expected_file)
+  test = pthtest.Test('ex1',ranks,launch,expected_file)
   test.setVerifyMethod(comparefunc)
   test.appendKeywords('@')
 
@@ -44,7 +44,7 @@ def test2():
     test.compareFloatingPoint(key,0.0001)
 
   # Create test object
-  test = pth.Test('ex2',ranks,launch,expected_file)
+  test = pthtest.Test('ex2',ranks,launch,expected_file)
   test.setVerifyMethod(comparefunc)
   test.appendKeywords('@')
   test.setComparisonFile('ex2-residual.log')
@@ -64,7 +64,7 @@ def test3():
     test.compareFloatingPoint(key,1.0e-4)
 
   # Create test object
-  test = pth.Test('ex3',ranks,launch,expected_file)
+  test = pthtest.Test('ex3',ranks,launch,expected_file)
   test.setVerifyMethod(comparefunc)
 
   return(test)
@@ -77,7 +77,7 @@ def run_tests():
   os.system('gcc -o ex1 ex1.c')
   os.system('gcc -o ex2 ex2.c')
 
-  h = harness.pthHarness(registeredTests)
+  h = pthharness.Harness(registeredTests)
   h.execute()
   h.verify()
 

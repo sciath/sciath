@@ -1,4 +1,4 @@
-class pthNamedColors:
+class NamedColors:
   HEADER = '\033[35m'
   OKBLUE = '\033[94m'
   OKGREEN = '\033[32m'
