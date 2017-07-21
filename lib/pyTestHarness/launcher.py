@@ -48,7 +48,7 @@ def generateLaunch_PBS(accountname,queuename,testname,mpiLaunch,executable,ranks
   file = open(filename,"w")
   file.write("#!/bin/bash\n")
 
-  file.write("# pyTH: auto-generated pbs file\n")
+  file.write("# pth: auto-generated pbs file\n")
 
   if accountname:
     file.write("#PBS -A " + accountname + "\n") # account to charge
@@ -77,7 +77,7 @@ def generateLaunch_SLURM(accountname,queuename,testname,constraint,mpiLaunch,exe
   file = open(filename,"w")
   file.write("#!/bin/bash -l\n")
 
-  file.write("# pyTH: auto-generated slurm file\n")
+  file.write("# pth: auto-generated slurm file\n")
   if accountname:
     file.write("#SBATCH --account=" + accountname + "\n") # account to charge
   file.write("#SBATCH --job-name=\"" + testname + "\"" + "\n") # jobname
@@ -113,7 +113,7 @@ def generateLaunch_LSF(accountname,queuename,testname,mpiLaunch,executable,ranks
   file = open(filename,"w")
   file.write("#!/bin/sh\n")
 
-  file.write("# pyTH: auto-generated lsf file\n")
+  file.write("# pth: auto-generated lsf file\n")
 
   file.write("#BSUB -J " + testname + "\n") # jobname
 
@@ -143,7 +143,7 @@ def generateLaunch_LoadLevelerBG(accountname,queuename,testname,executable,total
     print("<generateLaunch_LoadLeveler>: Requires the walltime be specified")
 
   print("#!/bin/sh")
-  print("# pyTH: auto-generated llq file")
+  print("# pth: auto-generated llq file")
   print("# @ job_name = " + testname)
   print("# @ job_type = bluegene")
   print("# @ error = $(job_name)_$(jobid).stderr")
