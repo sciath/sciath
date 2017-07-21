@@ -146,10 +146,10 @@ class Harness:
       counter = 0
       for test in testList:
         if test.ignore == False:
-          print('[-- Executing test: ' + test.name + ' --]')
+          print(pthcolors.SUBHEADER+'[-- Executing test: ' + test.name + ' --]'+pthcolors.ENDC)
           launcher.submitJob(test)
         else:
-          print('[-- Skipping test: ' + test.name + ' --] Reason: ' + description[counter])
+          print(pthcolors.WARNING+'[-- Skipping test: ' + test.name + ' --] Reason: '+description[counter]+pthcolors.ENDC)
         counter = counter + 1
 
   def verify(self):
@@ -157,16 +157,15 @@ class Harness:
     if not self.launcher.useBatch or self.args.verify :
       print('')
       print(pthcolors.HEADER + '[ *** Verifying Test Output *** ]' + pthcolors.ENDC)
-      tests_not_skipped = 0
+      skipCounter = 0
       for test in self.registeredTests:
-        print('[-- Verifying test: ' + test.name + ' --]')
-        if test.ignore :
-          print('[Skipping verification for test \"' + test.name + '\"]')
-        elif self.launcher.mpiLaunch == 'none' and test.ranks != 1:
-          print('[Skipping verification for test \"' + test.name + '\" as test uses > 1 MPI ranks and no MPI launcher was provided]')
+        if test.ignore  or (self.launcher.mpiLaunch == 'none' and test.ranks != 1) :
+          skipCounter = skipCounter + 1
         else:
-          tests_not_skipped = tests_not_skipped + 1
+          print('[-- Verifying test: ' + test.name + ' --]')
           test.verifyOutput()
+      if skipCounter > 0 :
+        print(pthcolors.WARNING+'[pth] Skipped verification for '+str(skipCounter)+' skipped tests'+pthcolors.ENDC)
 
       print('')
       counter = 0
@@ -175,7 +174,7 @@ class Harness:
           counter = counter + 1
       if counter > 0:
         print('')
-        print('[--------- Test Error Report ----------------------]')
+        print(pthcolors.SUBHEADER+'[--------- Test Error Report ----------------------]'+pthcolors.ENDC)
         for test in self.registeredTests:
           test.report('log')
 
@@ -188,14 +187,17 @@ class Harness:
 
   def clean(self):
     print('')
-    print(pthcolors.HEADER + '[ *** Deleting Existing Test Output *** ]' + pthcolors.ENDC)
+    print(pthcolors.HEADER+'[ *** Deleting Existing Test Output *** ]'+pthcolors.ENDC)
     if os.path.isfile(self.pthErrorReportFileName) :
       os.remove(self.pthErrorReportFileName)
+    skipCounter = 0
     for test in self.registeredTests:
       if test.ignore:
-        print('[ -- Skipping test:',test.name,'--]')
+        skipCounter = skipCounter + 1
       else:
         self.launcher.clean(test)
+    if skipCounter > 0 :
+      print(pthcolors.WARNING+'[pth] Skipped removing output for '+str(skipCounter)+' skipped tests'+pthcolors.ENDC)
 
   def reportAll(self):
     launcher = self.launcher
@@ -238,12 +240,12 @@ class Harness:
         elif test.ranks >= 1 and test.passed == True:
           mpiPassedCounter = mpiPassedCounter + 1
 
-    print('[--------- test status ----------------------]')
+    print(pthcolors.SUBHEADER+'[--------- test status ----------------------]'+pthcolors.ENDC)
     for test in testList:
       test.report('summary')
 
     print('')
-    print('[--------- test report ----------------------]')
+    print(pthcolors.SUBHEADER+'[--------- test report ----------------------]'+pthcolors.ENDC)
     print('  ' + ("%.4d" % nTests) + ' ' + 'tests registered')
     print('  ' + ("%.4d" % seqCounter) + ' Sequential tests')
     print('  ' + ("%.4d" % mpiCounter) + ' MPI tests')
