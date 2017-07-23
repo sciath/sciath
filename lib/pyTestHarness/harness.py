@@ -19,10 +19,15 @@ class Harness:
     self.testDescription = []
     self.registeredTests = registeredTests
 
+    # Check that tests are the correct type, with unique names
+    testNames = []
     for t in self.registeredTests:
+      testNames.append(t.name)
       if not isinstance(t,pthtest.Test):
-        raise ValueError('[pth]: Registered tests must be of type test')
+        raise ValueError('[pth]: Registered tests must be of type pyTestHarness.test.Test')
     self.testsRegistered = len(self.registeredTests)
+    if len(testNames) != len(set(testNames)) :
+      raise Exception('[pth] Registered tests must have unique names')
 
     parser = argparse.ArgumentParser(description='Python Test Harness.')
     parser.add_argument('-e', '--execute', help='Execute all tests', required=False, action='store_true')
