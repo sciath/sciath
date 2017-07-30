@@ -258,6 +258,8 @@ class Launcher:
 
   def view(self):
     print('pth: Batch queueing system configuration [',Launcher.confFileName,']')
+    major,minor,patch=getVersion()
+    print('  Version:         ',str(major)+'.'+str(minor)+'.'+str(patch))
     print('  Queue system:    ',self.queuingSystemType)
     print('  MPI launcher:    ',self.mpiLaunch)
     if self.useBatch:
