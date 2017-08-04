@@ -30,7 +30,6 @@ class Harness:
       raise Exception('[pth] Registered tests must have unique names')
 
     parser = argparse.ArgumentParser(description='Python Test Harness.')
-    parser.add_argument('-e', '--execute', help='Execute all tests', required=False, action='store_true')
     parser.add_argument('-v', '--verify', help='Perform test verification only (and not execution)', required=False, action='store_true')
     parser.add_argument('-c', '--configure', help='Configure queuing system information', required=False, action='store_true')
     parser.add_argument('-t', '--test', help='List of test names', required=False)
