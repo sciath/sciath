@@ -193,9 +193,14 @@ class Test:
     self.errno = -1
     self.name = name
     if not name or len(name) == 0 :
-        raise RuntimeError('Tests must be named')
+      raise RuntimeError('Tests must be named')
     self.ranks = ranks
-    self.execute = execute
+    if isinstance(execute,list):
+      self.execute = execute
+      print('Found multiple execution statements')
+    if isinstance(execute,str):
+      print('Found a singleton execution statement - making iteratable')
+      self.execute = [execute]
     self.expected_file = expected_file
     self.keywords = [ '#', '!', '//' ]
     self.output_file = name + '-p' + str(ranks) + '.output'
