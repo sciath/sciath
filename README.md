@@ -30,7 +30,9 @@ pyTestHarness provides:
 
 The included `pth_exampleN.py` scripts serve as examples of key functionality.
 
-Note: the tests themselves may _fail_ in the following examples. This is to
+The tests' permission are set to allow direct execution (e.g. `./pth_example1.py`). They may also be run e.g. `python pth_example1.py`.
+
+Note that the tests themselves may _fail_ in the following examples. This is to
 demonstrate how differences from expected output are reported, and doesn't mean
 that the test harness itself isn't working!
 
@@ -44,12 +46,12 @@ Basic functionality includes:
 
 #### Example 1
 
-    cd example1;
+    cd example1
     ./pth_example1.py           # ex1 should pass; ex2 and ex3 should fail
 
 #### Example 4
 
-    cd example4;
+    cd example4
     ./pth_example4.py           # ex2 should pass; ex1 and ex3 should fail
 
 ### Tests defined in separate directories
@@ -82,22 +84,23 @@ Requires the environment variables ```PETSC_DIR``` and ```PETSC_ARCH``` to be de
 #### Example 5
 
     cd example5
-    python pth_example5.py      # ex1 should pass; ex2-ex4 should fail
+    ./pth_example5.py           # ex1 should pass; ex2-ex4 should fail
 
 ### Deleting test output
-Generated test output may be deleted by supplying the `-p` option.
+Generated test output may be deleted:
 
     cd example5
-    python pth_example5.py      # ex1 should pass; ex2-ex4 should fail
-    python pth_example5.ph -p
+    ./pth_example5.py           # ex1 should pass; ex2-ex4 should fail
+    ./pth_example5.ph -p        # delete output for all tests
+    ./pth_example5.ph -p -t ex1 # delete output for a single test
 
 ### Running tests in dedicated "sandbox" directories
 
 #### Example 6
-Each test may be run in a "sandbox" directory using `-s`, useful to run tests which (may) produce identically-named output files.
+Each test may be run in a "sandbox" directory, useful to run tests which produce identically-named output files, or for testing applications which may generate extra output files.
 
     cd example6
-    ./pth_example6.py -s
+    ./pth_example6.py -s        # use a "sandbox" directory for each test
     ./pth_example6.py -s -p     # remove output
 
 ### Running multiple executables
