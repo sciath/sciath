@@ -197,9 +197,7 @@ class Test:
     self.ranks = ranks
     if isinstance(execute,list):
       self.execute = execute
-      print('Found multiple execution statements')
     if isinstance(execute,str):
-      print('Found a singleton execution statement - making iteratable')
       self.execute = [execute]
     self.expected_file = expected_file
     self.keywords = [ '#', '!', '//' ]

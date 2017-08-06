@@ -421,7 +421,6 @@ class Launcher:
         if self.mpiLaunch == 'none':
           launchCmd = []
           for e in test.execute:
-            print(e)
             launchCmd.append( e + " >> " + os.path.join(test.output_path,test.output_file) )
         else:
           launch = pthFormatMPILaunchCommand(mpiLaunch,test.ranks,None)
