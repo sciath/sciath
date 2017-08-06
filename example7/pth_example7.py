@@ -13,10 +13,7 @@ def test1():
   expected_file = 'ex.expected'
 
   def comparefuncSubTest(test):
-    os.system('head -n 8 ex1-p1.output > cvg.txt')
-    os.system('tail -n 3 ex1-p1.output >> cvg.txt')
     test.compareUnixDiff()
-
 
   # Create test object
   test = pthtest.Test('ex1',ranks,launch,expected_file)
@@ -24,7 +21,6 @@ def test1():
   test.appendKeywords('@')
 
   return(test)
-
 
 def run_tests():
   os.environ['PYTHONUNBUFFERED'] = str('1')
