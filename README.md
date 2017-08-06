@@ -42,16 +42,15 @@ Basic functionality includes:
 2. multiple tests;
 3. report summary and error log files
 
-
 #### Example 1
 
     cd example1;
-	  ./pth_example1.py # ex1 should pass; ex2 and ex3 should fail
+    ./pth_example1.py           # ex1 should pass; ex2 and ex3 should fail
 
 #### Example 4
 
-	  cd example4;
-	  ./pth_example4.py # ex2 should pass; ex1 and ex3 should fail
+    cd example4;
+    ./pth_example4.py           # ex2 should pass; ex1 and ex3 should fail
 
 ### Tests defined in separate directories
 #### Example 2
@@ -76,40 +75,44 @@ Features:
 Requires the environment variables ```PETSC_DIR``` and ```PETSC_ARCH``` to be defined.
 
     cd example3;
-	  python pth_example3.py # ex2b should pass; ex2a and ex2c should fail
+    python pth_example3.py      # ex2b should pass; ex2a and ex2c should fail
 
 ### Defining a test which doesn't depend on an expected output file
+
 #### Example 5
 
     cd example5
-	  python pth_example5.py # ex1 should pass; ex2-ex4 should fail
+    python pth_example5.py      # ex1 should pass; ex2-ex4 should fail
 
 ### Deleting test output
 Generated test output may be deleted by supplying the `-p` option.
 
-	  cd example5
-	  python pth_example5.py # ex1 should pass; ex2-ex4 should fail
+    cd example5
+    python pth_example5.py      # ex1 should pass; ex2-ex4 should fail
     python pth_example5.ph -p
 
 ### Running tests in dedicated "sandbox" directories
+
 #### Example 6
 Each test may be run in a "sandbox" directory using `-s`, useful to run tests which (may) produce identically-named output files.
 
     cd example6
     ./pth_example6.py -s
-    ./pth_example6.py -s -p # remove output
+    ./pth_example6.py -s -p     # remove output
 
 ### Running multiple executables
+
 #### Example 7
 The `execute` field for a `Test` may be a list.
 This example executes the same executable twice:
 
     cd example7
-    python pth_example7.py # ex1 should fail
+    python pth_example7.py      # ex1 should fail
 
 ## Tips for building tests
 
-* The verification process involves parsing expected output and searching for keywords. If your output generates strings requiring escape characters, for example the string "|a.b|_2", the keyword provided to pyTestHarness needs to be expressed as "\|a.b\|\_2". This is awkward so we recommend using the regular expression utilities which provide a method to add the backslash automatically. E.g.
+### Escape characters
+The verification process involves parsing expected output and searching for keywords. If your output generates strings requiring escape characters, for example the string "|a.b|_2", the keyword provided to pyTestHarness needs to be expressed as "\|a.b\|\_2". This is awkward so we recommend using the regular expression utilities which provide a method to add the backslash automatically. E.g.
 ```
 #!/usr/bin/env python
 
