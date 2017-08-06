@@ -107,6 +107,9 @@ Each test may be run in a "sandbox" directory, useful to run tests which produce
 
 #### Example 7
 The `execute` field for a `Test` may be a list.
+All executables in the list are run in succession. Note that on batch/queing
+systems, these are all run with the same number of MPI ranks.
+
 This example executes the same executable twice:
 
     cd example7
