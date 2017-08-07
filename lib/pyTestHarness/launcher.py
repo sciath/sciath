@@ -67,7 +67,7 @@ def generateLaunch_PBS(accountname,queuename,testname,mpiLaunch,executable,ranks
   file.close()
   return(filename)
 
-def generateLaunch_SLURM(accountname,queuename,testname,constraint,mpiLaunch,executable,ranks,ranks_per_node,walltime,outfile):
+def generateLaunch_SLURM(accountname,queuename,testname,constraint,mpiLaunch,execute,ranks,ranks_per_node,walltime,outfile):
   if not ranks:
     print("<generateLaunch_SLURM>: Requires the number of MPI-ranks be specified")
   if not walltime:
@@ -99,11 +99,13 @@ def generateLaunch_SLURM(accountname,queuename,testname,constraint,mpiLaunch,exe
     file.write("#SBATCH --constraint=" + constraint + "\n")
 
   launch = pthFormatMPILaunchCommand(mpiLaunch,ranks,ranks_per_node)
-  file.write(launch + " " + executable + " > " + outfile + "\n\n") # launch command
+  for e in execute:
+    file.write(launch + " " + e + " >> " + outfile + "\n") # launch command
+  file.write("\n")
   file.close()
   return(filename)
 
-def generateLaunch_LSF(accountname,queuename,testname,mpiLaunch,executable,ranks,rusage,walltime,outfile):
+def generateLaunch_LSF(accountname,queuename,testname,mpiLaunch,execute,ranks,rusage,walltime,outfile):
   if not ranks:
     print("<generateLaunch_LSF>: Requires the number of MPI-ranks be specified")
   if not walltime:
@@ -132,11 +134,13 @@ def generateLaunch_LSF(accountname,queuename,testname,mpiLaunch,executable,ranks
   file.write("#BSUB -W " + wt + "\n")
 
   launch = pthFormatMPILaunchCommand(mpiLaunch,ranks,None)
-  file.write(launch + " " + executable + " > " + outfile + "\n\n") # launch command
+  for e in execute:
+    file.write(launch + " " + e + " >> " + outfile + "\n") # launch command
+  file.write("\n")
   file.close()
   return(filename)
 
-def generateLaunch_LoadLevelerBG(accountname,queuename,testname,executable,total_ranks,machine_ranks_per_node,walltime):
+def generateLaunch_LoadLevelerBG(accountname,queuename,testname,execute,total_ranks,machine_ranks_per_node,walltime):
   if not total_ranks:
     print("<generateLaunch_LoadLeveler>: Requires the number of MPI-ranks be specified")
   if not walltime:
@@ -159,7 +163,8 @@ def generateLaunch_LoadLevelerBG(accountname,queuename,testname,executable,total
   print("# @ bg_connection = TORUS")
   print("# @ queue")
 
-  print("runjob -n " + executable) # launch command
+  for e in execute:
+    print("runjob -n " + e) # launch command
 
 
 class Launcher:
@@ -414,16 +419,23 @@ class Launcher:
         print('[Failed to launch test \"' + test.name + '\" as test uses > 1 MPI ranks and no MPI launcher was provided]')
       else:
         if self.mpiLaunch == 'none':
-          launchCmd = test.execute + " > " + os.path.join(test.output_path,test.output_file)
+          launchCmd = []
+          for e in test.execute:
+            launchCmd.append( e + " >> " + os.path.join(test.output_path,test.output_file) )
         else:
           launch = pthFormatMPILaunchCommand(mpiLaunch,test.ranks,None)
-          launchCmd = launch + ' ' + test.execute + " > " + os.path.join(test.output_path,test.output_file)
+          launchCmd = []
+          for e in test.execute:
+            launchCmd.append( launch + ' ' + e + " >> " + os.path.join(test.output_path,test.output_file) )
         if self.verbosity_level > 0:
           if test.use_sandbox:
-            print('[Executing from ' + os.getcwd() + ']',launchCmd)
+            for lc in launchCmd:
+              print('[Executing from ' + os.getcwd() + ']',lc)
           else :
-            print('[Executing]',launchCmd)
-        test.errno = os.system(launchCmd) >> 8
+            for lc in launchCmd:
+              print('[Executing]',lc)
+        for lc in launchCmd:
+          test.errno = os.system(lc) >> 8
     else:
       outfile = os.path.join(test.output_path,test.output_file)
       launchfile = self.createSubmissionFile(test.name,test.execute,test.ranks,'',test.walltime,outfile)
