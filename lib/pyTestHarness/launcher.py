@@ -186,7 +186,7 @@ class Launcher:
     self.queueName = []
     self.mpiLaunch = []
     self.queuingSystemType = []
-    self.batchConstraint=None
+    self.batchConstraint = []
     self.jobSubmissionCommand = []
     self.useBatch = False
     self.verbosity_level = 1
@@ -303,10 +303,8 @@ class Launcher:
 
     if self.useBatch == True:
       prompt = '[3] specify a constraint (e.g. "gpu" on Piz Daint) (optional - hit enter if not applicable):'
-      v = None
       v = py23input(prompt)
-      if v :
-        self.setBatchConstraint(v)
+      self.setBatchConstraint(v)
 
       prompt = '[4] Account to charge (optional - hit enter if not applicable): '
       v = py23input(prompt)
