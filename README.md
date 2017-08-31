@@ -100,8 +100,13 @@ Generated test output may be deleted:
 Each test may be run in a "sandbox" directory, useful to run tests which produce identically-named output files, or for testing applications which may generate extra output files.
 
     cd example6
-    ./pth_example6.py -s        # use a "sandbox" directory for each test
-    ./pth_example6.py -s -p     # remove output
+    ./pth_example6.py
+
+You may supply the -s flag to use a sandbox directory for all tests
+
+    cd example5
+    ./pth_example5.py -s
+    ./pth_example5.py -s -p     # remove output
 
 ### Running multiple executables
 

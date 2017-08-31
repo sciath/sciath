@@ -60,7 +60,7 @@ class Harness:
       self.launcher.configure()
       sys.exit(0)
 
-    # Instruct tests to use sandboxes if requested
+    # Instruct all tests to use sandboxes if requested
     if self.args.sandbox :
       for test in registeredTests :
         test.use_sandbox = True

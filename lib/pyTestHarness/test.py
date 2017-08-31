@@ -229,6 +229,9 @@ class Test:
   def setWalltime(self,mins):
     self.walltime = mins
 
+  def setUseSandbox(self) :
+    self.use_sandbox=True
+
   def appendKeywords(self,keywords):
     self.keywords.append(keywords)
   #print(self.keywords)

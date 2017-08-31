@@ -25,6 +25,7 @@ def test1() :
   test = pthtest.Test('ex1',ranks,launch,expected_file)
   test.setVerifyMethod(comparefunc)
   test.setComparisonFile('out.txt')
+  test.setUseSandbox()
 
   return(test)
 
@@ -40,6 +41,7 @@ def test2():
   test = pthtest.Test('ex2',ranks,launch,expected_file)
   test.setVerifyMethod(comparefunc)
   test.setComparisonFile('out.txt')
+  test.setUseSandbox()
 
   return(test)
 
