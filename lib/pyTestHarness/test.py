@@ -213,9 +213,10 @@ class Test:
     self.verbosity_level = value
 
   def verify(self,junk):
-    raise RuntimeError('[pth] A valid verification method for test \"' + self.name + '\" was not found.\n\
+    errstr = '[pth] A valid verification method for test \"' + self.name + '\" was not found.\n\
               [pth] You must provide each test with a method to verify the output.\n\
-              [pth] The method is set via calling test.setVerifyMethod()')
+              [pth] The method is set via calling test.setVerifyMethod()'
+    raise RuntimeError(errstr)
 
   def setOutputPath(self,opath):
     self.output_path = opath
@@ -297,7 +298,8 @@ class Test:
     output,output_flat = self.getOutput()
     values_e = getKeyValuesAsFloat(expected_flat,key)
     if len(values_e) == 0:
-      raise RuntimeError('[pth][VerificationError] Test \"' + self.name + '\" queried the expected file \"' + self.comparison_file + '\" for key \"' + key + '\" which was not found. \n\t\t    Users verification code is likely incorrect (contains a typo in the key name)' )
+      errstr = '[pth][VerificationError] Test \"' + self.name + '\" queried the expected file \"' + self.comparison_file + '\" for key \"' + key + '\" which was not found. \n\t\t    Users verification code is likely incorrect (contains a typo in the key name)'
+      raise RuntimeError(errstr)
     values   = getKeyValuesAsFloat(output_flat,key)
     status,err = compareFloatingPoint(values,tolerance,values_e)
     kerr = ''
@@ -310,7 +312,8 @@ class Test:
     output,output_flat = self.getOutput()
     values_e = getKeyValuesAsInt(expected_flat,key)
     if len(values_e) == 0:
-      raise RuntimeError('[pth][VerificationError] Test \"' + self.name + '\" queried the expected file \"' + self.comparison_file + '\" for key \"' + key + '\" which was not found. \n\t\t    Users verification code is likely incorrect (contains a typo in the key name)' )
+      errstr = '[pth][VerificationError] Test \"' + self.name + '\" queried the expected file \"' + self.comparison_file + '\" for key \"' + key + '\" which was not found. \n\t\t    Users verification code is likely incorrect (contains a typo in the key name)'
+      raise RuntimeError(errstr)
 
     values   = getKeyValuesAsInt(output_flat,key)
     status,err = compareInteger(values,tolerance,values_e)
@@ -324,7 +327,8 @@ class Test:
     output,output_flat = self.getOutput()
     values_e = getKeyValues(expected_flat,key)
     if len(values_e) == 0:
-      raise RuntimeError('[pth][VerificationError] Test \"' + self.name + '\" queried the expected file \"' + self.comparison_file + '\" for key \"' + key + '\" which was not found. \n\t\t    Users verification code is likely incorrect (contains a typo in the key name)' )
+      errstr = '[pth][VerificationError] Test \"' + self.name + '\" queried the expected file \"' + self.comparison_file + '\" for key \"' + key + '\" which was not found. \n\t\t    Users verification code is likely incorrect (contains a typo in the key name)'
+      raise RuntimeError(errstr)
     values   = getKeyValues(output_flat,key)
     status,err = compareLiteral(values,values_e)
     kerr = ''
