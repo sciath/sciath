@@ -298,7 +298,7 @@ class Test:
     output,output_flat = self.getOutput()
     values_e = getKeyValuesAsFloat(expected_flat,key)
     if len(values_e) == 0:
-      errstr = '[pth][VerificationError] Test \"' + self.name + '\" queried the expected file \"' + self.comparison_file + '\" for key \"' + key + '\" which was not found. \n\t\t    Users verification code is likely incorrect (contains a typo in the key name)'
+      errstr = '[pth][VerificationError] Test \"' + self.name + '\" queried the expected file \"' + self.expected_file + '\" for key \"' + key + '\" which was not found. \n\t\t    Users verification code is likely incorrect (contains a typo in the key name)'
       raise RuntimeError(errstr)
     values   = getKeyValuesAsFloat(output_flat,key)
     status,err = compareFloatingPoint(values,tolerance,values_e)
@@ -312,7 +312,7 @@ class Test:
     output,output_flat = self.getOutput()
     values_e = getKeyValuesAsInt(expected_flat,key)
     if len(values_e) == 0:
-      errstr = '[pth][VerificationError] Test \"' + self.name + '\" queried the expected file \"' + self.comparison_file + '\" for key \"' + key + '\" which was not found. \n\t\t    Users verification code is likely incorrect (contains a typo in the key name)'
+      errstr = '[pth][VerificationError] Test \"' + self.name + '\" queried the expected file \"' + self.expected_file + '\" for key \"' + key + '\" which was not found. \n\t\t    Users verification code is likely incorrect (contains a typo in the key name)'
       raise RuntimeError(errstr)
 
     values   = getKeyValuesAsInt(output_flat,key)
@@ -327,7 +327,7 @@ class Test:
     output,output_flat = self.getOutput()
     values_e = getKeyValues(expected_flat,key)
     if len(values_e) == 0:
-      errstr = '[pth][VerificationError] Test \"' + self.name + '\" queried the expected file \"' + self.comparison_file + '\" for key \"' + key + '\" which was not found. \n\t\t    Users verification code is likely incorrect (contains a typo in the key name)'
+      errstr = '[pth][VerificationError] Test \"' + self.name + '\" queried the expected file \"' + self.expected_file + '\" for key \"' + key + '\" which was not found. \n\t\t    Users verification code is likely incorrect (contains a typo in the key name)'
       raise RuntimeError(errstr)
     values   = getKeyValues(output_flat,key)
     status,err = compareLiteral(values,values_e)
