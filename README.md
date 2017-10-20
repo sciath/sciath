@@ -66,6 +66,14 @@ Basic functionality includes:
     ./pth_example2.py -t test1  # run a single test
                                 # can select multiple tests with -t test1,test2
 
+#### Example 8
+One may also provide a subset of tests directly in the initializer for the test
+harness. Additional tests can be added with `-t` as above.
+
+    cd example8
+    ./pth_example8.py               # test1 should pass, test1_clone should be skipped
+    ./pth_example8.py -t test_clone # both tests should run and pass
+
 ### Parallel tests using a PETSc code
 
 #### Example 3
