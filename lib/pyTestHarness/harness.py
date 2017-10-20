@@ -7,7 +7,7 @@ import pyTestHarness.launcher as pthlauncher
 from   pyTestHarness.colors import NamedColors as pthcolors
 
 class Harness:
-  def __init__(self,registeredTests):
+  def __init__(self,registeredTests,subsetTestName=None):
     self.testsRegistered = 0
     self.testsExecuted = 0
     self.testsSkipped = 0
@@ -40,6 +40,14 @@ class Harness:
     parser.add_argument('-s', '--sandbox', help='Execute tests in separate directories. Will not work unless you supply absolute paths to executables.', required=False, action='store_true')
     parser.add_argument('-l', '--list', help='List all registered tests and exit', required=False, action='store_true')
     self.args, self.unknown = parser.parse_known_args()
+
+    if subsetTestName is None:
+      self.subsetTestName = []
+      self.execSubset = False
+    else:
+      self.subsetTestName = subsetTestName
+      self.execSubset = True
+
 
     # If "list" option supplied, simply print out all the tests' names and exit
     if self.args.list :
@@ -86,7 +94,20 @@ class Harness:
 
     # Exclude tests based on command line option
     subList = []
+
+    for name in self.subsetTestName:
+      found = False
+      for t in self.registeredTests:
+        if name == t.name:
+          subList.append(t)
+          found = True
+          break
+      if found == False:
+        errstr= '[pth] You requested to test a subset of registered tests, \n\t\t  but no registered test matched the name \"' + name + '\"'
+        raise RuntimeError(errstr)
+
     if self.args.test:
+      self.execSubset = True
       tnames = self.args.test.split(',')
       for name in tnames:
         found = False
@@ -100,7 +121,7 @@ class Harness:
           errstr= '[pth] You requested to test a subset of registered tests, \n\t\t  but no registered test matched the name \"' + name + '\"'
           raise RuntimeError(errstr)
 
-    if self.args.test:
+    if self.execSubset:
       counter = 0
       for t in self.registeredTests:
         # skip tests already marked to be ignored (e.g. due to mpiLaunch = none and test.ranks != 1
