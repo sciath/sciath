@@ -121,7 +121,7 @@ class Harness:
           errstr= '[pth] You requested to test a subset of registered tests, \n\t\t  but no registered test matched the name \"' + name + '\"'
           raise RuntimeError(errstr)
 
-    if self.execSubset == True:
+    if self.execSubset:
       counter = 0
       for t in self.registeredTests:
         # skip tests already marked to be ignored (e.g. due to mpiLaunch = none and test.ranks != 1
