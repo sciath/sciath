@@ -3,7 +3,6 @@ import os
 import numpy as np
 import math as math
 import re
-import hashlib
 from pyTestHarness.colors import NamedColors as pthcolors
 
 def compareLiteral(input,expected):
@@ -204,7 +203,7 @@ class Test:
     self.output_file = name + '-p' + str(ranks) + '.output'
     self.comparison_file = ''
     self.output_path = ''
-    self.sandbox_path = self.name + '_sandbox_' +  hashlib.sha1(self.name.encode('utf-8')).hexdigest()[1:8]
+    self.sandbox_path = self.name + '_sandbox'
     self.use_sandbox = False
     self.ignore = False
     self.verbosity_level = 1
