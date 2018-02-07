@@ -1,5 +1,6 @@
 from __future__ import print_function
-import os,sys
+import os
+import sys
 import shutil
 import pyTestHarness.test
 from   pyTestHarness.colors import NamedColors as pthcolors
@@ -291,12 +292,17 @@ class Launcher:
       v = py23input(prompt)
       if not v :
         print(' Required. Some example MPI launch commands:')
-        print('  none','(if your tests do not use MPI)')
-        print('  mpirun -np <ranks>','(local machine)')
-        print('  mpiexec -n <ranks>','(local machine)')
-        print('  aprun -B','(slurm with aprun)')
-        print('  srun -n $SLURM_NTASKS','(native slurm)')
-        print('  /users/myname/petsc/bin/petscmpiexec -n <ranks>','(typical PETSc MPI wrapper)')
+        print('  No MPI Required           : none')
+        print('  Local Machine (mpirun)    : mpirun -np <ranks>')
+        print('  Local Machine (mpiexec)   : mpiexec -np <ranks>')
+        print('  SLURM w/ aprun            : aprun -B')
+        print('  Native SLURM              : srun -n $SLURM_NTASKS')
+        PETSC_DIR=os.getenv('PETSC_DIR')
+        PETSC_ARCH=os.getenv('PETSC_ARCH')
+        if PETSC_DIR and PETSC_ARCH:
+          print('  Current PETSc MPI wrapper :',os.path.join(PETSC_DIR,PETSC_ARCH,'bin','mpiexec'),'-n <ranks>')
+        else :
+          print('  Example PETSc MPI wrapper : /users/myname/petsc/arch-xxx/bin/mpiexec -n <ranks>')
         print(' Note that the string \"<ranks>\" must be included in your launch command.')
         print(' The keyword <ranks> will be replaced by the actual number of MPI ranks (defined by a given test) when the test is launched.')
     self.setMPILaunch(v)
