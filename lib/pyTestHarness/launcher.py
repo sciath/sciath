@@ -297,6 +297,7 @@ class Launcher:
         print('  Local Machine (mpiexec)   : mpiexec -np <ranks>')
         print('  SLURM w/ aprun            : aprun -B')
         print('  Native SLURM              : srun -n $SLURM_NTASKS')
+        print('  LSF (Euler)               : mpirun')
         PETSC_DIR=os.getenv('PETSC_DIR')
         PETSC_ARCH=os.getenv('PETSC_ARCH')
         if PETSC_DIR and PETSC_ARCH:
