@@ -303,7 +303,7 @@ class Launcher:
           print('  Current PETSc MPI wrapper :',os.path.join(PETSC_DIR,PETSC_ARCH,'bin','mpiexec'),'-n <ranks>')
         else :
           print('  Example PETSc MPI wrapper : /users/myname/petsc/arch-xxx/bin/mpiexec -n <ranks>')
-        print(' Note that the string \"<ranks>\" must be included in your launch command.')
+        print(' Note that the string \"<ranks>\" must be included if the number of ranks is required at launch.')
         print(' The keyword <ranks> will be replaced by the actual number of MPI ranks (defined by a given test) when the test is launched.')
     self.setMPILaunch(v)
 
