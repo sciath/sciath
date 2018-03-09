@@ -16,7 +16,7 @@ class Harness:
     self.verbosity_level = 1
     self.pthErrorReportFileName = 'pthErrorReport.log'
 
-    self.testDescription = []
+    self.testDescription = [] # Note: not currently output, but could be used for future logging
     self.registeredTests = registeredTests
 
     # Check that tests are the correct type, with unique names
@@ -155,7 +155,6 @@ class Harness:
       print(pthcolors.HEADER + '[ *** Executing Tests *** ]' + pthcolors.ENDC)
       launcher = self.launcher
       testList = self.registeredTests
-      description = self.testDescription
       if launcher.verbosity_level > 0:
         launcher.view()
 
@@ -169,13 +168,16 @@ class Harness:
         print('\n' + pthcolors.WARNING + 'Warning: ' + str(skipCounter) + ' MPI parallel jobs are being skipped as a valid MPI launcher was not provided'+ pthcolors.ENDC)
 
       counter = 0
+      skipCounter = 0
       for test in testList:
         if test.ignore == False:
           print(pthcolors.SUBHEADER+'[-- Executing test: ' + test.name + ' --]'+pthcolors.ENDC)
           launcher.submitJob(test)
         else:
-          print(pthcolors.WARNING+'[-- Skipping test: ' + test.name + ' --] Reason: '+description[counter]+pthcolors.ENDC)
+          skipCounter = skipCounter + 1
         counter = counter + 1
+      if (skipCounter > 0) :
+        print(pthcolors.WARNING+'[pth] Skipped executing '+str(skipCounter)+' tests'+pthcolors.ENDC)
 
   def verify(self):
     '''Verify, unless we are running with a batch system and are not in verify(-only) mode'''
