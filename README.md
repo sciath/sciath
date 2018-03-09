@@ -30,7 +30,7 @@ pyTestHarness provides:
 
 The included `pth_exampleN.py` scripts serve as examples of key functionality.
 
-The tests' permission are set to allow direct execution (e.g. `./pth_example1.py`). They may also be run e.g. `python pth_example1.py`.
+The tests' permissions are set to allow direct execution (e.g. `./pth_example1.py`). They may also be run e.g. `python pth_example1.py`.
 
 Note that the tests themselves may _fail_ in the following examples. This is to
 demonstrate how differences from expected output are reported, and doesn't mean
@@ -110,7 +110,7 @@ Each test may be run in a "sandbox" directory, useful to run tests which produce
     cd example6
     ./pth_example6.py
 
-You may supply the -s flag to use a sandbox directory for all tests
+You may supply the `-s` flag to use a sandbox directory for all tests
 
     cd example5
     ./pth_example5.py -s
@@ -120,7 +120,7 @@ You may supply the -s flag to use a sandbox directory for all tests
 
 #### Example 7
 The `execute` field for a `Test` may be a list.
-All executables in the list are run in succession. Note that on batch/queing
+All executables in the list are run in succession. Note that on batch/queueing
 systems, these are all run with the same number of MPI ranks.
 
 This example executes the same executable twice:
