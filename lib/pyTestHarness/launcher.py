@@ -451,15 +451,20 @@ class Launcher:
           launchCmd = []
           for e in test.execute:
             launchCmd.append( launch + ' ' + e + " >> " + os.path.join(test.output_path,test.output_file) )
-        if self.verbosity_level > 0:
-          if test.use_sandbox:
-            for lc in launchCmd:
-              print('[Executing from ' + os.getcwd() + ']',lc)
-          else :
-            for lc in launchCmd:
-              print('[Executing]',lc)
+        lc_len = len(launchCmd)
+        lc_count = 0
         for lc in launchCmd:
-          test.errno = os.system(lc) >> 8
+          lc_count = lc_count + 1
+          if self.verbosity_level > 0:
+            launch_text = pthcolors.SUBHEADER + '[Executing ' + test.name
+            if lc_len > 1 :
+              launch_text = launch_text + ' (' + str(lc_count) + '/' + str(lc_len) + ')'
+            launch_text = launch_text + ']' + pthcolors.ENDC
+            if test.use_sandbox:
+              launch_text = launch_text + ' from ' + os.getcwd()
+            print(launch_text)
+            print(lc)
+          test.errno = os.system(lc) >> 8 # TODO: fix this clobbering of errno for multiple tests
           setBlockingIOStdout()
     else:
       outfile = os.path.join(test.output_path,test.output_file)
@@ -467,9 +472,11 @@ class Launcher:
       launchCmd = self.jobSubmissionCommand + launchfile
       if self.verbosity_level > 0:
         if test.use_sandbox:
-          print('[Executing from ' + os.getcwd() + ']',launchCmd)
+          print(pthcolors.SUBHEADER + '[Executing ' + test.name + '] ' + pthcolors.ENDC + 'from ' + os.getcwd())
+          print(launchCmd)
         else :
-          print('[Executing]',launchCmd)
+          print(pthcolors.SUBHEADER + '[Executing ' + test.name + ']' + pthcolors.ENDC)
+          print(launchCmd)
       os.system(launchCmd)
       setBlockingIOStdout()
 

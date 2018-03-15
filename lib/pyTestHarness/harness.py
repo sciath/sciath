@@ -172,7 +172,6 @@ class Harness:
       skipCounter = 0
       for test in testList:
         if test.ignore == False:
-          print(pthcolors.SUBHEADER+'[-- Executing test: ' + test.name + ' --]'+pthcolors.ENDC)
           launcher.submitJob(test)
         else:
           skipCounter = skipCounter + 1
