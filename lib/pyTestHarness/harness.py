@@ -39,6 +39,7 @@ class Harness:
     parser.add_argument('-d', '--configure_default', help='Write default queuing system config file (no mpi, no queuing system)', required=False, action='store_true')
     parser.add_argument('-s', '--sandbox', help='Execute tests in separate directories. Will not work unless you supply absolute paths to executables.', required=False, action='store_true')
     parser.add_argument('-l', '--list', help='List all registered tests and exit', required=False, action='store_true')
+    parser.add_argument('-w','--with_conf_file',help='Use provided configuration file instead of the default',required=False)
     self.args, self.unknown = parser.parse_known_args()
 
     if subsetTestName is None:
@@ -61,7 +62,7 @@ class Harness:
       sys.exit(0)
 
     # Create the launcher
-    self.launcher = pthlauncher.Launcher()
+    self.launcher = pthlauncher.Launcher(self.args.with_conf_file)
 
     # If --configure is specified, (re)generate the configuration file and exit
     if self.args.configure:

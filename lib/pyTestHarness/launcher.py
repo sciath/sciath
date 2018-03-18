@@ -169,11 +169,11 @@ def generateLaunch_LoadLevelerBG(accountname,queuename,testname,execute,total_ra
 
 
 class Launcher:
-  confFileName = 'pthBatchQueuingSystem.conf'
+  defaultConfFileName = 'pthBatchQueuingSystem.conf'
 
   @staticmethod
   def writeDefaultDefinition():
-    file = open(Launcher.confFileName,'w')
+    file = open(Launcher.defaultConfFileName,'w')
     major,minor,patch=getVersion()
     file.write('majorVersion=' + str(major) + '\n')
     file.write('minorVersion=' + str(minor) + '\n')
@@ -182,7 +182,7 @@ class Launcher:
     file.write('mpiLaunch=none\n' )
     file.close()
 
-  def __init__(self):
+  def __init__(self,confFileName=None):
     self.accountName = []
     self.queueName = []
     self.mpiLaunch = []
@@ -191,6 +191,10 @@ class Launcher:
     self.jobSubmissionCommand = []
     self.useBatch = False
     self.verbosity_level = 1
+    if confFileName :
+      self.confFileName = confFileName
+    else :
+      self.confFileName = Launcher.defaultConfFileName
 
     self.setup()
 
@@ -263,7 +267,7 @@ class Launcher:
     self.queueName = name
 
   def view(self):
-    print('pth: Batch queueing system configuration [',Launcher.confFileName,']')
+    print('pth: Batch queueing system configuration [',self.confFileName,']')
     major,minor,patch=getVersion()
     print('  Version:         ',str(major)+'.'+str(minor)+'.'+str(patch))
     print('  Queue system:    ',self.queuingSystemType)
@@ -279,7 +283,7 @@ class Launcher:
 
   def configure(self):
     print('----------------------------------------------------------------')
-    print('Creating new',Launcher.confFileName,'file')
+    print('Creating new configuration file ',self.confFileName)
     prompt = '[1] Batch queuing system type <pbs,lsf,slurm,llq,none>: '
     v = py23input(prompt)
     if not v:
@@ -324,7 +328,7 @@ class Launcher:
     self.writeDefinition()
     print('\n')
     print('** If you wish to change the config for your batch system, either')
-    print('**  (i) delete the file',Launcher.confFileName,' or')
+    print('**  (i) delete the file',self.confFileName,' or')
     print('** (ii) re-run with the command line arg --configure')
     print('----------------------------------------------------------------')
 
@@ -336,7 +340,7 @@ class Launcher:
       self.writeDefinition()
 
   def writeDefinition(self):
-    file = open(Launcher.confFileName,'w')
+    file = open(self.confFileName,'w')
     major,minor,patch=getVersion()
     file.write('majorVersion=' + str(major) + '\n')
     file.write('minorVersion=' + str(minor) + '\n')
@@ -354,7 +358,7 @@ class Launcher:
       majorFile = None
       minorFile = None
       patchFile = None
-      file = open(Launcher.confFileName,'r')
+      file = open(self.confFileName,'r')
       for v in file :
         key,value = v.split('=',1)
         value = value.rstrip()
@@ -383,7 +387,7 @@ class Launcher:
     major,minor,patch = getVersion()
     if majorFile < major or (minorFile < minor and majorFile == major) or \
          majorFile==None or minorFile==None or patchFile==None :
-      message = '[pth] Incompatible, outdated ' + Launcher.confFileName + ' file detected. Please delete it and re-run to reconfigure.'
+      message = '[pth] Incompatible, outdated configuration file ' + self.confFileName + ' detected. Please delete it and re-run to reconfigure.'
       raise RuntimeError(message)
 
   def createSubmissionFile(self,testname,commnd,ranks,ranks_per_node,walltime,outfile):
