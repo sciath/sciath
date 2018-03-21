@@ -284,10 +284,12 @@ class Launcher:
   def configure(self):
     print('----------------------------------------------------------------')
     print('Creating new configuration file ',self.confFileName)
-    prompt = '[1] Batch queuing system type <pbs,lsf,slurm,llq,none>: '
-    v = py23input(prompt)
-    if not v:
-      raise ValueError('[pth] You must specify the type of queuing system')
+    v = None
+    while not v :
+      prompt = '[1] Batch queuing system type <pbs,lsf,slurm,llq,none>: '
+      v = py23input(prompt)
+      if not v :
+        print( 'Required.')
     self.setQueueSystemType(v)
 
     v = None
