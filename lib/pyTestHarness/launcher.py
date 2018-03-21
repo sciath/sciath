@@ -183,8 +183,9 @@ class Launcher:
   defaultConfFileName = 'pthBatchQueuingSystem.conf'
 
   @staticmethod
-  def writeDefaultDefinition():
-    file = open(Launcher.defaultConfFileName,'w')
+  def writeDefaultDefinition(confFileNameIn=None):
+    confFileName = confFileNameIn if confFileNameIn else Launcher.defaultConfFileName
+    file = open(confFileName,'w')
     major,minor,patch=getVersion()
     file.write('majorVersion=' + str(major) + '\n')
     file.write('minorVersion=' + str(minor) + '\n')

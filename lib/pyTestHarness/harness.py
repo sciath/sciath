@@ -58,7 +58,7 @@ class Harness:
 
     # If --configure_default is specified, write the default file and exit
     if self.args.configure_default:
-      pthlauncher.Launcher.writeDefaultDefinition()
+      pthlauncher.Launcher.writeDefaultDefinition(self.args.with_conf_file)
       sys.exit(0)
 
     # Create the launcher
