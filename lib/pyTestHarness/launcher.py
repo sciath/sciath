@@ -2,10 +2,21 @@ from __future__ import print_function
 import os
 import sys
 import shutil
+import fcntl
 import pyTestHarness.test
 from   pyTestHarness.colors import NamedColors as pthcolors
 from   pyTestHarness.version import getVersion
 from   pyTestHarness.utils import py23input
+
+# mpiexec has been observed to set non-blocking I/O, which
+#  has been observed to cause problems on OS X with errors like
+#  "BlockingIOError: [Errno 35] write could not complete without blocking"
+# We use this function to (re)set blocking I/O when launching
+def setBlockingIOStdout() :
+    fd = sys.stdout
+    flags = fcntl.fcntl(fd, fcntl.F_GETFL)
+    if flags & os.O_NONBLOCK:
+        fcntl.fcntl(fd, fcntl.F_SETFL, flags & ~os.O_NONBLOCK)
 
 class PthTestHarnessLoadException(Exception) :
   pass
@@ -418,6 +429,8 @@ class Launcher:
     return(filename)
 
   def submitJob(self,test):
+    setBlockingIOStdout()
+
     if test.use_sandbox:
       sandboxBack = os.getcwd()
       os.mkdir(test.sandbox_path) # error if  it already exists
@@ -447,6 +460,7 @@ class Launcher:
               print('[Executing]',lc)
         for lc in launchCmd:
           test.errno = os.system(lc) >> 8
+          setBlockingIOStdout()
     else:
       outfile = os.path.join(test.output_path,test.output_file)
       launchfile = self.createSubmissionFile(test.name,test.execute,test.ranks,'',test.walltime,outfile)
@@ -457,6 +471,7 @@ class Launcher:
         else :
           print('[Executing]',launchCmd)
       os.system(launchCmd)
+      setBlockingIOStdout()
 
     if test.use_sandbox:
         os.chdir(sandboxBack)
