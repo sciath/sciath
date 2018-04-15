@@ -54,6 +54,13 @@ Basic functionality includes:
     cd example4
     ./pth_example4.py           # ex2 should pass; ex1 and ex3 should fail
 
+#### Example 9
+
+Floating point comparisons can be absolute or relative.
+
+    cd example9
+    ./pth_example9.py           # testAbs should fail; testRel should pass
+
 ### Tests defined in separate directories
 #### Example 2
 

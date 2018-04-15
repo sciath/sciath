@@ -23,7 +23,7 @@ def compareLiteral(input,expected):
       err = err + "  index[" + str(index) +  "]" + " input \"" +  input[index] + "\" != expected \"" + expected[index] + "\"\n"
   return status,err
 
-def compareFloatingPoint(input,tolerance,expected):
+def compareFloatingPointAbsolute(input,tolerance,expected):
   status = True
   err = ''
   tmp = np.array(input)
@@ -33,7 +33,7 @@ def compareFloatingPoint(input,tolerance,expected):
   tol_f = float(tolerance)
   if len(input) != len(expected):
     status = False
-    err = err + "compareFloatingPoint [failed]\nReason: input and expected are of different length\n"
+    err = err + "compareFloatingPointAbsolute [failed]\nReason: input and expected are of different length\n"
     err = err + ("  expected: %s\n" % e_f)
     err = err + ("  input:    %s\n" % i_f)
     return status,err
@@ -41,7 +41,32 @@ def compareFloatingPoint(input,tolerance,expected):
     absdiff = np.abs(i_f[index] - e_f[index]);
     if absdiff > tol_f:
       status = False
-      err = err + "compareFloatingPoint [failed]\nReason: tolerance " + ("%1.4e" % tol_f) + " not satisifed\n"
+      err = err + "compareFloatingPointAbsolute [failed]\nReason: tolerance " + ("%1.4e" % tol_f) + " not satisifed\n"
+      err = err + ("  expected: %s\n" % e_f)
+      err = err + ("  input:    %s\n" % i_f)
+      err = err + "  index[" + str(index) + "]" + (" input \"%1.6e\"" %  i_f[index])  + (" != expected \"%1.6e\"" % e_f[index]) + " (+/-" + ("%1.4e" % tol_f)+")\n"
+  return status,err
+
+# TODO: reduce horrible code duplication here (and in many places in this file)
+def compareFloatingPointRelative(input,tolerance,expected):
+  status = True
+  err = ''
+  tmp = np.array(input)
+  i_f = tmp.astype(np.float)
+  tmp = np.array(expected)
+  e_f = tmp.astype(np.float)
+  tol_f = float(tolerance)
+  if len(input) != len(expected):
+    status = False
+    err = err + "compareFloatingPointRelative [failed]\nReason: input and expected are of different length\n"
+    err = err + ("  expected: %s\n" % e_f)
+    err = err + ("  input:    %s\n" % i_f)
+    return status,err
+  for index in range(0,len(e_f)):
+    reldiff = np.abs(i_f[index] - e_f[index])/np.abs(e_f[index]);
+    if reldiff > tol_f:
+      status = False
+      err = err + "compareFloatingPointRelative [failed]\nReason: tolerance " + ("%1.4e" % tol_f) + " not satisifed\n"
       err = err + ("  expected: %s\n" % e_f)
       err = err + ("  input:    %s\n" % i_f)
       err = err + "  index[" + str(index) + "]" + (" input \"%1.6e\"" %  i_f[index])  + (" != expected \"%1.6e\"" % e_f[index]) + " (+/-" + ("%1.4e" % tol_f)+")\n"
@@ -292,7 +317,7 @@ class Test:
         if self.passed == False:
           print('[' + self.name + '] reason for failure\n' + '--------------------------------------------------------------\n' + self.errormessage)
 
-  def compareFloatingPoint(self,key,tolerance):
+  def compareFloatingPointAbsolute(self,key,tolerance):
     expected,expected_flat = self.getExpected()
     output,output_flat = self.getOutput()
     values_e = getKeyValuesAsFloat(expected_flat,key)
@@ -300,7 +325,24 @@ class Test:
       errstr = '[pth][VerificationError] Test \"' + self.name + '\" queried the expected file \"' + self.expected_file + '\" for key \"' + key + '\" which was not found. \n\t\t    Users verification code is likely incorrect (contains a typo in the key name)'
       raise RuntimeError(errstr)
     values   = getKeyValuesAsFloat(output_flat,key)
-    status,err = compareFloatingPoint(values,tolerance,values_e)
+    status,err = compareFloatingPointAbsolute(values,tolerance,values_e)
+    kerr = ''
+    if status == False:
+      kerr = 'Key = \"' + key + '\" --> ' + err
+    self.updateStatus(status,kerr)
+
+  #Deprecated : default to absolute test
+  compareFloatingPoint=compareFloatingPointAbsolute
+
+  def compareFloatingPointRelative(self,key,tolerance):
+    expected,expected_flat = self.getExpected()
+    output,output_flat = self.getOutput()
+    values_e = getKeyValuesAsFloat(expected_flat,key)
+    if len(values_e) == 0:
+      errstr = '[pth][VerificationError] Test \"' + self.name + '\" queried the expected file \"' + self.expected_file + '\" for key \"' + key + '\" which was not found. \n\t\t    Users verification code is likely incorrect (contains a typo in the key name)'
+      raise RuntimeError(errstr)
+    values   = getKeyValuesAsFloat(output_flat,key)
+    status,err = compareFloatingPointRelative(values,tolerance,values_e)
     kerr = ''
     if status == False:
       kerr = 'Key = \"' + key + '\" --> ' + err
