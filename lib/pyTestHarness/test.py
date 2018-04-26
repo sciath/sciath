@@ -41,10 +41,10 @@ def compareFloatingPointAbsolute(input,tolerance,expected):
     absdiff = np.abs(i_f[index] - e_f[index]);
     if absdiff > tol_f:
       status = False
-      err = err + "compareFloatingPointAbsolute [failed]\nReason: tolerance " + ("%1.4e" % tol_f) + " not satisifed\n"
+      err = err + "compareFloatingPointAbsolute [failed]\nReason: absolute tolerance " + ("%1.4e" % tol_f) + " not satisfied\n"
       err = err + ("  expected: %s\n" % e_f)
       err = err + ("  input:    %s\n" % i_f)
-      err = err + "  index[" + str(index) + "]" + (" input \"%1.6e\"" %  i_f[index])  + (" != expected \"%1.6e\"" % e_f[index]) + " (+/-" + ("%1.4e" % tol_f)+")\n"
+      err = err + "  index[" + str(index) + "]" + (" input \"%1.6e\"" %  i_f[index])  + (" != expected \"%1.6e\"" % e_f[index]) + " (+/-" + ("%1.4e" % tol_f)+" abs.)\n"
   return status,err
 
 # TODO: reduce horrible code duplication here (and in many places in this file)
@@ -66,10 +66,10 @@ def compareFloatingPointRelative(input,tolerance,expected):
     reldiff = np.abs(i_f[index] - e_f[index])/np.abs(e_f[index]);
     if reldiff > tol_f:
       status = False
-      err = err + "compareFloatingPointRelative [failed]\nReason: tolerance " + ("%1.4e" % tol_f) + " not satisifed\n"
+      err = err + "compareFloatingPointRelative [failed]\nReason: relative tolerance " + ("%1.4e" % tol_f) + " not satisfied\n"
       err = err + ("  expected: %s\n" % e_f)
       err = err + ("  input:    %s\n" % i_f)
-      err = err + "  index[" + str(index) + "]" + (" input \"%1.6e\"" %  i_f[index])  + (" != expected \"%1.6e\"" % e_f[index]) + " (+/-" + ("%1.4e" % tol_f)+")\n"
+      err = err + "  index[" + str(index) + "]" + (" input \"%1.6e\"" %  i_f[index])  + (" != expected \"%1.6e\"" % e_f[index]) + " (+/-" + ("%1.4e" % tol_f)+"rel. )\n"
   return status,err
 
 def compareInteger(input,tolerance,expected):
