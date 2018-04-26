@@ -63,7 +63,10 @@ def compareFloatingPointRelative(input,tolerance,expected):
     err = err + ("  input:    %s\n" % i_f)
     return status,err
   for index in range(0,len(e_f)):
-    reldiff = np.abs(i_f[index] - e_f[index])/np.abs(e_f[index]);
+    if e_f[index] == 0.0 :
+      reldiff = 0.0 # for exactly zero values, set diff to 0 (controversial)
+    else :
+      reldiff = np.abs(i_f[index] - e_f[index])/np.abs(e_f[index]);
     if reldiff > tol_f:
       status = False
       err = err + "compareFloatingPointRelative [failed]\nReason: relative tolerance " + ("%1.4e" % tol_f) + " not satisfied\n"
