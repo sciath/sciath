@@ -285,7 +285,7 @@ class Launcher:
     print('  Queue system:    ',self.queuingSystemType)
     print('  MPI launcher:    ',self.mpiLaunch)
     if self.useBatch:
-      print('  Submit command:', self.jobSubmissionCommand)
+      print('  Submit command:  ', self.jobSubmissionCommand)
       if self.accountName:
         print('  Account:       ',self.accountName)
       if self.queueName:
