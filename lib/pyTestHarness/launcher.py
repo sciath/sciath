@@ -272,8 +272,7 @@ class Launcher:
       #print('No queuing system being used')
 
     else:
-      print('Value found: ' + type + ' ...')
-      raise RuntimeError('[pth] Unknown or unsupported batch queuing system specified')
+      raise RuntimeError('[pth] Unknown or unsupported batch queuing system "' + type + '" specified')
 
   def setQueueName(self,name):
     self.queueName = name
@@ -302,7 +301,12 @@ class Launcher:
       v = py23input(prompt)
       if not v :
         print( 'Required.')
-    self.setQueueSystemType(v)
+      else :
+        try :
+          self.setQueueSystemType(v)
+        except RuntimeError as e :
+          print(e)
+          v = None
 
     v = None
     while not v:
