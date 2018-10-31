@@ -228,7 +228,7 @@ class Test:
       self.execute = [execute]
     self.expected_file = expected_file
     self.keywords = [ '#', '!', '//' ]
-    self.output_file = name + '-p' + str(ranks) + '.output'
+    self.output_file = name + '.output'
     self.comparison_file = ''
     self.output_path = ''
     self.sandbox_path = self.name + '_sandbox'
