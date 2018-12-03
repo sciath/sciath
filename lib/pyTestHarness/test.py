@@ -315,10 +315,38 @@ class Test:
           print(pthcolors.FAIL + ' [' + self.name + ']   *** FAILED ***' + pthcolors.ENDC)
         else:
           print(pthcolors.OKGREEN + ' [' + self.name + ']   passed' + pthcolors.ENDC)
-    if type == 'log':
+  
+    elif type == 'log_short':
       if self.ignore == False:
         if self.passed == False:
-          print('[' + self.name + '] reason for failure\n' + '--------------------------------------------------------------\n' + self.errormessage)
+          print('[' + self.name + '] ' + 'expected file : ' + self.expected_file)
+          print('[' + self.name + '] ' + 'output file   : ' + os.path.join(self.output_path,self.output_file))
+          execline = str(self.execute[0])
+          print('[' + self.name + '] ' + 'launch command: ' + execline)
+          errordump = self.errormessage.split('\n')
+          if len(errordump) < 10:
+            print(self.errormessage)
+          else:
+            print('[' + self.name + '] ' +'  --- please refer to error report log file for full description ---\n')
+    elif type == 'log':
+      if self.ignore == False:
+        if self.passed == False:
+          lenheader = 0
+          n = self.name
+          ef = self.expected_file
+          of = os.path.join(self.output_path,self.output_file)
+          lenheader = max( len(n) , len(ef) , len(of) )
+          lenheader += 15 + 2 + 2
+          header = lenheader * '='
+          print(header)
+          print('  test name     : ' + self.name)
+          print('  expected file : ' + self.expected_file)
+          print('  output file   : ' + os.path.join(self.output_path,self.output_file))
+          execline = str(self.execute[0])
+          print('  launch command:',execline)
+          print('\n' + self.errormessage)
+    else:
+      print('[' + self.name + '] ' + 'Unknown error log type requested (' + str(type) + ')' )
 
   def compareFloatingPointAbsolute(self,key,tolerance):
     expected,expected_flat = self.getExpected()
