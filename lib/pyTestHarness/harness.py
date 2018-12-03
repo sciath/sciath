@@ -313,7 +313,7 @@ class Harness:
 
       print('xxx============================================================================xxx')
       print('     tests failed - Full error report written to ' + self.pthErrorReportFileName)
-      print('                      - Inspect the error log file and resolve failed tests')
+      print('                  - Please inspect the error log file and resolve failed tests')
       pthErrorReportFileLocation = os.path.realpath(self.pthErrorReportFileName)
       print('     cat ' + pthErrorReportFileLocation)
       print('xxx============================================================================xxx')
