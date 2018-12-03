@@ -315,36 +315,33 @@ class Test:
           print(pthcolors.FAIL + ' [' + self.name + ']   *** FAILED ***' + pthcolors.ENDC)
         else:
           print(pthcolors.OKGREEN + ' [' + self.name + ']   passed' + pthcolors.ENDC)
-  
-    elif type == 'log_short':
+
+    elif type == 'log_short' or type == 'log':
       if self.ignore == False:
         if self.passed == False:
-          print('[' + self.name + '] ' + 'expected file : ' + self.expected_file)
-          print('[' + self.name + '] ' + 'output file   : ' + os.path.join(self.output_path,self.output_file))
-          execline = str(self.execute[0])
-          print('[' + self.name + '] ' + 'launch command: ' + execline)
-          errordump = self.errormessage.split('\n')
-          if len(errordump) < 10:
-            print(self.errormessage)
-          else:
-            print('[' + self.name + '] ' +'  --- please refer to error report log file for full description ---\n')
-    elif type == 'log':
-      if self.ignore == False:
-        if self.passed == False:
-          lenheader = 0
           n = self.name
           ef = self.expected_file
           of = os.path.join(self.output_path,self.output_file)
-          lenheader = max( len(n) , len(ef) , len(of) )
-          lenheader += 15 + 2 + 2
-          header = lenheader * '='
-          print(header)
-          print('  test name     : ' + self.name)
-          print('  expected file : ' + self.expected_file)
-          print('  output file   : ' + os.path.join(self.output_path,self.output_file))
           execline = str(self.execute[0])
-          print('  launch command:',execline)
-          print('\n' + self.errormessage)
+          if type == 'log_short' :
+            print('[' + self.name + '] ' + 'expected file : ' + ef)
+            print('[' + self.name + '] ' + 'output file   : ' + of)
+            print('[' + self.name + '] ' + 'launch command: ' + execline)
+            if len(self.errormessage.split('\n')) < 10:
+              print(self.errormessage)
+            else:
+              print('[' + self.name + '] ' +'  --- please refer to error report log file for full description ---\n')
+          elif type == 'log':
+            lenheader = 0
+            lenheader = max( len(n) , len(ef) , len(of) )
+            lenheader += 15 + 2 + 2
+            header = lenheader * '='
+            print(header)
+            print('  test name     : ' + n)
+            print('  expected file : ' + ef)
+            print('  output file   : ' + of)
+            print('  launch command:',execline)
+            print('\n' + self.errormessage)
     else:
       print('[' + self.name + '] ' + 'Unknown error log type requested (' + str(type) + ')' )
 
