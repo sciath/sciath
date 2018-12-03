@@ -203,7 +203,7 @@ class Harness:
         print('')
         print(pthcolors.SUBHEADER+'[--------- Test Error Report ----------------------]'+pthcolors.ENDC)
         for test in self.registeredTests:
-          test.report('log')
+          test.report('log_short')
 
       errfile = self.reportAll()
       if errfile and self.args.error_on_test_failure:
