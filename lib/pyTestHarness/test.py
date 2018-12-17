@@ -9,18 +9,19 @@ def compareLiteral(input,expected):
   status = True
   err = ''
   if len(input) != len(expected):
-    status = False
     err = err + "compareLiteral [failed]\nReason: input and expected are of different length\n"
     err = err + ("  expected: %s\n" % expected)
     err = err + ("  input:    %s\n" % input)
+    status = False
     return status,err
   for index in range(0,len(expected)):
     if input[index] != expected[index]:
-      status = False
-      err = err + "compareLiteral [failed]\nReason: strings are different\n"
-      err = err + ("  expected: %s\n" % expected)
-      err = err + ("  input:    %s\n" % input)
+      if status:
+        err = err + "compareLiteral [failed]\nReason: strings are different\n"
+        err = err + ("  expected: %s\n" % expected)
+        err = err + ("  input:    %s\n" % input)
       err = err + "  index[" + str(index) +  "]" + " input \"" +  input[index] + "\" != expected \"" + expected[index] + "\"\n"
+      status = False
   return status,err
 
 def compareFloatingPointAbsolute(input,tolerance,expected):
@@ -32,19 +33,20 @@ def compareFloatingPointAbsolute(input,tolerance,expected):
   e_f = tmp.astype(np.float)
   tol_f = float(tolerance)
   if len(input) != len(expected):
-    status = False
     err = err + "compareFloatingPointAbsolute [failed]\nReason: input and expected are of different length\n"
     err = err + ("  expected: %s\n" % e_f)
     err = err + ("  input:    %s\n" % i_f)
+    status = False
     return status,err
   for index in range(0,len(e_f)):
     absdiff = np.abs(i_f[index] - e_f[index]);
     if absdiff > tol_f:
-      status = False
-      err = err + "compareFloatingPointAbsolute [failed]\nReason: absolute tolerance " + ("%1.4e" % tol_f) + " not satisfied\n"
-      err = err + ("  expected: %s\n" % e_f)
-      err = err + ("  input:    %s\n" % i_f)
+      if status :
+        err = err + "compareFloatingPointAbsolute [failed]\nReason: absolute tolerance " + ("%1.4e" % tol_f) + " not satisfied\n"
+        err = err + ("  expected: %s\n" % e_f)
+        err = err + ("  input:    %s\n" % i_f)
       err = err + "  index[" + str(index) + "]" + (" input \"%1.6e\"" %  i_f[index])  + (" != expected \"%1.6e\"" % e_f[index]) + " (+/-" + ("%1.4e" % tol_f)+" abs.)\n"
+      status = False
   return status,err
 
 # TODO: reduce horrible code duplication here (and in many places in this file)
@@ -57,10 +59,10 @@ def compareFloatingPointRelative(input,tolerance,expected):
   e_f = tmp.astype(np.float)
   tol_f = float(tolerance)
   if len(input) != len(expected):
-    status = False
     err = err + "compareFloatingPointRelative [failed]\nReason: input and expected are of different length\n"
     err = err + ("  expected: %s\n" % e_f)
     err = err + ("  input:    %s\n" % i_f)
+    status = False
     return status,err
   for index in range(0,len(e_f)):
     if e_f[index] == 0.0 :
@@ -68,11 +70,12 @@ def compareFloatingPointRelative(input,tolerance,expected):
     else :
       reldiff = np.abs(i_f[index] - e_f[index])/np.abs(e_f[index]);
     if reldiff > tol_f:
-      status = False
-      err = err + "compareFloatingPointRelative [failed]\nReason: relative tolerance " + ("%1.4e" % tol_f) + " not satisfied\n"
-      err = err + ("  expected: %s\n" % e_f)
-      err = err + ("  input:    %s\n" % i_f)
+      if status:
+        err = err + "compareFloatingPointRelative [failed]\nReason: relative tolerance " + ("%1.4e" % tol_f) + " not satisfied\n"
+        err = err + ("  expected: %s\n" % e_f)
+        err = err + ("  input:    %s\n" % i_f)
       err = err + "  index[" + str(index) + "]" + (" input \"%1.6e\"" %  i_f[index])  + (" != expected \"%1.6e\"" % e_f[index]) + " (+/-" + ("%1.4e" % tol_f)+" rel. )\n"
+      status = False
   return status,err
 
 def compareInteger(input,tolerance,expected):
@@ -84,19 +87,20 @@ def compareInteger(input,tolerance,expected):
   e_i = tmp.astype(np.int)
   tol_i = int(tolerance)
   if len(input) != len(expected):
-    status = False
     err = err + "compareInteger [failed]\nReason: input and expected are of different length\n"
     err = err + ("  expected: %s\n" % e_i)
     err = err + ("  input:    %s\n" % i_i)
+    status = False
     return status,err
   for index in range(0,len(e_i)):
     absdiff = np.abs(i_i[index] - e_i[index]);
     if absdiff > tol_i:
-      status = False
-      err = err + "compareInteger [failed]\nReason: tolerance " + str(tol_i) + " not satisifed\n"
-      err = err + ("  expected: %s\n" % e_i)
-      err = err + ("  input:    %s\n" % i_i)
+      if status:
+        err = err + "compareInteger [failed]\nReason: tolerance " + str(tol_i) + " not satisifed\n"
+        err = err + ("  expected: %s\n" % e_i)
+        err = err + ("  input:    %s\n" % i_i)
       err = err + "  index[" + str(index) + "]" + (" input \"%s\"" %  i_i[index]) + (" != expected \"%s\"" % e_i[index]) + " (+/-"+str(tol_i)+")\n"
+      status = False
   return status,err
 
 def parseFile(filename,keywords):
