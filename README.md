@@ -21,7 +21,10 @@ pyTestHarness provides:
 
 1. pyTestHarness depends on Python 3 (or Python 2.4+) and numpy
 
-2. Make sure you modify your PYTHONPATH environment variable to include the directory ```${PWD}/lib``` (relative to this README file)
+2. When using Python 3, it is highly recommended you set the environment variable PYTHONUNBUFFERED, e.g.
+```export PYTHONUNBUFFERED```
+
+3. Make sure you modify your PYTHONPATH environment variable to include the directory ```${PWD}/lib``` (relative to this README file)
 
 ## Examples
 
