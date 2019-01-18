@@ -66,13 +66,13 @@ Floating point comparisons can be absolute or relative.
 
 ### Running a subset of tests
 
-    ./pth_example2.p -l         # list all registered tests
-    ./pth_example2.py -t test1  # run a single test
-                                # can select multiple tests with -t test1,test2
+    ./pth_example2.p -l              # list all registered tests
+    ./pth_example2.py -t test1       # run a single test
+    ./pth_example2.py -t test1,test2 # run several tests
 
 #### Example 8
 One may also provide a subset of tests directly in the initializer for the test
-harness. Additional tests can be added with `-t` as above.
+harness. Additional tests can be added with `-t`.
 
     cd example8
     ./pth_example8.py               # test1 should pass, test1_clone should be skipped
@@ -103,8 +103,8 @@ Generated test output may be deleted:
 
     cd example5
     ./pth_example5.py           # ex1 should pass; ex2-ex4 should fail
-    ./pth_example5.ph -p        # delete output for all tests
-    ./pth_example5.ph -p -t ex1 # delete output for a single test
+    ./pth_example5.py -p        # delete output for all tests
+    ./pth_example5.py -p -t ex1 # delete output for a single test
 
 ### Running tests in dedicated "sandbox" directories
 
