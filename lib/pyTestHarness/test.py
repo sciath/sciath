@@ -49,7 +49,6 @@ def compareFloatingPointAbsolute(input,tolerance,expected):
       status = False
   return status,err
 
-# TODO: reduce horrible code duplication here (and in many places in this file)
 def compareFloatingPointRelative(input,tolerance,expected):
   status = True
   err = ''
