@@ -45,7 +45,7 @@ def compareFloatingPointAbsolute(input,tolerance,expected):
         err = err + "compareFloatingPointAbsolute [failed]\nReason: absolute tolerance " + ("%1.4e" % tol_f) + " not satisfied\n"
         err = err + ("  expected: %s\n" % e_f)
         err = err + ("  input:    %s\n" % i_f)
-      err = err + "  index[" + str(index) + "]" + (" input \"%1.6e\"" %  i_f[index])  + (" != expected \"%1.6e\"" % e_f[index]) + " (+/-" + ("%1.4e" % tol_f)+" abs.)\n"
+      err = err + "  index[" + str(index) + "]" + (" input %1.6e" %  i_f[index])  + (" doesn't match expected %1.6e" % e_f[index]) + "\n"
       status = False
   return status,err
 
@@ -72,11 +72,11 @@ def compareFloatingPointRelative(input,tolerance,expected,epsilon=None):
       if status:
         err = err + "compareFloatingPointRelative [failed]\nReason: relative tolerance " + ("%1.4e" % tol_f)
         if epsilon :
-          err  = err + " epsilon " + ("%1.4e" % epsilon)
+          err  = err + ", epsilon " + ("%1.4e" % epsilon) +","
         err = err  + " not satisfied\n"
         err = err + ("  expected: %s\n" % e_f)
         err = err + ("  input:    %s\n" % i_f)
-      err = err + "  index[" + str(index) + "]" + (" input \"%1.6e\"" %  i_f[index])  + (" doesn't match expected \"%1.6e\"" % e_f[index]) + " * (1 +/-" + ("%1.4e" % tol_f)+" rel. )\n"
+      err = err + "  index[" + str(index) + "]" + (" input %1.6e" %  i_f[index])  + (" doesn't match expected %1.6e" % e_f[index]) + "\n"
       status = False
   return status,err
 
