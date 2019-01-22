@@ -59,7 +59,7 @@ Basic functionality includes:
 Floating point comparisons can be absolute or relative.
 
     cd example9
-    ./pth_example9.py           # testAbs should fail; testRel should pass
+    ./pth_example9.py           # testAbs, testRel should fail; testRelEpsilon should pass
 
 ### Tests defined in separate directories
 #### Example 2
