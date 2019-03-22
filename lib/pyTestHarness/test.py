@@ -328,11 +328,16 @@ class Test:
           n = self.name
           ef = self.expected_file
           of = os.path.join(self.output_path,self.output_file)
-          execline = str(self.execute[0])
+          num_exec = len(self.execute)
+          multiple_exec = num_exec > 1
           if type == 'log_short' :
-            print('[' + self.name + '] ' + 'expected file : ' + ef)
-            print('[' + self.name + '] ' + 'output file   : ' + of)
-            print('[' + self.name + '] ' + 'launch command: ' + execline)
+            print('[' + self.name + '] ' + 'expected file  : ' + ef)
+            print('[' + self.name + '] ' + 'output file    : ' + of)
+            if multiple_exec :
+                for idx,exec_entry in enumerate(self.execute) :
+                    print('[' + self.name + '] ' + 'launch command (' + str(idx+1) + '/' + str(num_exec) + ') : ' + str(exec_entry))
+            else :
+                print('[' + self.name + '] ' + 'launch command :',str(self.execute[0]))
             if len(self.errormessage.split('\n')) < 10:
               print(self.errormessage)
             else:
@@ -346,7 +351,11 @@ class Test:
             print('  test name     : ' + n)
             print('  expected file : ' + ef)
             print('  output file   : ' + of)
-            print('  launch command:',execline)
+            if multiple_exec :
+                for idx,exec_entry in enumerate(self.execute) :
+                    print('  launch command (' + str(idx+1) + '/' + str(num_exec) + ') : ' + str(exec_entry))
+            else :
+                print('  launch command:',str(self.execute[0]))
             print('\n' + self.errormessage)
     else:
       print('[' + self.name + '] ' + 'Unknown error log type requested (' + str(type) + ')' )
