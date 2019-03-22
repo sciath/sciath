@@ -2,4 +2,4 @@ def getVersion() :
   """
   Returns major,minor,patch version as integers
   """
-  return 0,4,2
+  return 0,4,3
