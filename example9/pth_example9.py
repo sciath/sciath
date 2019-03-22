@@ -39,9 +39,30 @@ def testRel():
 
   return(test)
 
+def testRelEpsilon():
+  ranks = 1
+  launch = makeLocalPathAbsolute('./run.sh')
+  expected_file = 'expected'
+
+  def comparefunc(test):
+    key = "datum"
+    tol = 1e-5;
+    epsilon = 1e-10
+    test.compareFloatingPointRelative(key,tol,epsilon);
+
+  test = pthtest.Test('testRelEpsilon',ranks,launch,expected_file)
+  test.setVerifyMethod(comparefunc)
+  test.setUseSandbox()
+
+  return(test)
+
 def run_tests():
 
-  h = pthharness.Harness([testAbs(),testRel()])
+  h = pthharness.Harness([
+      testAbs(),
+      testRel(),
+      testRelEpsilon()
+  ])
   h.execute()
   h.verify()
 

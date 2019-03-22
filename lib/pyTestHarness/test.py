@@ -45,12 +45,11 @@ def compareFloatingPointAbsolute(input,tolerance,expected):
         err = err + "compareFloatingPointAbsolute [failed]\nReason: absolute tolerance " + ("%1.4e" % tol_f) + " not satisfied\n"
         err = err + ("  expected: %s\n" % e_f)
         err = err + ("  input:    %s\n" % i_f)
-      err = err + "  index[" + str(index) + "]" + (" input \"%1.6e\"" %  i_f[index])  + (" != expected \"%1.6e\"" % e_f[index]) + " (+/-" + ("%1.4e" % tol_f)+" abs.)\n"
+      err = err + "  index[" + str(index) + "]" + (" input %1.6e" %  i_f[index])  + (" doesn't match expected %1.6e" % e_f[index]) + "\n"
       status = False
   return status,err
 
-# TODO: reduce horrible code duplication here (and in many places in this file)
-def compareFloatingPointRelative(input,tolerance,expected):
+def compareFloatingPointRelative(input,tolerance,expected,epsilon=None):
   status = True
   err = ''
   tmp = np.array(input)
@@ -65,16 +64,19 @@ def compareFloatingPointRelative(input,tolerance,expected):
     status = False
     return status,err
   for index in range(0,len(e_f)):
-    if e_f[index] == 0.0 :
-      reldiff = 0.0 # for exactly zero values, set diff to 0 (controversial)
+    if epsilon :
+      reldiff = np.abs(i_f[index] - e_f[index])/(np.abs(e_f[index]) + epsilon);
     else :
       reldiff = np.abs(i_f[index] - e_f[index])/np.abs(e_f[index]);
     if reldiff > tol_f:
       if status:
-        err = err + "compareFloatingPointRelative [failed]\nReason: relative tolerance " + ("%1.4e" % tol_f) + " not satisfied\n"
+        err = err + "compareFloatingPointRelative [failed]\nReason: relative tolerance " + ("%1.4e" % tol_f)
+        if epsilon :
+          err  = err + ", epsilon " + ("%1.4e" % epsilon) +","
+        err = err  + " not satisfied\n"
         err = err + ("  expected: %s\n" % e_f)
         err = err + ("  input:    %s\n" % i_f)
-      err = err + "  index[" + str(index) + "]" + (" input \"%1.6e\"" %  i_f[index])  + (" != expected \"%1.6e\"" % e_f[index]) + " (+/-" + ("%1.4e" % tol_f)+" rel. )\n"
+      err = err + "  index[" + str(index) + "]" + (" input %1.6e" %  i_f[index])  + (" doesn't match expected %1.6e" % e_f[index]) + "\n"
       status = False
   return status,err
 
@@ -366,7 +368,7 @@ class Test:
   #Deprecated : default to absolute test
   compareFloatingPoint=compareFloatingPointAbsolute
 
-  def compareFloatingPointRelative(self,key,tolerance):
+  def compareFloatingPointRelative(self,key,tolerance,epsilon=None):
     expected,expected_flat = self.getExpected()
     output,output_flat = self.getOutput()
     values_e = getKeyValuesAsFloat(expected_flat,key)
@@ -374,7 +376,7 @@ class Test:
       errstr = '[pth][VerificationError] Test \"' + self.name + '\" queried the expected file \"' + self.expected_file + '\" for key \"' + key + '\" which was not found. \n\t\t    Users verification code is likely incorrect (contains a typo in the key name)'
       raise RuntimeError(errstr)
     values   = getKeyValuesAsFloat(output_flat,key)
-    status,err = compareFloatingPointRelative(values,tolerance,values_e)
+    status,err = compareFloatingPointRelative(values,tolerance,values_e,epsilon)
     kerr = ''
     if status == False:
       kerr = 'Key = \"' + key + '\" --> ' + err
