@@ -4,5 +4,13 @@ pthBatchQueuingSystem.conf
 *.slurm
 *.llq
 
-__pycache__
+# Python
 *.pyc
+__pycache__
+
+# OS X
+.DS_Store
+*.dSYM
+
+# Vim
+.*.sw[omp]
