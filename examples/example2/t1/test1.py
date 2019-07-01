@@ -1,5 +1,5 @@
 import os
-import pyTestHarness.test as pthtest
+from sciath.test import Test
 
 def makeLocalPathAbsolute(localRelPath) :
   thisDir = os.path.split(os.path.abspath(__file__))[0]
@@ -27,7 +27,7 @@ def test():
     test.compareFloatingPointAbsolute(key,0.01)
 
   # Create test object
-  ex1 = pthtest.Test('test1',ranks,launch,expected_file)
+  ex1 = Test('test1',ranks,launch,expected_file)
   ex1.setVerifyMethod(comparefunc)
   ex1.appendKeywords('@')
 

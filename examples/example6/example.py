@@ -6,8 +6,8 @@
 # Note: We define executables relative to the absolute path of this file
 
 import os
-import pyTestHarness.test as pthtest
-import pyTestHarness.harness as pthharness
+from sciath.test import Test
+from sciath.harness import Harness
 
 def makeLocalPathAbsolute(localRelPath) :
   thisDir = os.path.split(os.path.abspath(__file__))[0]
@@ -22,7 +22,7 @@ def test1() :
     key = 'testkey'
     test.compareInteger(key,0)
 
-  test = pthtest.Test('ex1',ranks,launch,expected_file)
+  test = Test('ex1',ranks,launch,expected_file)
   test.setVerifyMethod(comparefunc)
   test.setComparisonFile('out.txt')
   test.setUseSandbox()
@@ -38,7 +38,7 @@ def test2():
     key = 'testkey'
     test.compareInteger(key,0)
 
-  test = pthtest.Test('ex2',ranks,launch,expected_file)
+  test = Test('ex2',ranks,launch,expected_file)
   test.setVerifyMethod(comparefunc)
   test.setComparisonFile('out.txt')
   test.setUseSandbox()
@@ -50,7 +50,7 @@ def run_tests():
 
   registeredTests = [test1(), test2()]
 
-  h = pthharness.Harness(registeredTests)
+  h = Harness(registeredTests)
   h.execute()
   h.verify()
 

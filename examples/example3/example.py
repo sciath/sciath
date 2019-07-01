@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import os
-import pyTestHarness.test as pthtest
-import pyTestHarness.harness as pthharness
+from sciath.test import Test
+from sciath.harness import Harness
 
 def run_petsc_ex2a():
   launch = '${PETSC_DIR}/src/ksp/ksp/examples/tutorials/ex2'
@@ -12,7 +12,7 @@ def run_petsc_ex2a():
     key = 'KSP Residual norm'
     test.compareFloatingPointAbsolute(key,1.0e-5)
 
-  test = pthtest.Test('ex2a',ranks,launch,expected_file)
+  test = Test('ex2a',ranks,launch,expected_file)
   test.setVerifyMethod(comparefunc)
   return(test)
 
@@ -25,7 +25,7 @@ def run_petsc_ex2b():
     key = 'KSP Residual norm'
     test.compareFloatingPointAbsolute(key,1.0e-5)
 
-  test = pthtest.Test('ex2b',ranks,launch,expected_file)
+  test = Test('ex2b',ranks,launch,expected_file)
   test.setVerifyMethod(comparefunc)
   return(test)
 
@@ -41,7 +41,7 @@ def run_petsc_ex2c():
     key = 'Norm of error'
     test.compareLiteral(key)
 
-  test = pthtest.Test('ex2c',ranks,launch,expected_file)
+  test = Test('ex2c',ranks,launch,expected_file)
   test.setVerifyMethod(comparefunc)
   return(test)
 
@@ -55,7 +55,7 @@ def run_petsc_tests():
 
   registeredTests = [ run_petsc_ex2a() , run_petsc_ex2b() , run_petsc_ex2c() ]
 
-  h = pthharness.Harness(registeredTests)
+  h = Harness(registeredTests)
   h.execute()
   h.verify()
 

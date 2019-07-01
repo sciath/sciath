@@ -2,17 +2,17 @@
 API Reference
 =============
 
-pyTestHarness
-=============
+sciath
+======
 
-.. automodule:: pyTestHarness
+.. automodule:: sciath
   :members:
   :undoc-members:
 
 Test
 ====
 
-.. automodule:: pyTestHarness.test
+.. automodule:: sciath.test
   :members:
   :undoc-members:
 
@@ -20,25 +20,17 @@ Test
 Harness
 ========
 
-.. automodule:: pyTestHarness.harness
+.. automodule:: sciath.harness
   :members:
   :undoc-members:
 
 Additional modules and classes
 ==============================
 
-.. automodule:: pyTestHarness.launcher
+.. automodule:: sciath.launcher
   :members:
   :undoc-members:
 
-.. automodule:: pyTestHarness.colors
-  :members:
-  :undoc-members:
-
-.. automodule:: pyTestHarness.utils
-  :members:
-  :undoc-members:
-
-.. automodule:: pyTestHarness.version
+.. automodule:: sciath._io
   :members:
   :undoc-members:

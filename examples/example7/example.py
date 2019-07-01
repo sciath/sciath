@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import os
-import pyTestHarness.test as pthtest
-import pyTestHarness.harness as pthharness
+from sciath.test import Test
+from sciath.harness import Harness
 
 def makeLocalPathAbsolute(localRelPath) :
   thisDir = os.path.split(os.path.abspath(__file__))[0]
@@ -16,7 +16,7 @@ def test1():
     test.compareUnixDiff()
 
   # Create test object
-  test = pthtest.Test('ex1',ranks,launch,expected_file)
+  test = Test('ex1',ranks,launch,expected_file)
   test.setVerifyMethod(comparefuncSubTest)
   test.appendKeywords('@')
 
@@ -27,7 +27,7 @@ def run_tests():
 
   os.system('gcc -o ex ex.c')
 
-  h = pthharness.Harness( [test1()] )
+  h = Harness( [test1()] )
   h.execute()
   h.verify()
 

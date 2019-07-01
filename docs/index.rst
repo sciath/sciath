@@ -1,15 +1,15 @@
-=============
-pyTestHarness
-=============
+======
+SciATH
+======
 
-This is documentation for `pyTestHarness`_.
+This is documentation for `SciATH`_.
 
-..  _pyTestHarness: https://www.bitbucket.org/dmay/pythontestharness
+..  _SciATH: https://www.github.com/sciath/sciath
 
 What is it?
 ===========
 
-pyTestHarness is a set of lightweight Python tools designed to quickly and easily test scientific application codes. As such,
+SciATH is a set of lightweight Python tools designed to quickly and easily test scientific application codes. As such,
 it focuses on full-application testing
 and prioritizes being able to run on clusters with batch systems.
 This is in contrast to most testing frameworks, which are designed with libraries in mind.
