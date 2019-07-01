@@ -9,16 +9,6 @@ pyTestHarness
   :members:
   :undoc-members:
 
-Job
-===
-
-Launcher
-========
-
-.. automodule:: pyTestHarness.launcher
-  :members:
-  :undoc-members:
-
 Test
 ====
 
@@ -36,6 +26,10 @@ Harness
 
 Additional modules and classes
 ==============================
+
+.. automodule:: pyTestHarness.launcher
+  :members:
+  :undoc-members:
 
 .. automodule:: pyTestHarness.colors
   :members:
