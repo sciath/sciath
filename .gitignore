@@ -1,4 +1,4 @@
-pthBatchQueuingSystem.conf
+SciATHBatchQueuingSystem.conf
 *.pbs
 *.lsf
 *.slurm

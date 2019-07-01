@@ -17,7 +17,7 @@ sys.path.insert(0, os.path.abspath(os.path.join('..','lib')))
 
 # -- Project information -----------------------------------------------------
 
-project = 'pyTestHarness'
+project = 'SciATH'
 copyright = '2019, Dave A. May and Patrick Sanan'
 author = 'Dave A. May and Patrick Sanan'
 

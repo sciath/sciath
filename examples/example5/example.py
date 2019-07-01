@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import os
-import pyTestHarness.test as pthtest
-import pyTestHarness.harness as pthharness
+from sciath.test import Test
+from sciath.harness import Harness
 
 def makeLocalPathAbsolute(localRelPath) :
   thisDir = os.path.split(os.path.abspath(__file__))[0]
@@ -29,7 +29,7 @@ def test1():
     test.compareFloatingPointAbsolute(key,0.01)
 
   # Create test object
-  test = pthtest.Test('ex1',ranks,launch,expected_file)
+  test = Test('ex1',ranks,launch,expected_file)
   test.setVerifyMethod(comparefunc)
   test.appendKeywords('@')
 
@@ -45,7 +45,7 @@ def test2():
     test.compareFloatingPointAbsolute(key,0.0001)
 
   # Create test object
-  test = pthtest.Test('ex2',ranks,launch,expected_file)
+  test = Test('ex2',ranks,launch,expected_file)
   test.setVerifyMethod(comparefunc)
   test.appendKeywords('@')
   test.setComparisonFile('ex2-residual.log')
@@ -65,13 +65,13 @@ def test3():
     test.compareFloatingPointAbsolute(key,1.0e-4)
 
   # Create test object
-  test = pthtest.Test('ex3',ranks,launch,expected_file)
+  test = Test('ex3',ranks,launch,expected_file)
   test.setVerifyMethod(comparefunc)
 
   return(test)
 
 # Define test which doesn't use an expected file
-from pyTestHarness.test import getKeyValuesAsInt
+from sciath.test import getKeyValuesAsInt
 
 def test4():
   def comparefunc(test):
@@ -92,7 +92,7 @@ def test4():
       kerr = 'Key = \"' + key + '\" --> was not found in output file'
     test.updateStatus(status,kerr)
 
-  test = pthtest.Test('ex4',1,makeLocalPathAbsolute('./ex1'),None)
+  test = Test('ex4',1,makeLocalPathAbsolute('./ex1'),None)
   test.setVerifyMethod(comparefunc)
   return(test)
 
@@ -104,7 +104,7 @@ def run_tests():
   os.system('gcc -o ex1 ex1.c')
   os.system('gcc -o ex2 ex2.c')
 
-  h = pthharness.Harness(registeredTests)
+  h = Harness(registeredTests)
   h.execute()
   h.verify() 
 

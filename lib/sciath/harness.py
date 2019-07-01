@@ -2,9 +2,9 @@ from __future__ import print_function
 import os
 import sys
 import argparse
-import pyTestHarness.test as pthtest
-import pyTestHarness.launcher as pthlauncher
-from   pyTestHarness._io import NamedColors as pthcolors
+import sciath.test as sciathtest
+import sciath.launcher as sciathlauncher
+from   sciath._io import NamedColors as sciathcolors
 
 class Harness:
   def __init__(self,registeredTests,subsetTestName=None):
@@ -14,7 +14,7 @@ class Harness:
     self.testsPassed = 0
     self.testsFailed = 0
     self.verbosity_level = 1
-    self.pthErrorReportFileName = 'pthErrorReport.log'
+    self.errorReportFileName = 'errorReport.log'
 
     self.testDescription = [] # Note: not currently output, but could be used for future logging
     self.registeredTests = registeredTests
@@ -23,11 +23,11 @@ class Harness:
     testNames = []
     for t in self.registeredTests:
       testNames.append(t.name)
-      if not isinstance(t,pthtest.Test):
-        raise ValueError('[pth]: Registered tests must be of type pyTestHarness.test.Test')
+      if not isinstance(t,sciathtest.Test):
+        raise ValueError('[SciAth]: Registered tests must be of type pyTestHarness.test.Test')
     self.testsRegistered = len(self.registeredTests)
     if len(testNames) != len(set(testNames)) :
-      raise Exception('[pth] Registered tests must have unique names')
+      raise Exception('[SciAth] Registered tests must have unique names')
 
     parser = argparse.ArgumentParser(description='Python Test Harness.')
     parser.add_argument('-v', '--verify', help='Perform test verification only (and not execution)', required=False, action='store_true')
@@ -58,11 +58,11 @@ class Harness:
 
     # If --configure_default is specified, write the default file and exit
     if self.args.configure_default:
-      pthlauncher.Launcher.writeDefaultDefinition(self.args.with_conf_file)
+      sciathlauncher.Launcher.writeDefaultDefinition(self.args.with_conf_file)
       sys.exit(0)
 
     # Create the launcher
-    self.launcher = pthlauncher.Launcher(self.args.with_conf_file)
+    self.launcher = sciathlauncher.Launcher(self.args.with_conf_file)
 
     # If --configure is specified, (re)generate the configuration file and exit
     if self.args.configure:
@@ -104,7 +104,7 @@ class Harness:
           found = True
           break
       if found == False:
-        errstr= '[pth] You requested to test a subset of registered tests, \n\t\t  but no registered test matched the name \"' + name + '\"'
+        errstr= '[SciAth] You requested to test a subset of registered tests, \n\t\t  but no registered test matched the name \"' + name + '\"'
         raise RuntimeError(errstr)
 
     if self.args.test:
@@ -119,7 +119,7 @@ class Harness:
             break
 
         if found == False:
-          errstr= '[pth] You requested to test a subset of registered tests, \n\t\t  but no registered test matched the name \"' + name + '\"'
+          errstr= '[SciAth] You requested to test a subset of registered tests, \n\t\t  but no registered test matched the name \"' + name + '\"'
           raise RuntimeError(errstr)
 
     if self.execSubset:
@@ -153,7 +153,7 @@ class Harness:
     '''Execute tests unless verifying (only) or purging output (only)'''
     if not self.args.verify and not self.args.purge_output:
       print('')
-      print(pthcolors.HEADER + '[ *** Executing Tests *** ]' + pthcolors.ENDC)
+      print(sciathcolors.HEADER + '[ *** Executing Tests *** ]' + sciathcolors.ENDC)
       launcher = self.launcher
       testList = self.registeredTests
       if launcher.verbosity_level > 0:
@@ -166,7 +166,7 @@ class Harness:
             skipCounter = skipCounter + 1
 
       if skipCounter != 0:
-        print('\n' + pthcolors.WARNING + 'Warning: ' + str(skipCounter) + ' MPI parallel jobs are being skipped as a valid MPI launcher was not provided'+ pthcolors.ENDC)
+        print('\n' + sciathcolors.WARNING + 'Warning: ' + str(skipCounter) + ' MPI parallel jobs are being skipped as a valid MPI launcher was not provided'+ sciathcolors.ENDC)
 
       counter = 0
       skipCounter = 0
@@ -177,13 +177,13 @@ class Harness:
           skipCounter = skipCounter + 1
         counter = counter + 1
       if (skipCounter > 0) :
-        print(pthcolors.WARNING+'[pth] Skipped executing '+str(skipCounter)+' tests'+pthcolors.ENDC)
+        print(sciathcolors.WARNING+'[SciAth] Skipped executing '+str(skipCounter)+' tests'+sciathcolors.ENDC)
 
   def verify(self):
     '''Verify, unless we are running with a batch system and are not in verify(-only) mode'''
     if not self.launcher.useBatch or self.args.verify :
       print('')
-      print(pthcolors.HEADER + '[ *** Verifying Test Output *** ]' + pthcolors.ENDC)
+      print(sciathcolors.HEADER + '[ *** Verifying Test Output *** ]' + sciathcolors.ENDC)
       skipCounter = 0
       for test in self.registeredTests:
         if test.ignore  or (self.launcher.mpiLaunch == 'none' and test.ranks != 1) :
@@ -192,7 +192,7 @@ class Harness:
           print('[-- Verifying test: ' + test.name + ' --]')
           test.verifyOutput()
       if skipCounter > 0 :
-        print(pthcolors.WARNING+'[pth] Skipped verification for '+str(skipCounter)+' skipped tests'+pthcolors.ENDC)
+        print(sciathcolors.WARNING+'[SciAth] Skipped verification for '+str(skipCounter)+' skipped tests'+sciathcolors.ENDC)
 
       print('')
       counter = 0
@@ -201,7 +201,7 @@ class Harness:
           counter = counter + 1
       if counter > 0:
         print('')
-        print(pthcolors.SUBHEADER+'[--------- Test Error Report ----------------------]'+pthcolors.ENDC)
+        print(sciathcolors.SUBHEADER+'[--------- Test Error Report ----------------------]'+sciathcolors.ENDC)
         for test in self.registeredTests:
           test.report('log_short')
 
@@ -214,9 +214,9 @@ class Harness:
 
   def clean(self):
     print('')
-    print(pthcolors.HEADER+'[ *** Deleting Existing Test Output *** ]'+pthcolors.ENDC)
-    if os.path.isfile(self.pthErrorReportFileName) :
-      os.remove(self.pthErrorReportFileName)
+    print(sciathcolors.HEADER+'[ *** Deleting Existing Test Output *** ]'+sciathcolors.ENDC)
+    if os.path.isfile(self.errorReportFileName) :
+      os.remove(self.errorReportFileName)
     skipCounter = 0
     for test in self.registeredTests:
       if test.ignore:
@@ -224,7 +224,7 @@ class Harness:
       else:
         self.launcher.clean(test)
     if skipCounter > 0 :
-      print(pthcolors.WARNING+'[pth] Skipped removing output for '+str(skipCounter)+' skipped tests'+pthcolors.ENDC)
+      print(sciathcolors.WARNING+'[SciAth] Skipped removing output for '+str(skipCounter)+' skipped tests'+sciathcolors.ENDC)
 
   def reportAll(self):
     launcher = self.launcher
@@ -267,12 +267,12 @@ class Harness:
         elif test.ranks >= 1 and test.passed == True:
           mpiPassedCounter = mpiPassedCounter + 1
 
-    print(pthcolors.SUBHEADER+'[--------- test status ----------------------]'+pthcolors.ENDC)
+    print(sciathcolors.SUBHEADER+'[--------- test status ----------------------]'+sciathcolors.ENDC)
     for test in testList:
       test.report('summary')
 
     print('')
-    print(pthcolors.SUBHEADER+'[--------- test report ----------------------]'+pthcolors.ENDC)
+    print(sciathcolors.SUBHEADER+'[--------- test report ----------------------]'+sciathcolors.ENDC)
     print('  ' + ("%.4d" % nTests) + ' ' + 'tests registered')
     print('  ' + ("%.4d" % seqCounter) + ' Sequential tests')
     print('  ' + ("%.4d" % mpiCounter) + ' MPI tests')
@@ -280,29 +280,29 @@ class Harness:
 
     print('')
     if execCounter == 0:
-      print(pthcolors.WARNING + ' [status] UNKNOWN: All tests were skipped' + pthcolors.ENDC)
+      print(sciathcolors.WARNING + ' [status] UNKNOWN: All tests were skipped' + sciathcolors.ENDC)
 
     elif failCounter > 0:
-      print(pthcolors.FAIL + ' [status] FAIL: ' + str(failCounter) + ' of ' + str(execCounter) + pthcolors.FAIL + ' tests executed FAILED' + pthcolors.ENDC)
+      print(sciathcolors.FAIL + ' [status] FAIL: ' + str(failCounter) + ' of ' + str(execCounter) + sciathcolors.FAIL + ' tests executed FAILED' + sciathcolors.ENDC)
 
-      print(pthcolors.FAIL +'          ' + ("%.4d" % (seqExecCounter-seqPassedCounter)) + ' of ' +("%.4d" % seqExecCounter)+ ' executed Sequential tests failed'+pthcolors.ENDC)
-      print(pthcolors.FAIL +'          ' + ("%.4d" % (mpiExecCounter-mpiPassedCounter)) + ' of ' +("%.4d" % mpiExecCounter)+ ' executed MPI tests failed'+pthcolors.ENDC)
+      print(sciathcolors.FAIL +'          ' + ("%.4d" % (seqExecCounter-seqPassedCounter)) + ' of ' +("%.4d" % seqExecCounter)+ ' executed Sequential tests failed'+sciathcolors.ENDC)
+      print(sciathcolors.FAIL +'          ' + ("%.4d" % (mpiExecCounter-mpiPassedCounter)) + ' of ' +("%.4d" % mpiExecCounter)+ ' executed MPI tests failed'+sciathcolors.ENDC)
     else:
       if skipCounter == 0:
-        print(pthcolors.OKGREEN + ' [status] SUCCESS: All registered tests passed' + pthcolors.ENDC)
+        print(sciathcolors.OKGREEN + ' [status] SUCCESS: All registered tests passed' + sciathcolors.ENDC)
       else:
-        print(pthcolors.WARNING + ' [status] SUCCESS (partial): All executed tests passed' + pthcolors.ENDC)
+        print(sciathcolors.WARNING + ' [status] SUCCESS (partial): All executed tests passed' + sciathcolors.ENDC)
 
     if seqExecCounter + mpiExecCounter != nTests:
-      print(pthcolors.WARNING+'          Warning: Not all tests were executed!'+ pthcolors.ENDC)
+      print(sciathcolors.WARNING+'          Warning: Not all tests were executed!'+ sciathcolors.ENDC)
     if seqExecCounter != seqCounter:
-      print(pthcolors.WARNING+'          Warning: '+("%.4d" % (seqCounter-seqExecCounter))+' sequential tests were skipped'+ pthcolors.ENDC)
+      print(sciathcolors.WARNING+'          Warning: '+("%.4d" % (seqCounter-seqExecCounter))+' sequential tests were skipped'+ sciathcolors.ENDC)
     if mpiExecCounter != mpiCounter:
-      print(pthcolors.WARNING+'          Warning: '+("%.4d" % (mpiCounter-mpiExecCounter))+' MPI tests were skipped!'+ pthcolors.ENDC)
+      print(sciathcolors.WARNING+'          Warning: '+("%.4d" % (mpiCounter-mpiExecCounter))+' MPI tests were skipped!'+ sciathcolors.ENDC)
 
     errfile = []
     if failCounter > 0:
-      file = open(self.pthErrorReportFileName,'w')
+      file = open(self.errorReportFileName,'w')
       sys.stdout = file
 
       for test in testList:
@@ -312,10 +312,10 @@ class Harness:
       sys.stdout = sys.__stdout__
 
       print('xxx============================================================================xxx')
-      print('     tests failed - Full error report written to ' + self.pthErrorReportFileName)
+      print('     tests failed - Full error report written to ' + self.errorReportFileName)
       print('                  - Please inspect the error log file and resolve failed tests')
-      pthErrorReportFileLocation = os.path.realpath(self.pthErrorReportFileName)
-      print('     cat ' + pthErrorReportFileLocation)
+      errorReportFileLocation = os.path.realpath(self.errorReportFileName)
+      print('     cat ' + errorReportFileLocation)
       print('xxx============================================================================xxx')
-      errfile = pthErrorReportFileLocation
+      errfile = errorReportFileLocation
     return(errfile)

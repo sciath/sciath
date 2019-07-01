@@ -1,11 +1,11 @@
-# pyTestHarness
+# SciATH: Scientific Application Test Harness
 ## The Idea
 
-Testing code should be easy. The functionality required to launch, parse and perform verification should be light-weight and simple to migrate into existing projects. pyTestHarness (pth for short) supports testing of sequential and MPI-parallel applications. Tests can be performed locally, or submitted via a batch queuing system (e.g. PBS, LSF, Slurm or LoadLeveler).
+Testing code should be easy. The functionality required to launch, parse and perform verification should be light-weight and simple to migrate into existing projects. SciATH supports testing of sequential and MPI-parallel applications. Tests can be performed locally, or submitted via a batch queuing system (e.g. PBS, LSF, Slurm or LoadLeveler).
 
 ## Key Concepts
 
-pyTestHarness provides:
+SciATH provides:
 
 * An object to define a test. A "test" consists of:
     * a unique textual name;
@@ -19,7 +19,7 @@ pyTestHarness provides:
 
 ## How do I use this ?
 
-1. pyTestHarness depends on Python 3 (or Python 2.4+) and numpy
+1. SciATH depends on Python 3 (or Python 2.4+) and numpy
 
 2. When using Python 3, it is highly recommended you set the environment variable PYTHONUNBUFFERED, e.g.
 ```export PYTHONUNBUFFERED```
@@ -28,11 +28,11 @@ pyTestHarness provides:
 
 ## Examples
 
-The included `pth_exampleN.py` scripts serve as examples of key functionality.
+The included scripts serve as examples of key functionality.
 
 All the commands below assume that you are in the `examples/` subdirectory.
 
-The tests' permissions are set to allow direct execution (e.g. `./pth_example1.py`). They may also be run e.g. `python pth_example1.py`.
+The tests' permissions are set to allow direct execution (e.g. `./example.py`). They may also be run e.g. `python example.py`.
 
 Note that the tests themselves may _fail_ in the following examples. This is to
 demonstrate how differences from expected output are reported, and doesn't mean
@@ -49,39 +49,39 @@ Basic functionality includes:
 #### Example 1
 
     cd example1
-    ./pth_example1.py           # ex1 should pass; ex2 and ex3 should fail
+    ./example.py           # ex1 should pass; ex2 and ex3 should fail
 
 #### Example 4
 
     cd example4
-    ./pth_example4.py           # ex2 should pass; ex1 and ex3 should fail
+    ./example.py           # ex2 should pass; ex1 and ex3 should fail
 
 #### Example 9
 
 Floating point comparisons can be absolute or relative.
 
     cd example9
-    ./pth_example9.py           # testAbs, testRel should fail; testRelEpsilon should pass
+    ./example.py           # testAbs, testRel should fail; testRelEpsilon should pass
 
 ### Tests defined in separate directories
 #### Example 2
 
     cd example2
-    ./pth_example2.py           # test1 should pass; test2 should fail
+    ./example.py           # test1 should pass; test2 should fail
 
 ### Running a subset of tests
 
-    ./pth_example2.p -l              # list all registered tests
-    ./pth_example2.py -t test1       # run a single test
-    ./pth_example2.py -t test1,test2 # run several tests
+    ./example.py -l             # list all registered tests
+    ./example.py -t test1       # run a single test
+    ./example.py -t test1,test2 # run several tests
 
 #### Example 8
 One may also provide a subset of tests directly in the initializer for the test
 harness. Additional tests can be added with `-t`.
 
     cd example8
-    ./pth_example8.py               # test1 should pass, test1_clone should be skipped
-    ./pth_example8.py -t test_clone # both tests should run and pass
+    ./example.py               # test1 should pass, test1_clone should be skipped
+    ./example.py -t test_clone # both tests should run and pass
 
 ### Parallel tests using a PETSc code
 
@@ -94,22 +94,22 @@ Features:
 Requires the environment variables ```PETSC_DIR``` and ```PETSC_ARCH``` to be defined.
 
     cd example3;
-    python pth_example3.py      # ex2b should pass; ex2a and ex2c should fail
+    python example.py      # ex2b should pass; ex2a and ex2c should fail
 
 ### Defining a test which doesn't depend on an expected output file
 
 #### Example 5
 
     cd example5
-    ./pth_example5.py           # ex1 should pass; ex2-ex4 should fail
+    ./example.py           # ex1 should pass; ex2-ex4 should fail
 
 ### Deleting test output
 Generated test output may be deleted:
 
     cd example5
-    ./pth_example5.py           # ex1 should pass; ex2-ex4 should fail
-    ./pth_example5.py -p        # delete output for all tests
-    ./pth_example5.py -p -t ex1 # delete output for a single test
+    ./example.py           # ex1 should pass; ex2-ex4 should fail
+    ./example.py -p        # delete output for all tests
+    ./example.py -p -t ex1 # delete output for a single test
 
 ### Running tests in dedicated "sandbox" directories
 
@@ -117,13 +117,13 @@ Generated test output may be deleted:
 Each test may be run in a "sandbox" directory, useful to run tests which produce identically-named output files, or for testing applications which may generate extra output files.
 
     cd example6
-    ./pth_example6.py
+    ./example.py
 
 You may supply the `-s` flag to use a sandbox directory for all tests
 
     cd example5
-    ./pth_example5.py -s
-    ./pth_example5.py -s -p     # remove output
+    ./example.py -s
+    ./example.py -s -p     # remove output
 
 ### Running multiple executables
 
@@ -135,12 +135,12 @@ systems, these are all run with the same number of MPI ranks.
 This example executes the same executable twice:
 
     cd example7
-    python pth_example7.py      # ex1 should fail
+    python example.py      # ex1 should fail
 
 ## Tips for building tests
 
 ### Escape characters
-The verification process involves parsing expected output and searching for keywords. If your output generates strings requiring escape characters, for example the string "|a.b|_2", the keyword provided to pyTestHarness needs to be expressed as "\|a.b\|\_2". This is awkward so we recommend using the regular expression utilities which provide a method to add the backslash automatically. E.g.
+The verification process involves parsing expected output and searching for keywords. If your output generates strings requiring escape characters, for example the string "|a.b|_2", the keyword provided to SciATH needs to be expressed as "\|a.b\|\_2". This is awkward so we recommend using the regular expression utilities which provide a method to add the backslash automatically. E.g.
 
 ```
 #!/usr/bin/env python

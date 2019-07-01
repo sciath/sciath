@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import os
-import pyTestHarness.test as pthtest
-import pyTestHarness.harness as pthharness
+from sciath.test import Test
+from sciath.harness import Harness
 
 def makeLocalPathAbsolute(localRelPath) :
   thisDir = os.path.split(os.path.abspath(__file__))[0]
@@ -17,7 +17,7 @@ def testAbs():
     tol = 1e-5;
     test.compareFloatingPointAbsolute(key,tol);
 
-  test = pthtest.Test('testAbs',ranks,launch,expected_file)
+  test = Test('testAbs',ranks,launch,expected_file)
   test.setVerifyMethod(comparefunc)
   test.setUseSandbox()
 
@@ -33,7 +33,7 @@ def testRel():
     tol = 1e-5;
     test.compareFloatingPointRelative(key,tol);
 
-  test = pthtest.Test('testRel',ranks,launch,expected_file)
+  test = Test('testRel',ranks,launch,expected_file)
   test.setVerifyMethod(comparefunc)
   test.setUseSandbox()
 
@@ -50,7 +50,7 @@ def testRelEpsilon():
     epsilon = 1e-10
     test.compareFloatingPointRelative(key,tol,epsilon);
 
-  test = pthtest.Test('testRelEpsilon',ranks,launch,expected_file)
+  test = Test('testRelEpsilon',ranks,launch,expected_file)
   test.setVerifyMethod(comparefunc)
   test.setUseSandbox()
 
@@ -58,7 +58,7 @@ def testRelEpsilon():
 
 def run_tests():
 
-  h = pthharness.Harness([
+  h = Harness([
       testAbs(),
       testRel(),
       testRelEpsilon()

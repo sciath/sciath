@@ -3,10 +3,10 @@ import os
 import sys
 import shutil
 import fcntl
-import pyTestHarness.test
-from   pyTestHarness._io import NamedColors as pthcolors
-from   pyTestHarness import getVersion
-from   pyTestHarness._io import py23input
+import sciath.test
+from   sciath._io import NamedColors as sciathcolors
+from   sciath import getVersion
+from   sciath._io import py23input
 
 # mpiexec has been observed to set non-blocking I/O, which
 #  has been observed to cause problems on OS X with errors like
@@ -18,7 +18,7 @@ def setBlockingIOStdout() :
     if flags & os.O_NONBLOCK:
         fcntl.fcntl(fd, fcntl.F_SETFL, flags & ~os.O_NONBLOCK)
 
-class PthTestHarnessLoadException(Exception) :
+class SciATHLoadException(Exception) :
   pass
 
 def FormattedHourMin(seconds):
@@ -33,7 +33,7 @@ def FormattedHourMinSec(seconds):
   wt = "%02d:%02d:%02d" % (h, m,s)
   return(wt)
 
-def pthFormatMPILaunchCommand(mpiLaunch,ranks,corespernode):
+def formatMPILaunchCommand(mpiLaunch,ranks,corespernode):
   launch = mpiLaunch
   launch = launch.replace("<ranks>",str(ranks))
   launch = launch.replace("<cores>",str(ranks))
@@ -56,11 +56,11 @@ def generateLaunch_PBS(accountname,queuename,testname,mpiLaunch,executable,ranks
   if not walltime:
     print("<generateLaunch_PBS>: Requires the walltime be specified")
 
-  filename = testname + '-pth.pbs'
+  filename = testname + '-sciath.pbs'
   file = open(filename,"w")
   file.write("#!/bin/bash\n")
 
-  file.write("# pth: auto-generated pbs file\n")
+  file.write("# SciATH: auto-generated pbs file\n")
 
   if accountname:
     file.write("#PBS -A " + accountname + "\n") # account to charge
@@ -74,7 +74,7 @@ def generateLaunch_PBS(accountname,queuename,testname,mpiLaunch,executable,ranks
   wt = FormattedHourMinSec(walltime*60.0)
   file.write("#PBS -l mppwidth=1024,walltime=" + wt + "\n")
 
-  launch = pthFormatMPILaunchCommand(mpiLaunch,ranks,ranks_per_node)
+  launch = formatMPILaunchCommand(mpiLaunch,ranks,ranks_per_node)
   file.write(launch + " " + executable + " > " + outfile + "\n\n") # launch command
   file.close()
   return(filename)
@@ -85,11 +85,11 @@ def generateLaunch_SLURM(accountname,queuename,testname,constraint,mpiLaunch,exe
   if not walltime:
     print("<generateLaunch_SLURM>: Requires the walltime be specified")
 
-  filename = testname + '-pth.slurm'
+  filename = testname + '-sciath.slurm'
   file = open(filename,"w")
   file.write("#!/bin/bash -l\n")
 
-  file.write("# pth: auto-generated slurm file\n")
+  file.write("# SciATH: auto-generated slurm file\n")
   if accountname:
     file.write("#SBATCH --account=" + accountname + "\n") # account to charge
   file.write("#SBATCH --job-name=\"" + testname + "\"" + "\n") # jobname
@@ -110,7 +110,7 @@ def generateLaunch_SLURM(accountname,queuename,testname,constraint,mpiLaunch,exe
   if constraint :
     file.write("#SBATCH --constraint=" + constraint + "\n")
 
-  launch = pthFormatMPILaunchCommand(mpiLaunch,ranks,ranks_per_node)
+  launch = formatMPILaunchCommand(mpiLaunch,ranks,ranks_per_node)
   for e in execute:
     file.write(launch + " " + e + " >> " + outfile + "\n") # launch command
   file.write("\n")
@@ -123,11 +123,11 @@ def generateLaunch_LSF(accountname,queuename,testname,mpiLaunch,execute,ranks,ru
   if not walltime:
     print("<generateLaunch_LSF>: Requires the walltime be specified")
 
-  filename = testname + '-pth.lsf'
+  filename = testname + '-sciath.lsf'
   file = open(filename,"w")
   file.write("#!/bin/sh\n")
 
-  file.write("# pth: auto-generated lsf file\n")
+  file.write("# SciATH: auto-generated lsf file\n")
 
   file.write("#BSUB -J " + testname + "\n") # jobname
 
@@ -145,7 +145,7 @@ def generateLaunch_LSF(accountname,queuename,testname,mpiLaunch,execute,ranks,ru
   wt = FormattedHourMin(walltime*60.0) 
   file.write("#BSUB -W " + wt + "\n")
 
-  launch = pthFormatMPILaunchCommand(mpiLaunch,ranks,None)
+  launch = formatMPILaunchCommand(mpiLaunch,ranks,None)
   for e in execute:
     file.write(launch + " " + e + " >> " + outfile + "\n") # launch command
   file.write("\n")
@@ -159,7 +159,7 @@ def generateLaunch_LoadLevelerBG(accountname,queuename,testname,execute,total_ra
     print("<generateLaunch_LoadLeveler>: Requires the walltime be specified")
 
   print("#!/bin/sh")
-  print("# pth: auto-generated llq file")
+  print("# SciATH: auto-generated llq file")
   print("# @ job_name = " + testname)
   print("# @ job_type = bluegene")
   print("# @ error = $(job_name)_$(jobid).stderr")
@@ -180,7 +180,7 @@ def generateLaunch_LoadLevelerBG(accountname,queuename,testname,execute,total_ra
 
 
 class Launcher:
-  defaultConfFileName = 'pthBatchQueuingSystem.conf'
+  defaultConfFileName = 'SciATHBatchQueuingSystem.conf'
 
   @staticmethod
   def writeDefaultDefinition(confFileNameIn=None):
@@ -212,7 +212,7 @@ class Launcher:
 
     if self.useBatch :
       if self.mpiLaunch == 'none':
-        raise RuntimeError('[pth] If using a queuing system, a valid mpi launch command must be provided')
+        raise RuntimeError('[SciAth] If using a queuing system, a valid mpi launch command must be provided')
 
   def setVerbosityLevel(self,value):
     self.verbosity_level = value
@@ -239,7 +239,7 @@ class Launcher:
           break
 
       if valid_launcher == False:
-        raise RuntimeError('[pth] Your MPI launch command must contain the keyword \"<ranks>\"')
+        raise RuntimeError('[SciAth] Your MPI launch command must contain the keyword \"<ranks>\"')
 
   def setQueueSystemType(self,type):
     if type in ['PBS','pbs']:
@@ -272,13 +272,13 @@ class Launcher:
       #print('No queuing system being used')
 
     else:
-      raise RuntimeError('[pth] Unknown or unsupported batch queuing system "' + type + '" specified')
+      raise RuntimeError('[SciAth] Unknown or unsupported batch queuing system "' + type + '" specified')
 
   def setQueueName(self,name):
     self.queueName = name
 
   def view(self):
-    print('pth: Batch queueing system configuration [',self.confFileName,']')
+    print('SciATH: Batch queueing system configuration [',self.confFileName,']')
     major,minor,patch=getVersion()
     print('  Version:         ',str(major)+'.'+str(minor)+'.'+str(patch))
     print('  Queue system:    ',self.queuingSystemType)
@@ -353,7 +353,7 @@ class Launcher:
   def setup(self):
     try:
       self.loadDefinition()
-    except PthTestHarnessLoadException :
+    except SciATHLoadException :
       self.configure()
       self.writeDefinition()
 
@@ -399,13 +399,13 @@ class Launcher:
             self.setHPCAccountName(value)
       file.close()
     except:
-      raise PthTestHarnessLoadException('[pth] You must execute configure(), and or writeDefinition() first')
+      raise SciATHLoadException('[SciAth] You must execute configure(), and or writeDefinition() first')
 
     # Do not accept conf files if the major.minor version is stale, or if versions are missing
     major,minor,patch = getVersion()
     if majorFile < major or (minorFile < minor and majorFile == major) or \
          majorFile==None or minorFile==None or patchFile==None :
-      message = '[pth] Incompatible, outdated configuration file ' + self.confFileName + ' detected. Please delete it and re-run to reconfigure.'
+      message = '[SciAth] Incompatible, outdated configuration file ' + self.confFileName + ' detected. Please delete it and re-run to reconfigure.'
       raise RuntimeError(message)
 
   def createSubmissionFile(self,testname,commnd,ranks,ranks_per_node,walltime,outfile):
@@ -415,7 +415,7 @@ class Launcher:
       return(filename)
 
     if self.batchConstraint and self.queuingSystemType != 'slurm' :
-      message = '[pth] Constraints are only currently supported with SLURM'
+      message = '[SciAth] Constraints are only currently supported with SLURM'
       raise RuntimeError(message)
 
     if self.queuingSystemType == 'pbs':
@@ -428,7 +428,7 @@ class Launcher:
       filename = generateLaunch_SLURM(self.accountName,self.queueName,testname,self.batchConstraint,self.mpiLaunch,commnd,ranks,ranks_per_node,walltime,outfile)
 
     elif self.queuingSystemType == 'load_leveler':
-      raise ValueError('[pth] Unsupported: LoadLeveler needs to be updated')
+      raise ValueError('[SciAth] Unsupported: LoadLeveler needs to be updated')
 
     print('Created submission file:',filename)
     return(filename)
@@ -452,7 +452,7 @@ class Launcher:
           for e in test.execute:
             launchCmd.append( e + " >> " + os.path.join(test.output_path,test.output_file) )
         else:
-          launch = pthFormatMPILaunchCommand(mpiLaunch,test.ranks,None)
+          launch = formatMPILaunchCommand(mpiLaunch,test.ranks,None)
           launchCmd = []
           for e in test.execute:
             launchCmd.append( launch + ' ' + e + " >> " + os.path.join(test.output_path,test.output_file) )
@@ -461,10 +461,10 @@ class Launcher:
         for lc in launchCmd:
           lc_count = lc_count + 1
           if self.verbosity_level > 0:
-            launch_text = pthcolors.SUBHEADER + '[Executing ' + test.name
+            launch_text = sciathcolors.SUBHEADER + '[Executing ' + test.name
             if lc_len > 1 :
               launch_text = launch_text + ' (' + str(lc_count) + '/' + str(lc_len) + ')'
-            launch_text = launch_text + ']' + pthcolors.ENDC
+            launch_text = launch_text + ']' + sciathcolors.ENDC
             if test.use_sandbox:
               launch_text = launch_text + ' from ' + os.getcwd()
             print(launch_text)
@@ -477,10 +477,10 @@ class Launcher:
       launchCmd = self.jobSubmissionCommand + launchfile
       if self.verbosity_level > 0:
         if test.use_sandbox:
-          print(pthcolors.SUBHEADER + '[Executing ' + test.name + '] ' + pthcolors.ENDC + 'from ' + os.getcwd())
+          print(sciathcolors.SUBHEADER + '[Executing ' + test.name + '] ' + sciathcolors.ENDC + 'from ' + os.getcwd())
           print(launchCmd)
         else :
-          print(pthcolors.SUBHEADER + '[Executing ' + test.name + ']' + pthcolors.ENDC)
+          print(sciathcolors.SUBHEADER + '[Executing ' + test.name + ']' + sciathcolors.ENDC)
           print(launchCmd)
       os.system(launchCmd)
       setBlockingIOStdout()
@@ -521,19 +521,19 @@ class Launcher:
       if os.path.isfile(stdoutFile) :
         os.remove(stdoutFile)
       if self.queuingSystemType == 'pbs':
-        pbsFile = test.name + '-pth.pbs'
+        pbsFile = test.name + '-sciath.pbs'
         if os.path.isfile(pbsFile) :
           os.remove(pbsFile)
       elif self.queuingSystemType == 'lsf':
-        lsfFile = test.name + '-pth.lsf'
+        lsfFile = test.name + '-sciath.lsf'
         if os.path.isfile(lsfFile) :
           os.remove(lsfFile)
       elif self.queuingSystemType == 'slurm':
-        slurmFile = test.name + '-pth.slurm'
+        slurmFile = test.name + '-sciath.slurm'
         if os.path.isfile(slurmFile) :
           os.remove(slurmFile)
       elif self.queuingSystemType == 'load_leveler':
-        llqFile = test.name + '-pth.llq'
+        llqFile = test.name + '-sciath.llq'
         if os.path.isfile(llqFile) :
           os.remove(llqFile)
 

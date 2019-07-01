@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import os
-import pyTestHarness.test as pthtest
-import pyTestHarness.harness as pthharness
+from sciath.test import Test
+from sciath.harness import Harness
 
 def makeLocalPathAbsolute(localRelPath) :
   thisDir = os.path.split(os.path.abspath(__file__))[0]
@@ -20,7 +20,7 @@ def test1():
     test.compareFloatingPointAbsolute(key,1e-4)
 
   # Create test object
-  test = pthtest.Test('ex1',ranks,launch,expected_file)
+  test = Test('ex1',ranks,launch,expected_file)
   test.setVerifyMethod(comparefunc)
   test.appendKeywords('@')
 
@@ -39,7 +39,7 @@ def test2():
     test.compareFloatingPointAbsolute(key,1e-4)
 
   # Create test object
-  test = pthtest.Test('ex2',ranks,launch,expected_file)
+  test = Test('ex2',ranks,launch,expected_file)
   test.setVerifyMethod(comparefunc)
   test.appendKeywords('@')
 
@@ -58,7 +58,7 @@ def test3():
     test.compareFloatingPointAbsolute(key,1e-4)
 
   # Create test object
-  test = pthtest.Test('ex3',ranks,launch,expected_file)
+  test = Test('ex3',ranks,launch,expected_file)
   test.setVerifyMethod(comparefunc)
   test.appendKeywords('@')
 
@@ -71,7 +71,7 @@ def run_tests():
 
   os.system('gcc -o ex ex.c')
 
-  h = pthharness.Harness(registeredTests)
+  h = Harness(registeredTests)
   h.execute()
   h.verify()
 

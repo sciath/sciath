@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import os
-import pyTestHarness.test as pthtest
-import pyTestHarness.harness as pthharness
+from sciath.test import Test
+from sciath.harness import Harness
 
 def makeLocalPathAbsolute(localRelPath) :
   thisDir = os.path.split(os.path.abspath(__file__))[0]
@@ -16,7 +16,7 @@ def test1():
     test.compareUnixDiff()
 
   # Create test object
-  test = pthtest.Test('test1',ranks,launch,expected_file)
+  test = Test('test1',ranks,launch,expected_file)
   test.setVerifyMethod(comparefuncSubTest)
   test.appendKeywords('@')
   test.setUseSandbox()
@@ -32,7 +32,7 @@ def test1_clone():
     test.compareUnixDiff()
 
   # Create test object
-  test = pthtest.Test('test1_clone',ranks,launch,expected_file)
+  test = Test('test1_clone',ranks,launch,expected_file)
   test.setVerifyMethod(comparefuncSubTest)
   test.appendKeywords('@')
   test.setUseSandbox()
@@ -45,7 +45,7 @@ def run_tests():
   os.system('gcc -o ex ex.c')
 
   # Register both tests, but immediately select a subset
-  h = pthharness.Harness( \
+  h = Harness( \
           [test1(),test1_clone()],\
           ['test1']\
           ) 

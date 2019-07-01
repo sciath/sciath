@@ -4,7 +4,7 @@ Design and Motivation
 
 Why another test harness?
 
-We wrote pyTestHarness because we couldn't find a test harness that
+We wrote SciATH because we couldn't find a test harness that
 did what we wanted. We wanted to  replace and generalize an existing
 simple test suite for `pTatin3D`_ , an MPI-based code
 for regional geodynamic simulation. We wanted something:

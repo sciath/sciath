@@ -2,8 +2,8 @@
 import os
 import sys
 import argparse
-import pyTestHarness.test
-import pyTestHarness.harness as pthharness
+from sciath.test import Test
+from sciath.harness import Harness
 
 # Import separate tests
 sys.path.append(os.path.join(os.environ['PWD'], 't1'))
@@ -32,7 +32,7 @@ def run_tests():
   os.system('gcc -o t1/ex1 t1/ex1.c')
   os.system('gcc -o t2/ex2 t2/ex2.c')
 
-  h = pthharness.Harness(registeredTests)
+  h = Harness(registeredTests)
   h.execute()
   h.verify()
 
