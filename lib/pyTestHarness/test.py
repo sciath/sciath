@@ -374,9 +374,6 @@ class Test:
       kerr = 'Key = \"' + key + '\" --> ' + err
     self.updateStatus(status,kerr)
 
-  #Deprecated : default to absolute test
-  compareFloatingPoint=compareFloatingPointAbsolute
-
   def compareFloatingPointRelative(self,key,tolerance,epsilon=None):
     expected,expected_flat = self.getExpected()
     output,output_flat = self.getOutput()

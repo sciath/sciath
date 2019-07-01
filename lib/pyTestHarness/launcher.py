@@ -540,6 +540,3 @@ class Launcher:
     if test.use_sandbox:
       os.chdir(sandboxBack)
       shutil.rmtree(test.sandbox_path) # remove entire subtree
-
-# Deprecated alias for backwards compatibility
-pthLaunch = Launcher

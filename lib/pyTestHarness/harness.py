@@ -319,6 +319,3 @@ class Harness:
       print('xxx============================================================================xxx')
       errfile = pthErrorReportFileLocation
     return(errfile)
-
-# Deprecated alias for backwards compatibility
-pthHarness = Harness
