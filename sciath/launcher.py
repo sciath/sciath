@@ -212,7 +212,7 @@ class Launcher:
 
     if self.useBatch :
       if self.mpiLaunch == 'none':
-        raise RuntimeError('[SciAth] If using a queuing system, a valid mpi launch command must be provided')
+        raise RuntimeError('[SciATH] If using a queuing system, a valid mpi launch command must be provided')
 
   def setVerbosityLevel(self,value):
     self.verbosity_level = value
@@ -239,7 +239,7 @@ class Launcher:
           break
 
       if valid_launcher == False:
-        raise RuntimeError('[SciAth] Your MPI launch command must contain the keyword \"<ranks>\"')
+        raise RuntimeError('[SciATH] Your MPI launch command must contain the keyword \"<ranks>\"')
 
   def setQueueSystemType(self,type):
     if type in ['PBS','pbs']:
@@ -272,7 +272,7 @@ class Launcher:
       #print('No queuing system being used')
 
     else:
-      raise RuntimeError('[SciAth] Unknown or unsupported batch queuing system "' + type + '" specified')
+      raise RuntimeError('[SciATH] Unknown or unsupported batch queuing system "' + type + '" specified')
 
   def setQueueName(self,name):
     self.queueName = name
@@ -399,13 +399,13 @@ class Launcher:
             self.setHPCAccountName(value)
       file.close()
     except:
-      raise SciATHLoadException('[SciAth] You must execute configure(), and or writeDefinition() first')
+      raise SciATHLoadException('[SciATH] You must execute configure(), and or writeDefinition() first')
 
     # Do not accept conf files if the major.minor version is stale, or if versions are missing
     major,minor,patch = getVersion()
     if majorFile < major or (minorFile < minor and majorFile == major) or \
          majorFile==None or minorFile==None or patchFile==None :
-      message = '[SciAth] Incompatible, outdated configuration file ' + self.confFileName + ' detected. Please delete it and re-run to reconfigure.'
+      message = '[SciATH] Incompatible, outdated configuration file ' + self.confFileName + ' detected. Please delete it and re-run to reconfigure.'
       raise RuntimeError(message)
 
   def createSubmissionFile(self,testname,commnd,ranks,ranks_per_node,walltime,outfile):
@@ -415,7 +415,7 @@ class Launcher:
       return(filename)
 
     if self.batchConstraint and self.queuingSystemType != 'slurm' :
-      message = '[SciAth] Constraints are only currently supported with SLURM'
+      message = '[SciATH] Constraints are only currently supported with SLURM'
       raise RuntimeError(message)
 
     if self.queuingSystemType == 'pbs':
@@ -428,7 +428,7 @@ class Launcher:
       filename = generateLaunch_SLURM(self.accountName,self.queueName,testname,self.batchConstraint,self.mpiLaunch,commnd,ranks,ranks_per_node,walltime,outfile)
 
     elif self.queuingSystemType == 'load_leveler':
-      raise ValueError('[SciAth] Unsupported: LoadLeveler needs to be updated')
+      raise ValueError('[SciATH] Unsupported: LoadLeveler needs to be updated')
 
     print('Created submission file:',filename)
     return(filename)

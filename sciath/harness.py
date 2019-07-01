@@ -24,10 +24,10 @@ class Harness:
     for t in self.registeredTests:
       testNames.append(t.name)
       if not isinstance(t,sciathtest.Test):
-        raise ValueError('[SciAth]: Registered tests must be of type pyTestHarness.test.Test')
+        raise ValueError('[SciATH]: Registered tests must be of type pyTestHarness.test.Test')
     self.testsRegistered = len(self.registeredTests)
     if len(testNames) != len(set(testNames)) :
-      raise Exception('[SciAth] Registered tests must have unique names')
+      raise Exception('[SciATH] Registered tests must have unique names')
 
     parser = argparse.ArgumentParser(description='Python Test Harness.')
     parser.add_argument('-v', '--verify', help='Perform test verification only (and not execution)', required=False, action='store_true')
@@ -104,7 +104,7 @@ class Harness:
           found = True
           break
       if found == False:
-        errstr= '[SciAth] You requested to test a subset of registered tests, \n\t\t  but no registered test matched the name \"' + name + '\"'
+        errstr= '[SciATH] You requested to test a subset of registered tests, \n\t\t  but no registered test matched the name \"' + name + '\"'
         raise RuntimeError(errstr)
 
     if self.args.test:
@@ -119,7 +119,7 @@ class Harness:
             break
 
         if found == False:
-          errstr= '[SciAth] You requested to test a subset of registered tests, \n\t\t  but no registered test matched the name \"' + name + '\"'
+          errstr= '[SciATH] You requested to test a subset of registered tests, \n\t\t  but no registered test matched the name \"' + name + '\"'
           raise RuntimeError(errstr)
 
     if self.execSubset:
@@ -177,7 +177,7 @@ class Harness:
           skipCounter = skipCounter + 1
         counter = counter + 1
       if (skipCounter > 0) :
-        print(sciathcolors.WARNING+'[SciAth] Skipped executing '+str(skipCounter)+' tests'+sciathcolors.ENDC)
+        print(sciathcolors.WARNING+'[SciATH] Skipped executing '+str(skipCounter)+' tests'+sciathcolors.ENDC)
 
   def verify(self):
     '''Verify, unless we are running with a batch system and are not in verify(-only) mode'''
@@ -192,7 +192,7 @@ class Harness:
           print('[-- Verifying test: ' + test.name + ' --]')
           test.verifyOutput()
       if skipCounter > 0 :
-        print(sciathcolors.WARNING+'[SciAth] Skipped verification for '+str(skipCounter)+' skipped tests'+sciathcolors.ENDC)
+        print(sciathcolors.WARNING+'[SciATH] Skipped verification for '+str(skipCounter)+' skipped tests'+sciathcolors.ENDC)
 
       print('')
       counter = 0
@@ -224,7 +224,7 @@ class Harness:
       else:
         self.launcher.clean(test)
     if skipCounter > 0 :
-      print(sciathcolors.WARNING+'[SciAth] Skipped removing output for '+str(skipCounter)+' skipped tests'+sciathcolors.ENDC)
+      print(sciathcolors.WARNING+'[SciATH] Skipped removing output for '+str(skipCounter)+' skipped tests'+sciathcolors.ENDC)
 
   def reportAll(self):
     launcher = self.launcher
