@@ -4,9 +4,9 @@ import sys
 import shutil
 import fcntl
 import pyTestHarness.test
-from   pyTestHarness.colors import NamedColors as pthcolors
+from   pyTestHarness._io import NamedColors as pthcolors
 from   pyTestHarness.version import getVersion
-from   pyTestHarness.utils import py23input
+from   pyTestHarness._io import py23input
 
 # mpiexec has been observed to set non-blocking I/O, which
 #  has been observed to cause problems on OS X with errors like

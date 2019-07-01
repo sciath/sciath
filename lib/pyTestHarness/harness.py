@@ -4,7 +4,7 @@ import sys
 import argparse
 import pyTestHarness.test as pthtest
 import pyTestHarness.launcher as pthlauncher
-from   pyTestHarness.colors import NamedColors as pthcolors
+from   pyTestHarness._io import NamedColors as pthcolors
 
 class Harness:
   def __init__(self,registeredTests,subsetTestName=None):
