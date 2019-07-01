@@ -39,7 +39,7 @@ How do I use this ?
    variable PYTHONUNBUFFERED, e.g. ``export PYTHONUNBUFFERED``
 
 3. Make sure you modify your PYTHONPATH environment variable to include
-   the directory ``${PWD}/lib`` (relative to this README file)
+   this directory
 
 Documentation and Tutorials
 ---------------------------
