@@ -21,6 +21,7 @@ Topics
   tutorial
   design
   api
+  developer
 
 Indices
 =======
