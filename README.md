@@ -30,6 +30,8 @@ pyTestHarness provides:
 
 The included `pth_exampleN.py` scripts serve as examples of key functionality.
 
+All the commands below assume that you are in the `examples/` subdirectory.
+
 The tests' permissions are set to allow direct execution (e.g. `./pth_example1.py`). They may also be run e.g. `python pth_example1.py`.
 
 Note that the tests themselves may _fail_ in the following examples. This is to
