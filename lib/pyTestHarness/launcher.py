@@ -5,7 +5,7 @@ import shutil
 import fcntl
 import pyTestHarness.test
 from   pyTestHarness._io import NamedColors as pthcolors
-from   pyTestHarness.version import getVersion
+from   pyTestHarness import getVersion
 from   pyTestHarness._io import py23input
 
 # mpiexec has been observed to set non-blocking I/O, which
