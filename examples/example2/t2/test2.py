@@ -12,7 +12,7 @@ def test():
 
   def comparefunc(test):
     key = 'Residuals'
-    test.compareFloatingPoint(key,0.0001)
+    test.compareFloatingPointAbsolute(key,0.0001)
 
   # Create test object
   test = pthtest.Test('test2',ranks,launch,expected_file)

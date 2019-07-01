@@ -10,7 +10,7 @@ def run_petsc_ex2a():
 
   def comparefunc(test):
     key = 'KSP Residual norm'
-    test.compareFloatingPoint(key,1.0e-5)
+    test.compareFloatingPointAbsolute(key,1.0e-5)
 
   test = pthtest.Test('ex2a',ranks,launch,expected_file)
   test.setVerifyMethod(comparefunc)
@@ -23,7 +23,7 @@ def run_petsc_ex2b():
 
   def comparefunc(test):
     key = 'KSP Residual norm'
-    test.compareFloatingPoint(key,1.0e-5)
+    test.compareFloatingPointAbsolute(key,1.0e-5)
 
   test = pthtest.Test('ex2b',ranks,launch,expected_file)
   test.setVerifyMethod(comparefunc)
@@ -36,7 +36,7 @@ def run_petsc_ex2c():
 
   def comparefunc(test):
     key = 'KSP Residual norm'
-    test.compareFloatingPoint(key,1.0e-5)
+    test.compareFloatingPointAbsolute(key,1.0e-5)
 
     key = 'Norm of error'
     test.compareLiteral(key)

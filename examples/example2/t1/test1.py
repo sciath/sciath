@@ -12,19 +12,19 @@ def test():
 
   def comparefunc(test):
     key = '\$cputime'
-    test.compareFloatingPoint(key,0.01)
+    test.compareFloatingPointAbsolute(key,0.01)
 
     key = '\$residuals'
-    test.compareFloatingPoint(key,0.000001)
+    test.compareFloatingPointAbsolute(key,0.000001)
 
     key = 'kspits'
     test.compareInteger(key,0)
 
     key = '\$norm'
-    test.compareFloatingPoint(key,0.01)
+    test.compareFloatingPointAbsolute(key,0.01)
 
     key = '\$rms'
-    test.compareFloatingPoint(key,0.01)
+    test.compareFloatingPointAbsolute(key,0.01)
 
   # Create test object
   ex1 = pthtest.Test('test1',ranks,launch,expected_file)

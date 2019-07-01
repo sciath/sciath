@@ -14,19 +14,19 @@ def test1():
 
   def comparefunc(test):
     key = '\$cputime'
-    test.compareFloatingPoint(key,0.01)
+    test.compareFloatingPointAbsolute(key,0.01)
 
     key = '\$residuals'
-    test.compareFloatingPoint(key,0.000001)
+    test.compareFloatingPointAbsolute(key,0.000001)
 
     key = '\$kspits'
     test.compareInteger(key,0)
 
     key = '\$norm'
-    test.compareFloatingPoint(key,0.01)
+    test.compareFloatingPointAbsolute(key,0.01)
 
     key = '\$rms'
-    test.compareFloatingPoint(key,0.01)
+    test.compareFloatingPointAbsolute(key,0.01)
 
   # Create test object
   test = pthtest.Test('ex1',ranks,launch,expected_file)
@@ -42,7 +42,7 @@ def test2():
 
   def comparefunc(test):
     key = 'Residuals'
-    test.compareFloatingPoint(key,0.0001)
+    test.compareFloatingPointAbsolute(key,0.0001)
 
   # Create test object
   test = pthtest.Test('ex2',ranks,launch,expected_file)
@@ -62,7 +62,7 @@ def test3():
     test.compareInteger(key,0)
 
     key = 'res1'
-    test.compareFloatingPoint(key,1.0e-4)
+    test.compareFloatingPointAbsolute(key,1.0e-4)
 
   # Create test object
   test = pthtest.Test('ex3',ranks,launch,expected_file)

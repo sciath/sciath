@@ -17,7 +17,7 @@ def test1():
     test.compareInteger(key,0)
 
     key = 'norm'
-    test.compareFloatingPoint(key,1e-4)
+    test.compareFloatingPointAbsolute(key,1e-4)
 
   # Create test object
   test = pthtest.Test('ex1',ranks,launch,expected_file)
@@ -36,7 +36,7 @@ def test2():
     test.compareInteger(key,0)
 
     key = 'norm'
-    test.compareFloatingPoint(key,1e-4)
+    test.compareFloatingPointAbsolute(key,1e-4)
 
   # Create test object
   test = pthtest.Test('ex2',ranks,launch,expected_file)
@@ -55,7 +55,7 @@ def test3():
     test.compareInteger(key,0)
 
     key = 'norm'
-    test.compareFloatingPoint(key,1e-4)
+    test.compareFloatingPointAbsolute(key,1e-4)
 
   # Create test object
   test = pthtest.Test('ex3',ranks,launch,expected_file)
