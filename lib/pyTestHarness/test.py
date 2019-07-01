@@ -331,7 +331,8 @@ class Test:
           num_exec = len(self.execute)
           multiple_exec = num_exec > 1
           if type == 'log_short' :
-            print('[' + self.name + '] ' + 'expected file  : ' + ef)
+            if ef :
+              print('[' + self.name + '] ' + 'expected file  : ' + ef)
             print('[' + self.name + '] ' + 'output file    : ' + of)
             if multiple_exec :
                 for idx,exec_entry in enumerate(self.execute) :
@@ -344,12 +345,15 @@ class Test:
               print('[' + self.name + '] ' +'  --- please refer to error report log file for full description ---\n')
           elif type == 'log':
             lenheader = 0
-            lenheader = max( len(n) , len(ef) , len(of) )
+            lenheader = max( len(n), len(of) )
+            if ef :
+              lenheader = max(lenheader,len(ef))
             lenheader += 15 + 2 + 2
             header = lenheader * '='
             print(header)
             print('  test name     : ' + n)
-            print('  expected file : ' + ef)
+            if ef :
+              print('  expected file : ' + ef)
             print('  output file   : ' + of)
             if multiple_exec :
                 for idx,exec_entry in enumerate(self.execute) :
