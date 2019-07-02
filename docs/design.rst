@@ -17,6 +17,7 @@ for regional geodynamic simulation. We wanted something:
   * susceptible to numerical "noise"
   * parallel, using MPI, OpenMP, OpenCL, CUDA, etc.
   * maintained by very few people
+  * run in combination with setup and/or post-processing scripts, in various languages
 
 * non-invasive, not requiring modification of application source or writing of new executables
 * language-agnostic
