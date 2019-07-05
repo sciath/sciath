@@ -14,10 +14,6 @@ jC = SJob('echo \"dependent job 2\"')
 jD = SJob('echo \"dependent job 3\"',description='Job which will be run first',exitCode=0)
 jD.setResources(threads=27,ranks=40)
 
-jA.setChildJob(jB)
-jB.setChildJob(jC)
-jC.setChildJob(jD)
-
 er = jD.createExecuteCommand()
 print('Execute command + resources for jD')
 for i in er:
