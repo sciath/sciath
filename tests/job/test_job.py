@@ -1,17 +1,17 @@
 
-from sciath.sjob import SJob
+from sciath.job import Job
 
 
 # Example usage
-jA = SJob('echo \"job A\"',name='DMDA interpolation')
+jA = Job('echo \"job A\"',name='DMDA interpolation')
 jA.setResources(ranks=4,threads=11)
 
-jB = SJob('echo \"dependent job 1\"')
+jB = Job('echo \"dependent job 1\"')
 jB.setResources(ranks=140)
 
-jC = SJob('echo \"dependent job 2\"')
+jC = Job('echo \"dependent job 2\"')
 
-jD = SJob('echo \"dependent job 3\"',description='Job which will be run first',exitCode=0)
+jD = Job('echo \"dependent job 3\"',description='Job which will be run first',exitCode=0)
 jD.setResources(threads=27,ranks=40)
 
 er = jD.createExecuteCommand()

@@ -31,23 +31,23 @@ def _dictView(d):
     sys.exit(1)
 
 
-class SJob:
+class Job:
   """
   A SciATH job
     
   Args:
     cmd          (string): The command used to execute your application.
     **kwargs (name=value): A keyword argument list.
-                           The SJob constructor will recognize the following names:
+                           The Job constructor will recognize the following names:
                              name        (string): textual name you want to assign to the job.
                              description (string): desciption of what the job does.
                              exitCode       (int): the exit code which should be used to infer success.
   Examples:
-    job = SJob('echo \\"hi\\"') -> a new job which will simply execute $echo 'hi'
+    job = Job('echo \\"hi\\"') -> a new job which will simply execute $echo 'hi'
     
-    job = SJob('echo \\"hi\\"',**kwargs,) -> a new job which will simply execute $echo "hi"
+    job = Job('echo \\"hi\\"',**kwargs,) -> a new job which will simply execute $echo "hi"
                                        and with variables initialized with the name=value pairs
-    job = SJob('echo \\"hi\\"', name='job-1', description='My first SciATH job', exitCode=0)
+    job = Job('echo \\"hi\\"', name='job-1', description='My first SciATH job', exitCode=0)
   
   """
   def __init__(self,cmd,**kwargs):
@@ -153,16 +153,16 @@ class SJob:
 
   def view(self):
     """
-    Display the contents of an SJob instance to stdout.
+    Display the contents of an Job instance to stdout.
     The parent->child relationship will be reported.
     Uninitialized non-essential members will not be reported.
     This includes: self.name; self.description; self.child.
     """
     
     if self.name != '':
-      print('SJob: Job name:',self.name)
+      print('Job: Job name:',self.name)
     else:
-      print('SJob:')
+      print('Job:')
     if self.description != '':
       print('Description:',self.description)
     print('Command:',self.cmd)
@@ -174,9 +174,9 @@ class SJob:
 
 
 
-class SJobSequence(SJob):
+class JobSequence(Job):
   """
-  A SciATH linear job sequence (inherits from SJob)
+  A SciATH linear job sequence (inherits from Job)
   
   A linear job sequence defines a parent job (job_0) and N depdendent jobs: job_1, job_2, ..., job_N.
   A dependency graph is assumed from the order above; specifically we assume that
@@ -186,14 +186,14 @@ class SJobSequence(SJob):
   Args:
     cmd          (string): The command used to execute your application.
     **kwargs (name=value): A keyword argument list.
-                           The SJob constructor will recognize the following names:
+                           The Job constructor will recognize the following names:
                              name        (string): textual name you want to assign to the job.
                              description (string): desciption of what the job does.
                              exitCode       (int): the exit code which should be used to infer success.
   """
   
   def __init__(self,cmd,**kwargs):
-    SJob.__init__(self,cmd,**kwargs)
+    Job.__init__(self,cmd,**kwargs)
     self.sequence = []
 
 
@@ -243,7 +243,7 @@ class SJobSequence(SJob):
   def getMaxResources(self):
     """
     Returns the max. resources required for a job sequence.
-    The max is taken over all jobs registered via SJobSequence.append() and the parent job.
+    The max is taken over all jobs registered via JobSequence.append() and the parent job.
     """
 
     max = dict()
@@ -271,9 +271,9 @@ class SJobSequence(SJob):
     This includes: self.name; self.description; self.child.
     """
     
-    SJob.view(self)
+    Job.view(self)
     # view dependencies
-    print('SJobSequence:')
+    print('JobSequence:')
     print('Dependencies: found',len(self.sequence))
     cnt = 0
     for j in self.sequence:
@@ -288,23 +288,23 @@ class SJobSequence(SJob):
       cnt += 1
 
 
-class SJobDAG(SJob):
+class JobDAG(Job):
   """
-  A SciATH job sequence defined by a directed acyclic graph (DAG) (inherits from SJob).
+  A SciATH job sequence defined by a directed acyclic graph (DAG) (inherits from Job).
   The job sequence is determininstic and defined by performing 
   a depth first search (DFS) on the provided DAG.
 
   Args:
     cmd          (string): The command used to execute your application.
     **kwargs (name=value): A keyword argument list.
-                           The SJob constructor will recognize the following names:
+                           The Job constructor will recognize the following names:
                              name        (string): textual name you want to assign to the job.
                              description (string): desciption of what the job does.
                              exitCode       (int): the exit code which should be used to infer success.
   """
   
   def __init__(self,cmd,**kwargs):
-    SJob.__init__(self,cmd,**kwargs)
+    Job.__init__(self,cmd,**kwargs)
     self.dag = []
     self.order = []
     self.joblist = dict()
@@ -350,7 +350,7 @@ class SJobDAG(SJob):
     
     Arg:
       dag (dict): A dictionary defining vertex to vertex relationships.
-                  Each vertex must be identified by a string, matching the job name (e.g. SJob.name).
+                  Each vertex must be identified by a string, matching the job name (e.g. Job.name).
                   Neighbour vertices (child jobs) must be iteratable,
                   so put them in a list,e.g. ['a','b'], or a tuple, e.g. ('a','b').
                   Leaf vertices must be identified with the variable None.
@@ -494,9 +494,9 @@ class SJobDAG(SJob):
     The provided DAG will be displayed, along with the 
     specific ordering in which the jobs will be executed.
     """
-    SJob.view(self)
+    Job.view(self)
     # view DAG
-    print('SJobDAG:')
+    print('JobDAG:')
     print('[Registered jobs]')
     cnt = 0
     for key in self.joblist:

@@ -1,18 +1,18 @@
 
-from sciath.sjob import SJob
-from sciath.sjob import SJobSequence
-from sciath.sjob import SJobDAG
+from sciath.job import Job
+from sciath.job import JobSequence
+from sciath.job import JobDAG
 
 
 def example0a():
   print('++++++++ example 0a ++++++++')
   
-  jd1 = SJob( 'echo \"dependent job 1\"', name = 'demo-job-1' )
-  jd2 = SJob( 'echo \"dependent job 2\"')
+  jd1 = Job( 'echo \"dependent job 1\"', name = 'demo-job-1' )
+  jd2 = Job( 'echo \"dependent job 2\"')
 
   
   # Example usage
-  jA = SJobDAG('echo \"job A\"',name='DAG with no deps.')
+  jA = JobDAG('echo \"job A\"',name='DAG with no deps.')
   jA.registerJob(jd1)
   jA.registerJob(jd2)
   jA.view()
@@ -21,7 +21,7 @@ def example1():
   print('++++++++ example 1 (DAG with no deps.) ++++++++')
   
   # Example usage
-  jA = SJobDAG('echo \"job A\"',name='jobA')
+  jA = JobDAG('echo \"job A\"',name='jobA')
 
   user_dag = {'jobA': [None]}
   jA.insert(user_dag)
@@ -40,10 +40,10 @@ def example2():
   print('++++++++ example 2 (DAG with one dep.) ++++++++')
 
   # Example usage
-  jA = SJobDAG('echo \"job A\"',name='jobA')
+  jA = JobDAG('echo \"job A\"',name='jobA')
   jA.setResources(threads=27,ranks=40)
 
-  jd1 = SJob( 'echo \"dependent job 1\"', name = 'demo-depjob-1' )
+  jd1 = Job( 'echo \"dependent job 1\"', name = 'demo-depjob-1' )
   jd1.setResources(threads=101,ranks=101)
 
   jA.registerJob(jd1)
@@ -68,17 +68,17 @@ def example3():
   print('++++++++ example 3 (DAG with dependencies define by a non-trival graph) ++++++++')
   
   # Example usage
-  jA = SJobDAG('echo \"job A\"',name='jobA')
+  jA = JobDAG('echo \"job A\"',name='jobA')
   jA.setResources(threads=27,ranks=40)
 
-  jdb = SJob( 'echo \"dependent job b\"', name = 'b' )
-  jdc = SJob( 'echo \"dependent job c\"', name = 'c' )
-  jdd = SJob( 'echo \"dependent job d\"', name = 'd' )
+  jdb = Job( 'echo \"dependent job b\"', name = 'b' )
+  jdc = Job( 'echo \"dependent job c\"', name = 'c' )
+  jdd = Job( 'echo \"dependent job d\"', name = 'd' )
   jdd.setResources(threads=1,ranks=4)
-  jde = SJob( 'echo \"dependent job e\"', name = 'e' )
-  jdf = SJob( 'echo \"dependent job f\"', name = 'f' )
-  jdg = SJob( 'echo \"dependent job g\"', name = 'g' )
-  jdh = SJob( 'echo \"dependent job h\"', name = 'h' )
+  jde = Job( 'echo \"dependent job e\"', name = 'e' )
+  jdf = Job( 'echo \"dependent job f\"', name = 'f' )
+  jdg = Job( 'echo \"dependent job g\"', name = 'g' )
+  jdh = Job( 'echo \"dependent job h\"', name = 'h' )
 
   jl = [ jdb, jdc, jdd, jde, jdf, jdg, jdh]
   for j in jl:
