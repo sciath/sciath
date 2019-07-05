@@ -200,7 +200,7 @@ class SJobSequence(SJob):
   def append(self,job):
     """
     Append a job into the sequence. The parent job is always first in the list.
-    Dependenent jobs appear after tha parent.
+    Dependent jobs appear after the parent.
     """
     self.sequence.append(job)
 
@@ -358,14 +358,14 @@ class SJobDAG(SJob):
 
 
     Examples:
-      (i) Consider the greph:
+      (i) Consider the graph:
         A --> B
       The corresponding DAG using a dictionary is given by
         dag = { 'A': [ 'B' ],
                 'B': [None]    }
       Note that in the above we used a list (e.g. []) to define the neighbour vertices.
 
-      (ii) Consider the greph:
+      (ii) Consider the graph:
                 C
                /
         A --- B     E
