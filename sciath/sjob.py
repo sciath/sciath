@@ -1,8 +1,5 @@
 
 import sys
-# Only use the OrderedDict() class from collections - specifically this is only important
-# to use if we intend to use the result of SJob.view() for testing
-import collections
 
 # two space tab for formmated print statements
 tab = '  '
@@ -21,9 +18,9 @@ def printv(level,verbosityLevel,*vargs):
 
 # module private viewer
 def _dictView(d):
-  if isinstance(d,dict) or isinstance(d,OrderedDict):
+  if isinstance(d,dict):
     string = '{'
-    for key in d:
+    for key in sorted(d):
       value = d[key]
       string += "'" + str(key) + "': " + str(value) + ", "
     string = string[:-2] # remove last two characters - yes, I could have used a generator...
@@ -56,7 +53,7 @@ class SJob:
   def __init__(self,cmd,**kwargs):
     self.cmd      = cmd # command which will be executed via a system call to run this job
     # Design note: we use a dict to enable developers to easily add support for different resource requests
-    self.resources = collections.OrderedDict()
+    self.resources = dict()
     self.resources.update({"mpiranks":1}) # mpi parallel resource data
     self.resources.update({"threads":1}) # thread parallel (e.g. OMP) resource data
 
@@ -84,7 +81,7 @@ class SJob:
     # Iterate through keys in self.resource, set initial values in max
     # We are certain no new keys will be added as setResources() will
     # error if unrecognized resources were requested
-    max = collections.OrderedDict()
+    max = dict()
     for key in self.resources:
       value = self.resources[key]
       max.update({key:value})
@@ -249,7 +246,7 @@ class SJobSequence(SJob):
     The max is taken over all jobs registered via SJobSequence.append() and the parent job.
     """
 
-    max = collections.OrderedDict()
+    max = dict()
     for key in self.resources:
       value = self.resources[key]
       max.update({key:value})
@@ -468,7 +465,7 @@ class SJobDAG(SJob):
     The max is taken over all jobs defined by the DAG and the parent job.
     """
       
-    max = collections.OrderedDict()
+    max = dict()
 
     for key in self.resources:
       value = self.resources[key]
