@@ -36,7 +36,7 @@ def _dictView(d):
 
 class SJob:
   """
-  A SciARTH job
+  A SciATH job
     
   Args:
     cmd          (string): The command used to execute your application.
@@ -50,7 +50,7 @@ class SJob:
     
     job = SJob('echo \\"hi\\"',**kwargs,) -> a new job which will simply execute $echo "hi"
                                        and with variables initialized with the name=value pairs
-    job = SJob('echo \\"hi\\"', name='job-1', description='My first SciARTH job', exitCode=0)
+    job = SJob('echo \\"hi\\"', name='job-1', description='My first SciATH job', exitCode=0)
   
   """
   def __init__(self,cmd,**kwargs):
@@ -179,7 +179,7 @@ class SJob:
 
 class SJobSequence(SJob):
   """
-  A SciARTH linear job sequence (inherits from SJob)
+  A SciATH linear job sequence (inherits from SJob)
   
   A linear job sequence defines a parent job (job_0) and N depdendent jobs: job_1, job_2, ..., job_N.
   A dependency graph is assumed from the order above; specifically we assume that
@@ -293,7 +293,7 @@ class SJobSequence(SJob):
 
 class SJobDAG(SJob):
   """
-  A SciARTH job sequence defined by a directed acyclic graph (DAG) (inherits from SJob).
+  A SciATH job sequence defined by a directed acyclic graph (DAG) (inherits from SJob).
   The job sequence is determininstic and defined by performing 
   a depth first search (DFS) on the provided DAG.
 
