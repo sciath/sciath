@@ -28,8 +28,8 @@ class Job:
     self.resources.update({"threads":1}) # thread parallel (e.g. OMP) resource data
 
     # optional info not needing a setter (e.g. they are not special enough)
-    self.name              = ''
-    self.description       = ''
+    self.name              = None
+    self.description       = None
     self.exit_code_success = 0
   
     for key, value in kwargs.items():
@@ -129,11 +129,11 @@ class Job:
     This includes: self.name; self.description; self.child.
     """
     
-    if self.name != '':
+    if self.name:
       print('Job: Job name:',self.name)
     else:
       print('Job:')
-    if self.description != '':
+    if self.description:
       print('Description:',self.description)
     print('Command:',self.cmd)
     print('Exit code success:',self.exit_code_success)
@@ -283,7 +283,7 @@ class JobDAG(Job):
     self.jobcnt = 0
 
     # if the parent job was not given a name, assign a default name
-    if self.name == '':
+    if not self.name:
       self.name = 'default-job-' + str(self.jobcnt)
       self.jobcnt += 1
 
@@ -296,7 +296,7 @@ class JobDAG(Job):
     If a value has not been set, this function will modify job
     and define a default value for job.name.
     """
-    if job.name == '':
+    if not job.name:
       job.name = 'default-job-' + str(self.jobcnt)
     try:
       s = self.joblist[ job.name ]
