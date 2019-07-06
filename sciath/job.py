@@ -1,35 +1,5 @@
-
 import sys
-
-# two space tab for formmated print statements
-tab = '  '
-
-# verbosity regulated printing
-def printv(level,verbosityLevel,*vargs):
-  if level >= verbosityLevel:
-    line = ''
-    N = len(vargs)
-    for i in range(N-1):
-      line += str(vargs[i])
-      line += ' '
-    line += str(vargs[N-1])
-    print(line)
-
-
-# module private viewer
-def _dictView(d):
-  if isinstance(d,dict):
-    string = '{'
-    for key in sorted(d):
-      value = d[key]
-      string += "'" + str(key) + "': " + str(value) + ", "
-    string = string[:-2] # remove last two characters - yes, I could have used a generator...
-    string += '}'
-    return string
-  else:
-    print('[SciATH error] dictView() requires a dictionary as input.')
-    sys.exit(1)
-
+from sciath._io import dictView
 
 class Job:
   """
@@ -168,9 +138,9 @@ class Job:
     print('Command:',self.cmd)
     print('Exit code success:',self.exit_code_success)
     #print('MPI ranks:',self.resources["mpiranks"],', Threads:',self.resources["threads"])
-    print('Resources:',_dictView(self.resources))
+    print('Resources:',dictView(self.resources))
     maxR = self.getMaxResources()
-    print('Max. resources (incl. dependencies):', _dictView(maxR))
+    print('Max. resources (incl. dependencies):', dictView(maxR))
 
 
 
