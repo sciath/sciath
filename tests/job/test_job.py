@@ -1,4 +1,4 @@
-
+#!/usr/bin/python
 from sciath.job import Job
 
 
