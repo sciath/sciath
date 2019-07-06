@@ -1,68 +1,35 @@
-
 import sys
-# Only use the OrderedDict() class from collections - specifically this is only important
-# to use if we intend to use the result of SJob.view() for testing
-import collections
+from sciath._io import dictView
 
-# two space tab for formmated print statements
-tab = '  '
-
-# verbosity regulated printing
-def printv(level,verbosityLevel,*vargs):
-  if level >= verbosityLevel:
-    line = ''
-    N = len(vargs)
-    for i in range(N-1):
-      line += str(vargs[i])
-      line += ' '
-    line += str(vargs[N-1])
-    print(line)
-
-
-# module private viewer
-def _dictView(d):
-  if isinstance(d,dict) or isinstance(d,OrderedDict):
-    string = '{'
-    for key in d:
-      value = d[key]
-      string += "'" + str(key) + "': " + str(value) + ", "
-    string = string[:-2] # remove last two characters - yes, I could have used a generator...
-    string += '}'
-    return string
-  else:
-    print('[SciATH error] dictView() requires a dictionary as input.')
-    sys.exit(1)
-
-
-class SJob:
+class Job:
   """
-  A SciARTH job
+  A SciATH job
     
   Args:
     cmd          (string): The command used to execute your application.
     **kwargs (name=value): A keyword argument list.
-                           The SJob constructor will recognize the following names:
+                           The Job constructor will recognize the following names:
                              name        (string): textual name you want to assign to the job.
                              description (string): desciption of what the job does.
                              exitCode       (int): the exit code which should be used to infer success.
   Examples:
-    job = SJob('echo \\"hi\\"') -> a new job which will simply execute $echo 'hi'
+    job = Job('echo \\"hi\\"') -> a new job which will simply execute $echo 'hi'
     
-    job = SJob('echo \\"hi\\"',**kwargs,) -> a new job which will simply execute $echo "hi"
+    job = Job('echo \\"hi\\"',**kwargs,) -> a new job which will simply execute $echo "hi"
                                        and with variables initialized with the name=value pairs
-    job = SJob('echo \\"hi\\"', name='job-1', description='My first SciARTH job', exitCode=0)
+    job = Job('echo \\"hi\\"', name='job-1', description='My first SciATH job', exitCode=0)
   
   """
   def __init__(self,cmd,**kwargs):
     self.cmd      = cmd # command which will be executed via a system call to run this job
     # Design note: we use a dict to enable developers to easily add support for different resource requests
-    self.resources = collections.OrderedDict()
+    self.resources = dict()
     self.resources.update({"mpiranks":1}) # mpi parallel resource data
     self.resources.update({"threads":1}) # thread parallel (e.g. OMP) resource data
 
     # optional info not needing a setter (e.g. they are not special enough)
-    self.name              = ''
-    self.description       = ''
+    self.name              = None
+    self.description       = None
     self.exit_code_success = 0
   
     for key, value in kwargs.items():
@@ -84,7 +51,7 @@ class SJob:
     # Iterate through keys in self.resource, set initial values in max
     # We are certain no new keys will be added as setResources() will
     # error if unrecognized resources were requested
-    max = collections.OrderedDict()
+    max = dict()
     for key in self.resources:
       value = self.resources[key]
       max.update({key:value})
@@ -156,30 +123,30 @@ class SJob:
 
   def view(self):
     """
-    Display the contents of an SJob instance to stdout.
+    Display the contents of an Job instance to stdout.
     The parent->child relationship will be reported.
     Uninitialized non-essential members will not be reported.
     This includes: self.name; self.description; self.child.
     """
     
-    if self.name != '':
-      print('SJob: Job name:',self.name)
+    if self.name:
+      print('Job: Job name:',self.name)
     else:
-      print('SJob:')
-    if self.description != '':
+      print('Job:')
+    if self.description:
       print('Description:',self.description)
     print('Command:',self.cmd)
     print('Exit code success:',self.exit_code_success)
     #print('MPI ranks:',self.resources["mpiranks"],', Threads:',self.resources["threads"])
-    print('Resources:',_dictView(self.resources))
+    print('Resources:',dictView(self.resources))
     maxR = self.getMaxResources()
-    print('Max. resources (incl. dependencies):', _dictView(maxR))
+    print('Max. resources (incl. dependencies):', dictView(maxR))
 
 
 
-class SJobSequence(SJob):
+class JobSequence(Job):
   """
-  A SciARTH linear job sequence (inherits from SJob)
+  A SciATH linear job sequence (inherits from Job)
   
   A linear job sequence defines a parent job (job_0) and N depdendent jobs: job_1, job_2, ..., job_N.
   A dependency graph is assumed from the order above; specifically we assume that
@@ -189,21 +156,21 @@ class SJobSequence(SJob):
   Args:
     cmd          (string): The command used to execute your application.
     **kwargs (name=value): A keyword argument list.
-                           The SJob constructor will recognize the following names:
+                           The Job constructor will recognize the following names:
                              name        (string): textual name you want to assign to the job.
                              description (string): desciption of what the job does.
                              exitCode       (int): the exit code which should be used to infer success.
   """
   
   def __init__(self,cmd,**kwargs):
-    SJob.__init__(self,cmd,**kwargs)
+    Job.__init__(self,cmd,**kwargs)
     self.sequence = []
 
 
   def append(self,job):
     """
     Append a job into the sequence. The parent job is always first in the list.
-    Dependenent jobs appear after tha parent.
+    Dependent jobs appear after the parent.
     """
     self.sequence.append(job)
 
@@ -246,10 +213,10 @@ class SJobSequence(SJob):
   def getMaxResources(self):
     """
     Returns the max. resources required for a job sequence.
-    The max is taken over all jobs registered via SJobSequence.append() and the parent job.
+    The max is taken over all jobs registered via JobSequence.append() and the parent job.
     """
 
-    max = collections.OrderedDict()
+    max = dict()
     for key in self.resources:
       value = self.resources[key]
       max.update({key:value})
@@ -274,9 +241,9 @@ class SJobSequence(SJob):
     This includes: self.name; self.description; self.child.
     """
     
-    SJob.view(self)
+    Job.view(self)
     # view dependencies
-    print('SJobSequence:')
+    print('JobSequence:')
     print('Dependencies: found',len(self.sequence))
     cnt = 0
     for j in self.sequence:
@@ -291,23 +258,23 @@ class SJobSequence(SJob):
       cnt += 1
 
 
-class SJobDAG(SJob):
+class JobDAG(Job):
   """
-  A SciARTH job sequence defined by a directed acyclic graph (DAG) (inherits from SJob).
+  A SciATH job sequence defined by a directed acyclic graph (DAG) (inherits from Job).
   The job sequence is determininstic and defined by performing 
   a depth first search (DFS) on the provided DAG.
 
   Args:
     cmd          (string): The command used to execute your application.
     **kwargs (name=value): A keyword argument list.
-                           The SJob constructor will recognize the following names:
+                           The Job constructor will recognize the following names:
                              name        (string): textual name you want to assign to the job.
                              description (string): desciption of what the job does.
                              exitCode       (int): the exit code which should be used to infer success.
   """
   
   def __init__(self,cmd,**kwargs):
-    SJob.__init__(self,cmd,**kwargs)
+    Job.__init__(self,cmd,**kwargs)
     self.dag = []
     self.order = []
     self.joblist = dict()
@@ -316,7 +283,7 @@ class SJobDAG(SJob):
     self.jobcnt = 0
 
     # if the parent job was not given a name, assign a default name
-    if self.name == '':
+    if not self.name:
       self.name = 'default-job-' + str(self.jobcnt)
       self.jobcnt += 1
 
@@ -329,7 +296,7 @@ class SJobDAG(SJob):
     If a value has not been set, this function will modify job
     and define a default value for job.name.
     """
-    if job.name == '':
+    if not job.name:
       job.name = 'default-job-' + str(self.jobcnt)
     try:
       s = self.joblist[ job.name ]
@@ -353,7 +320,7 @@ class SJobDAG(SJob):
     
     Arg:
       dag (dict): A dictionary defining vertex to vertex relationships.
-                  Each vertex must be identified by a string, matching the job name (e.g. SJob.name).
+                  Each vertex must be identified by a string, matching the job name (e.g. Job.name).
                   Neighbour vertices (child jobs) must be iteratable,
                   so put them in a list,e.g. ['a','b'], or a tuple, e.g. ('a','b').
                   Leaf vertices must be identified with the variable None.
@@ -361,14 +328,14 @@ class SJobDAG(SJob):
 
 
     Examples:
-      (i) Consider the greph:
+      (i) Consider the graph:
         A --> B
       The corresponding DAG using a dictionary is given by
         dag = { 'A': [ 'B' ],
                 'B': [None]    }
       Note that in the above we used a list (e.g. []) to define the neighbour vertices.
 
-      (ii) Consider the greph:
+      (ii) Consider the graph:
                 C
                /
         A --- B     E
@@ -468,7 +435,7 @@ class SJobDAG(SJob):
     The max is taken over all jobs defined by the DAG and the parent job.
     """
       
-    max = collections.OrderedDict()
+    max = dict()
 
     for key in self.resources:
       value = self.resources[key]
@@ -497,9 +464,9 @@ class SJobDAG(SJob):
     The provided DAG will be displayed, along with the 
     specific ordering in which the jobs will be executed.
     """
-    SJob.view(self)
+    Job.view(self)
     # view DAG
-    print('SJobDAG:')
+    print('JobDAG:')
     print('[Registered jobs]')
     cnt = 0
     for key in self.joblist:
