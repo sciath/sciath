@@ -27,6 +27,10 @@ Harness
 Additional modules and classes
 ==============================
 
+.. automodule:: sciath.job
+  :members:
+  :undoc-members:
+
 .. automodule:: sciath.launcher
   :members:
   :undoc-members:
