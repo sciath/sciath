@@ -9,16 +9,17 @@ This is documentation for `SciATH`_.
 What is it?
 ===========
 
-Testing code should be easy. The functionality required to launch, parse
-and perform verification should be light-weight and simple to migrate
-into existing projects. SciATH supports testing of sequential and
-MPI-parallel applications. Tests can be performed locally, or submitted
-via a batch queuing system (e.g. PBS, LSF, Slurm or LoadLeveler).
+Testing code should be easy. The functionality required to launch, parse and
+perform verification should be light-weight and simple to migrate into existing
+projects. SciATH supports testing of sequential and MPI-parallel applications.
+Tests can be performed locally, or submitted via a batch queuing system (e.g.
+PBS, LSF, Slurm or LoadLeveler).
 
-SciATH is a set of lightweight Python tools designed to quickly and easily test scientific application codes. As such,
-it focuses on full-application testing
-and prioritizes being able to run on clusters with batch systems.
-This is in contrast to most testing frameworks, which are designed with libraries in mind.
+SciATH is a set of lightweight Python tools designed to quickly and easily test
+scientific application codes. As such, it focuses on full-application testing
+and prioritizes being able to run on clusters with batch systems.  This is in
+contrast to most testing frameworks, which are designed with libraries in mind,
+and are often closely associated with specific programming languages.
 
 Key Concepts
 ============
