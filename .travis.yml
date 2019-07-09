@@ -12,6 +12,5 @@ install:
   - pip install --upgrade numpy
 
 script:
-  - cd tests
-  - ./runTests.py -d # default config
-  - ./runTests.py -f # run tests, returning error code
+  - ./tests/runTests.py -d # default config
+  - ./tests/runTests.py -f # run tests, returning error code

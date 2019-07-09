@@ -1,6 +1,9 @@
 SciATH: Scientific Application Test Harness
 ===========================================
 
+.. image:: https://travis-ci.com/sciath/sciath.svg?branch=dev
+    :target: https://travis-ci.com/sciath/sciath
+
 The Idea
 --------
 
