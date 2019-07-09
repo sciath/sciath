@@ -9,7 +9,6 @@ branches:
     - dev
 
 script:
-  - git submodule init && git submodule update
   - cd tests
   - ./runTests.py -d # default config
   - ./runTests.py -f # run tests, returning error code
