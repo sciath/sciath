@@ -18,19 +18,19 @@ def abs_path(path) :
     return os.path.join(this_dir,path)
 
 def JobTest():
-    t = Test('JobTest',1,abs_path('./job/test_job.py'),abs_path('job/test_job.expected'))
+    t = Test('JobTest',1,'python ' + abs_path('./job/test_job.py'),abs_path('job/test_job.expected'))
     t.setVerifyMethod(lambda t: t.compareUnixDiff())
     t.setUseSandbox()
     return t
 
 def JobSequenceTest():
-    t = Test('JobSequenceTest',1,abs_path('./job/test_jobsequence.py'),abs_path('job/test_jobsequence.expected'))
+    t = Test('JobSequenceTest',1,'python ' + abs_path('./job/test_jobsequence.py'),abs_path('job/test_jobsequence.expected'))
     t.setVerifyMethod(lambda t: t.compareUnixDiff())
     t.setUseSandbox()
     return t
 
 def JobDAGTest():
-    t = Test('JobDAGTest',1,abs_path('./job/test_jobdag.py'),abs_path('job/test_jobdag.expected'))
+    t = Test('JobDAGTest',1,'python ' + abs_path('./job/test_jobdag.py'),abs_path('job/test_jobdag.expected'))
     t.setVerifyMethod(lambda t: t.compareUnixDiff())
     t.setUseSandbox()
     return t

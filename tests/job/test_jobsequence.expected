@@ -1,52 +1,52 @@
 Execute command + resources for jD
-('  cmd =', 'echo "dependent job 3 <exec 1>"', 'res =', {'mpiranks': 40, 'threads': 27})
+  cmd = echo "dependent job 3 <exec 1>" res = {'mpiranks': 40, 'threads': 27}
 Execute command + resources for jA
-('  cmd =', 'echo "dependent job 3 <exec 1>"', 'res =', {'mpiranks': 40, 'threads': 27})
-('  cmd =', 'echo "dependent job 2 <exec 2>"', 'res =', {'mpiranks': 1, 'threads': 1})
-('  cmd =', 'echo "dependent job 1 <exec 3>"', 'res =', {'mpiranks': 140, 'threads': 1})
-('  cmd =', 'echo "job A"', 'res =', {'mpiranks': 4, 'threads': 11})
-('Resources required for jD:      name =', None, ' :', {'mpiranks': 40, 'threads': 27})
-('Max. resources required for jD: name =', None, ' :', {'mpiranks': 40, 'threads': 27})
+  cmd = echo "dependent job 3 <exec 1>" res = {'mpiranks': 40, 'threads': 27}
+  cmd = echo "dependent job 2 <exec 2>" res = {'mpiranks': 1, 'threads': 1}
+  cmd = echo "dependent job 1 <exec 3>" res = {'mpiranks': 140, 'threads': 1}
+  cmd = echo "job A" res = {'mpiranks': 4, 'threads': 11}
+Resources required for jD:      name = None  : {'mpiranks': 40, 'threads': 27}
+Max. resources required for jD: name = None  : {'mpiranks': 40, 'threads': 27}
 ============================================================================
 Job:
-('Description:', 'Job which will be run first')
-('Command:', 'echo "dependent job 3 <exec 1>"')
-('Exit code success:', 0)
-('Resources:', "{'mpiranks': 40, 'threads': 27}")
-('Max. resources (incl. dependencies):', "{'mpiranks': 40, 'threads': 27}")
+Description: Job which will be run first
+Command: echo "dependent job 3 <exec 1>"
+Exit code success: 0
+Resources: {'mpiranks': 40, 'threads': 27}
+Max. resources (incl. dependencies): {'mpiranks': 40, 'threads': 27}
 ============================================================================
-('Resources required for jA:      name =', 'DMDA interpolation <exec 4>', ' :', {'mpiranks': 4, 'threads': 11})
-('Max. resources required for jA: name =', 'DMDA interpolation <exec 4>', ' :', {'mpiranks': 140, 'threads': 27})
+Resources required for jA:      name = DMDA interpolation <exec 4>  : {'mpiranks': 4, 'threads': 11}
+Max. resources required for jA: name = DMDA interpolation <exec 4>  : {'mpiranks': 140, 'threads': 27}
 ============================================================================
-('Job: Job name:', 'DMDA interpolation <exec 4>')
-('Command:', 'echo "job A"')
-('Exit code success:', 0)
-('Resources:', "{'mpiranks': 4, 'threads': 11}")
-('Max. resources (incl. dependencies):', "{'mpiranks': 140, 'threads': 27}")
+Job: Job name: DMDA interpolation <exec 4>
+Command: echo "job A"
+Exit code success: 0
+Resources: {'mpiranks': 4, 'threads': 11}
+Max. resources (incl. dependencies): {'mpiranks': 140, 'threads': 27}
 JobSequence:
-('Dependencies: found', 3)
-('[Child job index', 0, ']')
+Dependencies: found 3
+[Child job index 0 ]
 Job:
-('Command:', 'echo "dependent job 1 <exec 3>"')
-('Exit code success:', 0)
-('Resources:', "{'mpiranks': 140, 'threads': 1}")
-('Max. resources (incl. dependencies):', "{'mpiranks': 140, 'threads': 1}")
-('[Child job index', 1, ']')
+Command: echo "dependent job 1 <exec 3>"
+Exit code success: 0
+Resources: {'mpiranks': 140, 'threads': 1}
+Max. resources (incl. dependencies): {'mpiranks': 140, 'threads': 1}
+[Child job index 1 ]
 Job:
-('Command:', 'echo "dependent job 2 <exec 2>"')
-('Exit code success:', 0)
-('Resources:', "{'mpiranks': 1, 'threads': 1}")
-('Max. resources (incl. dependencies):', "{'mpiranks': 1, 'threads': 1}")
-('[Child job index', 2, ']')
+Command: echo "dependent job 2 <exec 2>"
+Exit code success: 0
+Resources: {'mpiranks': 1, 'threads': 1}
+Max. resources (incl. dependencies): {'mpiranks': 1, 'threads': 1}
+[Child job index 2 ]
 Job:
-('Description:', 'Job which will be run first')
-('Command:', 'echo "dependent job 3 <exec 1>"')
-('Exit code success:', 0)
-('Resources:', "{'mpiranks': 40, 'threads': 27}")
-('Max. resources (incl. dependencies):', "{'mpiranks': 40, 'threads': 27}")
+Description: Job which will be run first
+Command: echo "dependent job 3 <exec 1>"
+Exit code success: 0
+Resources: {'mpiranks': 40, 'threads': 27}
+Max. resources (incl. dependencies): {'mpiranks': 40, 'threads': 27}
 [Execution order]
-('  order', 0, ':', 'echo "dependent job 3 <exec 1>"')
-('  order', 1, ':', 'echo "dependent job 2 <exec 2>"')
-('  order', 2, ':', 'echo "dependent job 1 <exec 3>"')
-('  order', 3, ':', 'echo "job A"')
+  order 0 : echo "dependent job 3 <exec 1>"
+  order 1 : echo "dependent job 2 <exec 2>"
+  order 2 : echo "dependent job 1 <exec 3>"
+  order 3 : echo "job A"
 ============================================================================

@@ -1,54 +1,54 @@
 ++++++++ example 3 (DAG with dependencies define by a non-trival graph) ++++++++
-('not found -> inserting name', 'b')
-('not found -> inserting name', 'c')
-('not found -> inserting name', 'd')
-('not found -> inserting name', 'e')
-('not found -> inserting name', 'f')
-('not found -> inserting name', 'g')
-('not found -> inserting name', 'h')
-('[pass] The root vertex associated with parent job (name =', 'jobA', ') was found in the DAG.')
+not found -> inserting name b
+not found -> inserting name c
+not found -> inserting name d
+not found -> inserting name e
+not found -> inserting name f
+not found -> inserting name g
+not found -> inserting name h
+[pass] The root vertex associated with parent job (name = jobA ) was found in the DAG.
 [pass] All DAG vertices were found in self.joblist.
-('dag -> order =', ['g', 'e', 'd', 'f', 'h', 'c', 'b', 'jobA'])
+dag -> order = ['g', 'e', 'd', 'f', 'h', 'c', 'b', 'jobA']
 Execute command + resources for jA
-('  cmd =', 'echo "dependent job g"', 'res =', {'mpiranks': 1, 'threads': 1})
-('  cmd =', 'echo "dependent job e"', 'res =', {'mpiranks': 1, 'threads': 1})
-('  cmd =', 'echo "dependent job d"', 'res =', {'mpiranks': 4, 'threads': 1})
-('  cmd =', 'echo "dependent job f"', 'res =', {'mpiranks': 1, 'threads': 1})
-('  cmd =', 'echo "dependent job h"', 'res =', {'mpiranks': 1, 'threads': 1})
-('  cmd =', 'echo "dependent job c"', 'res =', {'mpiranks': 1, 'threads': 1})
-('  cmd =', 'echo "dependent job b"', 'res =', {'mpiranks': 1, 'threads': 1})
-('  cmd =', 'echo "job A"', 'res =', {'mpiranks': 40, 'threads': 27})
+  cmd = echo "dependent job g" res = {'mpiranks': 1, 'threads': 1}
+  cmd = echo "dependent job e" res = {'mpiranks': 1, 'threads': 1}
+  cmd = echo "dependent job d" res = {'mpiranks': 4, 'threads': 1}
+  cmd = echo "dependent job f" res = {'mpiranks': 1, 'threads': 1}
+  cmd = echo "dependent job h" res = {'mpiranks': 1, 'threads': 1}
+  cmd = echo "dependent job c" res = {'mpiranks': 1, 'threads': 1}
+  cmd = echo "dependent job b" res = {'mpiranks': 1, 'threads': 1}
+  cmd = echo "job A" res = {'mpiranks': 40, 'threads': 27}
 ============================================================================
-('Job: Job name:', 'jobA')
-('Command:', 'echo "job A"')
-('Exit code success:', 0)
-('Resources:', "{'mpiranks': 40, 'threads': 27}")
-('Max. resources (incl. dependencies):', "{'mpiranks': 40, 'threads': 27}")
+Job: Job name: jobA
+Command: echo "job A"
+Exit code success: 0
+Resources: {'mpiranks': 40, 'threads': 27}
+Max. resources (incl. dependencies): {'mpiranks': 40, 'threads': 27}
 JobDAG:
 [Registered jobs]
-('  job', 0, 'key =', 'c')
-('  job', 1, 'key =', 'b')
-('  job', 2, 'key =', 'e')
-('  job', 3, 'key =', 'd')
-('  job', 4, 'key =', 'g')
-('  job', 5, 'key =', 'f')
-('  job', 6, 'key =', 'h')
+  job 0 key = b
+  job 1 key = c
+  job 2 key = d
+  job 3 key = e
+  job 4 key = f
+  job 5 key = g
+  job 6 key = h
 [Provided DAG]
-('  "g" ->', [None])
-('  "c" ->', ('d', 'e', 'f'))
-('  "b" ->', ('c', 'f'))
-('  "e" ->', 'h')
-('  "d" ->', 'g')
-('  "jobA" ->', ['b', 'c', 'h'])
-('  "f" ->', [None])
-('  "h" ->', [None])
+  "jobA" -> ['b', 'c', 'h']
+  "b" -> ('c', 'f')
+  "c" -> ('d', 'e', 'f')
+  "d" -> g
+  "e" -> h
+  "f" -> [None]
+  "g" -> [None]
+  "h" -> [None]
 [Execution order]
-('  order', 0, ':', 'g')
-('  order', 1, ':', 'e')
-('  order', 2, ':', 'd')
-('  order', 3, ':', 'f')
-('  order', 4, ':', 'h')
-('  order', 5, ':', 'c')
-('  order', 6, ':', 'b')
-('  order', 7, ':', 'jobA')
+  order 0 : g
+  order 1 : e
+  order 2 : d
+  order 3 : f
+  order 4 : h
+  order 5 : c
+  order 6 : b
+  order 7 : jobA
 ============================================================================

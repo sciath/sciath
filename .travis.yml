@@ -9,7 +9,7 @@ branches:
     - dev
 
 install:
-  - pip install --upgrade numpy
+  - pip install numpy
 
 script:
   - export PYTHONPATH=$PWD:$PYTHONPATH
