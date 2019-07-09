@@ -1,4 +1,4 @@
-language: minimal
+language: python
 
 git:
   depth: false
@@ -7,6 +7,9 @@ branches:
   only:
     - master
     - dev
+
+install:
+  - pip install --upgrade numpy
 
 script:
   - cd tests
