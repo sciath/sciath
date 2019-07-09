@@ -1,0 +1,9 @@
+branches:
+  only:
+    - master
+    - dev
+script:
+  - git submodule init && git submodule update
+  - cd tests
+  - ./runTests -d # default config
+  - ./runTests -f # run tests, returning error code
