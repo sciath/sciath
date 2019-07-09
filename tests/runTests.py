@@ -6,10 +6,10 @@
 import sys
 import os
 sys.path.insert(0,os.path.join(os.path.dirname(os.path.abspath(__file__)),'sciath','lib')) # old location
-import pyTestHarness as stablePackage # old package name
-from stablePackage.version import getVersion as getStableVersion # old way to get version (later, just use sciath.__version__)
-from stablePackage.harness import Harness
-from stablePackage.test    import Test
+import pyTestHarness as stablePackage
+from pyTestHarness.version import getVersion as getStableVersion # old way to get version (later, just use sciath.__version__)
+from pyTestHarness.harness import Harness
+from pyTestHarness.test    import Test
 
 
 # Make a path relative to this file absolute
