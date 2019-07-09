@@ -1,7 +1,13 @@
+language: minimal
+
+git:
+  depth: false
+
 branches:
   only:
     - master
     - dev
+
 script:
   - git submodule init && git submodule update
   - cd tests

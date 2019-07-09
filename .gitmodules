@@ -1,3 +1,3 @@
 [submodule "tests/sciath"]
 	path = tests/sciath
-	url = git@github.com:sciath/sciath
+	url = https://github.com/sciath/sciath
