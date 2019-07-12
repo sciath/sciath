@@ -10,7 +10,7 @@ def makeLocalPathAbsolute(localRelPath) :
 def test1():
   ranks = 1
   launch = makeLocalPathAbsolute('./ex1')
-  expected_file = 'ex1.expected'
+  expected_file = makeLocalPathAbsolute('ex1.expected')
 
   def comparefunc(test):
     key = '\$cputime'
@@ -38,7 +38,7 @@ def test1():
 def test2():
   ranks = 1
   launch = makeLocalPathAbsolute('./ex2')
-  expected_file = 'ex2.expected'
+  expected_file = makeLocalPathAbsolute('ex2.expected')
   def comparefunc(test):
     key = 'Residuals'
     test.compareFloatingPointAbsolute(key,0.0001)
@@ -54,7 +54,7 @@ def test2():
 def test3():
   ranks = 1
   launch = 'echo' # produce no output
-  expected_file = 'ex3.expected'
+  expected_file = makeLocalPathAbsolute('ex3.expected')
 
   def comparefunc(test):
     key = 'kspit'
@@ -74,8 +74,8 @@ def run_tests():
 
   registeredTests = [ test1() , test2(), test3() ]
 
-  os.system('gcc -o ex1 ex1.c')
-  os.system('gcc -o ex2 ex2.c')
+  os.system('gcc -o ' + makeLocalPathAbsolute('ex1') + ' ' + makeLocalPathAbsolute('ex1.c'))
+  os.system('gcc -o ' + makeLocalPathAbsolute('ex2') + ' ' + makeLocalPathAbsolute('ex2.c'))
 
   h = Harness(registeredTests)
   h.execute()

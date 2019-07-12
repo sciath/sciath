@@ -7,8 +7,8 @@ def makeLocalPathAbsolute(localRelPath) :
 
 def test():
   ranks = 1
-  launch = makeLocalPathAbsolute('./ex1')
-  expected_file = 'expectedoutput/ex1.expected'
+  launch = makeLocalPathAbsolute('ex1')
+  expected_file = makeLocalPathAbsolute(os.path.join('..','expectedoutput','ex1.expected'))
 
   def comparefunc(test):
     key = '\$cputime'
