@@ -8,14 +8,18 @@ def py23input(prompt) :
   return(v)
 
 class NamedColors:
-  HEADER    = '\033[35m'
-  SUBHEADER = '\033[36m'
-  OKGREEN   = '\033[32m'
-  WARNING   = '\033[93m'
-  FAIL      = '\033[91m'
-  ENDC      = '\033[0m'
-  BOLD      = '\033[1m'
-  UNDERLINE = '\033[4m'
+  def __init__(self):
+    self.set_colors()
+
+  def set_colors(self,use_bash=True):
+    self.HEADER    = '\033[35m' if use_bash else ''
+    self.SUBHEADER = '\033[36m' if use_bash else ''
+    self.OKGREEN   = '\033[32m' if use_bash else ''
+    self.WARNING   = '\033[93m' if use_bash else ''
+    self.FAIL      = '\033[91m' if use_bash else ''
+    self.ENDC      = '\033[0m'  if use_bash else ''
+    self.BOLD      = '\033[1m'  if use_bash else ''
+    self.UNDERLINE = '\033[4m'  if use_bash else ''
 
 # two space tab for formatted print statements
 tab = '  '
