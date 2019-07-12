@@ -3,7 +3,7 @@ import os
 import numpy as np
 import math as math
 import re
-from sciath._io import NamedColors as sciathcolors
+from sciath import sciath_colors
 
 def compareLiteral(input,expected):
   status = True
@@ -315,12 +315,12 @@ class Test:
   def report(self,type):
     if type == 'summary':
       if self.ignore == True:
-        print(sciathcolors.WARNING + ' [' + self.name + ']   skipped' + sciathcolors.ENDC)
+        print(sciath_colors.WARNING + ' [' + self.name + ']   skipped' + sciath_colors.ENDC)
       else:
         if self.passed == False:
-          print(sciathcolors.FAIL + ' [' + self.name + ']   *** FAILED ***' + sciathcolors.ENDC)
+          print(sciath_colors.FAIL + ' [' + self.name + ']   *** FAILED ***' + sciath_colors.ENDC)
         else:
-          print(sciathcolors.OKGREEN + ' [' + self.name + ']   passed' + sciathcolors.ENDC)
+          print(sciath_colors.OKGREEN + ' [' + self.name + ']   passed' + sciath_colors.ENDC)
 
     elif type == 'log_short' or type == 'log':
       if self.ignore == False:

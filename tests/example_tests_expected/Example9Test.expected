@@ -1,0 +1,72 @@
+
+[ *** Deleting Existing Test Output *** ]
+[ -- Removing output for test: testAbs -- ]
+[ -- Removing output for test: testRel -- ]
+[ -- Removing output for test: testRelEpsilon -- ]
+
+[ *** Executing Tests *** ]
+SciATH: Batch queueing system configuration [ SciATHBatchQueuingSystem.conf ]
+  Version:          0.4.4
+  Queue system:     none
+  MPI launcher:     /Users/patrick/code/petsc-maint/arch-maint-extra-opt/bin/mpiexec -n <ranks>
+[Executing testAbs] from /Users/patrick/code/sciath/examples/example9/testAbs_sandbox
+/Users/patrick/code/petsc-maint/arch-maint-extra-opt/bin/mpiexec -n 1 /Users/patrick/code/sciath/examples/example9/./run.sh >> testAbs.output
+[Executing testRel] from /Users/patrick/code/sciath/examples/example9/testRel_sandbox
+/Users/patrick/code/petsc-maint/arch-maint-extra-opt/bin/mpiexec -n 1 /Users/patrick/code/sciath/examples/example9/./run.sh >> testRel.output
+[Executing testRelEpsilon] from /Users/patrick/code/sciath/examples/example9/testRelEpsilon_sandbox
+/Users/patrick/code/petsc-maint/arch-maint-extra-opt/bin/mpiexec -n 1 /Users/patrick/code/sciath/examples/example9/./run.sh >> testRelEpsilon.output
+
+[ *** Verifying Test Output *** ]
+[-- Verifying test: testAbs --]
+[Parsing file] testAbs.output
+[Parsing file] /Users/patrick/code/sciath/examples/example9/expected
+[-- Verifying test: testRel --]
+[Parsing file] testRel.output
+[Parsing file] /Users/patrick/code/sciath/examples/example9/expected
+[-- Verifying test: testRelEpsilon --]
+[Parsing file] testRelEpsilon.output
+[Parsing file] /Users/patrick/code/sciath/examples/example9/expected
+
+
+[--------- Test Error Report ----------------------]
+[testAbs] expected file  : /Users/patrick/code/sciath/examples/example9/expected
+[testAbs] output file    : testAbs.output
+[testAbs] launch command : /Users/patrick/code/sciath/examples/example9/./run.sh
+[testAbs]   --- THIS IS A HACK TO PASS THE TESTS FOR NOW
+Key = "datum" --> compareFloatingPointAbsolute [failed]
+Reason: absolute tolerance 1.0000e-05 not satisfied
+  expected: [2.99999e+01 2.99999e+10 2.99999e-10 1.23456e+03 1.23456e+10 2.00000e-24]
+  input:    [3.00000e+01 3.00000e+10 3.00000e-10 1.23456e+03 1.23456e+10 3.00000e-24]
+  index[0] input 3.000000e+01 doesn't match expected 2.999990e+01
+  index[1] input 3.000000e+10 doesn't match expected 2.999990e+10
+  index[4] input 1.234560e+10 doesn't match expected 1.234560e+10
+
+[testRel] expected file  : /Users/patrick/code/sciath/examples/example9/expected
+[testRel] output file    : testRel.output
+[testRel] launch command : /Users/patrick/code/sciath/examples/example9/./run.sh
+Key = "datum" --> compareFloatingPointRelative [failed]
+Reason: relative tolerance 1.0000e-05 not satisfied
+  expected: [2.99999e+01 2.99999e+10 2.99999e-10 1.23456e+03 1.23456e+10 2.00000e-24]
+  input:    [3.00000e+01 3.00000e+10 3.00000e-10 1.23456e+03 1.23456e+10 3.00000e-24]
+  index[5] input 3.000000e-24 doesn't match expected 2.000000e-24
+
+
+[--------- test status ----------------------]
+ [testAbs]   *** FAILED ***
+ [testRel]   *** FAILED ***
+ [testRelEpsilon]   passed
+
+[--------- test report ----------------------]
+  0003 tests registered
+  0003 Sequential tests
+  0000 MPI tests
+  0003 of 0003 tests executed
+
+ [status] FAIL: 2 of 3 tests executed FAILED
+          0002 of 0003 executed Sequential tests failed
+          0000 of 0000 executed MPI tests failed
+xxx============================================================================xxx
+     tests failed - Full error report written to errorReport.log
+                  - Please inspect the error log file and resolve failed tests
+     cat /Users/patrick/code/sciath/examples/example9/errorReport.log
+xxx============================================================================xxx

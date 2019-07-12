@@ -4,7 +4,7 @@ import sys
 import shutil
 import fcntl
 import sciath.test
-from   sciath._io import NamedColors as sciathcolors
+from   sciath import sciath_colors
 from   sciath import getVersion
 from   sciath._io import py23input
 
@@ -461,10 +461,10 @@ class Launcher:
         for lc in launchCmd:
           lc_count = lc_count + 1
           if self.verbosity_level > 0:
-            launch_text = sciathcolors.SUBHEADER + '[Executing ' + test.name
+            launch_text = sciath_colors.SUBHEADER + '[Executing ' + test.name
             if lc_len > 1 :
               launch_text = launch_text + ' (' + str(lc_count) + '/' + str(lc_len) + ')'
-            launch_text = launch_text + ']' + sciathcolors.ENDC
+            launch_text = launch_text + ']' + sciath_colors.ENDC
             if test.use_sandbox:
               launch_text = launch_text + ' from ' + os.getcwd()
             print(launch_text)
@@ -477,10 +477,10 @@ class Launcher:
       launchCmd = self.jobSubmissionCommand + launchfile
       if self.verbosity_level > 0:
         if test.use_sandbox:
-          print(sciathcolors.SUBHEADER + '[Executing ' + test.name + '] ' + sciathcolors.ENDC + 'from ' + os.getcwd())
+          print(sciath_colors.SUBHEADER + '[Executing ' + test.name + '] ' + sciath_colors.ENDC + 'from ' + os.getcwd())
           print(launchCmd)
         else :
-          print(sciathcolors.SUBHEADER + '[Executing ' + test.name + ']' + sciathcolors.ENDC)
+          print(sciath_colors.SUBHEADER + '[Executing ' + test.name + ']' + sciath_colors.ENDC)
           print(launchCmd)
       os.system(launchCmd)
       setBlockingIOStdout()

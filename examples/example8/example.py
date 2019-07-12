@@ -10,7 +10,7 @@ def makeLocalPathAbsolute(localRelPath) :
 def test1():
   ranks = 1
   launch = makeLocalPathAbsolute('./ex')
-  expected_file = 'ex.expected'
+  expected_file = makeLocalPathAbsolute('ex.expected')
 
   def comparefuncSubTest(test):
     test.compareUnixDiff()
@@ -26,7 +26,7 @@ def test1():
 def test1_clone():
   ranks = 1
   launch = makeLocalPathAbsolute('./ex')
-  expected_file = 'ex.expected'
+  expected_file = makeLocalPathAbsolute('ex.expected')
 
   def comparefuncSubTest(test):
     test.compareUnixDiff()
@@ -42,13 +42,13 @@ def test1_clone():
 def run_tests():
   os.environ['PYTHONUNBUFFERED'] = str('1')
 
-  os.system('gcc -o ex ex.c')
+  os.system('gcc -o ' + makeLocalPathAbsolute('ex') + ' ' + makeLocalPathAbsolute('ex.c'))
 
   # Register both tests, but immediately select a subset
   h = Harness( \
           [test1(),test1_clone()],\
           ['test1']\
-          ) 
+          )
   h.execute()
   h.verify()
 

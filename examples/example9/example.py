@@ -10,7 +10,7 @@ def makeLocalPathAbsolute(localRelPath) :
 def testAbs():
   ranks = 1
   launch = makeLocalPathAbsolute('./run.sh')
-  expected_file = 'expected'
+  expected_file = makeLocalPathAbsolute('expected')
 
   def comparefunc(test):
     key = "datum"
@@ -26,7 +26,7 @@ def testAbs():
 def testRel():
   ranks = 1
   launch = makeLocalPathAbsolute('./run.sh')
-  expected_file = 'expected'
+  expected_file = makeLocalPathAbsolute('expected')
 
   def comparefunc(test):
     key = "datum"
@@ -42,7 +42,7 @@ def testRel():
 def testRelEpsilon():
   ranks = 1
   launch = makeLocalPathAbsolute('./run.sh')
-  expected_file = 'expected'
+  expected_file = makeLocalPathAbsolute('expected')
 
   def comparefunc(test):
     key = "datum"

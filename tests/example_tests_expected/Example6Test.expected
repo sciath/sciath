@@ -1,0 +1,35 @@
+
+[ *** Deleting Existing Test Output *** ]
+[ -- Removing output for test: ex1 -- ]
+[ -- Removing output for test: ex2 -- ]
+
+[ *** Executing Tests *** ]
+SciATH: Batch queueing system configuration [ SciATHBatchQueuingSystem.conf ]
+  Version:          0.4.4
+  Queue system:     none
+  MPI launcher:     /Users/patrick/code/petsc-maint/arch-maint-extra-opt/bin/mpiexec -n <ranks>
+[Executing ex1] from /Users/patrick/code/sciath/examples/example6/ex1_sandbox
+/Users/patrick/code/petsc-maint/arch-maint-extra-opt/bin/mpiexec -n 1 /Users/patrick/code/sciath/examples/example6/ex.sh 1 >> ex1.output
+[Executing ex2] from /Users/patrick/code/sciath/examples/example6/ex2_sandbox
+/Users/patrick/code/petsc-maint/arch-maint-extra-opt/bin/mpiexec -n 1 /Users/patrick/code/sciath/examples/example6/ex.sh 2 >> ex2.output
+
+[ *** Verifying Test Output *** ]
+[-- Verifying test: ex1 --]
+[Parsing file] out.txt
+[Parsing file] /Users/patrick/code/sciath/examples/example6/ex1.expected
+[-- Verifying test: ex2 --]
+[Parsing file] out.txt
+[Parsing file] /Users/patrick/code/sciath/examples/example6/ex2.expected
+
+
+[--------- test status ----------------------]
+ [ex1]   passed
+ [ex2]   passed
+
+[--------- test report ----------------------]
+  0002 tests registered
+  0002 Sequential tests
+  0000 MPI tests
+  0002 of 0002 tests executed
+
+ [status] SUCCESS: All registered tests passed

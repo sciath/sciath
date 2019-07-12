@@ -7,8 +7,8 @@ def makeLocalPathAbsolute(localRelPath) :
 
 def test():
   ranks = 1
-  launch = makeLocalPathAbsolute('./ex2')
-  expected_file = 'expectedoutput/ex2.expected'
+  launch = makeLocalPathAbsolute('ex2')
+  expected_file = makeLocalPathAbsolute(os.path.join('..','expectedoutput','ex2.expected'))
 
   def comparefunc(test):
     key = 'Residuals'
