@@ -233,9 +233,9 @@ def Example9Test():
             abs_path('example_tests_expected/Example9Test.expected'))
 
     def comparefunc(test):
-        test.compareLiteral(re.escape(' [testAbs]'))
-        test.compareLiteral(re.escape(' [testRel]'))
-        test.compareLiteral(re.escape(' [testRelEpsilon]'))
+        test.compareLiteral(re.escape('[testAbs]   *'))
+        test.compareLiteral(re.escape('[testRel]   *'))
+        test.compareLiteral(re.escape('[testRelEpsilon]   p'))
 
     t.setVerifyMethod(comparefunc)
     t.setUseSandbox()

@@ -32,7 +32,6 @@ SciATH: Batch queueing system configuration [ SciATHBatchQueuingSystem.conf ]
 [testAbs] expected file  : /Users/patrick/code/sciath/examples/example9/expected
 [testAbs] output file    : testAbs.output
 [testAbs] launch command : /Users/patrick/code/sciath/examples/example9/./run.sh
-[testAbs]   --- THIS IS A HACK TO PASS THE TESTS FOR NOW
 Key = "datum" --> compareFloatingPointAbsolute [failed]
 Reason: absolute tolerance 1.0000e-05 not satisfied
   expected: [2.99999e+01 2.99999e+10 2.99999e-10 1.23456e+03 1.23456e+10 2.00000e-24]
