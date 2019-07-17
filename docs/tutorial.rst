@@ -167,6 +167,24 @@ This example executes the same executable twice:
    cd example7
    python example.py      # ex1 should fail
 
+Updating Expected Output
+------------------------
+Warning: this can overwrite your data! Use with caution.
+
+You can use the `-r` flag to overwrite the expected output with the output that is
+produced. For example, introduce an error into the expected file for a test
+and update the output to overwrite it. Note that a backup file is created.
+
+::
+
+   cd example1
+   python example1.py -t ex1               # ex1 should pass
+   printf "kspits = 999.9" >> ex1.expected
+   python example.py -t ex1                # ex1 should fail
+   python example.py -t ex1 -r             # ex1 should pass and update ex1.expected
+   python example.py -t ex1                # ex1 should pass
+   rm ex1.expected.bak                     # remove the backup file
+
 Tips for building tests
 -----------------------
 

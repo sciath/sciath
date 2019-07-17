@@ -40,6 +40,7 @@ class Harness:
     parser.add_argument('-s', '--sandbox', help='Execute tests in separate directories. Will not work unless you supply absolute paths to executables.', required=False, action='store_true')
     parser.add_argument('-l', '--list', help='List all registered tests and exit', required=False, action='store_true')
     parser.add_argument('-w','--with_conf_file',help='Use provided configuration file instead of the default',required=False)
+    parser.add_argument('-r','--replace_expected',help='Replace expected files (destructive!)',required=False,action='store_true')
     parser.add_argument('--no-colors',help='Deactivate colored output',required=False,action='store_true')
     self.args, self.unknown = parser.parse_known_args()
 
@@ -155,7 +156,9 @@ class Harness:
     self.launcher.setVerbosityLevel(self.verbosity_level)
 
   def execute(self):
-    '''Execute tests unless verifying (only) or purging output (only)'''
+    '''Execute tests unless verifying (only) or purging output (only)
+       Update expected output if in "replace_expected" mode
+    '''
     if not self.args.verify and not self.args.purge_output:
       print('')
       print(sciath_colors.HEADER + '[ *** Executing Tests *** ]' + sciath_colors.ENDC)
@@ -183,6 +186,9 @@ class Harness:
         counter = counter + 1
       if (skipCounter > 0) :
         print(sciath_colors.WARNING+'[SciATH] Skipped executing '+str(skipCounter)+' tests'+sciath_colors.ENDC)
+    if self.args.replace_expected :
+      print(sciath_colors.HEADER + '[ *** Replacing Expected Output  *** ]' + sciath_colors.ENDC)
+      [test.updateExpected() for test in testList if not test.ignore]
 
   def verify(self):
     '''Verify, unless we are running with a batch system and are not in verify(-only) mode'''

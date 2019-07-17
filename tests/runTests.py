@@ -58,6 +58,29 @@ def Example1Test():
     t.setUseSandbox()
     return t
 
+def Example1Test_2():
+    # Note: this test is a bit dangerous, as it modifies files in the examples directory
+    t = Test('Example1Test_2',1,
+            [
+            'rm -f '   + abs_path(os.path.join('..','examples','example1','ex1.expected.bak')),
+            'python '  + abs_path(os.path.join('..','examples','example1','example.py')) + ' -d',
+            'python '  + abs_path(os.path.join('..','examples','example1','example.py')) + ' --no-colors -t ex1',
+            'cp '      + abs_path(os.path.join('example_tests_resources','Example1Test_2_ex1.expected.wrong ')) + abs_path(os.path.join('..','examples','example1','ex1.expected')),
+            'python '  + abs_path(os.path.join('..','examples','example1','example.py')) + ' --no-colors -t ex1',
+            'python '  + abs_path(os.path.join('..','examples','example1','example.py')) + ' --no-colors -t ex1 -r',
+            'python '  + abs_path(os.path.join('..','examples','example1','example.py')) + ' --no-colors -t ex1',
+            'rm '      + abs_path(os.path.join('..','examples','example1','ex1.expected.bak')),
+            ],
+            abs_path('example_tests_expected/Example1Test_2.expected'))
+
+    def comparefunc(test):
+        test.compareLiteral(re.escape('[ex1]   *'))
+        test.compareLiteral(re.escape('[ex1]   p'))
+
+    t.setVerifyMethod(comparefunc)
+    t.setUseSandbox()
+    return t
+
 def Example2Test():
     t = Test('Example2Test',1,
             [
@@ -233,9 +256,9 @@ def Example9Test():
             abs_path('example_tests_expected/Example9Test.expected'))
 
     def comparefunc(test):
-        test.compareLiteral(re.escape(' [testAbs]'))
-        test.compareLiteral(re.escape(' [testRel]'))
-        test.compareLiteral(re.escape(' [testRelEpsilon]'))
+        test.compareLiteral(re.escape('[testAbs]   *'))
+        test.compareLiteral(re.escape('[testRel]   *'))
+        test.compareLiteral(re.escape('[testRelEpsilon]   p'))
 
     t.setVerifyMethod(comparefunc)
     t.setUseSandbox()
@@ -249,6 +272,7 @@ def main():
         JobSequenceTest(),
         JobDAGTest(),
         Example1Test(),
+        Example1Test_2(),
         Example2Test(),
         Example2Test_2(),
         Example2Test_3(),

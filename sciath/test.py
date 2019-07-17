@@ -3,6 +3,7 @@ import os
 import numpy as np
 import math as math
 import re
+import shutil
 from sciath import sciath_colors
 
 def compareLiteral(input,expected):
@@ -278,6 +279,25 @@ class Test:
 
   def getErrorStatus(self):
     return self.passed
+
+  def updateExpected(self,backup=True):
+      """Copy the comparison file to the expected file.
+      Back up the expected file if 'backup' is true.
+      """
+      if not self.expected_file :
+          raise Exception('Cannot updated the expected file for test ' + self.name + ' because one is not defined')
+      source_expected_file = self.comparison_file if self.comparison_file != '' else os.path.join(self.output_path,self.output_file) # Kludge (comparison_file should just default to this!)
+      if not os.path.isfile(source_expected_file):
+          raise Exception('Cannot updated the expected file for test ' + self.name + ' because the file ' + source_expected_file + ' to copy from does not exist')
+      if backup :
+          backup_expected_filename = self.expected_file + '.bak'
+          print('[Updating Expected File]',self.expected_file,' (backup at',backup_expected_filename,')')
+          if os.path.isfile(backup_expected_filename) :
+              raise Exception('Cannot backup the expected file for test ' + self.name + ' because a backup file ' + backup_expected_filename + ' already exists')
+          shutil.copyfile(self.expected_file,backup_expected_filename)
+      else :
+          print('[Updating Expected File]',self.expected_file)
+      shutil.copyfile(source_expected_file,self.expected_file)
 
   def verifyOutput(self):
     if self.use_sandbox :
