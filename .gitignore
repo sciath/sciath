@@ -1,8 +1,11 @@
 SciATHBatchQueuingSystem.conf
+
 *.pbs
 *.lsf
 *.slurm
 *.llq
+
+*.bak
 
 # Python
 *.pyc

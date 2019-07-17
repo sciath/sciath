@@ -4,10 +4,10 @@
 int main(void)
 {
 
-  printf("@ -- \n");
-  printf("@ -- Output from fake application code \n");
-  printf("@ -- comment lines \n");
-  printf("@ -- \n");
+  printf("@ --\n");
+  printf("@ -- Output from fake application code\n");
+  printf("@ -- comment lines\n");
+  printf("@ --\n");
  
   printf("$cputime = { 2.2 }\n");
   printf("$residuals { 33.33, 6.6 }\n");
