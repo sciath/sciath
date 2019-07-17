@@ -27,24 +27,15 @@ Basic functionality includes:
 2. multiple tests;
 3. report summary and error log files
 
-Example 1
-^^^^^^^^^
-
 ::
 
    cd example1
    ./example.py           # ex1 should pass; ex2 and ex3 should fail
 
-Example 4
-^^^^^^^^^
-
 ::
 
    cd example4
    ./example.py           # ex2 should pass; ex1 and ex3 should fail
-
-Example 9
-^^^^^^^^^
 
 Floating point comparisons can be absolute or relative.
 
@@ -55,9 +46,6 @@ Floating point comparisons can be absolute or relative.
 
 Tests defined in separate directories
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Example 2
-^^^^^^^^^
 
 ::
 
@@ -73,9 +61,6 @@ Running a subset of tests
    ./example.py -t test1       # run a single test
    ./example.py -t test1,test2 # run several tests
 
-Example 8
-^^^^^^^^^
-
 One may also provide a subset of tests directly in the initializer for
 the test harness. Additional tests can be added with ``-t``.
 
@@ -87,9 +72,6 @@ the test harness. Additional tests can be added with ``-t``.
 
 Parallel tests using a PETSc code
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Example 3
-^^^^^^^^^
 
 Features:
 
@@ -106,9 +88,6 @@ be defined.
 
 Defining a test which doesn’t depend on an expected output file
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Example 5
-^^^^^^^^^
 
 ::
 
@@ -130,9 +109,6 @@ Generated test output may be deleted:
 Running tests in dedicated “sandbox” directories
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Example 6
-^^^^^^^^^
-
 Each test may be run in a “sandbox” directory, useful to run tests which
 produce identically-named output files, or for testing applications
 which may generate extra output files.
@@ -153,9 +129,6 @@ You may supply the ``-s`` flag to use a sandbox directory for all tests
 Running multiple executables
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Example 7
-^^^^^^^^^
-
 The ``execute`` field for a ``Test`` may be a list. All executables in
 the list are run in succession. Note that on batch/queueing systems,
 these are all run with the same number of MPI ranks.
@@ -167,8 +140,8 @@ This example executes the same executable twice:
    cd example7
    python example.py      # ex1 should fail
 
-Updating Expected Output
-------------------------
+Updating expected output
+~~~~~~~~~~~~~~~~~~~~~~~~
 Warning: this can overwrite your data! Use with caution.
 
 You can use the ``-r`` flag to overwrite the expected output with the output that is
