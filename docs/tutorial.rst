@@ -171,7 +171,7 @@ Updating Expected Output
 ------------------------
 Warning: this can overwrite your data! Use with caution.
 
-You can use the `-r` flag to overwrite the expected output with the output that is
+You can use the ``-r`` flag to overwrite the expected output with the output that is
 produced. For example, introduce an error into the expected file for a test
 and update the output to overwrite it. Note that a backup file is created.
 
