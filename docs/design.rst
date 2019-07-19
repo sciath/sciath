@@ -44,6 +44,7 @@ Job
 * A command to be run, that is a string containing an executable and arguments. Note that any relative paths will be interpreted relative to where the command is run.
 * A set of "resources" required. These are system-agnostic details like the number of (MPI) ranks or (OpenMP) threads.
 * Information on how to interpret an exit code as indicating a successful run (note that in the case of running other testing programs, "error" exit codes may indicate that tests failed, not that the program didn't run as intended)
+* An optional amount of time required to run
 * An optional user-provided method to clean up after the command, assuming it has run once from the same path
 
 Note that this class knows nothing about where it will be run from or how many times (possibly simultaneously).
