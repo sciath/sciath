@@ -5,6 +5,7 @@ import math as math
 import re
 import shutil
 from sciath import sciath_colors
+from sciath.job import Job, JobSequence
 
 def compareLiteral(input,expected):
     status = True
@@ -222,17 +223,27 @@ def getKeyValuesNLinesExclusive(contents,keyword,numlines):
 class Test:
     def __init__(self,name,ranks,execute,expected_file):
         self.passed = -1
-        self.walltime = 2.0 # minutes
+        self.walltime = 2.0 # minutes TODO move to Job
         self.errormessage = ''
         self.errno = -1
         self.name = name
         if not name or len(name) == 0 :
             raise RuntimeError('Tests must be named')
-        self.ranks = ranks
+        self.ranks = ranks # TODO remove self.ranks and use the Job directly
         if isinstance(execute,list):
-            self.execute = execute
-        if isinstance(execute,str):
-            self.execute = [execute]
+            self.job = JobSequence(execute[-1],name=name) # TODO this sucks. JobSequence should just be a bag of jobs without any cmd of its own..
+            for command in reversed(execute[:-1]):
+                sub_job = Job(command)
+                sub_job.setResources(ranks=ranks)
+                self.job.append(sub_job)
+        elif isinstance(execute,str):
+            self.job = Job(execute,name=name)
+            self.job.setResources(ranks=ranks)
+        self.execute = []
+        for (cmd,res) in self.job.createExecuteCommand():
+            self.execute.append(cmd)
+        # TODO self.execute and self.ranks should be removed, as this info is contained in self.job
+        # TODO get max ranks and set as ranks
         self.expected_file = expected_file
         self.keywords = [ '#', '!', '//' ]
         self.output_file = name + '.output'
