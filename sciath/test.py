@@ -229,7 +229,6 @@ class Test:
         self.name = name
         if not name or len(name) == 0 :
             raise RuntimeError('Tests must be named')
-        self.ranks = ranks # TODO remove self.ranks and use the Job directly
         if isinstance(execute,list):
             self.job = JobSequence(execute[-1],name=name) # TODO this sucks. JobSequence should just be a bag of jobs without any cmd of its own..
             for command in reversed(execute[:-1]):
@@ -243,7 +242,7 @@ class Test:
         for (cmd,res) in self.job.createExecuteCommand():
             self.execute.append(cmd)
         # TODO self.execute and self.ranks should be removed, as this info is contained in self.job
-        # TODO get max ranks and set as ranks
+        self.ranks = self.job.getMaxResources()['mpiranks']
         self.expected_file = expected_file
         self.keywords = [ '#', '!', '//' ]
         self.output_file = name + '.output'
