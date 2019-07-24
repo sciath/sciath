@@ -19,7 +19,6 @@ def testAbs():
 
   test = Test('testAbs',ranks,launch,expected_file)
   test.setVerifyMethod(comparefunc)
-  test.setUseSandbox()
 
   return(test)
 
@@ -35,7 +34,6 @@ def testRel():
 
   test = Test('testRel',ranks,launch,expected_file)
   test.setVerifyMethod(comparefunc)
-  test.setUseSandbox()
 
   return(test)
 
@@ -52,7 +50,6 @@ def testRelEpsilon():
 
   test = Test('testRelEpsilon',ranks,launch,expected_file)
   test.setVerifyMethod(comparefunc)
-  test.setUseSandbox()
 
   return(test)
 
@@ -63,6 +60,7 @@ def run_tests():
       testRel(),
       testRelEpsilon()
   ])
+  h.setUseSandbox()
   h.execute()
   h.verify()
 

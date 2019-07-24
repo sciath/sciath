@@ -109,9 +109,10 @@ Generated test output may be deleted:
 Running tests in dedicated “sandbox” directories
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Each test may be run in a “sandbox” directory, useful to run tests which
-produce identically-named output files, or for testing applications
-which may generate extra output files.
+Each test may be run in a “sandbox” directory. This is always recommended (and
+will likely soon be the default), but this is particularly useful to run tests
+which produce identically-named output files, or for testing applications which
+may generate extra output files.
 
 ::
 

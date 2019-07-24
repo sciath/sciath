@@ -248,8 +248,6 @@ class Test:
         self.output_file = name + '.output'
         self.comparison_file = ''
         self.output_path = ''
-        self.sandbox_path = self.name + '_sandbox'
-        self.use_sandbox = False
         self.ignore = False
         self.verbosity_level = 1
 
@@ -273,9 +271,6 @@ class Test:
 
     def setWalltime(self,mins):
         self.walltime = mins
-
-    def setUseSandbox(self) :
-        self.use_sandbox=True
 
     def appendKeywords(self,keywords):
         self.keywords.append(keywords)
@@ -310,16 +305,11 @@ class Test:
         shutil.copyfile(source_expected_file,self.expected_file)
 
     def verifyOutput(self):
-        if self.use_sandbox :
-            sandboxBack = os.getcwd()
-            os.chdir(self.sandbox_path)
         if self.comparison_file == '':
             self.comparison_file = os.path.join(self.output_path,self.output_file)
         if self.verbosity_level > 0:
             print('[Parsing file]',self.comparison_file)
         (self.output_contents,self.output_flatcontents) = parseFile(self.comparison_file,self.keywords)
-        if self.use_sandbox :
-            os.chdir(sandboxBack)
         if self.verbosity_level > 0:
             print('[Parsing file]',self.expected_file)
         (self.expected_contents,self.expected_flatcontents) = parseFile(self.expected_file,self.keywords)

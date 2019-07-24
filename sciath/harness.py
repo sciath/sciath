@@ -2,6 +2,7 @@ from __future__ import print_function
 import os
 import sys
 import argparse
+import shutil
 import sciath.test as sciathtest
 import sciath.launcher as sciathlauncher
 from   sciath import sciath_colors
@@ -15,6 +16,7 @@ class Harness:
         self.testsFailed = 0
         self.verbosity_level = 1
         self.errorReportFileName = 'errorReport.log'
+        self.use_sandbox = False
 
         self.testDescription = [] # Note: not currently output, but could be used for future logging
         self.registeredTests = registeredTests
@@ -43,6 +45,9 @@ class Harness:
         parser.add_argument('-r','--replace_expected',help='Replace expected files (destructive!)',required=False,action='store_true')
         parser.add_argument('--no-colors',help='Deactivate colored output',required=False,action='store_true')
         self.args, self.unknown = parser.parse_known_args()
+
+        # Sandbox
+        self.use_sandbox = self.args.sandbox
 
         # Deactivate colored output if requested
         if self.args.no_colors :
@@ -73,11 +78,6 @@ class Harness:
         if self.args.configure:
             self.launcher.configure()
             sys.exit(0)
-
-        # Instruct all tests to use sandboxes if requested
-        if self.args.sandbox :
-            for test in registeredTests :
-                test.use_sandbox = True
 
         # Set output path on all tests if --output_path option was included
         if self.args.output_path:
@@ -179,7 +179,15 @@ class Harness:
             skipCounter = 0
             for test in testList:
                 if test.ignore == False:
+                    if self.use_sandbox:
+                        sandbox_dirname = self.generate_sandbox_dirname(test)
+                        if not os.path.isdir(sandbox_dirname):
+                            os.mkdir(sandbox_dirname)
+                        sandbox_back = os.getcwd()
+                        os.chdir(sandbox_dirname)
                     launcher.submitJob(test)
+                    if self.use_sandbox:
+                        os.chdir(sandbox_back)
                 else:
                     skipCounter = skipCounter + 1
                 counter = counter + 1
@@ -200,7 +208,13 @@ class Harness:
                     skipCounter = skipCounter + 1
                 else:
                     print('[-- Verifying test: ' + test.name + ' --]')
+                    if self.use_sandbox:
+                        sandbox_dirname = self.generate_sandbox_dirname(test)
+                        sandbox_back = os.getcwd()
+                        os.chdir(sandbox_dirname)
                     test.verifyOutput()
+                    if self.use_sandbox:
+                        os.chdir(sandbox_back)
             if skipCounter > 0 :
                 print(sciath_colors.WARNING+'[SciATH] Skipped verification for '+str(skipCounter)+' skipped tests'+sciath_colors.ENDC)
 
@@ -232,7 +246,16 @@ class Harness:
             if test.ignore:
                 skipCounter = skipCounter + 1
             else:
+                if self.use_sandbox:
+                    sandbox_dirname = self.generate_sandbox_dirname(test)
+                    if not os.path.isdir(sandbox_dirname):
+                        os.mkdir(sandbox_dirname)
+                    sandbox_back = os.getcwd()
+                    os.chdir(sandbox_dirname)
                 self.launcher.clean(test)
+                if self.use_sandbox:
+                   os.chdir(sandbox_back)
+                   shutil.rmtree(sandbox_dirname) # remove entire subtree
         if skipCounter > 0 :
             print(sciath_colors.WARNING+'[SciATH] Skipped removing output for '+str(skipCounter)+' skipped tests'+sciath_colors.ENDC)
 
@@ -329,3 +352,9 @@ class Harness:
             print('xxx============================================================================xxx')
             errfile = errorReportFileLocation
         return(errfile)
+
+    def generate_sandbox_dirname(self,test):
+        return test.name + '_sandbox'
+
+    def setUseSandbox(self,val=True):
+        self.use_sandbox = val

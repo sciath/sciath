@@ -19,7 +19,6 @@ def test1():
   test = Test('test1',ranks,launch,expected_file)
   test.setVerifyMethod(comparefuncSubTest)
   test.appendKeywords('@')
-  test.setUseSandbox()
 
   return(test)
 
@@ -35,7 +34,6 @@ def test1_clone():
   test = Test('test1_clone',ranks,launch,expected_file)
   test.setVerifyMethod(comparefuncSubTest)
   test.appendKeywords('@')
-  test.setUseSandbox()
 
   return(test)
 
@@ -49,6 +47,7 @@ def run_tests():
           [test1(),test1_clone()],\
           ['test1']\
           )
+  h.setUseSandbox()
   h.execute()
   h.verify()
 

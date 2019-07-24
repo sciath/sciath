@@ -436,10 +436,6 @@ class Launcher:
     def submitJob(self,test):
         setBlockingIOStdout()
 
-        if test.use_sandbox:
-            sandboxBack = os.getcwd()
-            os.mkdir(test.sandbox_path) # error if  it already exists
-            os.chdir(test.sandbox_path)
         test.setVerbosityLevel(self.verbosity_level)
         if not self.useBatch:
             mpiLaunch = self.mpiLaunch
@@ -480,16 +476,8 @@ class Launcher:
             os.system(launchCmd)
             setBlockingIOStdout()
 
-        if test.use_sandbox:
-            os.chdir(sandboxBack)
-
     def clean(self,test):
         print('[ -- Removing output for test:',test.name,'-- ]')
-        if test.use_sandbox:
-            sandboxBack = os.getcwd()
-            if not os.path.isdir(test.sandbox_path) :
-                os.mkdir(test.sandbox_path)
-            os.chdir(test.sandbox_path)
         outfile = os.path.join(test.output_path,test.output_file)
         if os.path.isfile(outfile) :
             os.remove(outfile)
@@ -531,7 +519,3 @@ class Launcher:
                 llqFile = test.name + '-sciath.llq'
                 if os.path.isfile(llqFile) :
                     os.remove(llqFile)
-
-        if test.use_sandbox:
-            os.chdir(sandboxBack)
-            shutil.rmtree(test.sandbox_path) # remove entire subtree
