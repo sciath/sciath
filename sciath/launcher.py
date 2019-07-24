@@ -465,8 +465,7 @@ class Launcher:
                         if lc_len > 1 :
                             launch_text = launch_text + ' (' + str(lc_count) + '/' + str(lc_len) + ')'
                         launch_text = launch_text + ']' + sciath_colors.ENDC
-                        if test.use_sandbox:
-                            launch_text = launch_text + ' from ' + os.getcwd()
+                        launch_text = launch_text + ' from ' + os.getcwd()
                         print(launch_text)
                         print(lc)
                     test.errno = os.system(lc) >> 8 # TODO: fix this clobbering of errno for multiple tests
@@ -476,12 +475,8 @@ class Launcher:
             launchfile = self.createSubmissionFile(test.name,test.execute,test.ranks,'',test.walltime,outfile)
             launchCmd = self.jobSubmissionCommand + launchfile
             if self.verbosity_level > 0:
-                if test.use_sandbox:
-                    print(sciath_colors.SUBHEADER + '[Executing ' + test.name + '] ' + sciath_colors.ENDC + 'from ' + os.getcwd())
-                    print(launchCmd)
-                else :
-                    print(sciath_colors.SUBHEADER + '[Executing ' + test.name + ']' + sciath_colors.ENDC)
-                    print(launchCmd)
+                print(sciath_colors.SUBHEADER + '[Executing ' + test.name + '] ' + sciath_colors.ENDC + 'from ' + os.getcwd())
+                print(launchCmd)
             os.system(launchCmd)
             setBlockingIOStdout()
 
