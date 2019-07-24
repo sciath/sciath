@@ -66,7 +66,7 @@ class Job:
 
     def createExecuteCommand(self):
         """
-        Returns the command, resource tuple for a job.
+        Returns a list containing the command, resource tuple for a job.
         """
 
         ex = []
