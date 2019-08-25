@@ -24,12 +24,12 @@ class Harness:
         for t in self.registeredTests:
             testNames.append(t.name)
             if not isinstance(t,sciathtest.Test):
-                raise ValueError('[SciATH]: Registered tests must be of type pyTestHarness.test.Test')
+                raise ValueError('[SciATH]: Registered tests must be of type sciath.test.Test')
         self.testsRegistered = len(self.registeredTests)
         if len(testNames) != len(set(testNames)) :
             raise Exception('[SciATH] Registered tests must have unique names')
 
-        parser = argparse.ArgumentParser(description='Python Test Harness.')
+        parser = argparse.ArgumentParser(description='SciATH')
         parser.add_argument('-v', '--verify', help='Perform test verification only (and not execution)', required=False, action='store_true')
         parser.add_argument('-c', '--configure', help='Configure queuing system information', required=False, action='store_true')
         parser.add_argument('-t', '--test', help='List of test names', required=False)
@@ -54,7 +54,6 @@ class Harness:
         else:
             self.subsetTestName = subsetTestName
             self.execSubset = True
-
 
         # If "list" option supplied, simply print out all the tests' names and exit
         if self.args.list :
