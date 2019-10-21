@@ -56,19 +56,23 @@ Launcher
 ~~~~~~~~
 
 * The exclusive location for system-specific information
-* The exclusive reader of system-specific configuration (a simple plain-text `key: value` file)
+* The exclusive reader of system-specific configuration (a simple plain-text ``key: value`` file)
 
-Includes methods to operate on a combination of a `Job` and a path:
+Includes methods to operate on a combination of a ``Job`` and a path:
 
 * Run the job from that path. Depending on whether this is a batch system,
+
   * blocking: blocks, function returns error code
   * non-blocking: returns after launching
+
 * Check the status of the job as run from that path
+
   * includes error code for batch jobs
+
 * Clean up after a job, calling the clean method from the ``Job`` and removing other generated files
 
-`Launcher` does not know about `Test` or `Harness`, and it should be possible
-to use `Launcher` and a collection of `Job` objects as a convenience to run the
+``Launcher`` does not know about ``Test`` or ``Harness``, and it should be possible
+to use ``Launcher`` and a collection of ``Job`` objects as a convenience to run the
 same commands on various systems.
 
 Test
@@ -83,7 +87,7 @@ Harness
 ~~~~~~~
 
 The central object which users interact with, either in their own scripts
-or via direct invocation of the `sciath` module.
+or via direct invocation of the ``sciath`` module.
 
 * A set of uniquely-named ``Test`` objects
 * A ``Launcher``
