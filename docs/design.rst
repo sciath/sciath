@@ -81,7 +81,7 @@ Test
 * A ``Job``
 * A (unique, mandatory) name
 * A method to verify success
-* An set of string-valued tags
+* A set of string-valued tags
 
 Harness
 ~~~~~~~
