@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # An example where an executable creates an output file with a standardized name
 # (perhaps not good software practice but common, and can happen unintentionally)
-# Run this example with the -s flag to execute each test in its own "sandbox"
+# This example is run using individual "sandboxes" (recommended)
 #
 # Note: We define executables relative to the absolute path of this file
 
@@ -25,7 +25,6 @@ def test1() :
   test = Test('ex1',ranks,launch,expected_file)
   test.setVerifyMethod(comparefunc)
   test.setComparisonFile('out.txt')
-  test.setUseSandbox()
 
   return(test)
 
@@ -41,7 +40,6 @@ def test2():
   test = Test('ex2',ranks,launch,expected_file)
   test.setVerifyMethod(comparefunc)
   test.setComparisonFile('out.txt')
-  test.setUseSandbox()
 
   return(test)
 
@@ -51,6 +49,7 @@ def run_tests():
   registeredTests = [test1(), test2()]
 
   h = Harness(registeredTests)
+  h.setUseSandbox()
   h.execute()
   h.verify()
 

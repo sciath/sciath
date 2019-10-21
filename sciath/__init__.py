@@ -9,10 +9,10 @@ import sciath
 from sciath._io import NamedColors
 
 def getVersion() :
-  """
-  Returns major,minor,patch version as integers
-  """
-  return 0,4,4
+    """
+    Returns major,minor,patch version as integers
+    """
+    return 0,4,4
 
 __version__ = getVersion()
 
