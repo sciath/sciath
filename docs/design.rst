@@ -59,6 +59,7 @@ Launcher
 * The exclusive reader of system-specific configuration (a simple plain-text `key: value` file)
 
 Includes methods to operate on a combination of a `Job` and a path:
+
 * Run the job from that path. Depending on whether this is a batch system,
   * blocking: blocks, function returns error code
   * non-blocking: returns after launching
@@ -66,15 +67,15 @@ Includes methods to operate on a combination of a `Job` and a path:
   * includes error code for batch jobs
 * Clean up after a job, calling the clean method from the ``Job`` and removing other generated files
 
-Note that it should be possible to use the Launcher and a set of Jobs as
-a convenience to run the same commands on various systems, without knowing
-anything about `Test` or `Harness`.
+`Launcher` does not know about `Test` or `Harness`, and it should be possible
+to use `Launcher` and a collection of `Job` objects as a convenience to run the
+same commands on various systems.
 
 Test
 ~~~~
 
 * A ``Job``
-* A name
+* A (unique, mandatory) name
 * A method to verify success
 * An set of string-valued tags
 
