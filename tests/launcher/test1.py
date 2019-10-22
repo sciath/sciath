@@ -11,7 +11,7 @@ def example_1():
     # Example usage
     jA = Job(['echo','random-text-from-example_1'],name='DMDA interpolation')
     jA.setResources(ranks=4,threads=1)
-    job_launcher.submitJob(jA,path='./',walltime=60.0)
+    job_launcher.submitJob(jA,path='./',wallTime=60.0)
     #job_launcher.clean(jA,path='./')
 
 def example_2():
