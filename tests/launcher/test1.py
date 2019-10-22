@@ -10,7 +10,7 @@ def example_1():
 
     # Example usage
     jA = Job(['echo','random-text-from-example_1'],name='DMDA interpolation')
-    jA.setResources(ranks=4,threads=1,mpirankspernode=2)
+    jA.setResources(ranks=4,threads=1)
     job_launcher.submitJob(jA,path='./',walltime=60.0)
     #job_launcher.clean(jA,path='./')
 
@@ -59,11 +59,11 @@ def example_3():
     job_launcher.setVerbosityLevel(1000)
     
     # Example usage
-    #jA.setResources(ranks=4,threads=1,mpirankspernode=2)
+    #jA.setResources(ranks=4,threads=1)
     job_launcher.submitJob(
                            Job( ['echo','random-text-from-example_3'],
                                 name='DMDA interpolation',
-                                mpiranks=14,threads=4,mpirankspernode=2,wallTime=0.5),
+                                mpiranks=14,threads=4,wallTime=0.5),
                            path = './',
                            wallTime = 6.0)
 
