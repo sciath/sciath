@@ -24,22 +24,41 @@ class Job:
         self.cmd      = cmd # command which will be executed via a system call to run this job
         # Design note: we use a dict to enable developers to easily add support for different resource requests
         self.resources = dict()
-        self.resources.update({"mpiranks":1}) # mpi parallel resource data
-        self.resources.update({"threads":1}) # thread parallel (e.g. OMP) resource data
+        self.setResources(**kwargs) # looking in kwargs for any resources
+        if len(self.resources) == 0: # set defaults
+            self.resources.update({"mpiranks":1}) # mpi parallel resource data
+            self.resources.update({"threads":1}) # thread parallel (e.g. OMP) resource data
+            self.resources.update({"idlempirankspernode":0}) # idle ranks-per-compute-node resource data
 
         # optional info not needing a setter (e.g. they are not special enough)
         self.name              = None
         self.description       = None
         self.exit_code_success = 0
+        self.wall_time         = None # 10 secs (in minutes)
 
         for key, value in kwargs.items():
             if key == 'name':
-                self.name = value
+                self.name = value.replace(' ','_')
             if key == 'description':
                 self.description = value
             if key == 'exitCode':
                 self.exit_code_success = int(value)
+            if key == 'wallTime':
+                try:
+                    self.wall_time = float(value)
+                except:
+                  print('[SciATH error]: Cannot convert wallTime \"' + str(value) + '\" to float.')
+                  sys.exit(1)
 
+
+    def clean(self):
+        """
+        Responsible for deleting any data Job creates.
+        User should over-ride this method with their own deletion rules.
+        Care will have to be taken with paths as the Job may get executed from a
+        different directory to where the executable lives.
+        """
+        return
 
     def getMaxResources(self):
         """
@@ -89,24 +108,36 @@ class Job:
         threads_k = [ 'threads', 'ompthreads' ]
         threads_set = 0
 
+        idlempirankspernode_k = [ 'idle-ranks-per-node', 'idle-mpiranks-per-node', 'idle-ranks_per_node', 'idle_mpiranks_per_node','idlerankspernode', 'idlempirankspernode' ]
+        idlempirankspernode_set = 0
+
         # Others resources go here
 
+        # Perform error checking on non-empty dictionary. This is done to enable this method
+        # silently be called during job.__init__()
         # Join all valid name list and check that the provided keyword is a valid resource name / identifier
-        allValidResourceNames = ranks_k + threads_k
-        for key,value in kwargs.items():
-            if key not in allValidResourceNames:
-                print('[SciATH error]: Unknown resource type \"' + str(key) + '\" was requested.')
-                print('                Choose from the following:',allValidResourceNames)
-                sys.exit(1)
+        if len(self.resources) != 0:
+            allValidResourceNames = ranks_k + threads_k
+            allValidResourceNames += idlempirankspernode_k
+            for key,value in kwargs.items():
+                if key not in allValidResourceNames:
+                    print('[SciATH error]: Unknown resource type \"' + str(key) + '\" was requested.')
+                    print('                Choose from the following:',allValidResourceNames)
+                    sys.exit(1)
 
         for key, value in kwargs.items():
             if key in ranks_k: # look mpi rank keyword identifiers
                 self.resources.update({"mpiranks":int(value)})
                 ranks_set += 1
 
-            if key in threads_k: # look thread keyword identifiers
+            if key in threads_k: # look for thread keyword identifiers
                 self.resources.update({"threads":int(value)})
                 threads_set += 1
+
+            if key in idlempirankspernode_k: # look for idlempirankspernode keyword identifiers
+                self.resources.update({"idlempirankspernode":int(value)})
+                idlempirankspernode_set += 1
+
 
         # Sanity check that only one instance of a valid keyword
         # for a given resource type (e.g. mpi ranks) was provided
@@ -118,6 +149,11 @@ class Job:
         if threads_set > 1:
             print('[SciATH error]: More than one instance of a valid threads keyword was provided to setResources().')
             print('                To set the #threads, choose one of:',threads_k)
+            sys.exit(1)
+
+        if idlempirankspernode_set > 1:
+            print('[SciATH error]: More than one instance of a valid idlempirankspernode keyword was provided to setResources().')
+            print('                To set the #idle-ranks-per-node, choose one of:',idlempirankspernode_k)
             sys.exit(1)
 
 
@@ -258,6 +294,18 @@ class JobSequence(Job):
             cnt += 1
 
 
+    def createJobOrdering(self):
+        """
+        Returns a list of job names in the order they will be executed.
+        """
+        # collect the user defined job list and reverse it (leave self.sequence untouched)
+        jname = []
+        for j in self.sequence:
+            jname.append(j.name)
+        jname.reverse()
+        return jname
+
+
 class JobDAG(Job):
     """
     A SciATH job sequence defined by a directed acyclic graph (DAG) (inherits from Job).
@@ -303,8 +351,8 @@ class JobDAG(Job):
         except:
             print('not found -> inserting name',job.name)
         else:
-            print('[SciATH error] A job with name',job.name,'has already been registered.')
-            sys.exit(0)
+            message = '[SciATH error] A job with name',job.name,'has already been registered.'
+            raise RuntimeError(message)
 
         self.joblist.update({job.name: job})
         self.jobcnt += 1
