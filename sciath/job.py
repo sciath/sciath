@@ -47,8 +47,8 @@ class Job:
                 try:
                     self.wall_time = float(value)
                 except:
-                  print('[SciATH error]: Cannot convert wallTime \"' + str(value) + '\" to float.')
-                  sys.exit(1)
+                    message = '[SciATH error]: Cannot convert wallTime \"' + str(value) + '\" to float.'
+                    raise RuntimeError(message)
 
 
     def clean(self):
@@ -121,9 +121,9 @@ class Job:
             allValidResourceNames += idlempirankspernode_k
             for key,value in kwargs.items():
                 if key not in allValidResourceNames:
-                    print('[SciATH error]: Unknown resource type \"' + str(key) + '\" was requested.')
-                    print('                Choose from the following:',allValidResourceNames)
-                    sys.exit(1)
+                    message  = '[SciATH error]: Unknown resource type \"' + str(key) + '\" was requested.\n'
+                    message += '                Choose from the following: ' + " ".join(allValidResourceNames)
+                    raise RuntimeError(message)
 
         for key, value in kwargs.items():
             if key in ranks_k: # look mpi rank keyword identifiers
@@ -142,19 +142,19 @@ class Job:
         # Sanity check that only one instance of a valid keyword
         # for a given resource type (e.g. mpi ranks) was provided
         if ranks_set > 1:
-            print('[SciATH error]: More than one instance of a valid MPI ranks keyword was provided to setResources().')
-            print('                To set the #mpi ranks, choose one of:',ranks_k)
-            sys.exit(1)
+            message  = '[SciATH error]: More than one instance of a valid MPI ranks keyword was provided to setResources().\n'
+            message += '                To set the #mpi ranks, choose one of: ' + " ".join(ranks_k)
+            raise RuntimeError(message)
 
         if threads_set > 1:
-            print('[SciATH error]: More than one instance of a valid threads keyword was provided to setResources().')
-            print('                To set the #threads, choose one of:',threads_k)
-            sys.exit(1)
+            message   = '[SciATH error]: More than one instance of a valid threads keyword was provided to setResources().\n'
+            message += '                To set the #threads, choose one of: ' + " ".join(threads_k)
+            raise RuntimeError(message)
 
         if idlempirankspernode_set > 1:
-            print('[SciATH error]: More than one instance of a valid idlempirankspernode keyword was provided to setResources().')
-            print('                To set the #idle-ranks-per-node, choose one of:',idlempirankspernode_k)
-            sys.exit(1)
+            message = '[SciATH error]: More than one instance of a valid idlempirankspernode keyword was provided to setResources().\n'
+            message += '                To set the #idle-ranks-per-node, choose one of: ' + " ".join(idlempirankspernode_k)
+            raise RuntimeError(message)
 
 
     def view(self):
@@ -403,11 +403,12 @@ class JobDAG(Job):
         try:
             value = dag[ self.name ]
         except:
-            print('[SciATH error] The root vertex associated with parent job (name =',self.name,').')
-            print('[SciATH error] was not found in the DAG dictionary - the parent name is essential to the DAG definition.')
-            sys.exit(1)
+            message = '[SciATH error] The root vertex associated with parent job (name = ' + self.name + ' ).\n'
+            message += '[SciATH error] was not found in the DAG dictionary - the parent name is essential to the DAG definition.\n'
+            raise RuntimeError(message)
+
         else:
-            print('[pass] The root vertex associated with parent job (name =',self.name,') was found in the DAG.')
+            print('[pass] The root vertex associated with parent job (name = ' + self.name + ' ) was found in the DAG.')
 
         # Check that the key for each vertex is in self.joblist
         for key in dag:
@@ -415,9 +416,9 @@ class JobDAG(Job):
             if key == self.name:
                 continue
             if key not in self.joblist:
-                print('[SciATH error] The DAG key',key,'was not found in the member self.joblist.')
-                print('[SciATH error] Call self.registerJob() to add this key into self.joblist.')
-                sys.exit(1)
+                message = '[SciATH error] The DAG key ' + key + ' was not found in the member self.joblist.\n'
+                message += '[SciATH error] Call self.registerJob() to add this key into self.joblist.\n'
+                raise RuntimeError(message)
 
         print('[pass] All DAG vertices were found in self.joblist.')
         self.dag = dag
