@@ -300,6 +300,7 @@ class JobSequence(Job):
         """
         # collect the user defined job list and reverse it (leave self.sequence untouched)
         jname = []
+        jname.append(self.name)
         for j in self.sequence:
             jname.append(j.name)
         jname.reverse()
