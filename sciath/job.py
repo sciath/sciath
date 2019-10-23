@@ -306,6 +306,14 @@ class JobSequence(Job):
         jname.reverse()
         return jname
 
+    def getJobList(self):
+        jobs = []
+        jobs.append(self)
+        for j in self.sequence:
+          jobs.append(j)
+        jobs.reverse()
+        return jobs
+
 
 class JobDAG(Job):
     """
@@ -541,3 +549,10 @@ class JobDAG(Job):
 
         order = self.__DFS(self.dag,self.name)
         return order
+
+    def getJobList(self):
+        names = self.createJobOrdering()
+        jobs = []
+        for n in names:
+          jobs.append( self.joblist[n] )
+        return jobs
