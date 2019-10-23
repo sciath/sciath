@@ -51,6 +51,47 @@ def formatMPILaunchCommand(mpiLaunch,ranks,corespernode):
         launch = launch.replace("<RANKS_PER_NODE>",str(corespernode))
     return launch.split()
 
+
+# Returns name lists for error-code file (one per job), stdout, stderr
+def _getLaunchStandardOutputFileNames(job):
+    jobnames = []
+    try:
+        jobnames = job.createJobOrdering()
+    except:
+        jobnames.append(job.name)
+
+    errorCodeName = "sciath.job-" +  job.name + ".errorcode"
+    stdoutName = []
+    stderrName = []
+
+    lc_count = len(jobnames)
+    for i in range(0,len(jobnames)):
+        jprefix = "".join(["sciath.depjob-",str(lc_count),'-',jobnames[i]])
+        if lc_count == 1: # we do something special for the last job in a sequence/DAG list
+            jprefix = "sciath.job-" + job.name
+        
+        stdoutName.append( jprefix + ".stdout" )
+        stderrName.append( jprefix + ".stderr" )
+
+        lc_count -= 1
+
+    return errorCodeName, stdoutName, stderrName
+
+def _removeFile(file2rm):
+    safetyMode = True
+    debugMode = False
+    if os.path.isfile(file2rm) :
+        cmd = ['rm',file2rm]
+        if safetyMode == True:
+            cmd = ['rm','-i',file2rm]
+        if debugMode == True:
+            print('  removing file: ',file2rm)
+            print('  ',cmd)
+        else:
+            #ctx = subp.run( cmd ,universal_newlines=True, stdout=subp.PIPE, stderr=subp.PIPE )
+            ecode = subp.call( cmd )
+
+
 def _generateLaunch_PBS(launcher,walltime,output_path,job):
   
     if walltime is None:
@@ -67,7 +108,9 @@ def _generateLaunch_PBS(launcher,walltime,output_path,job):
     ranks_per_node = None
     # TODO: Need logic here to compute the number of ranks per node
 
-    filename = "sciath.job-" + job.name + "-launch.pbs"
+    c_name,o_name,e_name = _getLaunchStandardOutputFileNames(job)
+
+    filename = os.path.join(output_path,"sciath.job-" + job.name + "-launch." + launcher.queueFileExt)
     file = open(filename,"w")
 
     # PBS specifics
@@ -78,8 +121,8 @@ def _generateLaunch_PBS(launcher,walltime,output_path,job):
         file.write("#PBS -A " + accountname + "\n") # account to charge
 
     file.write("#PBS -N \"" + "sciath.job-" + job.name + "\"" + "\n") # jobname
-    file.write("#PBS -o " + "sciath.job-" + job.name + ".stdout" + "\n")
-    file.write("#PBS -e " + "sciath.job-" + job.name + ".stderr" + "\n")
+    file.write("#PBS -o " + os.path.join(output_path,o_name[-1]) + "\n")
+    file.write("#PBS -e " + os.path.join(output_path,e_name[-1]) + "\n")
     
     if queuename:
         file.write("#PBS -q " + queuename + "\n")
@@ -90,9 +133,12 @@ def _generateLaunch_PBS(launcher,walltime,output_path,job):
     # Write out the list of jobs execute commands
     # Dependent jobs have their stdout collected in separate files (one per job)
     # The stdout/stderr for the parent job is collected via the queue system
-    prefix = launcher.createOutputPrefix(job,output_path)
+
+    _removeFile( os.path.join(output_path,c_name) )
+
     command_resource = job.createExecuteCommand()
-    for i in range(0,len(prefix)):
+    njobs = len(command_resource)
+    for i in range(0,njobs):
         j = command_resource[i]
         j_ranks = j[1]["mpiranks"]
         launch = []
@@ -103,12 +149,12 @@ def _generateLaunch_PBS(launcher,walltime,output_path,job):
         else:
             launch.append(j[0])
         
-        if i < len(prefix)-1:
-            file.write(" ".join(launch) + " > " + prefix[i] + ".stdout" + "\n") # launch command
-            file.write("echo $? > " + prefix[i] + ".errorcode" + "\n")
+        if i < njobs-1:
+            file.write(" ".join(launch) + " > " + os.path.join(output_path,o_name[i]) + "\n") # launch command
+            file.write("echo $? >> " + os.path.join(output_path,c_name) + "\n")
     # Command for the parent job
     file.write(" ".join(launch) + "\n") # launch command
-    file.write("echo $? > " + prefix[-1] + ".errorcode" + "\n")
+    file.write("echo $? >> " + os.path.join(output_path,c_name) + "\n")
     file.write("\n")
 
     file.close()
@@ -130,7 +176,9 @@ def _generateLaunch_LSF(launcher,rusage,walltime,output_path,job):
     ranks_per_node = None
     # TODO: Need logic here to compute the number of ranks per node
     
-    filename = "sciath.job-" + job.name + "-launch.lsf"
+    c_name,o_name,e_name = _getLaunchStandardOutputFileNames(job)
+  
+    filename = os.path.join(output_path,"sciath.job-" + job.name + "-launch." + launcher.queueFileExt)
     file = open(filename,"w")
 
     # LSF specifics
@@ -141,8 +189,8 @@ def _generateLaunch_LSF(launcher,rusage,walltime,output_path,job):
         file.write("#BSUB -G " + accountname + "\n")
 
     file.write("#BSUB -J " + "sciath.job-" + job.name + "\n") # jobname
-    file.write("#BSUB -o " + "sciath.job-" + job.name + ".stdout\n") # jobname.stdout
-    file.write("#BSUB -e " + "sciath.job-" + job.name + ".stderr\n") # jobname.stderr
+    file.write("#BSUB -o " + os.path.join(output_path,o_name[-1]) + "\n") # jobname.stdout
+    file.write("#BSUB -e " + os.path.join(output_path,e_name[-1]) + "\n") # jobname.stderr
 
     if queuename:
         file.write("#BSUB -q " + queuename + "\n")
@@ -158,9 +206,12 @@ def _generateLaunch_LSF(launcher,rusage,walltime,output_path,job):
     # Write out the list of jobs execute commands
     # Dependent jobs have their stdout collected in separate files (one per job)
     # The stdout/stderr for the parent job is collected via the queue system
-    prefix = launcher.createOutputPrefix(job,output_path)
+
+    _removeFile( os.path.join(output_path,c_name) )
+  
     command_resource = job.createExecuteCommand()
-    for i in range(0,len(prefix)):
+    njobs = len(command_resource)
+    for i in range(0,njobs):
         j = command_resource[i]
         j_ranks = j[1]["mpiranks"]
         launch = []
@@ -171,12 +222,12 @@ def _generateLaunch_LSF(launcher,rusage,walltime,output_path,job):
         else:
             launch.append(j[0])
         
-        if i < len(prefix)-1:
-            file.write(" ".join(launch) + " > " + prefix[i] + ".stdout" + "\n") # launch command
-            file.write("echo $? > " + prefix[i] + ".errorcode" + "\n")
+        if i < njobs-1:
+            file.write(" ".join(launch) + " > " + os.path.join(output_path,o_name[i]) + "\n") # launch command
+            file.write("echo $? >> " + os.path.join(output_path,c_name) + "\n")
     # Command for the parent job
     file.write(" ".join(launch) + "\n") # launch command
-    file.write("echo $? > " + prefix[-1] + ".errorcode" + "\n")
+    file.write("echo $? >> " + os.path.join(output_path,c_name) + "\n")
     file.write("\n")
     
     file.close()
@@ -201,7 +252,9 @@ def _generateLaunch_SLURM(launcher,walltime,output_path,job):
     ranks_per_node = None
     # TODO: Need logic here to compute the number of ranks per node
 
-    filename = "sciath.job-" + job.name + "-launch.slurm"
+    c_name,o_name,e_name = _getLaunchStandardOutputFileNames(job)
+  
+    filename = os.path.join(output_path,"sciath.job-" + job.name + "-launch." + launcher.queueFileExt)
     file = open(filename,"w")
 
     # SLURM specifics
@@ -212,8 +265,8 @@ def _generateLaunch_SLURM(launcher,walltime,output_path,job):
         file.write("#SBATCH --account=" + accountname + "\n") # account to charge
 
     file.write("#SBATCH --job-name=\"" + "sciath.job-" + job.name + "\"" + "\n") # jobname
-    file.write("#SBATCH --output=" + "sciath.job-" + job.name + ".stdout" + "\n") # jobname.stdout
-    file.write("#SBATCH --error=" + "sciath.job-" + job.name + ".stderr" + "\n") # jobname.stderr
+    file.write("#SBATCH --output=" + os.path.join(output_path,o_name[-1]) + "\n") # jobname.stdout
+    file.write("#SBATCH --error=" + os.path.join(output_path,e_name[-1]) + "\n") # jobname.stderr
 
     if queuename:
         file.write("#SBATCH --partition=" + queuename + "\n")
@@ -232,9 +285,12 @@ def _generateLaunch_SLURM(launcher,walltime,output_path,job):
     # Write out the list of jobs execute commands
     # Dependent jobs have their stdout collected in separate files (one per job)
     # The stdout/stderr for the parent job is collected via the queue system
-    prefix = launcher.createOutputPrefix(job,output_path)
+
+    _removeFile( os.path.join(output_path,c_name) )
+  
     command_resource = job.createExecuteCommand()
-    for i in range(0,len(prefix)):
+    njobs = len(command_resource)
+    for i in range(0,njobs):
         j = command_resource[i]
         j_ranks = j[1]["mpiranks"]
         launch = []
@@ -244,13 +300,13 @@ def _generateLaunch_SLURM(launcher,walltime,output_path,job):
                 launch.append(c)
         else:
             launch.append(j[0])
-
-        if i < len(prefix)-1:
-            file.write(" ".join(launch) + " > " + prefix[i] + ".stdout" + "\n") # launch command
-            file.write("echo $? > " + prefix[i] + ".errorcode" + "\n")
+        
+        if i < njobs-1:
+            file.write(" ".join(launch) + " > " + os.path.join(output_path,o_name[i]) + "\n") # launch command
+            file.write("echo $? >> " + os.path.join(output_path,c_name) + "\n")
     # Command for the parent job
     file.write(" ".join(launch) + "\n") # launch command
-    file.write("echo $? > " + prefix[-1] + ".errorcode" + "\n")
+    file.write("echo $? >> " + os.path.join(output_path,c_name) + "\n")
     file.write("\n")
 
     file.close()
@@ -324,26 +380,31 @@ class Launcher:
             self.queuingSystemType = 'pbs'
             self.jobSubmissionCommand = 'qsub '
             self.useBatch = True
+            self.queueFileExt = 'pbs'
 
         elif type in ['LSF','lsf']:
             self.queuingSystemType = 'lsf'
             self.jobSubmissionCommand = 'bsub < '
             self.useBatch = True
+            self.queueFileExt = 'lsf'
 
         elif type in ['SLURM','slurm']:
             self.queuingSystemType = 'slurm'
             self.jobSubmissionCommand = 'sbatch '
             self.useBatch = True
+            self.queueFileExt = 'slurm'
 
         elif type in ['LoadLeveler','load_leveler','loadleveler','llq']:
             self.queuingSystemType = 'load_leveler'
             self.jobSubmissionCommand = 'llsubmit '
             self.useBatch = True
+            self.queueFileExt = 'llq'
             raise ValueError('[SciATH] Unsupported: LoadLeveler needs to be updated')
 
         elif type in ['none', 'None', 'local']:
             self.queuingSystemType = 'none'
             self.jobSubmissionCommand = ''
+            self.queueFileExt = None
 
         else:
             raise RuntimeError('[SciATH] Unknown or unsupported batch queuing system "' + type + '" specified')
@@ -505,27 +566,6 @@ class Launcher:
         print('Created submission file:',filename)
         return filename
 
-
-    def createOutputPrefix(self,job,output_path):
-        jobnames = []
-        try:
-            jobnames = job.createJobOrdering()
-        except:
-            jobnames.append(job.name)
-      
-        lc_count = len(jobnames)
-        for i in range(0,len(jobnames)):
-            job_output_prefix = "".join(['sciath.depjob',str(lc_count),'-',jobnames[i]])
-            if lc_count == 1: # we do something special for the last job in a sequence/DAG list
-                job_output_prefix = 'sciath.job-' + job.name
-                
-            location = os.path.join(output_path,job_output_prefix)
-            jobnames[i] = location
-            lc_count -= 1
-        
-        return jobnames
-
-
     def submitJob(self,job,**kwargs):
       
         output_path = ''
@@ -585,8 +625,9 @@ class Launcher:
                     print(launch_text)
                     print('  [cmd] ',lc)
         
-            prefix = self.createOutputPrefix(job,output_path)
+            c_name,o_name,e_name = _getLaunchStandardOutputFileNames(job)
 
+            file_ecode = open( os.path.join(output_path,c_name) ,'w')
             lc_count = len(launchCmd)
             for i in range(0,lc_count):
 
@@ -596,15 +637,14 @@ class Launcher:
 
                 # New style, using subprocess.
                 # python-3 only
-                file_e = open(prefix[i] + '.stderr','w')
-                file_o = open(prefix[i] + '.stdout','w')
+                file_e = open( os.path.join(output_path,e_name[i]), 'w')
+                file_o = open( os.path.join(output_path,o_name[i]), 'w')
                 ctx = subp.run( launchCmd[i] ,universal_newlines=True,stdout=file_o,stderr=file_e)
                 file_o.close()
                 file_e.close()
-                file_e = open(prefix[i] + '.errorcode','w')
-                file_e.write(str(ctx.returncode)) # exit code
-                file_e.close()
+                file_ecode.write(str(ctx.returncode)+"\n") # exit code
                 setBlockingIOStdout()
+            file_ecode.close()
 
         else:
     
@@ -630,16 +670,16 @@ class Launcher:
         except:
             pass
 
-        # Create prefix for job (and any dependent jobs)
-        prefix = self.createOutputPrefix(job,output_path)
-        for outfile in prefix:
-            extensions = [".errorcode", ".stdout",".stderr","-launch.lsf","-launch.slurm","-launch.pbs","-launch.llq"]
-            for ext in extensions:
-                f2rm = "".join([outfile,ext])
-                if os.path.isfile(f2rm) :
-                    if self.verbosity_level > 0:
-                        print('  removing file: ',f2rm)
-                    os.remove(f2rm)
+        c_name,o_name,e_name = _getLaunchStandardOutputFileNames(job)
+        _removeFile( os.path.join(output_path,c_name) )
+        for f in o_name:
+            _removeFile( os.path.join(output_path,f) )
+        for f in e_name:
+            _removeFile( os.path.join(output_path,f) )
+        
+        if self.queueFileExt is not None:
+            filename = "sciath.job-" + job.name + "-launch." + self.queueFileExt
+            _removeFile( os.path.join(output_path,filename) )
 
         return
         
