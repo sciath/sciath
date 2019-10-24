@@ -43,7 +43,6 @@ Job
 
 * A command to be run, that is a string containing an executable and arguments. Note that any relative paths will be interpreted relative to where the command is run.
 * A set of "resources" required. These are system-agnostic details like the number of (MPI) ranks or (OpenMP) threads.
-* Information on how to interpret an exit code as indicating a successful run (note that in the case of running other testing programs, "error" exit codes may indicate that tests failed, not that the program didn't run as intended)
 * An optional amount of time required to run
 * An optional user-provided method to clean up after the command, assuming it has run once from the same path
 
@@ -60,15 +59,8 @@ Launcher
 
 Includes methods to operate on a combination of a ``Job`` and a path:
 
-* Run the job from that path. Depending on whether this is a batch system,
-
-  * blocking: blocks, function returns error code
-  * non-blocking: returns after launching
-
+* Run the job from that path. If not on a batch system, blocks until the job completes.
 * Check the status of the job as run from that path
-
-  * includes error code for batch jobs
-
 * Clean up after a job, calling the clean method from the ``Job`` and removing other generated files
 
 ``Launcher`` does not know about ``Test`` or ``Harness``, and it should be possible
