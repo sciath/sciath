@@ -274,8 +274,6 @@ class Launcher:
         else:
             raise RuntimeError('[SciATH] Unknown or unsupported batch queuing system "' + type + '" specified')
 
-    def setQueueName(self,name):
-        self.queueName = name
 
     def view(self):
         print('SciATH: Batch queueing system configuration [',self.confFileName,']')
