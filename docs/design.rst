@@ -44,7 +44,7 @@ Job
 * A command to be run, that is a string containing an executable and arguments. Note that any relative paths will be interpreted relative to where the command is run.
 * A set of "resources" required. These are system-agnostic details like the number of (MPI) ranks or (OpenMP) threads.
 * An optional amount of time required to run
-* An optional user-provided method to clean up after the command, assuming it has run once from the same path
+* An optional user-provided method to clean up after the command, relative to a provided path
 
 Note that this class knows nothing about where it will be run from or how many times (possibly simultaneously).
 Indeed, it is mostly just a collection of data.
@@ -61,7 +61,7 @@ Includes methods to operate on a combination of a ``Job`` and a path:
 
 * Run the job from that path. If not on a batch system, blocks until the job completes.
 * Check the status of the job as run from that path
-* Clean up after a job, calling the clean method from the ``Job`` and removing other generated files
+* Clean up after a job, calling the clean method from the ``Job`` and removing configuration-specific generated files
 
 ``Launcher`` does not know about ``Test`` or ``Harness``, and it should be possible
 to use ``Launcher`` and a collection of ``Job`` objects as a convenience to run the
@@ -70,8 +70,10 @@ same commands on various systems.
 Test
 ~~~~
 
+Data include:
+
 * A ``Job``
-* A (unique, mandatory) name
+* A (mandatory) name
 * An instance of a subclass of ``TestVerifier``, to evaluate test success
 * A set of string-valued tags
 
@@ -88,3 +90,4 @@ or via direct invocation of the ``sciath`` module.
 * Tools for running and verifying a test suite
 * Can work with groups of tests defined by tags or resources
 * Exclusive location of information about where to launch ``Jobs`` from, passed to included ``Launcher``
+* Manages sandboxing: defines, creates, and cleans subdirectories used to conduct tests
