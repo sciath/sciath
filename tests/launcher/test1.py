@@ -11,7 +11,7 @@ def example_1():
     # Example usage
     jA = Job(['echo','random-text-from-example_1'],name='DMDA interpolation')
     jA.setResources(ranks=4,threads=1)
-    job_launcher.submitJob(jA,path='./',wallTime=60.0)
+    job_launcher.submitJob(jA,path='./')
     #job_launcher.clean(jA,path='./')
 
 def example_2():
@@ -50,7 +50,7 @@ def example_2():
     job_launcher = Launcher()
     job_launcher.setVerbosityLevel(1)
 
-    job_launcher.submitJob(jA,path='./',wallTime=0.1)
+    job_launcher.submitJob(jA,path='./')
     #job_launcher.clean(jA,path='./')
 
 def example_3():
@@ -63,9 +63,8 @@ def example_3():
     job_launcher.submitJob(
                            Job( ['echo','random-text-from-example_3'],
                                 name='DMDA interpolation',
-                                mpiranks=14,threads=4,wallTime=0.5),
-                           path = './',
-                           wallTime = 6.0)
+                                mpiranks=14,threads=4,wall_time=0.5),
+                           path = './')
 
 
 

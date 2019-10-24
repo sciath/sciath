@@ -34,7 +34,7 @@ class Job:
         self.name              = None
         self.description       = None
         self.exit_code_success = 0
-        self.wall_time         = None # 10 secs (in minutes)
+        self.wall_time         = 10.0/60.0 # 10 secs (in minutes)
 
         for key, value in kwargs.items():
             if key == 'name':
@@ -43,11 +43,11 @@ class Job:
                 self.description = value
             if key == 'exitCode':
                 self.exit_code_success = int(value)
-            if key == 'wallTime':
+            if key == 'wall_time':
                 try:
                     self.wall_time = float(value)
                 except:
-                    message = '[SciATH error]: Cannot convert wallTime \"' + str(value) + '\" to float.'
+                    message = '[SciATH error]: Cannot convert wall_time \"' + str(value) + '\" to float.'
                     raise RuntimeError(message)
 
 
@@ -82,6 +82,12 @@ class Job:
         """
 
         return self.resources
+
+    def getMaxWallTime(self):
+        """
+        Returns a floating point number which is the sum of all wall_time values.
+        """
+        return self.wall_time
 
     def createExecuteCommand(self):
         """
@@ -266,6 +272,17 @@ class JobSequence(Job):
                     max.update({key:value})
 
         return max
+
+    # overload
+    def getMaxWallTime(self):
+        """
+        Returns a floating point number which is the sum of all wall_time values associated with JobSequence
+        """
+        sum_wt = self.wall_time
+        for j in self.sequence:
+            sum_wt += j.wall_time
+        
+        return sum_wt
 
 
     # overload
@@ -514,6 +531,18 @@ class JobDAG(Job):
 
         return max
 
+    # overload
+    def getMaxWallTime(self):
+        """
+        Returns a floating point number which is the sum of all wall_time values associated with JobDAG
+        """
+        jobs = self.getJobList()
+        sum_wt = 0.0
+        for j in jobs:
+            sum_wt += j.wall_time
+        
+        return sum_wt
+
 
     # overload
     def view(self):
@@ -546,13 +575,13 @@ class JobDAG(Job):
         """
         Returns a list of job names in the order they will be executed.
         """
-
         order = self.__DFS(self.dag,self.name)
         return order
 
     def getJobList(self):
         names = self.createJobOrdering()
         jobs = []
-        for n in names:
-          jobs.append( self.joblist[n] )
+        for i in range(0,len(names)-1):
+          jobs.append( self.joblist[ names[i] ] )
+        jobs.append( self )
         return jobs

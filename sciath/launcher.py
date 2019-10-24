@@ -572,11 +572,6 @@ class Launcher:
         for key, value in kwargs.items():
             if key == 'path':
                 output_path = value
-        walltime = None
-        walltime = job.wall_time
-        for key, value in kwargs.items():
-            if key == 'wallTime':
-              walltime = value
 
         if job.name == None:
             raise ValueError('[SciATH] Unsupported: Job cannot be submitted without it having a name')
@@ -647,7 +642,9 @@ class Launcher:
             file_ecode.close()
 
         else:
-    
+            walltime = 0.0
+            walltime = job.getMaxWallTime()
+
             launchfile = self.__createJobSubmissionFile(job,walltime,output_path)
             launchCmd = [self.jobSubmissionCommand,launchfile]
             if self.verbosity_level > 0:
