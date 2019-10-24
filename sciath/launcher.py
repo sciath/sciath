@@ -276,6 +276,9 @@ class Launcher:
             raise RuntimeError('[SciATH] Unknown or unsupported batch queuing system "' + type + '" specified')
 
     def setMaxRanksPerNode(self,n):
+        """ Store an int-valued maximum number of MPI ranks per node """
+        if not isinstance(n,int) or n <= 0:
+            raise ValueError("Maximum ranks per node must be a positive int")
         self.maxRanksPerNode = n
 
     def view(self):
@@ -347,8 +350,17 @@ class Launcher:
             self.setQueueName(v)
 
             prompt = '[6] Maximum number of MPI ranks per compute node (optional - hit enter to skip): '
-            v = py23input(prompt)
-            self.setMaxRanksPerNode(v)
+            done = False
+            while not done:
+                v = py23input(prompt)
+                if len(v) == 0:
+                    done = True
+                else:
+                    try:
+                        self.setMaxRanksPerNode(int(v))
+                        done = True
+                    except ValueError:
+                        print('Enter a positive integer (or nothing, to skip)')
 
         self.writeDefinition()
         print('\n')
@@ -376,7 +388,8 @@ class Launcher:
             file.write('accountName=' + self.accountName + '\n')
             file.write('batchConstraint=' + self.batchConstraint + '\n')
             file.write('queueName=' + self.queueName + '\n')
-            file.write('maxRanksPerNode=' + self.maxRanksPerNode + '\n')
+            if self.maxRanksPerNode:
+                file.write('maxRanksPerNode=' + str(self.maxRanksPerNode) + '\n')
         file.close()
 
     def loadDefinition(self):
@@ -406,7 +419,7 @@ class Launcher:
                     if key == 'accountName' :
                         self.setHPCAccountName(value)
                     if key == 'maxRanksPerNode' :
-                        self.setMaxRanksPerNode(value)
+                        self.setMaxRanksPerNode(int(value))
             file.close()
         except:
             raise SciATHLoadException('[SciATH] You must execute configure(), and or writeDefinition() first')
