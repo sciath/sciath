@@ -680,23 +680,3 @@ class Launcher:
 
         return
         
-        # TODO: Need to gut this garbage at a later date
-        outfile = os.path.join(test.output_path,test.output_file)
-        if os.path.isfile(outfile) :
-            os.remove(outfile)
-        if test.comparison_file != outfile and os.path.isfile(test.comparison_file) :
-            foundInLocalTree = False
-            cwd = os.getcwd()
-            for (root, dirs, files) in os.walk(cwd) :
-                for f in files :
-                    if os.path.abspath(test.comparison_file) == os.path.abspath(os.path.join(root,f)) :
-                        foundInLocalTree = True
-                        break
-                if foundInLocalTree :
-                    break
-            if foundInLocalTree :
-                os.remove(test.comparison_file)
-            else :
-                message = "Refusing to remove output file " + test.comparison_file + " since it does not live in the local subtree. If you really wanted to compare with this file, please delete it yourself to proceed"
-                raise RuntimeError(message)
-
