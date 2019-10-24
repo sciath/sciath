@@ -80,7 +80,7 @@ Test
 
 * A ``Job``
 * A (unique, mandatory) name
-* A method to verify success
+* An instance of a subclass of ``TestVerifier``, to evaluate test success
 * A set of string-valued tags
 
 Harness
