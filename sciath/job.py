@@ -327,7 +327,7 @@ class JobSequence(Job):
         jobs = []
         jobs.append(self)
         for j in self.sequence:
-          jobs.append(j)
+            jobs.append(j)
         jobs.reverse()
         return jobs
 
@@ -604,6 +604,6 @@ class JobDAG(Job):
         names = self.createJobOrdering()
         jobs = []
         for i in range(0,len(names)-1): # skip the last job as this is NOT stored in self.joblist
-          jobs.append( self.joblist[ names[i] ] )
+            jobs.append( self.joblist[ names[i] ] )
         jobs.append( self )
         return jobs
