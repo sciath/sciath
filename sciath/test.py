@@ -41,10 +41,10 @@ class Test:
         return self.verifier.getStatus()
 
     def print(self):
-      rep = [self.name] + self.getStatus()
-      print(rep)
-      for l in self.getReport():
-        print(l)
+        rep = [self.name] + self.getStatus()
+        print(rep)
+        for l in self.getReport():
+            print(l)
 
-
-
+    def verify(self):
+        self.verifier.execute()
