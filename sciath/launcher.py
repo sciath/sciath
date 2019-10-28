@@ -4,7 +4,6 @@ import sys
 import shutil
 import fcntl
 import subprocess as subp
-import sciath.test
 from   sciath import sciath_colors
 from   sciath import getVersion
 from   sciath._io import py23input
