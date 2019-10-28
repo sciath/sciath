@@ -419,9 +419,10 @@ class JobDAG(Job):
           The corresponding DAG using a dictionary is given by
             dag = { 'A': ( 'B' ),
                     'B': ( 'C' , 'D' ),
+                    'C': ([None]),
                     'D': ( 'E' , 'F' ),
-                    'E': (None),
-                    'F': (None)         }
+                    'E': ([None]),
+                    'F': ([None])         }
           Note that in the above we used tuples (e.g. ()) to define the neighbour vertices.
         """
 
@@ -434,19 +435,36 @@ class JobDAG(Job):
             raise RuntimeError(message)
 
         else:
-            print('[pass] The root vertex associated with parent job (name = ' + self.name + ' ) was found in the DAG.')
+            print('[pass] The root vertex associated with parent job (name = ' + self.name + ') was found in the DAG.')
 
         # Check that the key for each vertex is in self.joblist
+        check1 = True
+        message = '\n'
         for key in dag:
             # skip parent
             if key == self.name:
                 continue
             if key not in self.joblist:
-                message = '[SciATH error] The DAG key ' + key + ' was not found in the member self.joblist.\n'
+                message += '[SciATH error] The DAG key ' + key + ' was not found in the member self.joblist.\n'
                 message += '[SciATH error] Call self.registerJob() to add this key into self.joblist.\n'
-                raise RuntimeError(message)
+                check1 = False
+        if check1 == False:
+              raise RuntimeError(message)
+        print('[pass] All DAG vertices were found in the registered job list.')
 
-        print('[pass] All DAG vertices were found in self.joblist.')
+        # Check that every member in self.joblist is a key in the dag
+        check2 = True
+        message = '\n'
+        for jobname in self.joblist:
+            try:
+                value = dag[ jobname ]
+            except:
+                message += '[SciATH error] A vertex with key \"' + jobname + '\" was not found in the user-provided DAG.\n'
+                check2 = False
+        if check2 == False:
+            raise RuntimeError(message)
+        print('[pass] All registered jobs were associated with a DAG vertex.')
+
         self.dag = dag
 
 
