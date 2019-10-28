@@ -280,7 +280,7 @@ class JobSequence(Job):
         """
         sum_wt = self.wall_time
         for j in self.sequence:
-            sum_wt += j.wall_time
+            sum_wt += j.getMaxWallTime()
         
         return sum_wt
 
@@ -555,9 +555,10 @@ class JobDAG(Job):
         Returns a floating point number which is the sum of all wall_time values associated with JobDAG
         """
         jobs = self.getJobList()
-        sum_wt = 0.0
+        sum_wt = self.wall_time
         for j in jobs:
-            sum_wt += j.wall_time
+            if j != self:
+                sum_wt += j.getMaxWallTime()
         
         return sum_wt
 

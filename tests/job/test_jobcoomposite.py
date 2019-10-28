@@ -29,7 +29,9 @@ def create_composite_seq():
     print('Execute command + resources for jA')
     for i in er:
         print('  cmd =',i[0],'res =',i[1])
-
+    wt2 = s2.getMaxWallTime()
+    wt1 = s1.getMaxWallTime()
+    print(wt1,wt2)
 
 # DAG - Sequence
 def create_dag_sequence():
@@ -58,6 +60,11 @@ def create_dag_sequence():
     print('Execute command + resources for jA')
     for i in er:
         print('  cmd =',i[0],'res =',i[1])
+
+    wt3 = jdb.getMaxWallTime()
+    wt2 = jdd.getMaxWallTime()
+    wt1 = jA.getMaxWallTime()
+    print(wt1,wt2,wt3)
 
 
 #create_composite_seq()
