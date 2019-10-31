@@ -14,10 +14,6 @@ class Verifier:
       self.test = test
       self.job = test.job
       self.c_name, self.o_name, self.e_name = _getLaunchStandardOutputFileNames(self.job)
-      self.output_path = ''
-      for key, value in kwargs.items():
-          if key == 'path':
-              self.output_path = value
       self.status = None
       self.report = []
 
@@ -35,22 +31,22 @@ class Verifier:
     def getStatus(self):
         return self.status
 
-    def execute(self):
-        # fetch file, look at return code, check it matches that expected
-        
+    def execute(self,path):
+        """ Relative to a given path, fetch file, look at return code, check it matches that expected"""
+
         self.status = None
         self.report = []
-        
-        errorfile = os.path.join(self.output_path,self.c_name)
+
+        errorfile = os.path.join(path,self.c_name)
         if not os.path.isfile(errorfile) :
             self.report.append("[ReturnCodeDiff] File (" + errorfile + ") not found")
             self.status = sciath_test_status.job_not_run
             return
-        
+
         with open(errorfile, 'r') as f:
             data = f.readlines()
         data = np.asarray(data,dtype=int)
-        
+
         # special
         if not isinstance(self.job,JobSequence) and not isinstance(self.job,JobDAG):
             if self.job.exit_code_success != data[0]:
@@ -59,10 +55,10 @@ class Verifier:
             else:
                 self.status = sciath_test_status.ok
                 return
-        
+
         else:
             jobs = self.job.getJobList()
-            
+
             if len(data) != len(jobs):
                 self.report.append("[ReturnCodeDiff] Mismatch in number of error codes found and jobs run. This should never happen.")
                 exret = np.zeros(len(jobs))
@@ -75,7 +71,7 @@ class Verifier:
                 self.report.append("[ReturnCodeDiff] Output file: " + errorfile)
                 self.status = sciath_test_status.not_ok
                 return
-            
+
             L = len(data)
             anyChildrenFailed = False
             i = 0
@@ -100,8 +96,8 @@ class Verifier:
                 msg = "[ReturnCodeDiff] Output return codes  : " + str(data)
                 self.report.append(msg)
                 self.report.append("[ReturnCodeDiff] Output file: " + errorfile)
-          
+
             self.status = s
-            
+
         return
 

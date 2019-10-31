@@ -16,11 +16,11 @@ job_launcher.setVerbosityLevel(VERBOSITY)
 def test1_ud(): # result: pass
     cmd = ['sh' , 'write_test1_ud.sh' ]
     
-    t = Test( Job(cmd), 'Test_1_ud', path = OUTPUT_PATH )
+    t = Test( Job(cmd), 'Test_1_ud')
     print(t.output_path)
     t.verifier = VerifierUnixDiff(t, "./expected/t1.expected")
 
-    job_launcher.submitJob( t.job, path = t.output_path )
+    job_launcher.submitJob( t.job, path = OUTPUT_PATH )
     t.verify()
     t.print()
     return t
@@ -28,10 +28,10 @@ def test1_ud(): # result: pass
 def test2_ud(): # result: fail
     cmd = ['sh' , 'write_test2_ud.sh' ]
     
-    t = Test( Job(cmd), 'Test_2_ud', path = OUTPUT_PATH )
+    t = Test( Job(cmd), 'Test_2_ud' )
     t.verifier = VerifierUnixDiff(t, "./expected/t1.expected" )
     
-    job_launcher.submitJob( t.job, path = t.output_path )
+    job_launcher.submitJob( t.job, path = OUTPUT_PATH )
     t.verify()
     t.print()
     return t
@@ -51,6 +51,6 @@ def main():
 
     tests = [t1_ud,t2_ud]
     for t in tests:
-        job_launcher.clean(t.job, path = t.output_path)
+        job_launcher.clean(t.job, path = OUTPUT_PATH)
 
 main()

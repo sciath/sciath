@@ -9,24 +9,18 @@ import sciath._subprocess as subp
 from sciath.launcher import _getLaunchStandardOutputFileNames
 
 
-
 class Test:
     def __init__(self,job,name,**kwargs):
         self.job = job
-        self.output_path = ''
         self.name = name
 
         for key, value in kwargs.items():
-            if key == 'path':
-                self.output_path = value
-
             if key == 'description':
                 self.description = value
 
         if self.name is None:
             message = '[SciATH error] Test constructor requires a valid name is provided.'
             raise RuntimeError(message)
-
 
         # Overide job name. Since test requires a name, and launcher requires a job to have a name,
         # this overide ensures test.job will go through the launcher without error.
@@ -36,7 +30,7 @@ class Test:
 
     def getReport(self):
         return self.verifier.getReport()
-    
+
     def getStatus(self):
         return self.verifier.getStatus()
 
@@ -46,5 +40,5 @@ class Test:
         for l in self.getReport():
             print(l)
 
-    def verify(self):
-        self.verifier.execute()
+    def verify(self,path):
+        self.verifier.execute(path)
