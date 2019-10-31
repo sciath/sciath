@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 import sciath._subprocess as subp
 
 def example_1():

@@ -47,6 +47,26 @@ def JobDAGTest():
     t.setUseSandbox()
     return t
 
+def LauncherTest1():
+    t = Test('LauncherTest1',1, [ 'cp '  + abs_path('./launcher/test_conf') + ' ' + 'SciATHBatchQueuingSystem.conf', 'python ' + abs_path('./launcher/test1.py') ], abs_path('launcher/test1.expected'))
+    t.setVerifyMethod(lambda t: t.compareUnixDiff())
+    t.setUseSandbox()
+    return t
+
+def LauncherTest2():
+    t = Test('LauncherTest2',1,'python ' + abs_path('./launcher/test2.py'),abs_path('launcher/test2.expected'))
+    t.setVerifyMethod(lambda t: t.compareUnixDiff())
+    t.setUseSandbox()
+    return t
+
+def TestTest1():
+    t = Test('TestTest1',1, [ 'cp -r ' + abs_path('./test/expected/') + ' expected','cp '  + abs_path('./test/test_conf') + ' ' + 'SciATHBatchQueuingSystem.conf', 'python ' + abs_path('./test/unittest_ex1.py') ], abs_path('test/unittest_ex1.expected'))
+    t.setVerifyMethod(lambda t: t.compareUnixDiff())
+    t.setUseSandbox()
+    return t
+
+# Missing: test/unittest_ex2.py testing
+
 def main():
     print('SciATH Self-tests')
     print('Testing with version',getStableVersion(),'from',stablePackage.__file__)
@@ -55,6 +75,9 @@ def main():
         JobSequenceTest(),
         JobDAGTest(),
         JobCompositeTest(),
+        LauncherTest1(),
+        LauncherTest2(),
+        TestTest1(),
         ])
     harness.execute()
     harness.verify()

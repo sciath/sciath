@@ -1,0 +1,12 @@
+++++++++ Launcher example 2 (DAG with dependencies define by a non-trival graph) ++++++++
+not found -> inserting name b
+not found -> inserting name c
+not found -> inserting name d
+not found -> inserting name e
+not found -> inserting name f
+not found -> inserting name g
+not found -> inserting name h
+[pass] The root vertex associated with parent job (name = jobA) was found in the DAG.
+[pass] All DAG vertices were found in the registered job list.
+[pass] All registered jobs were associated with a DAG vertex.
+[Failed to launch test "jobA" as test uses > 1 MPI ranks and no MPI launcher was provided]
