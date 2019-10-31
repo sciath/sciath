@@ -649,8 +649,10 @@ class Launcher:
             if self.verbosity_level > 0:
                 print(sciath_colors.SUBHEADER + '[Executing ' + job.name + ']' + sciath_colors.ENDC)
                 print('  [cmd] ',launchCmd)
+            # TODO launch with subp?
             #ctx = subp.run( launchCmd,universal_newlines=True,stdout=subp.PIPE,stderr=subp.PIPE )
-            #setBlockingIOStdout()
+            os.system(' '.join(launchCmd))
+            setBlockingIOStdout()
 
 
     def clean(self,job,**kwargs):
