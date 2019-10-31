@@ -6,24 +6,25 @@ not found -> inserting name e
 not found -> inserting name f
 not found -> inserting name g
 not found -> inserting name h
-[pass] The root vertex associated with parent job (name = jobA ) was found in the DAG.
-[pass] All DAG vertices were found in self.joblist.
+[pass] The root vertex associated with parent job (name = jobA) was found in the DAG.
+[pass] All DAG vertices were found in the registered job list.
+[pass] All registered jobs were associated with a DAG vertex.
 dag -> order = ['g', 'e', 'd', 'f', 'h', 'c', 'b', 'jobA']
 Execute command + resources for jA
-  cmd = echo "dependent job g" res = {'mpiranks': 1, 'threads': 1}
-  cmd = echo "dependent job e" res = {'mpiranks': 1, 'threads': 1}
-  cmd = echo "dependent job d" res = {'mpiranks': 4, 'threads': 1}
-  cmd = echo "dependent job f" res = {'mpiranks': 1, 'threads': 1}
-  cmd = echo "dependent job h" res = {'mpiranks': 1, 'threads': 1}
-  cmd = echo "dependent job c" res = {'mpiranks': 1, 'threads': 1}
-  cmd = echo "dependent job b" res = {'mpiranks': 1, 'threads': 1}
-  cmd = echo "job A" res = {'mpiranks': 40, 'threads': 27}
+  cmd = echo "dependent job g" res = {'mpiranks': 1, 'threads': 1, 'idlempirankspernode': 0}
+  cmd = echo "dependent job e" res = {'mpiranks': 1, 'threads': 1, 'idlempirankspernode': 0}
+  cmd = echo "dependent job d" res = {'mpiranks': 4, 'threads': 1, 'idlempirankspernode': 0}
+  cmd = echo "dependent job f" res = {'mpiranks': 1, 'threads': 1, 'idlempirankspernode': 0}
+  cmd = echo "dependent job h" res = {'mpiranks': 1, 'threads': 1, 'idlempirankspernode': 0}
+  cmd = echo "dependent job c" res = {'mpiranks': 1, 'threads': 1, 'idlempirankspernode': 0}
+  cmd = echo "dependent job b" res = {'mpiranks': 1, 'threads': 1, 'idlempirankspernode': 0}
+  cmd = echo "job A" res = {'mpiranks': 40, 'threads': 27, 'idlempirankspernode': 0}
 ============================================================================
 Job: Job name: jobA
 Command: echo "job A"
 Exit code success: 0
-Resources: {'mpiranks': 40, 'threads': 27}
-Max. resources (incl. dependencies): {'mpiranks': 40, 'threads': 27}
+Resources: {'idlempirankspernode': 0, 'mpiranks': 40, 'threads': 27}
+Max. resources (incl. dependencies): {'idlempirankspernode': 0, 'mpiranks': 40, 'threads': 27}
 JobDAG:
 [Registered jobs]
   job 0 key = b

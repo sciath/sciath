@@ -1,0 +1,38 @@
+not found -> inserting name b
+not found -> inserting name c
+not found -> inserting name job-seq-d
+[pass] The root vertex associated with parent job (name = jobDAG) was found in the DAG.
+[pass] All DAG vertices were found in the registered job list.
+[pass] All registered jobs were associated with a DAG vertex.
+============================================================================
+Job: Job name: jobDAG
+Command: echo "job A"
+Exit code success: 0
+Resources: {'idlempirankspernode': 0, 'mpiranks': 1, 'threads': 1}
+Max. resources (incl. dependencies): {'idlempirankspernode': 0, 'mpiranks': 1, 'threads': 1}
+JobDAG:
+[Registered jobs]
+  job 0 key = b
+  job 1 key = c
+  job 2 key = job-seq-d
+[Provided DAG]
+  "jobDAG" -> b
+  "b" -> ('c', 'job-seq-d')
+  "c" -> [None]
+  "job-seq-d" -> [None]
+[Execution order]
+  order 0 : job-seq-d
+  order 1 : c
+  order 2 : b
+  order 3 : jobDAG
+============================================================================
+dag -> order = ['job-seq-d', 'c', 'b', 'jobDAG']
+Execute command + resources for jA
+  cmd = ['echo', 'job-3d'] res = {'mpiranks': 1, 'threads': 1, 'idlempirankspernode': 0}
+  cmd = ['echo', 'job-2d'] res = {'mpiranks': 1, 'threads': 1, 'idlempirankspernode': 0}
+  cmd = ['echo', 'job-1d'] res = {'mpiranks': 1, 'threads': 1, 'idlempirankspernode': 0}
+  cmd = ['echo', 'job-d'] res = {'mpiranks': 1, 'threads': 1, 'idlempirankspernode': 0}
+  cmd = echo "dependent job c" res = {'mpiranks': 1, 'threads': 1, 'idlempirankspernode': 0}
+  cmd = echo "dependent job b" res = {'mpiranks': 1, 'threads': 1, 'idlempirankspernode': 0}
+  cmd = echo "job A" res = {'mpiranks': 1, 'threads': 1, 'idlempirankspernode': 0}
+1.1666666666666665 0.6666666666666666 0.16666666666666666

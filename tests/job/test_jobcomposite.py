@@ -1,5 +1,4 @@
-
-#!/usr/bin/python
+#!/usr/bin/env python
 from sciath.job import Job
 from sciath.job import JobSequence
 from sciath.job import JobDAG

@@ -29,6 +29,12 @@ def JobTest():
     t.setUseSandbox()
     return t
 
+def JobCompositeTest():
+    t = Test('JobCompositeTest',1,'python ' + abs_path('./job/test_jobcomposite.py'),abs_path('job/test_jobcomposite.expected'))
+    t.setVerifyMethod(lambda t: t.compareUnixDiff())
+    t.setUseSandbox()
+    return t
+
 def JobSequenceTest():
     t = Test('JobSequenceTest',1,'python ' + abs_path('./job/test_jobsequence.py'),abs_path('job/test_jobsequence.expected'))
     t.setVerifyMethod(lambda t: t.compareUnixDiff())
@@ -48,6 +54,7 @@ def main():
         JobTest(),
         JobSequenceTest(),
         JobDAGTest(),
+        JobCompositeTest(),
         ])
     harness.execute()
     harness.verify()
