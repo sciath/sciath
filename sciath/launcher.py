@@ -383,7 +383,7 @@ class Launcher:
 
         elif type in ['LSF','lsf']:
             self.queuingSystemType = 'lsf'
-            self.jobSubmissionCommand = 'bsub < '
+            self.jobSubmissionCommand = 'sh -c \'bsub < $0\'' # Note single (escaped) quotes. This is a trick to interpret "<".
             self.useBatch = True
             self.queueFileExt = 'lsf'
 
