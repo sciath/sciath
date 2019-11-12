@@ -332,6 +332,7 @@ class Launcher:
         self.queueName = []
         self.mpiLaunch = []
         self.queuingSystemType = []
+        self.maxRanksPerNode = None
         self.batchConstraint = []
         self.jobSubmissionCommand = []
         self.useBatch = False
@@ -408,21 +409,28 @@ class Launcher:
         else:
             raise RuntimeError('[SciATH] Unknown or unsupported batch queuing system "' + type + '" specified')
 
+    def setMaxRanksPerNode(self,n):
+        """ Store an int-valued maximum number of MPI ranks per node """
+        if not isinstance(n,int) or n <= 0:
+            raise ValueError("Maximum ranks per node must be a positive int")
+        self.maxRanksPerNode = n
 
     def view(self):
         print('SciATH: Batch queueing system configuration [',self.confFileName,']')
         major,minor,patch=getVersion()
-        print('  Version:         ',str(major)+'.'+str(minor)+'.'+str(patch))
-        print('  Queue system:    ',self.queuingSystemType)
-        print('  MPI launcher:    ',self.mpiLaunch)
+        print('  Version:           ',str(major)+'.'+str(minor)+'.'+str(patch))
+        print('  Queue system:      ',self.queuingSystemType)
+        print('  MPI launcher:      ',self.mpiLaunch)
         if self.useBatch:
-            print('  Submit command:  ', self.jobSubmissionCommand)
+            print('  Submit command:    ', self.jobSubmissionCommand)
             if self.accountName:
-                print('  Account:       ',self.accountName)
+                print('  Account:           ',self.accountName)
             if self.queueName:
-                print('  Queue:         ',self.queueName)
+                print('  Queue:             ',self.queueName)
             if self.batchConstraint :
-                print('  Constraint:    ', self.batchConstraint)
+                print('  Constraint:        ', self.batchConstraint)
+            if self.maxRanksPerNode :
+                print('  Max Ranks Per Node:', self.maxRanksPerNode)
 
     def configure(self):
         print('----------------------------------------------------------------')
@@ -475,6 +483,19 @@ class Launcher:
             v = py23input(prompt)
             self.setQueueName(v)
 
+            prompt = '[6] Maximum number of MPI ranks per compute node (optional - hit enter to skip): '
+            done = False
+            while not done:
+                v = py23input(prompt)
+                if len(v) == 0:
+                    done = True
+                else:
+                    try:
+                        self.setMaxRanksPerNode(int(v))
+                        done = True
+                    except ValueError:
+                        print('Enter a positive integer (or nothing, to skip)')
+
         self.writeDefinition()
         print('\n')
         print('** If you wish to change the config for your batch system, either')
@@ -501,6 +522,8 @@ class Launcher:
             file.write('accountName=' + self.accountName + '\n')
             file.write('batchConstraint=' + self.batchConstraint + '\n')
             file.write('queueName=' + self.queueName + '\n')
+            if self.maxRanksPerNode:
+                file.write('maxRanksPerNode=' + str(self.maxRanksPerNode) + '\n')
         file.close()
 
     def loadDefinition(self):
@@ -529,6 +552,8 @@ class Launcher:
                         self.setQueueName(value)
                     if key == 'accountName' :
                         self.setHPCAccountName(value)
+                    if key == 'maxRanksPerNode' :
+                        self.setMaxRanksPerNode(int(value))
             file.close()
         except:
             raise SciATHLoadException('[SciATH] You must execute configure(), and or writeDefinition() first')
