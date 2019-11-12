@@ -7,6 +7,7 @@ import re
 
 import sciath
 from sciath._io import NamedColors
+from sciath._teststatus import SciathTestStatusDefinition
 
 def getVersion() :
     """
@@ -21,3 +22,7 @@ sciath_colors = NamedColors()
 
 def default_colors_set_use_bash(use_bash):
     sciath.sciath_colors = NamedColors(use_bash)
+
+# Default codes/status/message/colors for test verification
+sciath_test_status = SciathTestStatusDefinition(sciath_colors)
+

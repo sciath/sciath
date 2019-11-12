@@ -56,7 +56,6 @@ Topics
 ======
 
 .. toctree ::
-  tutorial
   design
   api
   developer

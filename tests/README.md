@@ -1,7 +1,7 @@
 # SciATH Self-tests
 
 Important: these are tests for SciATH to test itself, NOT intended as examples for users! 
-For examples of how to use SciATH, see the examples directory and the tutorial!
+See the SciATH documentation for information on using SciATH.
 
 We use a previous stable version of SciATH itself to test, via a git submodule.
 

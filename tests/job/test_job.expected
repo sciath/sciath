@@ -1,11 +1,11 @@
 Execute command + resources for jD
-  cmd = echo "dependent job 3" res = {'mpiranks': 40, 'threads': 27}
+  cmd = echo "dependent job 3" res = {'mpiranks': 40, 'threads': 27, 'idlempirankspernode': 0}
 Execute command + resources for jA
-  cmd = echo "job A" res = {'mpiranks': 4, 'threads': 11}
-Resources required for jA:      name = DMDA interpolation  : {'mpiranks': 4, 'threads': 11}
-Max. resources required for jA: name = DMDA interpolation  : {'mpiranks': 4, 'threads': 11}
-Job: Job name: DMDA interpolation
+  cmd = echo "job A" res = {'mpiranks': 4, 'threads': 11, 'idlempirankspernode': 0}
+Resources required for jA:      name = DMDA_interpolation  : {'mpiranks': 4, 'threads': 11, 'idlempirankspernode': 0}
+Max. resources required for jA: name = DMDA_interpolation  : {'mpiranks': 4, 'threads': 11, 'idlempirankspernode': 0}
+Job: Job name: DMDA_interpolation
 Command: echo "job A"
 Exit code success: 0
-Resources: {'mpiranks': 4, 'threads': 11}
-Max. resources (incl. dependencies): {'mpiranks': 4, 'threads': 11}
+Resources: {'idlempirankspernode': 0, 'mpiranks': 4, 'threads': 11}
+Max. resources (incl. dependencies): {'idlempirankspernode': 0, 'mpiranks': 4, 'threads': 11}

@@ -24,22 +24,41 @@ class Job:
         self.cmd      = cmd # command which will be executed via a system call to run this job
         # Design note: we use a dict to enable developers to easily add support for different resource requests
         self.resources = dict()
-        self.resources.update({"mpiranks":1}) # mpi parallel resource data
-        self.resources.update({"threads":1}) # thread parallel (e.g. OMP) resource data
+        self.setResources(**kwargs) # looking in kwargs for any resources
+        if len(self.resources) == 0: # set defaults
+            self.resources.update({"mpiranks":1}) # mpi parallel resource data
+            self.resources.update({"threads":1}) # thread parallel (e.g. OMP) resource data
+            self.resources.update({"idlempirankspernode":0}) # idle ranks-per-compute-node resource data
 
         # optional info not needing a setter (e.g. they are not special enough)
         self.name              = None
         self.description       = None
         self.exit_code_success = 0
+        self.wall_time         = 10.0/60.0 # 10 secs (in minutes)
 
         for key, value in kwargs.items():
             if key == 'name':
-                self.name = value
+                self.name = value.replace(' ','_')
             if key == 'description':
                 self.description = value
             if key == 'exitCode':
                 self.exit_code_success = int(value)
+            if key == 'wall_time':
+                try:
+                    self.wall_time = float(value)
+                except:
+                    message = '[SciATH error]: Cannot convert wall_time \"' + str(value) + '\" to float.'
+                    raise RuntimeError(message)
 
+
+    def clean(self):
+        """
+        Responsible for deleting any data Job creates.
+        User should over-ride this method with their own deletion rules.
+        Care will have to be taken with paths as the Job may get executed from a
+        different directory to where the executable lives.
+        """
+        return
 
     def getMaxResources(self):
         """
@@ -63,6 +82,12 @@ class Job:
         """
 
         return self.resources
+
+    def getMaxWallTime(self):
+        """
+        Returns a floating point number which is the sum of all wall_time values.
+        """
+        return self.wall_time
 
     def createExecuteCommand(self):
         """
@@ -89,36 +114,53 @@ class Job:
         threads_k = [ 'threads', 'ompthreads' ]
         threads_set = 0
 
+        idlempirankspernode_k = [ 'idle-ranks-per-node', 'idle-mpiranks-per-node', 'idle-ranks_per_node', 'idle_mpiranks_per_node','idlerankspernode', 'idlempirankspernode' ]
+        idlempirankspernode_set = 0
+
         # Others resources go here
 
+        # Perform error checking on non-empty dictionary. This is done to enable this method
+        # silently be called during job.__init__()
         # Join all valid name list and check that the provided keyword is a valid resource name / identifier
-        allValidResourceNames = ranks_k + threads_k
-        for key,value in kwargs.items():
-            if key not in allValidResourceNames:
-                print('[SciATH error]: Unknown resource type \"' + str(key) + '\" was requested.')
-                print('                Choose from the following:',allValidResourceNames)
-                sys.exit(1)
+        if len(self.resources) != 0:
+            allValidResourceNames = ranks_k + threads_k
+            allValidResourceNames += idlempirankspernode_k
+            for key,value in kwargs.items():
+                if key not in allValidResourceNames:
+                    message  = '[SciATH error]: Unknown resource type \"' + str(key) + '\" was requested.\n'
+                    message += '                Choose from the following: ' + " ".join(allValidResourceNames)
+                    raise RuntimeError(message)
 
         for key, value in kwargs.items():
             if key in ranks_k: # look mpi rank keyword identifiers
                 self.resources.update({"mpiranks":int(value)})
                 ranks_set += 1
 
-            if key in threads_k: # look thread keyword identifiers
+            if key in threads_k: # look for thread keyword identifiers
                 self.resources.update({"threads":int(value)})
                 threads_set += 1
+
+            if key in idlempirankspernode_k: # look for idlempirankspernode keyword identifiers
+                self.resources.update({"idlempirankspernode":int(value)})
+                idlempirankspernode_set += 1
+
 
         # Sanity check that only one instance of a valid keyword
         # for a given resource type (e.g. mpi ranks) was provided
         if ranks_set > 1:
-            print('[SciATH error]: More than one instance of a valid MPI ranks keyword was provided to setResources().')
-            print('                To set the #mpi ranks, choose one of:',ranks_k)
-            sys.exit(1)
+            message  = '[SciATH error]: More than one instance of a valid MPI ranks keyword was provided to setResources().\n'
+            message += '                To set the #mpi ranks, choose one of: ' + " ".join(ranks_k)
+            raise RuntimeError(message)
 
         if threads_set > 1:
-            print('[SciATH error]: More than one instance of a valid threads keyword was provided to setResources().')
-            print('                To set the #threads, choose one of:',threads_k)
-            sys.exit(1)
+            message   = '[SciATH error]: More than one instance of a valid threads keyword was provided to setResources().\n'
+            message += '                To set the #threads, choose one of: ' + " ".join(threads_k)
+            raise RuntimeError(message)
+
+        if idlempirankspernode_set > 1:
+            message = '[SciATH error]: More than one instance of a valid idlempirankspernode keyword was provided to setResources().\n'
+            message += '                To set the #idle-ranks-per-node, choose one of: ' + " ".join(idlempirankspernode_k)
+            raise RuntimeError(message)
 
 
     def view(self):
@@ -231,6 +273,17 @@ class JobSequence(Job):
 
         return max
 
+    # overload
+    def getMaxWallTime(self):
+        """
+        Returns a floating point number which is the sum of all wall_time values associated with JobSequence
+        """
+        sum_wt = self.wall_time
+        for j in self.sequence:
+            sum_wt += j.getMaxWallTime()
+        
+        return sum_wt
+
 
     # overload
     def view(self):
@@ -256,6 +309,27 @@ class JobSequence(Job):
         for i in cr:
             print('  order',cnt,':',i[0])
             cnt += 1
+
+
+    def createJobOrdering(self):
+        """
+        Returns a list of job names in the order they will be executed.
+        """
+        # collect the user defined job list and reverse it (leave self.sequence untouched)
+        jname = []
+        jname.append(self.name)
+        for j in self.sequence:
+            jname.append(j.name)
+        jname.reverse()
+        return jname
+
+    def getJobList(self):
+        jobs = []
+        jobs.append(self)
+        for j in self.sequence:
+            jobs.append(j)
+        jobs.reverse()
+        return jobs
 
 
 class JobDAG(Job):
@@ -303,8 +377,8 @@ class JobDAG(Job):
         except:
             print('not found -> inserting name',job.name)
         else:
-            print('[SciATH error] A job with name',job.name,'has already been registered.')
-            sys.exit(0)
+            message = '[SciATH error] A job with name',job.name,'has already been registered.'
+            raise RuntimeError(message)
 
         self.joblist.update({job.name: job})
         self.jobcnt += 1
@@ -345,9 +419,10 @@ class JobDAG(Job):
           The corresponding DAG using a dictionary is given by
             dag = { 'A': ( 'B' ),
                     'B': ( 'C' , 'D' ),
+                    'C': ([None]),
                     'D': ( 'E' , 'F' ),
-                    'E': (None),
-                    'F': (None)         }
+                    'E': ([None]),
+                    'F': ([None])         }
           Note that in the above we used tuples (e.g. ()) to define the neighbour vertices.
         """
 
@@ -355,23 +430,41 @@ class JobDAG(Job):
         try:
             value = dag[ self.name ]
         except:
-            print('[SciATH error] The root vertex associated with parent job (name =',self.name,').')
-            print('[SciATH error] was not found in the DAG dictionary - the parent name is essential to the DAG definition.')
-            sys.exit(1)
+            message = '[SciATH error] The root vertex associated with parent job (name = ' + self.name + ' ).\n'
+            message += '[SciATH error] was not found in the DAG dictionary - the parent name is essential to the DAG definition.\n'
+            raise RuntimeError(message)
+
         else:
-            print('[pass] The root vertex associated with parent job (name =',self.name,') was found in the DAG.')
+            print('[pass] The root vertex associated with parent job (name = ' + self.name + ') was found in the DAG.')
 
         # Check that the key for each vertex is in self.joblist
+        check1 = True
+        message = '\n'
         for key in dag:
             # skip parent
             if key == self.name:
                 continue
             if key not in self.joblist:
-                print('[SciATH error] The DAG key',key,'was not found in the member self.joblist.')
-                print('[SciATH error] Call self.registerJob() to add this key into self.joblist.')
-                sys.exit(1)
+                message += '[SciATH error] The DAG key ' + key + ' was not found in the member self.joblist.\n'
+                message += '[SciATH error] Call self.registerJob() to add this key into self.joblist.\n'
+                check1 = False
+        if check1 == False:
+              raise RuntimeError(message)
+        print('[pass] All DAG vertices were found in the registered job list.')
 
-        print('[pass] All DAG vertices were found in self.joblist.')
+        # Check that every member in self.joblist is a key in the dag
+        check2 = True
+        message = '\n'
+        for jobname in self.joblist:
+            try:
+                value = dag[ jobname ]
+            except:
+                message += '[SciATH error] A vertex with key \"' + jobname + '\" was not found in the user-provided DAG.\n'
+                check2 = False
+        if check2 == False:
+            raise RuntimeError(message)
+        print('[pass] All registered jobs were associated with a DAG vertex.')
+
         self.dag = dag
 
 
@@ -456,6 +549,19 @@ class JobDAG(Job):
 
         return max
 
+    # overload
+    def getMaxWallTime(self):
+        """
+        Returns a floating point number which is the sum of all wall_time values associated with JobDAG
+        """
+        jobs = self.getJobList()
+        sum_wt = self.wall_time
+        for j in jobs:
+            if j != self:
+                sum_wt += j.getMaxWallTime()
+        
+        return sum_wt
+
 
     # overload
     def view(self):
@@ -488,6 +594,16 @@ class JobDAG(Job):
         """
         Returns a list of job names in the order they will be executed.
         """
-
         order = self.__DFS(self.dag,self.name)
         return order
+
+    def getJobList(self):
+        """
+        Returns a list of jobs in the order they will be executed.
+        """
+        names = self.createJobOrdering()
+        jobs = []
+        for i in range(0,len(names)-1): # skip the last job as this is NOT stored in self.joblist
+            jobs.append( self.joblist[ names[i] ] )
+        jobs.append( self )
+        return jobs
