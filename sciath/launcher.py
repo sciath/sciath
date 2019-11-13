@@ -702,7 +702,6 @@ class Launcher:
             if key == 'output_path':
                 output_path = value
       
-        print('[ -- Removing output for job:',job.name,'-- ]')
         try:
             job.clean()
         except:
