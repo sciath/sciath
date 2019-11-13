@@ -598,8 +598,8 @@ class Launcher:
         will be executed.
         """
       
-        output_path = ''
-        exec_path = ''
+        output_path = '.'
+        exec_path = '.'
         for key, value in kwargs.items():
             if key == 'output_path':
                 output_path = value
@@ -699,7 +699,7 @@ class Launcher:
       
         output_path = ''
         for key, value in kwargs.items():
-            if key == 'path':
+            if key == 'output_path':
                 output_path = value
       
         print('[ -- Removing output for job:',job.name,'-- ]')

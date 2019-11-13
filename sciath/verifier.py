@@ -31,13 +31,13 @@ class Verifier:
     def getStatus(self):
         return self.status
 
-    def execute(self,path):
-        """ Relative to a given path, fetch file, look at return code, check it matches that expected"""
+    def execute(self,output_path,exec_path=None):
+        """ Relative to a given output path, fetch file, look at return code, check it matches that expected"""
 
         self.status = None
         self.report = []
 
-        errorfile = os.path.join(path,self.c_name)
+        errorfile = os.path.join(output_path,self.c_name)
         if not os.path.isfile(errorfile) :
             self.report.append("[ReturnCodeDiff] File (" + errorfile + ") not found")
             self.status = sciath_test_status.job_not_run
