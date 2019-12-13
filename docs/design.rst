@@ -73,9 +73,9 @@ Test
 Data include:
 
 * A ``Job``
-* A (mandatory) name
+* A name
 * An instance of a subclass of ``TestVerifier``, to evaluate test success
-* A set of string-valued tags
+* A set of tags
 
 Harness
 ~~~~~~~

@@ -26,9 +26,9 @@ Key Concepts
 
 SciATH provides:
 
--  An object to define a test. A “test” consists of:
+-  An object to define a test. A "test" consists of:
 
-   -  a unique textual name;
+   -  a unique name;
    -  one or more executables;
    -  a number of MPI ranks (1 for serial execution)
    -  a text file containing the expected output;
@@ -37,8 +37,8 @@ SciATH provides:
 
 -  A set of tools to parse / filter and query text files for test
    verification purposes
--  A “harness” object to quickly define and process a set of tests
--  Internally, a “launcher” object to manage launching a serial or MPI
+-  A "harness" object to quickly define and process a set of tests
+-  Internally, a "launcher" object to manage launching a serial or MPI
    job locally or via a batch queuing system
 
 How do I use this ?
@@ -47,9 +47,9 @@ How do I use this ?
 1. SciATH depends on Python 3 (or Python 2.4+) and numpy
 
 2. When using Python 3, it is highly recommended you set the environment
-   variable PYTHONUNBUFFERED, e.g. ``export PYTHONUNBUFFERED``
+   variable ``PYTHONUNBUFFERED``, e.g. ``export PYTHONUNBUFFERED``
 
-3. Make sure you modify your PYTHONPATH environment variable to include
+3. Make sure you modify your ``PYTHONPATH`` environment variable to include
    this directory
 
 Topics
