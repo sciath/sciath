@@ -589,11 +589,22 @@ class Launcher:
         return filename
 
     def submitJob(self,job,**kwargs):
+        """ Run a job
+
+        Supply output_path to change the location where SciATH's output
+        files will be saved.
+
+        Supply exec_path to change the directory from which the command
+        will be executed.
+        """
       
-        output_path = ''
+        output_path = '.'
+        exec_path = '.'
         for key, value in kwargs.items():
-            if key == 'path':
+            if key == 'output_path':
                 output_path = value
+            if key == 'exec_path':
+                exec_path = value
 
         if job.name == None:
             raise ValueError('[SciATH] Unsupported: Job cannot be submitted without it having a name')
@@ -656,7 +667,11 @@ class Launcher:
                 # python-3 only
                 file_e = open( os.path.join(output_path,e_name[i]), 'w')
                 file_o = open( os.path.join(output_path,o_name[i]), 'w')
+                cwd_back = os.getcwd()
+                os.chdir(exec_path)
                 ctx = subp.run( launchCmd[i] ,universal_newlines=True,stdout=file_o,stderr=file_e)
+                os.chdir(cwd_back)
+
                 file_o.close()
                 file_e.close()
                 file_ecode.write(str(ctx.returncode)+"\n") # exit code
@@ -672,20 +687,21 @@ class Launcher:
             if self.verbosity_level > 0:
                 print(sciath_colors.SUBHEADER + '[Executing ' + job.name + ']' + sciath_colors.ENDC)
                 print('  [cmd] ',launchCmd)
+            cwd_back = os.getcwd()
+            os.chdir(exec_path)
             # TODO launch with subp?
             #ctx = subp.run( launchCmd,universal_newlines=True,stdout=subp.PIPE,stderr=subp.PIPE )
             os.system(' '.join(launchCmd))
+            os.chdir(cwd_back)
             setBlockingIOStdout()
-
 
     def clean(self,job,**kwargs):
       
         output_path = ''
         for key, value in kwargs.items():
-            if key == 'path':
+            if key == 'output_path':
                 output_path = value
       
-        print('[ -- Removing output for job:',job.name,'-- ]')
         try:
             job.clean()
         except:

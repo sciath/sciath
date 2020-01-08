@@ -51,6 +51,10 @@ Indeed, it is mostly just a collection of data.
 
 Subclasses exist to describe composite sets of ``Job`` objects.
 
+``Job`` objects are "stateless", in the sense that they do not contain
+information specific to the actual execution of a command, rather being instructions
+about how to execute a command.
+
 Launcher
 ~~~~~~~~
 
@@ -67,6 +71,9 @@ Includes methods to operate on a combination of a ``Job`` and a path:
 to use ``Launcher`` and a collection of ``Job`` objects as a convenience to run the
 same commands on various systems.
 
+A ``Launcher`` object's state corresponds only to its configuration,
+not the status of any particular process.
+
 Test
 ~~~~
 
@@ -76,6 +83,8 @@ Data include:
 * A name
 * An instance of a subclass of ``TestVerifier``, to evaluate test success
 * A set of tags
+
+``Test`` objects are "stateless", in the same sense as ``Job`` objects.
 
 Harness
 ~~~~~~~
@@ -91,3 +100,6 @@ or via direct invocation of the ``sciath`` module.
 * Can work with groups of tests defined by tags or resources
 * Exclusive location of information about where to launch ``Jobs`` from, passed to included ``Launcher``
 * Manages sandboxing: defines, creates, and cleans subdirectories used to conduct tests
+
+A ``Harness`` object's state is confined to the state of a list of internal
+``_TestRun`` objects.

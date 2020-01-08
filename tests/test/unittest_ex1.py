@@ -18,8 +18,8 @@ def test1(): # result: pass
     cmd = ['echo' , '"aBc";' , 'echo' '"kspits=30"' , 'echo ""' ]
   
     t = Test( Job(cmd), 'Test_1')
-    job_launcher.submitJob( t.job, path = OUTPUT_PATH )
-    t.verify(path = OUTPUT_PATH)
+    job_launcher.submitJob( t.job, output_path = OUTPUT_PATH )
+    t.verify(output_path = OUTPUT_PATH)
     t.print()
     return t
 
@@ -27,8 +27,8 @@ def test2(): # result: pass
     cmd = ['echo' , '"aBc";' , 'echo' '"kspits=30"' ]
     
     t = Test( Job(cmd), 'Test_2')
-    job_launcher.submitJob( t.job, path = OUTPUT_PATH )
-    t.verify(path = OUTPUT_PATH)
+    job_launcher.submitJob( t.job, output_path = OUTPUT_PATH )
+    t.verify(output_path = OUTPUT_PATH)
     t.print()
     return t
 
@@ -36,8 +36,8 @@ def test3(): # result: fail
     cmd = ['echo' , '"aBc";' , 'echo' '"kspits=30"' ]
     
     t = Test( Job(cmd,exitCode = 1), 'Test_3')
-    job_launcher.submitJob( t.job, path = OUTPUT_PATH )
-    t.verify(path = OUTPUT_PATH)
+    job_launcher.submitJob( t.job, output_path = OUTPUT_PATH )
+    t.verify(output_path = OUTPUT_PATH)
     t.print()
     return t
 
@@ -45,7 +45,7 @@ def test4(): # result: pass
     cmd = ['echo' , '"aBc";' , 'echo' '"kspits=30"' ]
     
     t = Test( Job(cmd), 'Test_4')
-    job_launcher.submitJob( t.job, path = OUTPUT_PATH )
+    job_launcher.submitJob( t.job, output_path = OUTPUT_PATH )
     return t
 
 
@@ -63,13 +63,13 @@ def main():
 
     # test with staged submit/verify
     t4 = test4()
-    t4.verify(path = OUTPUT_PATH)
+    t4.verify(output_path = OUTPUT_PATH)
     t4.print()
-    job_launcher.clean(t4.job, path = OUTPUT_PATH)
+    job_launcher.clean(t4.job, output_path = OUTPUT_PATH)
 
     tests = [t1,t2,t3,t4]
     for t in tests:
-        job_launcher.clean(t.job, path = OUTPUT_PATH)
+        job_launcher.clean(t.job, output_path = OUTPUT_PATH)
 
 
 main()

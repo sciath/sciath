@@ -18,7 +18,7 @@ class VerifierUnixDiff(Verifier):
       if output_file is None:
           self.output_file = self.o_name[-1]
 
-    def execute(self,path):
+    def execute(self,output_path,exec_path = None):
     
         self.status = None
         self.report = []
@@ -28,14 +28,14 @@ class VerifierUnixDiff(Verifier):
             self.status = sciath_test_status.expected_file_not_found
             return
    
-        output_full_path = os.path.join(path,self.output_file)
+        output_full_path = os.path.join(output_path,self.output_file)
         if not os.path.isfile(output_full_path) :
             self.report.append("[UnixDiff] Output file \"" + output_full_path + "\" was not found")
             self.status = sciath_test_status.output_file_not_found
             return
     
     
-        stdoutfile = os.path.join(path,"sciath.verifier-unixdiff.stdout")
+        stdoutfile = os.path.join(output_path,"sciath.verifier-unixdiff.stdout")
         file_o = open( stdoutfile, 'w')
         e = subp.run(['diff','-c',self.expected_file,self.output_file],file_o,None)
         file_o.close()

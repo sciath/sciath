@@ -40,5 +40,5 @@ class Test:
         for l in self.getReport():
             print(l)
 
-    def verify(self,path):
-        self.verifier.execute(path)
+    def verify(self,output_path):
+        self.verifier.execute(output_path)

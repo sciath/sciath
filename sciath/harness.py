@@ -1,360 +1,151 @@
-from __future__ import print_function
 import os
-import sys
 import argparse
 import shutil
-import sciath.test as sciathtest
-import sciath.launcher as sciathlauncher
-from   sciath import sciath_colors
+
+import sciath
+from sciath.test import Test
+from sciath.launcher import Launcher
+
+class _TestRun:
+        """ A private class which adds state about a specific "run" of a Test.
+
+        It contains a Test object, which should be thought of as the stateless
+        information about a test case, provided by a user. In addition, it
+        contains information managed by the Harness, such as a location to run
+        from, information collected from the Launcher (to use for output), etc.
+        """
+
+        def __init__(self,test):
+            self.active = True
+            self.test = test
+            self.output_path = test.name + '_output'
+            self.exec_path = os.path.join(self.output_path,'sandbox')
+            self.sandbox = True
 
 class Harness:
-    def __init__(self,registeredTests,subsetTestName=None):
-        self.testsRegistered = 0
-        self.testsExecuted = 0
-        self.testsSkipped = 0
-        self.testsPassed = 0
-        self.testsFailed = 0
-        self.verbosity_level = 1
-        self.errorReportFileName = 'errorReport.log'
-        self.use_sandbox = False
 
-        self.testDescription = [] # Note: not currently output, but could be used for future logging
-        self.registeredTests = registeredTests
+    sandbox_sentinel_filename = '.sciath_sandbox'
 
-        # Check that tests are the correct type, with unique names
-        testNames = []
-        for t in self.registeredTests:
-            testNames.append(t.name)
-            if not isinstance(t,sciathtest.Test):
-                raise ValueError('[SciATH]: Registered tests must be of type sciath.test.Test')
-        self.testsRegistered = len(self.registeredTests)
-        if len(testNames) != len(set(testNames)) :
-            raise Exception('[SciATH] Registered tests must have unique names')
-
-        parser = argparse.ArgumentParser(description='SciATH')
-        parser.add_argument('-v', '--verify', help='Perform test verification only (and not execution)', required=False, action='store_true')
-        parser.add_argument('-c', '--configure', help='Configure queuing system information', required=False, action='store_true')
-        parser.add_argument('-t', '--test', help='List of test names', required=False)
-        parser.add_argument('-o', '--output_path', help='Directory to write stdout into', required=False)
-        parser.add_argument('-p', '--purge_output', help='Delete generated output', required=False, action='store_true')
-        parser.add_argument('-f', '--error_on_test_failure', help='Return exit code of 1 if any test failed', required=False, action='store_true')
-        parser.add_argument('-d', '--configure_default', help='Write default queuing system config file (no mpi, no queuing system)', required=False, action='store_true')
-        parser.add_argument('-s', '--sandbox', help='Execute tests in separate directories. Will not work unless you supply absolute paths to executables.', required=False, action='store_true')
-        parser.add_argument('-l', '--list', help='List all registered tests and exit', required=False, action='store_true')
-        parser.add_argument('-w','--with_conf_file',help='Use provided configuration file instead of the default',required=False)
-        parser.add_argument('-r','--replace_expected',help='Replace expected files (destructive!)',required=False,action='store_true')
-        parser.add_argument('--no-colors',help='Deactivate colored output',required=False,action='store_true')
-        self.args, self.unknown = parser.parse_known_args()
-
-        # Sandbox
-        self.use_sandbox = self.args.sandbox
-
-        # Deactivate colored output if requested
-        if self.args.no_colors :
-            sciath_colors.set_colors(use_bash = False)
-
-        if subsetTestName is None:
-            self.subsetTestName = []
-            self.execSubset = False
-        else:
-            self.subsetTestName = subsetTestName
-            self.execSubset = True
-
-        # If "list" option supplied, simply print out all the tests' names and exit
-        if self.args.list :
-            for test in registeredTests :
-                print(test.name)
-            sys.exit(0)
-
-        # If --configure_default is specified, write the default file and exit
-        if self.args.configure_default:
-            sciathlauncher.Launcher.writeDefaultDefinition(self.args.with_conf_file)
-            sys.exit(0)
-
-        # Create the launcher
-        self.launcher = sciathlauncher.Launcher(self.args.with_conf_file)
-
-        # If --configure is specified, (re)generate the configuration file and exit
-        if self.args.configure:
-            self.launcher.configure()
-            sys.exit(0)
-
-        # Set output path on all tests if --output_path option was included
-        if self.args.output_path:
-            for test in self.registeredTests:
-                test.setOutputPath(self.args.output_path)
-
-        # Label tests as Registered or Excluded:Reason
-        for i in range(0,len(self.registeredTests)):
-            self.testDescription.append('Registered')
-
-        # Exclude parallel tests if mpiLauncher = 'none' and test uses more than 1 rank
-        counter = 0
-        skipCounter = 0
-        for t in self.registeredTests:
-            if self.launcher.mpiLaunch == 'none' and t.ranks != 1:
-                self.registeredTests[counter].ignore = True
-                self.testDescription[counter] = 'No MPI launcher was provided and test requested > 1 MPI rank'
-                skipCounter = skipCounter + 1
-            counter = counter + 1
-
-        # Exclude tests based on command line option
-        subList = []
-
-        for name in self.subsetTestName:
-            found = False
-            for t in self.registeredTests:
-                if name == t.name:
-                    subList.append(t)
-                    found = True
-                    break
-            if found == False:
-                errstr= '[SciATH] You requested to test a subset of registered tests, \n\t\t  but no registered test matched the name \"' + name + '\"'
-                raise RuntimeError(errstr)
-
-        if self.args.test:
-            self.execSubset = True
-            tnames = self.args.test.split(',')
-            for name in tnames:
-                found = False
-                for t in self.registeredTests:
-                    if name == t.name:
-                        subList.append(t)
-                        found = True
-                        break
-
-                if found == False:
-                    errstr= '[SciATH] You requested to test a subset of registered tests, \n\t\t  but no registered test matched the name \"' + name + '\"'
-                    raise RuntimeError(errstr)
-
-        if self.execSubset:
-            counter = 0
-            for t in self.registeredTests:
-                # skip tests already marked to be ignored (e.g. due to mpiLaunch = none and test.ranks != 1
-                if t.ignore == True:
-                    counter = counter + 1
-                    continue
-
-                if t not in subList:
-                    t.ignore = True
-                    self.testDescription[counter] = 'Excluded based on users command line arg -t'
-                counter = counter + 1
-
-        # Clean all output unless we are verifying (only)
-        if not self.args.verify :
-            self.clean()
-
-        # If -p was supplied, stop after cleaning
-        if self.args.verify and self.args.purge_output :
-            raise RuntimeError('-p (--purge_output) and -v (--verify) are not supported together')
-        if self.args.purge_output :
-            exit(0);
-
-    def setVerbosityLevel(self,value):
-        self.verbosity_level = value
-        self.launcher.setVerbosityLevel(self.verbosity_level)
-
-    def execute(self):
-        '''Execute tests unless verifying (only) or purging output (only)
-           Update expected output if in "replace_expected" mode
-        '''
-        if not self.args.verify and not self.args.purge_output:
-            print('')
-            print(sciath_colors.HEADER + '[ *** Executing Tests *** ]' + sciath_colors.ENDC)
-            launcher = self.launcher
-            testList = self.registeredTests
-            if launcher.verbosity_level > 0:
-                launcher.view()
-
-            skipCounter = 0
-            for t in testList:
-                if launcher.mpiLaunch == 'none' and t.ranks != 1:
-                    if t.ignore == True:
-                        skipCounter = skipCounter + 1
-
-            if skipCounter != 0:
-                print('\n' + sciath_colors.WARNING + 'Warning: ' + str(skipCounter) + ' MPI parallel jobs are being skipped as a valid MPI launcher was not provided'+ sciath_colors.ENDC)
-
-            counter = 0
-            skipCounter = 0
-            for test in testList:
-                if test.ignore == False:
-                    if self.use_sandbox:
-                        sandbox_dirname = self.generate_sandbox_dirname(test)
-                        if not os.path.isdir(sandbox_dirname):
-                            os.mkdir(sandbox_dirname)
-                        sandbox_back = os.getcwd()
-                        os.chdir(sandbox_dirname)
-                    launcher.submitJob(test)
-                    if self.use_sandbox:
-                        os.chdir(sandbox_back)
-                else:
-                    skipCounter = skipCounter + 1
-                counter = counter + 1
-            if (skipCounter > 0) :
-                print(sciath_colors.WARNING+'[SciATH] Skipped executing '+str(skipCounter)+' tests'+sciath_colors.ENDC)
-        if self.args.replace_expected :
-            print(sciath_colors.HEADER + '[ *** Replacing Expected Output  *** ]' + sciath_colors.ENDC)
-            [test.updateExpected() for test in testList if not test.ignore]
-
-    def verify(self):
-        '''Verify, unless we are running with a batch system and are not in verify(-only) mode'''
-        if not self.launcher.useBatch or self.args.verify :
-            print('')
-            print(sciath_colors.HEADER + '[ *** Verifying Test Output *** ]' + sciath_colors.ENDC)
-            skipCounter = 0
-            for test in self.registeredTests:
-                if test.ignore  or (self.launcher.mpiLaunch == 'none' and test.ranks != 1) :
-                    skipCounter = skipCounter + 1
-                else:
-                    print('[-- Verifying test: ' + test.name + ' --]')
-                    if self.use_sandbox:
-                        sandbox_dirname = self.generate_sandbox_dirname(test)
-                        sandbox_back = os.getcwd()
-                        os.chdir(sandbox_dirname)
-                    test.verifyOutput()
-                    if self.use_sandbox:
-                        os.chdir(sandbox_back)
-            if skipCounter > 0 :
-                print(sciath_colors.WARNING+'[SciATH] Skipped verification for '+str(skipCounter)+' skipped tests'+sciath_colors.ENDC)
-
-            print('')
-            counter = 0
-            for test in self.registeredTests:
-                if not test.ignore and not test.passed :
-                    counter = counter + 1
-            if counter > 0:
-                print('')
-                print(sciath_colors.SUBHEADER+'[--------- Test Error Report ----------------------]'+sciath_colors.ENDC)
-                for test in self.registeredTests:
-                    test.report('log_short')
-
-            errfile = self.reportAll()
-            if errfile and self.args.error_on_test_failure:
-                print('\n')
-                print('Contents of "' + errfile +'"')
-                os.system('cat ' + errfile)
-                sys.exit(1)
+    def __init__(self,test_list):
+        self._create_testruns_from_tests(test_list)
+        self.launcher = None # Created when needed
 
     def clean(self):
-        print('')
-        print(sciath_colors.HEADER+'[ *** Deleting Existing Test Output *** ]'+sciath_colors.ENDC)
-        if os.path.isfile(self.errorReportFileName) :
-            os.remove(self.errorReportFileName)
-        skipCounter = 0
-        for test in self.registeredTests:
-            if test.ignore:
-                skipCounter = skipCounter + 1
-            else:
-                if self.use_sandbox:
-                    sandbox_dirname = self.generate_sandbox_dirname(test)
-                    if not os.path.isdir(sandbox_dirname):
-                        os.mkdir(sandbox_dirname)
-                    sandbox_back = os.getcwd()
-                    os.chdir(sandbox_dirname)
-                self.launcher.clean(test)
-                if self.use_sandbox:
-                   os.chdir(sandbox_back)
-                   shutil.rmtree(sandbox_dirname) # remove entire subtree
-        if skipCounter > 0 :
-            print(sciath_colors.WARNING+'[SciATH] Skipped removing output for '+str(skipCounter)+' skipped tests'+sciath_colors.ENDC)
+        if self.launcher is None:
+            self.launcher = Launcher()
 
-    def reportAll(self):
-        launcher = self.launcher
-        testList = self.registeredTests
-        print('')
-        nTests = len(testList)
-        failCounter = 0
-        execCounter = 0
-        skipCounter = 0
-        seqCounter = 0
-        mpiCounter  = 0
-        seqPassedCounter = 0
-        mpiPassedCounter  = 0
-        seqExecCounter = 0
-        mpiExecCounter  = 0
+        # Clean all tests
+        for testrun in self.testruns:
+            if testrun.active:
+                print('[ -- Removing output for Test:',testrun.test.name,'-- ]')
+                self.launcher.clean(testrun.test.job, output_path=testrun.output_path)
+                if testrun.sandbox and os.path.exists(testrun.exec_path):
+                    sentinel_file = os.path.join(testrun.exec_path,self.sandbox_sentinel_filename)
+                    if not os.path.exists(sentinel_file):
+                        raise Exception('[SciATH] did not find expected sentinel file ' + sentinel_file)
+                    shutil.rmtree(testrun.exec_path)
 
-        for test in testList:
-            if test.ranks == 1:
-                seqCounter = seqCounter + 1
-            else:
-                mpiCounter = mpiCounter + 1
+    def execute(self):
+        # Always clean before executing
+        self.clean()
 
-            if test.ignore == False:
-                execCounter = execCounter + 1
+        if self.launcher is None:
+            self.launcher = Launcher()
 
-                if test.ranks == 1:
-                    seqExecCounter = seqExecCounter + 1
-                else:
-                    mpiExecCounter = mpiExecCounter + 1
+        for testrun in self.testruns:
+            if testrun.active:
+                if not os.path.exists(testrun.output_path):
+                    os.makedirs(testrun.output_path)
+                if not os.path.exists(testrun.exec_path):
+                    os.makedirs(testrun.exec_path)
+                if testrun.sandbox:
+                    sentinel_file = os.path.join(testrun.exec_path,self.sandbox_sentinel_filename)
+                    if os.path.exists(sentinel_file):
+                        raise Exception("[SciATH] Unexpected sentinel file " + sentinel_file)
+                    with open(sentinel_file,'w'):
+                        pass
+                self.launcher.submitJob(
+                        testrun.test.job,
+                        output_path=testrun.output_path,
+                        exec_path = testrun.exec_path)
 
-                if test.passed == False:
-                    failCounter = failCounter + 1
-            else:
-                skipCounter = skipCounter + 1
+    def print_all_tests(self):
+        for testrun in self.testruns:
+            print(testrun.test.name)
 
-        for test in testList:
-            if test.ignore == False:
-                if test.ranks == 1 and test.passed == True:
-                    seqPassedCounter = seqPassedCounter + 1
-                elif test.ranks >= 1 and test.passed == True:
-                    mpiPassedCounter = mpiPassedCounter + 1
+    def report(self):
+        for testrun in self.testruns:
+            print(testrun.test.name,":",testrun.test.getStatus())
 
-        print(sciath_colors.SUBHEADER+'[--------- test status ----------------------]'+sciath_colors.ENDC)
-        for test in testList:
-            test.report('summary')
+    def run_from_args(self):
+        """ Perform one or more actions, based on command line options
 
-        print('')
-        print(sciath_colors.SUBHEADER+'[--------- test report ----------------------]'+sciath_colors.ENDC)
-        print('  ' + ("%.4d" % nTests) + ' ' + 'tests registered')
-        print('  ' + ("%.4d" % seqCounter) + ' Sequential tests')
-        print('  ' + ("%.4d" % mpiCounter) + ' MPI tests')
-        print('  ' + ("%.4d" % execCounter) + ' of ' +("%.4d" % nTests)+ ' tests executed')
+        This essentially defines the "main" function for the typical
+        use of SciATH.
+        """
 
-        print('')
-        if execCounter == 0:
-            print(sciath_colors.WARNING + ' [status] UNKNOWN: All tests were skipped' + sciath_colors.ENDC)
+        parser = argparse.ArgumentParser(description='SciATH')
+        parser.add_argument('-v', '--verify', help='Perform test verification (and not execution)', required=False, action='store_true')
+        parser.add_argument('-c', '--configure', help='Configure queuing system information', required=False, action='store_true')
+        parser.add_argument('-t', '--test-subset', help='Comma-separated list of test names', required=False)
+        parser.add_argument('-p', '--purge-output', help='Delete generated output', required=False, action='store_true')
+        parser.add_argument('-f', '--error-on-test-failure', help='Return exit code of 1 if any test failed', required=False, action='store_true')
+        parser.add_argument('-d', '--configure-default', help='Write default queuing system config file (no mpi, no queuing system)', required=False, action='store_true')
+        parser.add_argument('-l', '--list', help='List all registered tests and exit', required=False, action='store_true')
+        parser.add_argument('-w','--conf-file',help='Use provided configuration file instead of the default',required=False)
+        parser.add_argument('--no-colors',help='Deactivate colored output',required=False,action='store_true')
+        args,unknown = parser.parse_known_args()
 
-        elif failCounter > 0:
-            print(sciath_colors.FAIL + ' [status] FAIL: ' + str(failCounter) + ' of ' + str(execCounter) + sciath_colors.FAIL + ' tests executed FAILED' + sciath_colors.ENDC)
+        if args.no_colors:
+            sciath.sciath_colors.set_colors(use_bash = False)
 
-            print(sciath_colors.FAIL +'          ' + ("%.4d" % (seqExecCounter-seqPassedCounter)) + ' of ' +("%.4d" % seqExecCounter)+ ' executed Sequential tests failed'+sciath_colors.ENDC)
-            print(sciath_colors.FAIL +'          ' + ("%.4d" % (mpiExecCounter-mpiPassedCounter)) + ' of ' +("%.4d" % mpiExecCounter)+ ' executed MPI tests failed'+sciath_colors.ENDC)
-        else:
-            if skipCounter == 0:
-                print(sciath_colors.OKGREEN + ' [status] SUCCESS: All registered tests passed' + sciath_colors.ENDC)
-            else:
-                print(sciath_colors.WARNING + ' [status] SUCCESS (partial): All executed tests passed' + sciath_colors.ENDC)
+        if args.list:
+            self.print_all_tests()
+            return
 
-        if seqExecCounter + mpiExecCounter != nTests:
-            print(sciath_colors.WARNING+'          Warning: Not all tests were executed!'+ sciath_colors.ENDC)
-        if seqExecCounter != seqCounter:
-            print(sciath_colors.WARNING+'          Warning: '+("%.4d" % (seqCounter-seqExecCounter))+' sequential tests were skipped'+ sciath_colors.ENDC)
-        if mpiExecCounter != mpiCounter:
-            print(sciath_colors.WARNING+'          Warning: '+("%.4d" % (mpiCounter-mpiExecCounter))+' MPI tests were skipped!'+ sciath_colors.ENDC)
+        if args.test_subset:
+            self._activate_tests_from_argument(args.test_subset)
 
-        errfile = []
-        if failCounter > 0:
-            file = open(self.errorReportFileName,'w')
-            sys.stdout = file
+        if args.configure_default:
+            Launcher.writeDefaultDefinition(args.conf_file)
+            return
 
-            for test in testList:
-                test.report('log')
+        self.launcher = Launcher(args.conf_file)
 
-            file.close()
-            sys.stdout = sys.__stdout__
+        if args.configure:
+            self.launcher.configure()
 
-            print('xxx============================================================================xxx')
-            print('     tests failed - Full error report written to ' + self.errorReportFileName)
-            print('                  - Please inspect the error log file and resolve failed tests')
-            errorReportFileLocation = os.path.realpath(self.errorReportFileName)
-            print('     cat ' + errorReportFileLocation)
-            print('xxx============================================================================xxx')
-            errfile = errorReportFileLocation
-        return(errfile)
+        if args.purge_output:
+            self.clean()
+            return
 
-    def generate_sandbox_dirname(self,test):
-        return test.name + '_sandbox'
+        if not args.verify:
+            self.execute()
 
-    def setUseSandbox(self,val=True):
-        self.use_sandbox = val
+        self.verify()
+
+        self.report()
+
+        if args.error_on_test_failure:
+            raise Exception("Exit on failure option not implemented")
+
+    def verify(self):
+        for testrun in self.testruns:
+            if testrun.active:
+                testrun.test.verifier.execute(testrun.output_path)
+
+    def _activate_tests_from_argument(self, test_subset_arg):
+        test_subset_names = test_subset_arg.split(',')
+        for testrun in self.testruns:
+            testrun.active = False
+        for name in test_subset_names:
+            found = False
+            for testrun in self.testruns:
+                if name == testrun.test.name:
+                    testrun.active = True
+                    found = True
+                    break
+
+    def _create_testruns_from_tests(self,test_list):
+        """ Create a list of _TestRuns from a list of Tests"""
+        self.testruns = [_TestRun(test) for test in test_list]

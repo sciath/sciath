@@ -20,9 +20,6 @@ __version__ = getVersion()
 # A default set of colors
 sciath_colors = NamedColors()
 
-def default_colors_set_use_bash(use_bash):
-    sciath.sciath_colors = NamedColors(use_bash)
-
 # Default codes/status/message/colors for test verification
 sciath_test_status = SciathTestStatusDefinition(sciath_colors)
 
