@@ -3,7 +3,7 @@
 class SciathTestStatusDefinition:
     def __init__(self,sciath_colors):
         self.status_color_type = { 
-		"pass" : sciath_colors.OKGREEN , 
+		"pass" : sciath_colors.OK ,
 		"fail" : sciath_colors.FAIL , 
 		"warn" : sciath_colors.WARNING ,
 		"skip" : sciath_colors.WARNING } 
