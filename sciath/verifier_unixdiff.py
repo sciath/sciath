@@ -1,11 +1,15 @@
-
 import os
+import sys
+if os.name == 'posix' and sys.version_info[0] < 3:
+    import subprocess32 as subprocess # To be removed once Python 2 is fully abandoned
+else:
+    import subprocess
+
 from sciath.job import Job
 from sciath.job import JobSequence
 from sciath.job import JobDAG
 from sciath.verifier import Verifier
 from sciath import sciath_test_status
-import sciath._subprocess as subp
 from sciath.launcher import _removeFile
 
 
@@ -37,7 +41,8 @@ class VerifierUnixDiff(Verifier):
     
         stdoutfile = os.path.join(output_path,"sciath.verifier-unixdiff.stdout")
         file_o = open( stdoutfile, 'w')
-        e = subp.run(['diff','-c',self.expected_file,self.output_file],file_o,None)
+        ctx = subprocess.run(['diff','-c',self.expected_file,self.output_file],stdout=file_o,stderr=subprocess.PIPE)
+        e = ctx.returncode
         file_o.close()
     
         if int(e) != 0:

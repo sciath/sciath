@@ -3,7 +3,10 @@ import os
 import sys
 import shutil
 import fcntl
-import subprocess as subp
+if os.name == 'posix' and sys.version_info[0] < 3:
+    import subprocess32 as subprocess # To be removed once Python 2 is fully abandoned
+else:
+    import subprocess
 from   sciath import sciath_colors
 from   sciath import getVersion
 from   sciath._io import py23input
@@ -87,8 +90,8 @@ def _removeFile(file2rm):
             print('  removing file: ',file2rm)
             print('  ',cmd)
         else:
-            #ctx = subp.run( cmd ,universal_newlines=True, stdout=subp.PIPE, stderr=subp.PIPE )
-            ecode = subp.call( cmd )
+            #ctx = subprocess.run( cmd ,universal_newlines=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE )
+            ecode = subprocess.call( cmd )
 
 
 def _generateLaunch_PBS(launcher,walltime,output_path,job):
@@ -669,7 +672,7 @@ class Launcher:
                 file_o = open( os.path.join(output_path,o_name[i]), 'w')
                 cwd_back = os.getcwd()
                 os.chdir(exec_path)
-                ctx = subp.run( launchCmd[i] ,universal_newlines=True,stdout=file_o,stderr=file_e)
+                ctx = subprocess.run( launchCmd[i] ,universal_newlines=True,stdout=file_o,stderr=file_e)
                 os.chdir(cwd_back)
 
                 file_o.close()
@@ -689,8 +692,8 @@ class Launcher:
                 print('  [cmd] ',launchCmd)
             cwd_back = os.getcwd()
             os.chdir(exec_path)
-            # TODO launch with subp?
-            #ctx = subp.run( launchCmd,universal_newlines=True,stdout=subp.PIPE,stderr=subp.PIPE )
+            # TODO launch with subprocess?
+            #ctx = subprocess.run( launchCmd,universal_newlines=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE )
             os.system(' '.join(launchCmd))
             os.chdir(cwd_back)
             setBlockingIOStdout()
