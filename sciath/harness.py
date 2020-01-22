@@ -1,10 +1,24 @@
 import os
+import sys
 import argparse
 import shutil
 
 import sciath
 from sciath.test import Test
 from sciath.launcher import Launcher
+from sciath._enum23 import Enum23, Enum23Value
+
+class _TestRunStatus(Enum23):
+    DEACTIVATED             = Enum23Value('deactivated')  # Test skipped intentionally
+    UNKNOWN                 = Enum23Value('unknown')      # Neither checked for completion nor verified
+    NOT_LAUNCHED            = Enum23Value('not launched') # Launcher reports test has not been launched
+    INCOMPLETE              = Enum23Value('incomplete')   # Launcher reports test run incomplete
+    COMPLETE_AND_UNVERIFIED = Enum23Value('unverified')   # Launcher reports complete, yet verification not performed
+    SKIPPED                 = Enum23Value('skipped')      # Test skipped because Launcher reports of lack of resources
+    JOB_INVALID             = Enum23Value('invalid job')  # Launcher reports test's Job is incorrectly specified
+    TEST_INVALID            = Enum23Value('invalid test') # Verifier reports test/verification is badly specified
+    PASS                    = Enum23Value('pass')         # Verifier confirms pass
+    FAIL                    = Enum23Value('fail')         # Verifier confirms fail
 
 class _TestRun:
         """ A private class which adds state about a specific "run" of a Test.
@@ -21,6 +35,8 @@ class _TestRun:
             self.output_path = test.name + '_output'
             self.exec_path = os.path.join(self.output_path,'sandbox')
             self.sandbox = True
+            self.status = _TestRunStatus.UNKNOWN
+            self.status_info = ''
 
 class Harness:
 
@@ -44,6 +60,12 @@ class Harness:
                     if not os.path.exists(sentinel_file):
                         raise Exception('[SciATH] did not find expected sentinel file ' + sentinel_file)
                     shutil.rmtree(testrun.exec_path)
+
+    def determine_overall_success(self):
+        for testrun in self.testruns:
+            if testrun.status not in [_TestRunStatus.DEACTIVATED, _TestRunStatus.PASS] :
+                return False
+        return True
 
     def execute(self):
         # Always clean before executing
@@ -74,8 +96,13 @@ class Harness:
             print(testrun.test.name)
 
     def report(self):
+        """ Compile results into a report and print """
         for testrun in self.testruns:
-            print(testrun.test.name,":",testrun.test.getStatus())
+            print(testrun.test.name,":",testrun.status.value,'('+testrun.status_info+')' if testrun.status_info else '')
+        if self.determine_overall_success():
+            print("Overall Success!")
+        else:
+            print("TEST SUCCESS NOT CONFIRMED")
 
     def run_from_args(self):
         """ Perform one or more actions, based on command line options
@@ -127,12 +154,31 @@ class Harness:
         self.report()
 
         if args.error_on_test_failure:
-            raise Exception("Exit on failure option not implemented")
+            if not self.determine_overall_success():
+                sys.exit(1)
 
     def verify(self):
+        """ Update the status of all test runs """
         for testrun in self.testruns:
             if testrun.active:
-                testrun.test.verifier.execute(testrun.output_path)
+                # TODO Need to ask the launcher if the job is completed and update the status, before passing to the verifier
+                testrun.test.verifier.execute(testrun.output_path) # TODO this should not have side effects!
+                verifier_status = testrun.test.getStatus()[0]
+                verifier_info = testrun.test.getStatus()[1]
+                if verifier_status == 'pass':
+                    testrun.status = _TestRunStatus.PASS
+                    testrun.status_info = verifier_info
+                elif verifier_status in ['fail','warn']: # TODO get rid of warn?
+                    testrun.status = _TestRunStatus.FAIL
+                    testrun.status_info = verifier_info
+                elif verifier_status == 'skip':
+                    testrun.status = _TestRunStatus.SKIP
+                    testrun.status_info = verifier_info
+                else:
+                    testrun.status = _TestRunStatus.INVALID
+                    testrun.status_info = "Verifier returned unrecognized status and info: " + verifier_status + ", " + verifier_info
+            else:
+                testrun.status = _TestRunStatus.DEACTIVATED
 
     def _activate_tests_from_argument(self, test_subset_arg):
         test_subset_names = test_subset_arg.split(',')

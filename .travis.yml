@@ -9,9 +9,10 @@ branches:
     - dev
 
 install:
-  - pip install numpy
+  - pip install numpy pytest
 
 script:
   - export PYTHONPATH=$PWD:$PYTHONPATH
   - ./tests/runTests.py -d # default config
   - yes | ./tests/runTests.py -f # run tests, returning error code
+  - python -m pytest tests/enum23/test_enum23.py
