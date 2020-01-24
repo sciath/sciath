@@ -149,9 +149,12 @@ class Harness:
         if not args.verify:
             self.execute()
 
-        self.verify()
-
-        self.report()
+        if not args.verify and self.launcher.useBatch:
+            # TODO instead test something like self.launcher.is_blocking(), to make it easier to have a local batch system
+            print('Not verifying or reporting, since there is a queue')
+        else:
+            self.verify()
+            self.report()
 
         if args.error_on_test_failure:
             if not self.determine_overall_success():
