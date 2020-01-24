@@ -6,8 +6,6 @@
 # SciATH is a python module, not a scientific application, and this avoids the
 # uncomfortable situation of testing something with itself).
 
-# Note: also see .travis.yml which defines some independent tests using other tools
-
 # Note: At the time of this writing, there are no parallel tests here
 
 import sys
