@@ -32,7 +32,7 @@ class _TestRun:
         def __init__(self,test):
             self.active = True
             self.test = test
-            self.output_path = test.name + '_output'
+            self.output_path = os.path.join(os.getcwd(),test.name + '_output')
             self.exec_path = os.path.join(self.output_path,'sandbox')
             self.sandbox = True
             self.status = _TestRunStatus.UNKNOWN

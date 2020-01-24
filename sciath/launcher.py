@@ -601,13 +601,17 @@ class Launcher:
         will be executed.
         """
       
-        output_path = '.'
-        exec_path = '.'
+        output_path = os.getcwd()
+        exec_path = os.getcwd()
         for key, value in kwargs.items():
             if key == 'output_path':
                 output_path = value
+                if not os.path.isabs(output_path):
+                    raise ValueError('[SciATH] Unsupported: output paths must be absolute')
             if key == 'exec_path':
                 exec_path = value
+                if not os.path.isabs(exec_path):
+                    raise ValueError('[SciATH] Unsupported: output paths must be absolute')
 
         if job.name == None:
             raise ValueError('[SciATH] Unsupported: Job cannot be submitted without it having a name')
@@ -699,11 +703,16 @@ class Launcher:
             setBlockingIOStdout()
 
     def clean(self,job,**kwargs):
-      
-        output_path = ''
+     
+        output_path = None
         for key, value in kwargs.items():
             if key == 'output_path':
                 output_path = value
+
+        if not output_path:
+            raise ValueError('[SciATH] cannot clean without an explicit output_path')
+        if not os.path.isabs(output_path):
+            raise ValueError('[SciATH] cannot clean without an absolute output_path')
       
         try:
             job.clean()
