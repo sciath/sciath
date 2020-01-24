@@ -62,6 +62,7 @@ def TestTest1():
 def TestTest2():
     t = Test('TestTest2',1, ['cp '  + abs_path('./test/test_conf') + ' ' + 'SciATHBatchQueuingSystem.conf', 'python ' + abs_path('./test/test_ex2.py') ], abs_path('test/test_ex2.expected'))
     t.setVerifyMethod(lambda t: t.compareUnixDiff())
+    t.appendKeywords('[UnixDiff] Expected file') # skip since absolute path is printed
     t.setUseSandbox()
     return t
 
