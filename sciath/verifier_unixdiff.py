@@ -41,10 +41,10 @@ class VerifierUnixDiff(Verifier):
     
         stdoutfile = os.path.join(output_path,"sciath.verifier-unixdiff.stdout")
         file_o = open( stdoutfile, 'w')
-        ctx = subprocess.run(['diff','-c',self.expected_file,self.output_file],stdout=file_o,stderr=subprocess.PIPE)
+        ctx = subprocess.run(['diff',self.expected_file,output_full_path],stdout=file_o,stderr=subprocess.PIPE)
         e = ctx.returncode
         file_o.close()
-    
+
         if int(e) != 0:
             with open(stdoutfile, 'r') as f:
                 data = f.readlines()

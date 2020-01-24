@@ -33,7 +33,8 @@ class Test:
     def getStatus(self):
         return self.verifier.getStatus()
 
-    def print(self):
+    def test_print(self):
+        # TODO this function is only used for testing and can probably be removed (especially since this is a class which isn't supposed to directly print anything)
         rep = [self.name] + self.getStatus()
         print(rep)
         for l in self.getReport():
