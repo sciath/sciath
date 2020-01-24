@@ -8,7 +8,7 @@ from sciath.launcher import Launcher
 from sciath.test import Test
 from sciath.verifier_unixdiff import VerifierUnixDiff
 
-OUTPUT_PATH = './output'
+OUTPUT_PATH = os.path.join(os.getcwd(),'output')
 VERBOSITY = 0
 job_launcher = Launcher()
 job_launcher.setVerbosityLevel(VERBOSITY)

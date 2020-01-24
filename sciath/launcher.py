@@ -3,7 +3,10 @@ import os
 import sys
 import shutil
 import fcntl
-import subprocess as subp
+if os.name == 'posix' and sys.version_info[0] < 3:
+    import subprocess32 as subprocess # To be removed once Python 2 is fully abandoned
+else:
+    import subprocess
 from   sciath import sciath_colors
 from   sciath import getVersion
 from   sciath._io import py23input
@@ -87,8 +90,7 @@ def _removeFile(file2rm):
             print('  removing file: ',file2rm)
             print('  ',cmd)
         else:
-            #ctx = subp.run( cmd ,universal_newlines=True, stdout=subp.PIPE, stderr=subp.PIPE )
-            ecode = subp.call( cmd )
+            subprocess.call(cmd)
 
 
 def _generateLaunch_PBS(launcher,walltime,output_path,job):
@@ -378,7 +380,7 @@ class Launcher:
     def setQueueSystemType(self,type):
         if type in ['PBS','pbs']:
             self.queuingSystemType = 'pbs'
-            self.jobSubmissionCommand = 'qsub '
+            self.jobSubmissionCommand = 'qsub'
             self.useBatch = True
             self.queueFileExt = 'pbs'
 
@@ -390,13 +392,13 @@ class Launcher:
 
         elif type in ['SLURM','slurm']:
             self.queuingSystemType = 'slurm'
-            self.jobSubmissionCommand = 'sbatch '
+            self.jobSubmissionCommand = 'sbatch'
             self.useBatch = True
             self.queueFileExt = 'slurm'
 
         elif type in ['LoadLeveler','load_leveler','loadleveler','llq']:
             self.queuingSystemType = 'load_leveler'
-            self.jobSubmissionCommand = 'llsubmit '
+            self.jobSubmissionCommand = 'llsubmit'
             self.useBatch = True
             self.queueFileExt = 'llq'
             raise ValueError('[SciATH] Unsupported: LoadLeveler needs to be updated')
@@ -598,13 +600,17 @@ class Launcher:
         will be executed.
         """
       
-        output_path = '.'
-        exec_path = '.'
+        output_path = os.getcwd()
+        exec_path = os.getcwd()
         for key, value in kwargs.items():
             if key == 'output_path':
                 output_path = value
+                if not os.path.isabs(output_path):
+                    raise ValueError('[SciATH] Unsupported: output paths must be absolute')
             if key == 'exec_path':
                 exec_path = value
+                if not os.path.isabs(exec_path):
+                    raise ValueError('[SciATH] Unsupported: output paths must be absolute')
 
         if job.name == None:
             raise ValueError('[SciATH] Unsupported: Job cannot be submitted without it having a name')
@@ -658,20 +664,12 @@ class Launcher:
             file_ecode = open( os.path.join(output_path,c_name) ,'w')
             lc_count = len(launchCmd)
             for i in range(0,lc_count):
-
-                # Old style, using system().
-                #test.errno = os.system(lc) >> 8 # TODO: fix this clobbering of errno for multiple tests
-                #setBlockingIOStdout()
-
-                # New style, using subprocess.
-                # python-3 only
                 file_e = open( os.path.join(output_path,e_name[i]), 'w')
                 file_o = open( os.path.join(output_path,o_name[i]), 'w')
                 cwd_back = os.getcwd()
                 os.chdir(exec_path)
-                ctx = subp.run( launchCmd[i] ,universal_newlines=True,stdout=file_o,stderr=file_e)
+                ctx = subprocess.run( launchCmd[i], universal_newlines=True, stdout=file_o, stderr=file_e)
                 os.chdir(cwd_back)
-
                 file_o.close()
                 file_e.close()
                 file_ecode.write(str(ctx.returncode)+"\n") # exit code
@@ -684,23 +682,26 @@ class Launcher:
 
             launchfile = self.__createJobSubmissionFile(job,walltime,output_path)
             launchCmd = [self.jobSubmissionCommand,launchfile]
-            if self.verbosity_level > 0:
-                print(sciath_colors.SUBHEADER + '[Executing ' + job.name + ']' + sciath_colors.ENDC)
-                print('  [cmd] ',launchCmd)
             cwd_back = os.getcwd()
             os.chdir(exec_path)
-            # TODO launch with subp?
-            #ctx = subp.run( launchCmd,universal_newlines=True,stdout=subp.PIPE,stderr=subp.PIPE )
-            os.system(' '.join(launchCmd))
+            if self.verbosity_level > 0:
+                print(sciath_colors.SUBHEADER + '[Executing ' + job.name + ']' + sciath_colors.ENDC + ' from ' + os.getcwd())
+                print('  [cmd] ',launchCmd)
+            subprocess.run(launchCmd, universal_newlines=True)
             os.chdir(cwd_back)
             setBlockingIOStdout()
 
     def clean(self,job,**kwargs):
-      
-        output_path = ''
+     
+        output_path = None
         for key, value in kwargs.items():
             if key == 'output_path':
                 output_path = value
+
+        if not output_path:
+            raise ValueError('[SciATH] cannot clean without an explicit output_path')
+        if not os.path.isabs(output_path):
+            raise ValueError('[SciATH] cannot clean without an absolute output_path')
       
         try:
             job.clean()

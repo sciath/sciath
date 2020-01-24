@@ -5,7 +5,6 @@ from sciath.job import Job
 from sciath.job import JobSequence
 from sciath.job import JobDAG
 from sciath.verifier import Verifier
-import sciath._subprocess as subp
 from sciath.launcher import _getLaunchStandardOutputFileNames
 
 

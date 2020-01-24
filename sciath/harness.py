@@ -32,7 +32,7 @@ class _TestRun:
         def __init__(self,test):
             self.active = True
             self.test = test
-            self.output_path = test.name + '_output'
+            self.output_path = os.path.join(os.getcwd(),test.name + '_output')
             self.exec_path = os.path.join(self.output_path,'sandbox')
             self.sandbox = True
             self.status = _TestRunStatus.UNKNOWN
@@ -149,9 +149,12 @@ class Harness:
         if not args.verify:
             self.execute()
 
-        self.verify()
-
-        self.report()
+        if not args.verify and self.launcher.useBatch:
+            # TODO instead test something like self.launcher.is_blocking(), to make it easier to have a local batch system
+            print('Not verifying or reporting, since there is a queue')
+        else:
+            self.verify()
+            self.report()
 
         if args.error_on_test_failure:
             if not self.determine_overall_success():
