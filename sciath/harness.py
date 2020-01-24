@@ -6,19 +6,19 @@ import shutil
 import sciath
 from sciath.test import Test
 from sciath.launcher import Launcher
-from sciath._enum23 import Enum23, Enum23Value
+from enum import Enum # Before Python 3.4, you need the enum34 (NOT enum) module
 
-class _TestRunStatus(Enum23):
-    DEACTIVATED             = Enum23Value('deactivated')  # Test skipped intentionally
-    UNKNOWN                 = Enum23Value('unknown')      # Neither checked for completion nor verified
-    NOT_LAUNCHED            = Enum23Value('not launched') # Launcher reports test has not been launched
-    INCOMPLETE              = Enum23Value('incomplete')   # Launcher reports test run incomplete
-    COMPLETE_AND_UNVERIFIED = Enum23Value('unverified')   # Launcher reports complete, yet verification not performed
-    SKIPPED                 = Enum23Value('skipped')      # Test skipped because Launcher reports of lack of resources
-    JOB_INVALID             = Enum23Value('invalid job')  # Launcher reports test's Job is incorrectly specified
-    TEST_INVALID            = Enum23Value('invalid test') # Verifier reports test/verification is badly specified
-    PASS                    = Enum23Value('pass')         # Verifier confirms pass
-    FAIL                    = Enum23Value('fail')         # Verifier confirms fail
+class _TestRunStatus(Enum):
+    DEACTIVATED             = 'deactivated'  # Test skipped intentionally
+    UNKNOWN                 = 'unknown'      # Neither checked for completion nor verified
+    NOT_LAUNCHED            = 'not launched' # Launcher reports test has not been launched
+    INCOMPLETE              = 'incomplete'   # Launcher reports test run incomplete
+    COMPLETE_AND_UNVERIFIED = 'unverified'   # Launcher reports complete, yet verification not performed
+    SKIPPED                 = 'skipped'      # Test skipped because Launcher reports of lack of resources
+    JOB_INVALID             = 'invalid job'  # Launcher reports test's Job is incorrectly specified
+    TEST_INVALID            = 'invalid test' # Verifier reports test/verification is badly specified
+    PASS                    = 'pass'         # Verifier confirms pass
+    FAIL                    = 'fail'         # Verifier confirms fail
 
 class _TestRun:
         """ A private class which adds state about a specific "run" of a Test.
