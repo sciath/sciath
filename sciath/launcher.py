@@ -381,7 +381,7 @@ class Launcher:
     def setQueueSystemType(self,type):
         if type in ['PBS','pbs']:
             self.queuingSystemType = 'pbs'
-            self.jobSubmissionCommand = 'qsub '
+            self.jobSubmissionCommand = 'qsub'
             self.useBatch = True
             self.queueFileExt = 'pbs'
 
@@ -393,13 +393,13 @@ class Launcher:
 
         elif type in ['SLURM','slurm']:
             self.queuingSystemType = 'slurm'
-            self.jobSubmissionCommand = 'sbatch '
+            self.jobSubmissionCommand = 'sbatch'
             self.useBatch = True
             self.queueFileExt = 'slurm'
 
         elif type in ['LoadLeveler','load_leveler','loadleveler','llq']:
             self.queuingSystemType = 'load_leveler'
-            self.jobSubmissionCommand = 'llsubmit '
+            self.jobSubmissionCommand = 'llsubmit'
             self.useBatch = True
             self.queueFileExt = 'llq'
             raise ValueError('[SciATH] Unsupported: LoadLeveler needs to be updated')
