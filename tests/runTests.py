@@ -1,13 +1,15 @@
 #!/usr/bin/env python
 
 # Note that these are NOT well-done. These are put quickly in place
-# to help us refactor, and should later be replaced using a newer version of SciATH!
+# to help us refactor, and should later be replaced using a newer version of SciATH,
+# or an independent tool (this is probably better, as it's less confusing,
+# SciATH is a python module, not a scientific application, and this avoids the
+# uncomfortable situation of testing something with itself).
+
+# Note: also see .travis.yml which defines some independent tests using other tools
 
 # Note: At the time of this writing, there are no parallel tests here
 
-# Note: this is not so error-prone for now, since we use a version with the old package name.
-# Later, we need to make extremely sure we import the correct (older) version of SciATH,
-# printing out enough to make this very clear if we make a mistake
 import sys
 import os
 import re
