@@ -687,11 +687,11 @@ class Launcher:
 
             launchfile = self.__createJobSubmissionFile(job,walltime,output_path)
             launchCmd = [self.jobSubmissionCommand,launchfile]
-            if self.verbosity_level > 0:
-                print(sciath_colors.SUBHEADER + '[Executing ' + job.name + ']' + sciath_colors.ENDC)
-                print('  [cmd] ',launchCmd)
             cwd_back = os.getcwd()
             os.chdir(exec_path)
+            if self.verbosity_level > 0:
+                print(sciath_colors.SUBHEADER + '[Executing ' + job.name + ']' + sciath_colors.ENDC + ' from ' + os.getcwd())
+                print('  [cmd] ',launchCmd)
             # TODO launch with subprocess?
             #ctx = subprocess.run( launchCmd,universal_newlines=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE )
             os.system(' '.join(launchCmd))
