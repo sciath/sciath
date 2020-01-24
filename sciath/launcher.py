@@ -665,20 +665,12 @@ class Launcher:
             file_ecode = open( os.path.join(output_path,c_name) ,'w')
             lc_count = len(launchCmd)
             for i in range(0,lc_count):
-
-                # Old style, using system().
-                #test.errno = os.system(lc) >> 8 # TODO: fix this clobbering of errno for multiple tests
-                #setBlockingIOStdout()
-
-                # New style, using subprocess.
-                # python-3 only
                 file_e = open( os.path.join(output_path,e_name[i]), 'w')
                 file_o = open( os.path.join(output_path,o_name[i]), 'w')
                 cwd_back = os.getcwd()
                 os.chdir(exec_path)
-                ctx = subprocess.run( launchCmd[i] ,universal_newlines=True,stdout=file_o,stderr=file_e)
+                ctx = subprocess.run( launchCmd[i], universal_newlines=True, stdout=file_o, stderr=file_e)
                 os.chdir(cwd_back)
-
                 file_o.close()
                 file_e.close()
                 file_ecode.write(str(ctx.returncode)+"\n") # exit code
@@ -696,9 +688,7 @@ class Launcher:
             if self.verbosity_level > 0:
                 print(sciath_colors.SUBHEADER + '[Executing ' + job.name + ']' + sciath_colors.ENDC + ' from ' + os.getcwd())
                 print('  [cmd] ',launchCmd)
-            # TODO launch with subprocess?
-            #ctx = subprocess.run( launchCmd,universal_newlines=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE )
-            os.system(' '.join(launchCmd))
+            subprocess.run(launchCmd, universal_newlines=True)
             os.chdir(cwd_back)
             setBlockingIOStdout()
 
