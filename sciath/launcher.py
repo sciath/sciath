@@ -90,8 +90,7 @@ def _removeFile(file2rm):
             print('  removing file: ',file2rm)
             print('  ',cmd)
         else:
-            #ctx = subprocess.run( cmd ,universal_newlines=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE )
-            ecode = subprocess.call( cmd )
+            subprocess.call(cmd)
 
 
 def _generateLaunch_PBS(launcher,walltime,output_path,job):
