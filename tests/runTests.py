@@ -54,12 +54,16 @@ def LauncherTest1():
     return t
 
 def TestTest1():
-    t = Test('TestTest1',1, [ 'cp -r ' + abs_path('./test/expected/') + ' expected','cp '  + abs_path('./test/test_conf') + ' ' + 'SciATHBatchQueuingSystem.conf', 'python ' + abs_path('./test/unittest_ex1.py') ], abs_path('test/unittest_ex1.expected'))
+    t = Test('TestTest1',1, ['cp '  + abs_path('./test/test_conf') + ' ' + 'SciATHBatchQueuingSystem.conf', 'python ' + abs_path('./test/unittest_ex1.py') ], abs_path('test/unittest_ex1.expected'))
     t.setVerifyMethod(lambda t: t.compareUnixDiff())
     t.setUseSandbox()
     return t
 
-# Missing: test/unittest_ex2.py testing
+def TestTest2():
+    t = Test('TestTest2',1, ['cp '  + abs_path('./test/test_conf') + ' ' + 'SciATHBatchQueuingSystem.conf', 'python ' + abs_path('./test/unittest_ex2.py') ], abs_path('test/unittest_ex2.expected'))
+    t.setVerifyMethod(lambda t: t.compareUnixDiff())
+    t.setUseSandbox()
+    return t
 
 def main():
     print('SciATH Self-tests')
@@ -71,6 +75,7 @@ def main():
         JobCompositeTest(),
         LauncherTest1(),
         TestTest1(),
+        TestTest2(),
         ])
     harness.execute()
     harness.verify()

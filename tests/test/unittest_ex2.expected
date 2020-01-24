@@ -1,0 +1,7 @@
+['Test_1_ud', 'pass', 'verification was successful']
+['Test_2_ud', 'fail', 'verification failed']
+3d2
+< 
+[UnixDiff] Expected and output files are not identical
+[UnixDiff] Expected file: "/Users/patrick/code/sciath/tests/test/./expected/t1.expected"
+[UnixDiff] Output file  : "sciath.job-Test_2_ud.stdout"
