@@ -9,7 +9,7 @@ else:
     import subprocess
 from   sciath import sciath_colors
 from   sciath import getVersion
-from   sciath._io import py23input
+from   sciath._io import py23input, _remove_file
 
 # mpiexec has been observed to set non-blocking I/O, which
 #  has been observed to cause problems on OS X with errors like
@@ -79,20 +79,6 @@ def _getLaunchStandardOutputFileNames(job):
 
     return errorCodeName, stdoutName, stderrName
 
-def _removeFile(file2rm):
-    safetyMode = True
-    debugMode = False
-    if os.path.isfile(file2rm) :
-        cmd = ['rm',file2rm]
-        if safetyMode == True:
-            cmd = ['rm','-i',file2rm]
-        if debugMode == True:
-            print('  removing file: ',file2rm)
-            print('  ',cmd)
-        else:
-            subprocess.call(cmd)
-
-
 def _generateLaunch_PBS(launcher,walltime,output_path,job):
   
     if walltime is None:
@@ -135,7 +121,7 @@ def _generateLaunch_PBS(launcher,walltime,output_path,job):
     # Dependent jobs have their stdout collected in separate files (one per job)
     # The stdout/stderr for the parent job is collected via the queue system
 
-    _removeFile( os.path.join(output_path,c_name) )
+    _remove_file( os.path.join(output_path,c_name) )
 
     command_resource = job.createExecuteCommand()
     njobs = len(command_resource)
@@ -208,7 +194,7 @@ def _generateLaunch_LSF(launcher,rusage,walltime,output_path,job):
     # Dependent jobs have their stdout collected in separate files (one per job)
     # The stdout/stderr for the parent job is collected via the queue system
 
-    _removeFile( os.path.join(output_path,c_name) )
+    _remove_file( os.path.join(output_path,c_name) )
   
     command_resource = job.createExecuteCommand()
     njobs = len(command_resource)
@@ -287,7 +273,7 @@ def _generateLaunch_SLURM(launcher,walltime,output_path,job):
     # Dependent jobs have their stdout collected in separate files (one per job)
     # The stdout/stderr for the parent job is collected via the queue system
 
-    _removeFile( os.path.join(output_path,c_name) )
+    _remove_file( os.path.join(output_path,c_name) )
   
     command_resource = job.createExecuteCommand()
     njobs = len(command_resource)
@@ -709,15 +695,15 @@ class Launcher:
             pass
 
         c_name,o_name,e_name = _getLaunchStandardOutputFileNames(job)
-        _removeFile( os.path.join(output_path,c_name) )
+        _remove_file( os.path.join(output_path,c_name) )
         for f in o_name:
-            _removeFile( os.path.join(output_path,f) )
+            _remove_file( os.path.join(output_path,f) )
         for f in e_name:
-            _removeFile( os.path.join(output_path,f) )
+            _remove_file( os.path.join(output_path,f) )
         
         if self.queueFileExt is not None:
             filename = "sciath.job-" + job.name + "-launch." + self.queueFileExt
-            _removeFile( os.path.join(output_path,filename) )
+            _remove_file( os.path.join(output_path,filename) )
 
         return
         

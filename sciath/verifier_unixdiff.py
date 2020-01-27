@@ -10,7 +10,7 @@ from sciath.job import JobSequence
 from sciath.job import JobDAG
 from sciath.verifier import Verifier
 from sciath import sciath_test_status
-from sciath.launcher import _removeFile
+from sciath._io import _remove_file
 
 
 class VerifierUnixDiff(Verifier):
@@ -60,7 +60,7 @@ class VerifierUnixDiff(Verifier):
         else:
             self.status = sciath_test_status.ok
     
-        _removeFile(stdoutfile)
+        _remove_file(stdoutfile)
 
         return
 

@@ -1,4 +1,9 @@
+import os
 import sys
+if os.name == 'posix' and sys.version_info[0] < 3:
+    import subprocess32 as subprocess # To be removed once Python 2 is fully abandoned
+else:
+    import subprocess
 
 def py23input(prompt) :
     if sys.version_info[0] == 2 :
@@ -6,6 +11,20 @@ def py23input(prompt) :
     else :
         v = input(prompt)
     return(v)
+
+def _remove_file(file2rm):
+    """ Remove a file, with some debugging options for development purposes """
+    safetyMode = True
+    debugMode = False
+    if os.path.isfile(file2rm) :
+        cmd = ['rm',file2rm]
+        if safetyMode == True:
+            cmd = ['rm','-i',file2rm]
+        if debugMode == True:
+            print('  removing file: ',file2rm)
+            print('  ',cmd)
+        else:
+            subprocess.call(cmd)
 
 class NamedColors:
     def __init__(self):
