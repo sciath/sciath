@@ -596,7 +596,7 @@ class Launcher:
             if key == 'exec_path':
                 exec_path = value
                 if not os.path.isabs(exec_path):
-                    raise ValueError('[SciATH] Unsupported: output paths must be absolute')
+                    raise ValueError('[SciATH] Unsupported: exec paths must be absolute')
 
         if job.name == None:
             raise ValueError('[SciATH] Unsupported: Job cannot be submitted without it having a name')
