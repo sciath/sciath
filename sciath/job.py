@@ -19,8 +19,18 @@ class Job:
       job = Job('echo \\"hi\\"', name='job-1', exitCode=0)
 
     """
-    def __init__(self,cmd,**kwargs):
-        self.cmd      = cmd # command which will be executed via a system call to run this job
+
+    _default_job_name = 'job'
+
+    def __init__(self, cmd, name=None, **kwargs):
+        self.cmd = cmd # command which will be executed via a system call to run this job
+        if name is None:
+            self.name = Job._default_job_name
+            self.named_by_default = True
+        else:
+            self.name = name.replace(' ','_')
+            self.named_by_default = False
+
         # Design note: we use a dict to enable developers to easily add support for different resource requests
         self.resources = dict()
         self.setResources(**kwargs) # looking in kwargs for any resources
@@ -30,13 +40,10 @@ class Job:
             self.resources.update({"idlempirankspernode":0}) # idle ranks-per-compute-node resource data
 
         # optional info not needing a setter (e.g. they are not special enough)
-        self.name              = None
         self.exit_code_success = 0
         self.wall_time         = 10.0/60.0 # 10 secs (in minutes)
 
         for key, value in kwargs.items():
-            if key == 'name':
-                self.name = value.replace(' ','_')
             if key == 'exitCode':
                 self.exit_code_success = int(value)
             if key == 'wall_time':
@@ -164,13 +171,10 @@ class Job:
         Display the contents of an Job instance to stdout.
         The parent->child relationship will be reported.
         Uninitialized non-essential members will not be reported.
-        This includes: self.name; self.child.
+        This includes: self.child.
         """
 
-        if self.name:
-            print('Job: Job name:',self.name)
-        else:
-            print('Job:')
+        print('Job: Job name:',self.name)
         print('Command:',self.cmd)
         print('Exit code success:',self.exit_code_success)
         #print('MPI ranks:',self.resources["mpiranks"],', Threads:',self.resources["threads"])
@@ -197,8 +201,8 @@ class JobSequence(Job):
                                exitCode       (int): the exit code which should be used to infer success.
     """
 
-    def __init__(self,cmd,**kwargs):
-        Job.__init__(self,cmd,**kwargs)
+    def __init__(self,cmd,name='job_sequence',**kwargs):
+        Job.__init__(self,cmd,name,**kwargs)
         self.sequence = []
 
 
@@ -284,7 +288,7 @@ class JobSequence(Job):
         Display the contents of an job sequence to stdout.
         The parent will be reported first followed by its dependencies.
         Uninitialized non-essential members will not be reported.
-        This includes: self.name; self.child.
+        This includes: self.child.
         """
 
         Job.view(self)
@@ -339,31 +343,18 @@ class JobDAG(Job):
                                exitCode       (int): the exit code which should be used to infer success.
     """
 
-    def __init__(self,cmd,**kwargs):
-        Job.__init__(self,cmd,**kwargs)
+    def __init__(self,cmd,name='job_dag',**kwargs):
+        Job.__init__(self,cmd,name,**kwargs)
         self.dag = []
         self.order = []
         self.joblist = dict()
         # Keep track of how many jobs have been added.
-        # This is useful for generating job names (when required, e.g. user did not provide one)
-        self.jobcnt = 0
-
-        # if the parent job was not given a name, assign a default name
-        if not self.name:
-            self.name = 'default-job-' + str(self.jobcnt)
-            self.jobcnt += 1
-
 
     def registerJob(self,job):
         """
         Register a dependent job.
         All jobs which will appear in your DAG must be registered.
-        The dependent job is required to have the member job.name to be set.
-        If a value has not been set, this function will modify job
-        and define a default value for job.name.
         """
-        if not job.name:
-            job.name = 'default-job-' + str(self.jobcnt)
         try:
             s = self.joblist[ job.name ]
         except:
@@ -373,7 +364,6 @@ class JobDAG(Job):
             raise RuntimeError(message)
 
         self.joblist.update({job.name: job})
-        self.jobcnt += 1
 
 
     def insert(self,dag):
