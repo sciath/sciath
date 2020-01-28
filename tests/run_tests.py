@@ -23,6 +23,34 @@ def abs_path(path) :
     this_dir = os.path.dirname(os.path.abspath(__file__))
     return os.path.join(this_dir,path)
 
+def HarnessTest1():
+    t = Test('HarnessTest1',1, [ 'cp '  + abs_path('./test_conf') + ' ' + 'SciATHBatchQueuingSystem.conf', 'python ' + abs_path('./harness/test1.py') ], abs_path('harness/test1.expected'))
+    t.setVerifyMethod(lambda t: t.compareUnixDiff())
+    t.appendKeywords('[Executing') # skip since absolute path is printed
+    t.setUseSandbox()
+    return t
+
+def HarnessTest2():
+    t = Test('HarnessTest2',1, [ 'cp '  + abs_path('./test_conf') + ' ' + 'SciATHBatchQueuingSystem.conf', 'python ' + abs_path('./harness/test2.py') ], abs_path('harness/test2.expected'))
+    t.setVerifyMethod(lambda t: t.compareUnixDiff())
+    t.appendKeywords('[Executing') # skip since absolute path is printed
+    t.setUseSandbox()
+    return t
+
+def HarnessTest2List():
+    t = Test('HarnessTest2List',1, [ 'cp '  + abs_path('./test_conf') + ' ' + 'SciATHBatchQueuingSystem.conf', 'python ' + abs_path('./harness/test2.py') + ' -l'], abs_path('harness/test2list.expected'))
+    t.setVerifyMethod(lambda t: t.compareUnixDiff())
+    t.appendKeywords('[Executing') # skip since absolute path is printed
+    t.setUseSandbox()
+    return t
+
+def HarnessTest3():
+    t = Test('HarnessTest3',1, [ 'cp '  + abs_path('./test_conf') + ' ' + 'SciATHBatchQueuingSystem.conf', 'python ' + abs_path('./harness/test3.py') ], abs_path('harness/test3.expected'))
+    t.setVerifyMethod(lambda t: t.compareUnixDiff())
+    t.appendKeywords('[Executing') # skip since absolute path is printed
+    t.setUseSandbox()
+    return t
+
 def JobTest():
     t = Test('JobTest',1,'python ' + abs_path('./job/test_job.py'),abs_path('job/test_job.expected'))
     t.setVerifyMethod(lambda t: t.compareUnixDiff())
@@ -70,6 +98,10 @@ def main():
     print('SciATH Self-tests')
     print('Testing with version',getStableVersion(),'from',stablePackage.__file__)
     harness = Harness([
+        HarnessTest1(),
+        HarnessTest2(),
+        HarnessTest2List(),
+        HarnessTest3(),
         JobTest(),
         JobSequenceTest(),
         JobDAGTest(),
