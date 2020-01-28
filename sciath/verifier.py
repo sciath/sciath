@@ -1,6 +1,7 @@
-
 import os
+
 import numpy as np
+
 from sciath.job import Job
 from sciath.job import JobSequence
 from sciath.job import JobDAG
@@ -100,4 +101,3 @@ class Verifier:
             self.status = s
 
         return
-
