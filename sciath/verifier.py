@@ -18,14 +18,6 @@ class Verifier:
       self.status = None
       self.report = []
 
-    def listifyStream(self,fname):
-        with open(fname, 'r') as f:
-            data = f.readlines()
-        for k in range(0,len(data)):
-            line = data[k]
-            data[k] = line.rstrip("\n")
-        return data
-
     def getReport(self):
         return self.report
 
