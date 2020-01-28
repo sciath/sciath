@@ -13,6 +13,12 @@ VERBOSITY = 0
 job_launcher = Launcher()
 job_launcher.setVerbosityLevel(VERBOSITY)
 
+def test_print(test):
+    rep = [test.name] + test.getStatus()
+    print(rep)
+    for l in test.getReport():
+        print(l)
+
 # Default verifier (check error code)
 def test1(): # result: pass
     cmd = ['echo' , '"aBc";' , 'echo' '"kspits=30"' , 'echo ""' ]
@@ -20,7 +26,7 @@ def test1(): # result: pass
     t = Test( Job(cmd), 'Test_1')
     job_launcher.submitJob( t.job, output_path = OUTPUT_PATH )
     t.verify(output_path = OUTPUT_PATH)
-    t.test_print()
+    test_print(t)
     return t
 
 def test2(): # result: pass
@@ -29,7 +35,7 @@ def test2(): # result: pass
     t = Test( Job(cmd), 'Test_2')
     job_launcher.submitJob( t.job, output_path = OUTPUT_PATH )
     t.verify(output_path = OUTPUT_PATH)
-    t.test_print()
+    test_print(t)
     return t
 
 def test3(): # result: fail
@@ -38,7 +44,7 @@ def test3(): # result: fail
     t = Test( Job(cmd,exitCode = 1), 'Test_3')
     job_launcher.submitJob( t.job, output_path = OUTPUT_PATH )
     t.verify(output_path = OUTPUT_PATH)
-    t.test_print()
+    test_print(t)
     return t
 
 def test4(): # result: pass
@@ -64,7 +70,7 @@ def main():
     # test with staged submit/verify
     t4 = test4()
     t4.verify(output_path = OUTPUT_PATH)
-    t4.test_print()
+    test_print(t4)
     job_launcher.clean(t4.job, output_path = OUTPUT_PATH)
 
     tests = [t1,t2,t3,t4]

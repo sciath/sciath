@@ -10,14 +10,13 @@ class Job:
       **kwargs (name=value): A keyword argument list.
                              The Job constructor will recognize the following names:
                                name        (string): textual name you want to assign to the job.
-                               description (string): desciption of what the job does.
                                exitCode       (int): the exit code which should be used to infer success.
     Examples:
       job = Job('echo \\"hi\\"') -> a new job which will simply execute $echo 'hi'
 
       job = Job('echo \\"hi\\"',**kwargs,) -> a new job which will simply execute $echo "hi"
                                          and with variables initialized with the name=value pairs
-      job = Job('echo \\"hi\\"', name='job-1', description='My first SciATH job', exitCode=0)
+      job = Job('echo \\"hi\\"', name='job-1', exitCode=0)
 
     """
     def __init__(self,cmd,**kwargs):
@@ -32,15 +31,12 @@ class Job:
 
         # optional info not needing a setter (e.g. they are not special enough)
         self.name              = None
-        self.description       = None
         self.exit_code_success = 0
         self.wall_time         = 10.0/60.0 # 10 secs (in minutes)
 
         for key, value in kwargs.items():
             if key == 'name':
                 self.name = value.replace(' ','_')
-            if key == 'description':
-                self.description = value
             if key == 'exitCode':
                 self.exit_code_success = int(value)
             if key == 'wall_time':
@@ -168,15 +164,13 @@ class Job:
         Display the contents of an Job instance to stdout.
         The parent->child relationship will be reported.
         Uninitialized non-essential members will not be reported.
-        This includes: self.name; self.description; self.child.
+        This includes: self.name; self.child.
         """
 
         if self.name:
             print('Job: Job name:',self.name)
         else:
             print('Job:')
-        if self.description:
-            print('Description:',self.description)
         print('Command:',self.cmd)
         print('Exit code success:',self.exit_code_success)
         #print('MPI ranks:',self.resources["mpiranks"],', Threads:',self.resources["threads"])
@@ -200,7 +194,6 @@ class JobSequence(Job):
       **kwargs (name=value): A keyword argument list.
                              The Job constructor will recognize the following names:
                                name        (string): textual name you want to assign to the job.
-                               description (string): desciption of what the job does.
                                exitCode       (int): the exit code which should be used to infer success.
     """
 
@@ -291,7 +284,7 @@ class JobSequence(Job):
         Display the contents of an job sequence to stdout.
         The parent will be reported first followed by its dependencies.
         Uninitialized non-essential members will not be reported.
-        This includes: self.name; self.description; self.child.
+        This includes: self.name; self.child.
         """
 
         Job.view(self)
@@ -343,7 +336,6 @@ class JobDAG(Job):
       **kwargs (name=value): A keyword argument list.
                              The Job constructor will recognize the following names:
                                name        (string): textual name you want to assign to the job.
-                               description (string): desciption of what the job does.
                                exitCode       (int): the exit code which should be used to infer success.
     """
 

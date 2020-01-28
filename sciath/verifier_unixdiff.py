@@ -14,8 +14,8 @@ from sciath._io import _remove_file
 
 
 class VerifierUnixDiff(Verifier):
-    def __init__(self,test,expected_file,output_file=None,**kwargs):
-      Verifier.__init__(self,test,**kwargs)
+    def __init__(self,test,expected_file,output_file=None):
+      Verifier.__init__(self,test)
       if expected_file is None:
           raise RuntimeError('[Sciath] Must set expected_file on test')
       self.expected_file = expected_file
