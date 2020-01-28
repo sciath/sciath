@@ -13,10 +13,6 @@ class Test:
         self.job = job
         self.name = name
 
-        for key, value in kwargs.items():
-            if key == 'description':
-                self.description = value
-
         if self.name is None:
             message = '[SciATH error] Test constructor requires a valid name is provided.'
             raise RuntimeError(message)
