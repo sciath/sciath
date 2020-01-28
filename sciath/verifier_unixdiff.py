@@ -24,20 +24,19 @@ class VerifierUnixDiff(Verifier):
 
     def execute(self,output_path,exec_path = None):
     
-        self.status = None
-        self.report = []
+        status = None
+        report = []
     
         if not os.path.isfile(self.expected_file) :
-            self.report.append("[UnixDiff] Expected file \"" + self.expected_file + "\" was not found")
-            self.status = sciath_test_status.expected_file_not_found
+            report.append("[UnixDiff] Expected file \"" + self.expected_file + "\" was not found")
+            status = sciath_test_status.expected_file_not_found
             return
    
         output_full_path = os.path.join(output_path,self.output_file)
         if not os.path.isfile(output_full_path) :
-            self.report.append("[UnixDiff] Output file \"" + output_full_path + "\" was not found")
-            self.status = sciath_test_status.output_file_not_found
+            report.append("[UnixDiff] Output file \"" + output_full_path + "\" was not found")
+            status = sciath_test_status.output_file_not_found
             return
-    
     
         stdoutfile = os.path.join(output_path,"sciath.verifier-unixdiff.stdout")
         file_o = open( stdoutfile, 'w')
@@ -48,20 +47,18 @@ class VerifierUnixDiff(Verifier):
         if int(e) != 0:
             with open(stdoutfile, 'r') as f:
                 data = f.readlines()
-            self.report += data
-            for k in range(0,len(self.report)):
-                line = self.report[k]
-                self.report[k] = line.rstrip("\n")
+            report += data
+            for k in range(0,len(report)):
+                line = report[k]
+                report[k] = line.rstrip("\n")
       
-            self.report.append("[UnixDiff] Expected and output files are not identical")
-            self.report.append("[UnixDiff] Expected file: \"" + self.expected_file + "\"")
-            self.report.append("[UnixDiff] Output file  : \"" + self.output_file + "\"")
-            self.status = sciath_test_status.not_ok
+            report.append("[UnixDiff] Expected and output files are not identical")
+            report.append("[UnixDiff] Expected file: \"" + self.expected_file + "\"")
+            report.append("[UnixDiff] Output file  : \"" + self.output_file + "\"")
+            status = sciath_test_status.not_ok
         else:
-            self.status = sciath_test_status.ok
+            status = sciath_test_status.ok
     
         _remove_file(stdoutfile)
 
-        return
-
-
+        return status,report

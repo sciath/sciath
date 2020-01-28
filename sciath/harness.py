@@ -165,9 +165,10 @@ class Harness:
         for testrun in self.testruns:
             if testrun.active:
                 # TODO Need to ask the launcher if the job is completed and update the status, before passing to the verifier
-                testrun.test.verifier.execute(testrun.output_path) # TODO this should not have side effects!
-                verifier_status = testrun.test.getStatus()[0]
-                verifier_info = testrun.test.getStatus()[1]
+                status,report = testrun.test.verifier.execute(testrun.output_path)
+                # TODO report is not currently used (use when improving reporting)
+                verifier_status = status[0]
+                verifier_info = status[1]
                 if verifier_status == 'pass':
                     testrun.status = _TestRunStatus.PASS
                     testrun.status_info = verifier_info

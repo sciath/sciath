@@ -13,10 +13,11 @@ VERBOSITY = 0
 job_launcher = Launcher()
 job_launcher.setVerbosityLevel(VERBOSITY)
 
-def test_print(test):
-    rep = [test.name] + test.getStatus()
+def test_print(test, output_path):
+    status,report = test.verifier.execute(output_path = output_path)
+    rep = [test.name] + status
     print(rep)
-    for l in test.getReport():
+    for l in report:
         print(l)
 
 # Default verifier (check error code)
@@ -26,7 +27,7 @@ def test1(): # result: pass
     t = Test(Job(cmd, 'Test_1'))
     job_launcher.submitJob( t.job, output_path = OUTPUT_PATH )
     t.verify(output_path = OUTPUT_PATH)
-    test_print(t)
+    test_print(t, output_path = OUTPUT_PATH)
     return t
 
 def test2(): # result: pass
@@ -35,7 +36,7 @@ def test2(): # result: pass
     t = Test( Job(cmd, 'Test_2'))
     job_launcher.submitJob( t.job, output_path = OUTPUT_PATH )
     t.verify(output_path = OUTPUT_PATH)
-    test_print(t)
+    test_print(t, output_path = OUTPUT_PATH)
     return t
 
 def test3(): # result: fail
@@ -44,7 +45,7 @@ def test3(): # result: fail
     t = Test(Job(cmd, 'Test_3', exitCode = 1))
     job_launcher.submitJob( t.job, output_path = OUTPUT_PATH )
     t.verify(output_path = OUTPUT_PATH)
-    test_print(t)
+    test_print(t, output_path = OUTPUT_PATH)
     return t
 
 def test4(): # result: pass
@@ -70,7 +71,7 @@ def main():
     # test with staged submit/verify
     t4 = test4()
     t4.verify(output_path = OUTPUT_PATH)
-    test_print(t4)
+    test_print(t4, output_path = OUTPUT_PATH)
     job_launcher.clean(t4.job, output_path = OUTPUT_PATH)
 
     tests = [t1,t2,t3,t4]

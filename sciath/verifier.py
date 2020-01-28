@@ -1,6 +1,7 @@
-
 import os
+
 import numpy as np
+
 from sciath.job import Job
 from sciath.job import JobSequence
 from sciath.job import JobDAG
@@ -14,34 +15,18 @@ class Verifier:
       self.test = test
       self.job = test.job
       self.c_name, self.o_name, self.e_name = _getLaunchStandardOutputFileNames(self.job)
-      self.status = None
-      self.report = []
-
-    def listifyStream(self,fname):
-        with open(fname, 'r') as f:
-            data = f.readlines()
-        for k in range(0,len(data)):
-            line = data[k]
-            data[k] = line.rstrip("\n")
-        return data
-
-    def getReport(self):
-        return self.report
-
-    def getStatus(self):
-        return self.status
 
     def execute(self,output_path,exec_path=None):
-        """ Relative to a given output path, fetch file, look at return code, check it matches that expected"""
+        """ Relative to a given output path, fetch file(s) and produce status,report """
 
-        self.status = None
-        self.report = []
+        status = None
+        report = []
 
         errorfile = os.path.join(output_path,self.c_name)
         if not os.path.isfile(errorfile) :
-            self.report.append("[ReturnCodeDiff] File (" + errorfile + ") not found")
-            self.status = sciath_test_status.job_not_run
-            return
+            report.append("[ReturnCodeDiff] File (" + errorfile + ") not found")
+            status = sciath_test_status.job_not_run
+            return status,report
 
         with open(errorfile, 'r') as f:
             data = f.readlines()
@@ -50,27 +35,27 @@ class Verifier:
         # special
         if not isinstance(self.job,JobSequence) and not isinstance(self.job,JobDAG):
             if self.job.exit_code_success != data[0]:
-                self.status = sciath_test_status.not_ok
-                return
+                status = sciath_test_status.not_ok
+                return status,report
             else:
-                self.status = sciath_test_status.ok
-                return
+                status = sciath_test_status.ok
+                return status,report
 
         else:
             jobs = self.job.getJobList()
 
             if len(data) != len(jobs):
-                self.report.append("[ReturnCodeDiff] Mismatch in number of error codes found and jobs run. This should never happen.")
+                report.append("[ReturnCodeDiff] Mismatch in number of error codes found and jobs run. This should never happen.")
                 exret = np.zeros(len(jobs))
                 for j in range(0,len(jobs)):
                     exret[j] = int(jobs[j].exit_code_success)
                 msg = "[ReturnCodeDiff] Expected return codes: " + str(exret)
-                self.report.append(msg)
+                report.append(msg)
                 msg = "[ReturnCodeDiff] Output return codes  : " + str(data)
-                self.report.append(msg)
-                self.report.append("[ReturnCodeDiff] Output file: " + errorfile)
-                self.status = sciath_test_status.not_ok
-                return
+                report.append(msg)
+                report.append("[ReturnCodeDiff] Output file: " + errorfile)
+                status = sciath_test_status.not_ok
+                return status,report
 
             L = len(data)
             anyChildrenFailed = False
@@ -92,12 +77,11 @@ class Verifier:
                     s = sciath_test_status.parent_and_depjob_failed
             if s != sciath_test_status.ok:
                 msg = "[ReturnCodeDiff] Expected return codes: " + str(exret)
-                self.report.append(msg)
+                report.append(msg)
                 msg = "[ReturnCodeDiff] Output return codes  : " + str(data)
-                self.report.append(msg)
-                self.report.append("[ReturnCodeDiff] Output file: " + errorfile)
+                report.append(msg)
+                report.append("[ReturnCodeDiff] Output file: " + errorfile)
 
-            self.status = s
+            status = s
 
-        return
-
+        return status,report
