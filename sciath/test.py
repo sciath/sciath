@@ -9,18 +9,14 @@ from sciath.launcher import _getLaunchStandardOutputFileNames
 
 
 class Test:
-    def __init__(self,job,name):
+    def __init__(self, job, name = None):
         self.job = job
-        self.name = name
-
-        if self.name is None:
-            message = '[SciATH error] Test constructor requires a valid name is provided.'
-            raise RuntimeError(message)
-
-        # Overide job name. Since test requires a name, and launcher requires a job to have a name,
-        # this overide ensures test.job will go through the launcher without error.
-        job.name = self.name
-
+        if name is not None:
+            self.name = name
+        else:
+            if job.named_by_default:
+                raise Exception("[SciATH error] to create a Test, you must either name the Test or the Job explicitly")
+            self.name = job.name
         self.verifier = Verifier(self)
 
     def getReport(self):

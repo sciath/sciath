@@ -24,7 +24,7 @@ def test_print(test):
 def test1_ud(): # result: pass
     cmd = ['sh' , os.path.join(this_dir,'write_test1_ud.sh') ]
 
-    t = Test( Job(cmd), 'Test_1_ud')
+    t = Test(Job(cmd, 'Test_1_ud'))
     t.verifier = VerifierUnixDiff(t, os.path.join(this_dir,"./expected/t1.expected"))
 
     job_launcher.submitJob( t.job, output_path = OUTPUT_PATH, exec_path = OUTPUT_PATH )
@@ -35,7 +35,7 @@ def test1_ud(): # result: pass
 def test2_ud(): # result: fail
     cmd = ['sh' , os.path.join(this_dir,'write_test2_ud.sh') ]
 
-    t = Test( Job(cmd), 'Test_2_ud' )
+    t = Test(Job(cmd, 'Test_2_ud'))
     t.verifier = VerifierUnixDiff(t, os.path.join(this_dir,"./expected/t1.expected"))
 
     job_launcher.submitJob( t.job, output_path = OUTPUT_PATH, exec_path = OUTPUT_PATH )
