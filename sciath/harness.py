@@ -2,11 +2,11 @@ import os
 import sys
 import argparse
 import shutil
+from enum import Enum # Before Python 3.4, you need the enum34 (NOT enum) module
 
 import sciath
 from sciath.test import Test
 from sciath.launcher import Launcher
-from enum import Enum # Before Python 3.4, you need the enum34 (NOT enum) module
 
 class _TestRunStatus(Enum):
     DEACTIVATED             = 'deactivated'  # Test skipped intentionally
