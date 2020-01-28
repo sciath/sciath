@@ -19,11 +19,6 @@ class Test:
             self.name = job.name
         self.verifier = Verifier(self)
 
-    def getReport(self):
-        return self.verifier.getReport()
-
-    def getStatus(self):
-        return self.verifier.getStatus()
-
     def verify(self,output_path):
-        self.verifier.execute(output_path)
+        status,report = self.verifier.execute(output_path)
+        return status,report
