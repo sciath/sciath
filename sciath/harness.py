@@ -39,6 +39,24 @@ class _TestRun:
             self.status_info = ''
 
 class Harness:
+    """ :class:`Harness` is the central user-facing class in SciATH.
+
+    It manages a set of tests, and thus includes:
+
+    * A set of uniquely-named :class:`Test` objects
+    * A :class:`Launcher`
+    * Tools for running and verifying a test suite
+    * Tools for managing "sandboxing" (managing directories in which to run tests)
+
+
+    It is the exclusive location within SciATH for
+
+    * Printing to stdout
+    * Information about where to launch ``Jobs`` from, passed to included ``Launcher``
+
+    A :class:`Harness` object's state is confined to the state of a list of internal
+    :class:`_TestRun` objects.
+    """
 
     _sandbox_sentinel_filename = '.sciath_sandbox'
 

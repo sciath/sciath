@@ -301,6 +301,27 @@ def _generateLaunch_SLURM(launcher,walltime,output_path,job):
 
 
 class Launcher:
+    """ :class:`Launcher` is responsible for executing tasks specified by a :class:`Job`, 
+    depending on its system-dependent configuration.
+
+    Thus, it is:
+
+    * The exclusive location for system-specific information
+    * The exclusive reader of system-specific configuration (a simple plain-text ``key: value`` file)
+
+    :class:`Launcher` include methods to operate on a combination of a :class:`Job` and a path:
+
+    * Run the job from that path. If not on a batch system, blocks until the job completes.
+    * Check the status of the job as run from that path
+    * Clean up after a job, calling the clean method from the :class:`Job` and removing configuration-specific generated files
+
+    :class:`Launcher` does not know about :class:`Test` or :class:`Harness`, and it should be possible
+    to use :class:`Launcher` and a collection of :class:`Job` objects as a convenience to run the
+    same commands on various systems.
+
+    A :class:`Launcher`'s state corresponds only to its configuration,
+    not the status of any particular "run".
+    """
     defaultConfFileName = 'SciATHBatchQueuingSystem.conf'
 
     @staticmethod
