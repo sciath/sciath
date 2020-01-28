@@ -43,6 +43,7 @@ Job
 
 * A command to be run, that is a string containing an executable and arguments. Note that any relative paths will be interpreted relative to where the command is run.
 * A set of "resources" required. These are system-agnostic details like the number of (MPI) ranks or (OpenMP) threads.
+* A name
 * An optional amount of time required to run
 * An optional user-provided method to clean up after the command, relative to a provided path
 

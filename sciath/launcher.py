@@ -598,9 +598,6 @@ class Launcher:
                 if not os.path.isabs(exec_path):
                     raise ValueError('[SciATH] Unsupported: exec paths must be absolute')
 
-        if job.name == None:
-            raise ValueError('[SciATH] Unsupported: Job cannot be submitted without it having a name')
-        
         setBlockingIOStdout()
 
         if not self.useBatch:
