@@ -9,7 +9,7 @@ from sciath.launcher import _getLaunchStandardOutputFileNames
 
 
 class Test:
-    def __init__(self,job,name,**kwargs):
+    def __init__(self,job,name):
         self.job = job
         self.name = name
 
@@ -21,7 +21,7 @@ class Test:
         # this overide ensures test.job will go through the launcher without error.
         job.name = self.name
 
-        self.verifier = Verifier(self,**kwargs)
+        self.verifier = Verifier(self)
 
     def getReport(self):
         return self.verifier.getReport()

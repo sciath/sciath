@@ -10,7 +10,7 @@ from sciath import sciath_test_status
 class Verifier:
     """Base class for verification of a Test"""
 
-    def __init__(self,test,**kwargs):
+    def __init__(self,test):
       self.test = test
       self.job = test.job
       self.c_name, self.o_name, self.e_name = _getLaunchStandardOutputFileNames(self.job)
