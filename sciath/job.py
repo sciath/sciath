@@ -3,7 +3,7 @@ from sciath._io import dictView
 
 class Job:
     """:class:`Job` describes a command to be run with a given set of resources.
-   
+
     It describes how to execute such a command, not information about any particular "run".
     The :class:`Launcher` object executes tasks described by a :class:`Job`.
 
@@ -289,7 +289,7 @@ class JobSequence(Job):
         sum_wt = self.wall_time
         for j in self.sequence:
             sum_wt += j.getMaxWallTime()
-        
+
         return sum_wt
 
 
@@ -553,7 +553,7 @@ class JobDAG(Job):
         for j in jobs:
             if j != self:
                 sum_wt += j.getMaxWallTime()
-        
+
         return sum_wt
 
 
