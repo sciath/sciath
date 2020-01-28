@@ -2,17 +2,17 @@
 
 class SciathTestStatusDefinition:
     def __init__(self,sciath_colors):
-        self.status_color_type = { 
-		"pass" : sciath_colors.OK ,
-		"fail" : sciath_colors.FAIL , 
-		"warn" : sciath_colors.WARNING ,
-		"skip" : sciath_colors.WARNING } 
+        self.status_color_type = {
+            "pass" : sciath_colors.OK ,
+            "fail" : sciath_colors.FAIL ,
+            "warn" : sciath_colors.WARNING ,
+            "skip" : sciath_colors.WARNING }
         self.set_status_type()
-    
+
     def set_status_type(self):
         self.ok     = [ 'pass' , 'verification was successful' ]
         self.not_ok = [ 'fail' , 'verification failed' ]
-        
+
         self.job_not_run              = [ 'fail' , 'test.job has not executed - sentinal file not found' ]
         self.file_not_found           = [ 'fail' , 'file not found' ]
         self.dependent_job_failed     = [ 'warn' , 'test passed, at least one dependent job returned non-success error code' ]
@@ -31,7 +31,3 @@ class SciathTestStatusDefinition:
         self.resources_invalid_mpi = [ 'skip' , 'resource request cannot be satisifed - no MPI exec provided' ]
         self.resources_invalid_gpu = [ 'skip' , 'resource request cannot be satisifed - no GPU info provided' ]
         self.resources_invalid_mpiranks_per_node = [ 'skip' , 'resource request cannot be satisifed - insufficient mpiranks-per-node' ]
-
-
-
-
