@@ -71,7 +71,7 @@ def _getLaunchStandardOutputFileNames(job):
         jprefix = "".join(["sciath.depjob-",str(lc_count),'-',jobnames[i]])
         if lc_count == 1: # we do something special for the last job in a sequence/DAG list
             jprefix = "sciath.job-" + job.name
-        
+
         stdoutName.append( jprefix + ".stdout" )
         stderrName.append( jprefix + ".stderr" )
 
@@ -80,15 +80,15 @@ def _getLaunchStandardOutputFileNames(job):
     return errorCodeName, stdoutName, stderrName
 
 def _generateLaunch_PBS(launcher,walltime,output_path,job):
-  
+
     if walltime is None:
         message = "[SciATH] _generateLaunch_PBS requires walltime be specified"
         raise RuntimeError(message)
-    
+
     accountname = launcher.accountName
     queuename = launcher.queueName
     mpiLaunch = launcher.mpiLaunch
-    
+
     resources = job.getMaxResources()
     ranks = resources["mpiranks"]
     idle_ranks_per_node = resources["idlempirankspernode"]
@@ -103,17 +103,17 @@ def _generateLaunch_PBS(launcher,walltime,output_path,job):
     # PBS specifics
     file.write("#!/bin/bash\n")
     file.write("# SciATH: auto-generated pbs file\n")
-    
+
     if accountname:
         file.write("#PBS -A " + accountname + "\n") # account to charge
 
     file.write("#PBS -N \"" + "sciath.job-" + job.name + "\"" + "\n") # jobname
     file.write("#PBS -o " + os.path.join(output_path,o_name[-1]) + "\n")
     file.write("#PBS -e " + os.path.join(output_path,e_name[-1]) + "\n")
-    
+
     if queuename:
         file.write("#PBS -q " + queuename + "\n")
-    
+
     wt = FormattedHourMinSec(float(walltime)*60.0)
     file.write("#PBS -l mppwidth=1024,walltime=" + wt + "\n")
 
@@ -135,7 +135,7 @@ def _generateLaunch_PBS(launcher,walltime,output_path,job):
                 launch.append(c)
         else:
             launch.append(j[0])
-        
+
         if i < njobs-1:
             file.write(" ".join(launch) + " > " + os.path.join(output_path,o_name[i]) + "\n") # launch command
             file.write("echo $? >> " + os.path.join(output_path,c_name) + "\n")
@@ -156,15 +156,15 @@ def _generateLaunch_LSF(launcher,rusage,walltime,output_path,job):
     accountname = launcher.accountName
     queuename = launcher.queueName
     mpiLaunch = launcher.mpiLaunch
-    
+
     resources = job.getMaxResources()
     ranks = resources["mpiranks"]
     idle_ranks_per_node = resources["idlempirankspernode"]
     ranks_per_node = None
     # TODO: Need logic here to compute the number of ranks per node
-    
+
     c_name,o_name,e_name = _getLaunchStandardOutputFileNames(job)
-  
+
     filename = os.path.join(output_path,"sciath.job-" + job.name + "-launch." + launcher.queueFileExt)
     file = open(filename,"w")
 
@@ -181,21 +181,21 @@ def _generateLaunch_LSF(launcher,rusage,walltime,output_path,job):
 
     if queuename:
         file.write("#BSUB -q " + queuename + "\n")
-    
+
     file.write("#BSUB -n " + str(ranks) + "\n")
 
     if rusage:
         file.write("#BSUB -R \'" + rusage + "\'" + "\n")
-    
+
     wt = FormattedHourMin(float(walltime)*60.0)
     file.write("#BSUB -W " + wt + "\n")
-    
+
     # Write out the list of jobs execute commands
     # Dependent jobs have their stdout collected in separate files (one per job)
     # The stdout/stderr for the parent job is collected via the queue system
 
     _remove_file( os.path.join(output_path,c_name) )
-  
+
     command_resource = job.createExecuteCommand()
     njobs = len(command_resource)
     for i in range(0,njobs):
@@ -208,7 +208,7 @@ def _generateLaunch_LSF(launcher,rusage,walltime,output_path,job):
                 launch.append(c)
         else:
             launch.append(j[0])
-        
+
         if i < njobs-1:
             file.write(" ".join(launch) + " > " + os.path.join(output_path,o_name[i]) + "\n") # launch command
             file.write("echo $? >> " + os.path.join(output_path,c_name) + "\n")
@@ -216,23 +216,23 @@ def _generateLaunch_LSF(launcher,rusage,walltime,output_path,job):
     file.write(" ".join(launch) + "\n") # launch command
     file.write("echo $? >> " + os.path.join(output_path,c_name) + "\n")
     file.write("\n")
-    
+
     file.close()
     return filename
 
 
 
 def _generateLaunch_SLURM(launcher,walltime,output_path,job):
-  
+
     if walltime is None:
       message = "[SciATH] _generateLaunch_SLURM requires walltime be specified"
       raise RuntimeError(message)
-  
+
     accountname = launcher.accountName
     queuename = launcher.queueName
     constraint = launcher.batchConstraint
     mpiLaunch = launcher.mpiLaunch
-  
+
     resources = job.getMaxResources()
     ranks = resources["mpiranks"]
     idle_ranks_per_node = resources["idlempirankspernode"]
@@ -240,7 +240,7 @@ def _generateLaunch_SLURM(launcher,walltime,output_path,job):
     # TODO: Need logic here to compute the number of ranks per node
 
     c_name,o_name,e_name = _getLaunchStandardOutputFileNames(job)
-  
+
     filename = os.path.join(output_path,"sciath.job-" + job.name + "-launch." + launcher.queueFileExt)
     file = open(filename,"w")
 
@@ -257,24 +257,24 @@ def _generateLaunch_SLURM(launcher,walltime,output_path,job):
 
     if queuename:
         file.write("#SBATCH --partition=" + queuename + "\n")
-    
+
     file.write("#SBATCH --ntasks=" + str(ranks) + "\n")
     #if ranks_per_node:
     #  file.write("#SBATCH --ntasks-per-node=" + str(ranks_per_node) + "\n")
-  
+
     if constraint :
         file.write("#SBATCH --constraint=" + constraint + "\n")
 
     wt = FormattedHourMinSec(float(walltime)*60.0)
     file.write("#SBATCH --time=" + wt + "\n")
-    
+
 
     # Write out the list of jobs execute commands
     # Dependent jobs have their stdout collected in separate files (one per job)
     # The stdout/stderr for the parent job is collected via the queue system
 
     _remove_file( os.path.join(output_path,c_name) )
-  
+
     command_resource = job.createExecuteCommand()
     njobs = len(command_resource)
     for i in range(0,njobs):
@@ -287,7 +287,7 @@ def _generateLaunch_SLURM(launcher,walltime,output_path,job):
                 launch.append(c)
         else:
             launch.append(j[0])
-        
+
         if i < njobs-1:
             file.write(" ".join(launch) + " > " + os.path.join(output_path,o_name[i]) + "\n") # launch command
             file.write("echo $? >> " + os.path.join(output_path,c_name) + "\n")
@@ -301,7 +301,7 @@ def _generateLaunch_SLURM(launcher,walltime,output_path,job):
 
 
 class Launcher:
-    """ :class:`Launcher` is responsible for executing tasks specified by a :class:`Job`, 
+    """ :class:`Launcher` is responsible for executing tasks specified by a :class:`Job`,
     depending on its system-dependent configuration.
 
     Thus, it is:
@@ -576,7 +576,7 @@ class Launcher:
 
 
     def __createJobSubmissionFile(self,job,walltime,output_path):
-      
+
         # Verify input, check for generic errors
         if self.batchConstraint and self.queuingSystemType != 'slurm' :
             message = '[SciATH] Constraints are only currently supported with SLURM'
@@ -606,7 +606,7 @@ class Launcher:
         Supply exec_path to change the directory from which the command
         will be executed.
         """
-      
+
         output_path = os.getcwd()
         exec_path = os.getcwd()
         for key, value in kwargs.items():
@@ -633,7 +633,7 @@ class Launcher:
             if self.mpiLaunch == 'none' and ranks != 1:
                 print('[Failed to launch test \"' + job.name + '\" as test uses > 1 MPI ranks and no MPI launcher was provided]')
                 return
-            
+
             command_resource = job.createExecuteCommand()
             launchCmd = []
             for j in command_resource:
@@ -641,15 +641,15 @@ class Launcher:
                 if self.mpiLaunch != 'none':
                     j_ranks = j[1]["mpiranks"]
                     launch += formatMPILaunchCommand(mpiLaunch,j_ranks,None)
-                
+
                 if isinstance(j[0], list):
                     for c in j[0]:
                         launch.append(c)
                 else:
                     launch.append(j[0])
-                
+
                 launchCmd.append(launch)
-                  
+
             if self.verbosity_level > 0:
                 lc_len = len(launchCmd)
                 lc_count = 0
@@ -662,7 +662,7 @@ class Launcher:
                     launch_text = launch_text + ' from ' + os.getcwd()
                     print(launch_text)
                     print('  [cmd] ',lc)
-        
+
             c_name,o_name,e_name = _getLaunchStandardOutputFileNames(job)
 
             file_ecode = open( os.path.join(output_path,c_name) ,'w')
@@ -696,7 +696,7 @@ class Launcher:
             setBlockingIOStdout()
 
     def clean(self,job,**kwargs):
-     
+
         output_path = None
         for key, value in kwargs.items():
             if key == 'output_path':
@@ -706,7 +706,7 @@ class Launcher:
             raise ValueError('[SciATH] cannot clean without an explicit output_path')
         if not os.path.isabs(output_path):
             raise ValueError('[SciATH] cannot clean without an absolute output_path')
-      
+
         try:
             job.clean()
         except:
@@ -718,10 +718,9 @@ class Launcher:
             _remove_file( os.path.join(output_path,f) )
         for f in e_name:
             _remove_file( os.path.join(output_path,f) )
-        
+
         if self.queueFileExt is not None:
             filename = "sciath.job-" + job.name + "-launch." + self.queueFileExt
             _remove_file( os.path.join(output_path,filename) )
 
         return
-        
