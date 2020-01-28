@@ -13,5 +13,5 @@ install:
 
 script:
   - export PYTHONPATH=$PWD:$PYTHONPATH
-  - ./tests/runTests.py -d # default config
-  - yes | ./tests/runTests.py -f # run tests, returning error code
+  - ./tests/run_tests.py -d # default config
+  - yes | ./tests/run_tests.py -f # run tests, returning error code
