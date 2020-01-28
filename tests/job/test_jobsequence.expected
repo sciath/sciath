@@ -9,7 +9,6 @@ Resources required for jD:      name = None  : {'mpiranks': 40, 'threads': 27, '
 Max. resources required for jD: name = None  : {'mpiranks': 40, 'threads': 27, 'idlempirankspernode': 0}
 ============================================================================
 Job:
-Description: Job which will be run first
 Command: echo "dependent job 3 <exec 1>"
 Exit code success: 0
 Resources: {'idlempirankspernode': 0, 'mpiranks': 40, 'threads': 27}
@@ -39,7 +38,6 @@ Resources: {'idlempirankspernode': 0, 'mpiranks': 1, 'threads': 1}
 Max. resources (incl. dependencies): {'idlempirankspernode': 0, 'mpiranks': 1, 'threads': 1}
 [Child job index 2 ]
 Job:
-Description: Job which will be run first
 Command: echo "dependent job 3 <exec 1>"
 Exit code success: 0
 Resources: {'idlempirankspernode': 0, 'mpiranks': 40, 'threads': 27}

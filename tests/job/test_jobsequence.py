@@ -12,7 +12,7 @@ jB.setResources(ranks=140)
 
 jC = Job('echo \"dependent job 2 <exec 2>\"')
 
-jD = Job('echo \"dependent job 3 <exec 1>\"',description='Job which will be run first',exitCode=0)
+jD = Job('echo \"dependent job 3 <exec 1>\"', exitCode=0) # Job which will run first
 jD.setResources(threads=27,ranks=40)
 
 jA.append(jB)
