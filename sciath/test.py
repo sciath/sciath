@@ -29,12 +29,5 @@ class Test:
     def getStatus(self):
         return self.verifier.getStatus()
 
-    def test_print(self):
-        # TODO this function is only used for testing and can probably be removed (especially since this is a class which isn't supposed to directly print anything)
-        rep = [self.name] + self.getStatus()
-        print(rep)
-        for l in self.getReport():
-            print(l)
-
     def verify(self,output_path):
         self.verifier.execute(output_path)

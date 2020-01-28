@@ -15,6 +15,12 @@ VERBOSITY = 0
 job_launcher = Launcher()
 job_launcher.setVerbosityLevel(VERBOSITY)
 
+def test_print(test):
+    rep = [test.name] + test.getStatus()
+    print(rep)
+    for l in test.getReport():
+        print(l)
+
 def test1_ud(): # result: pass
     cmd = ['sh' , os.path.join(this_dir,'write_test1_ud.sh') ]
 
@@ -23,7 +29,7 @@ def test1_ud(): # result: pass
 
     job_launcher.submitJob( t.job, output_path = OUTPUT_PATH, exec_path = OUTPUT_PATH )
     t.verify(output_path = OUTPUT_PATH)
-    t.test_print()
+    test_print(t)
     return t
 
 def test2_ud(): # result: fail
@@ -34,7 +40,7 @@ def test2_ud(): # result: fail
 
     job_launcher.submitJob( t.job, output_path = OUTPUT_PATH, exec_path = OUTPUT_PATH )
     t.verify(output_path = OUTPUT_PATH)
-    t.test_print()
+    test_print(t)
     return t
 
 
