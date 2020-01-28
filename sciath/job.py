@@ -2,23 +2,35 @@ import sys
 from sciath._io import dictView
 
 class Job:
-    """
-    A SciATH job
+    """:class:`Job` describes a command to be run with a given set of resources.
+   
+    It describes how to execute such a command, not information about any particular "run".
+    The :class:`Launcher` object executes tasks described by a :class:`Job`.
 
-    Args:
-      cmd          (string): The command used to execute your application.
-      **kwargs (name=value): A keyword argument list.
-                             The Job constructor will recognize the following names:
-                               name        (string): textual name you want to assign to the job.
-                               exitCode       (int): the exit code which should be used to infer success.
-    Examples:
-      job = Job('echo \\"hi\\"') -> a new job which will simply execute $echo 'hi'
+    Data include
 
-      job = Job('echo \\"hi\\"',**kwargs,) -> a new job which will simply execute $echo "hi"
-                                         and with variables initialized with the name=value pairs
-      job = Job('echo \\"hi\\"', name='job-1', exitCode=0)
+    * A command to be run: a string containing an executable and arguments. Relative paths (not recommended) will be interpreted relative to where the command is run.
+    * A set of "resources" required. These are system-agnostic details like the number of (MPI) ranks or (OpenMP) threads.
+    * A name, set to a default value if not provided
+    * An amount of time required to run (optional)
+    * A user-provided method to clean up after the command, relative to a provided path (optional)
 
     """
+
+    # TODO integrate into docstring or tutorial
+    #Args:
+    #  cmd          (string): The command used to execute your application.
+    #  **kwargs (name=value): A keyword argument list.
+    #                         The Job constructor will recognize the following names:
+    #                           name        (string): textual name you want to assign to the job.
+    #                           exitCode       (int): the exit code which should be used to infer success.
+    #Examples:
+    #  job = Job('echo \\"hi\\"') -> a new job which will simply execute $echo 'hi'
+
+    #  job = Job('echo \\"hi\\"',**kwargs,) -> a new job which will simply execute $echo "hi"
+    #                                     and with variables initialized with the name=value pairs
+    #  job = Job('echo \\"hi\\"', name='job-1', exitCode=0)
+
 
     _default_job_name = 'job'
 
@@ -185,21 +197,20 @@ class Job:
 
 
 class JobSequence(Job):
+    """ A SciATH linear job sequence (inherits from :class:`Job`)
     """
-    A SciATH linear job sequence (inherits from Job)
 
-    A linear job sequence defines a parent job (job_0) and N depdendent jobs: job_1, job_2, ..., job_N.
-    A dependency graph is assumed from the order above; specifically we assume that
-    job_{i} depends on the result of job_{i+1}, hence job_{i+1} will be executed before job_{i}.
-    An arbitrary number of dependent jobs (N) may be defined.
+    #A linear job sequence defines a parent job (job_0) and N depdendent jobs: job_1, job_2, ..., job_N.
+    #A dependency graph is assumed from the order above; specifically we assume that
+    #job_{i} depends on the result of job_{i+1}, hence job_{i+1} will be executed before job_{i}.
+    #An arbitrary number of dependent jobs (N) may be defined.
 
-    Args:
-      cmd          (string): The command used to execute your application.
-      **kwargs (name=value): A keyword argument list.
-                             The Job constructor will recognize the following names:
-                               name        (string): textual name you want to assign to the job.
-                               exitCode       (int): the exit code which should be used to infer success.
-    """
+    #Args:
+    #  cmd          (string): The command used to execute your application.
+    #  **kwargs (name=value): A keyword argument list.
+    #                         The Job constructor will recognize the following names:
+    #                           name        (string): textual name you want to assign to the job.
+    #                           exitCode       (int): the exit code which should be used to infer success.
 
     def __init__(self,cmd,name='job_sequence',**kwargs):
         Job.__init__(self,cmd,name,**kwargs)
@@ -335,13 +346,13 @@ class JobDAG(Job):
     The job sequence is determininstic and defined by performing
     a depth first search (DFS) on the provided DAG.
 
-    Args:
-      cmd          (string): The command used to execute your application.
-      **kwargs (name=value): A keyword argument list.
-                             The Job constructor will recognize the following names:
-                               name        (string): textual name you want to assign to the job.
-                               exitCode       (int): the exit code which should be used to infer success.
     """
+    #Args:
+    #  cmd          (string): The command used to execute your application.
+    #  **kwargs (name=value): A keyword argument list.
+    #                         The Job constructor will recognize the following names:
+    #                           name        (string): textual name you want to assign to the job.
+    #                           exitCode       (int): the exit code which should be used to infer success.
 
     def __init__(self,cmd,name='job_dag',**kwargs):
         Job.__init__(self,cmd,name,**kwargs)
@@ -374,39 +385,40 @@ class JobDAG(Job):
         performing the depth first search required to infer the order the jobs
         will be executed.
 
-        Arg:
-          dag (dict): A dictionary defining vertex to vertex relationships.
-                      Each vertex must be identified by a string, matching the job name (e.g. Job.name).
-                      Neighbour vertices (child jobs) must be iteratable,
-                      so put them in a list,e.g. ['a','b'], or a tuple, e.g. ('a','b').
-                      Leaf vertices must be identified with the variable None.
-                      Leaf jobs must also be iteratable, e.g. use {"jobA" : [None] }.
-
-
-        Examples:
-          (i) Consider the graph:
-            A --> B
-          The corresponding DAG using a dictionary is given by
-            dag = { 'A': [ 'B' ],
-                    'B': [None]    }
-          Note that in the above we used a list (e.g. []) to define the neighbour vertices.
-
-          (ii) Consider the graph:
-                    C
-                   /
-            A --- B     E
-                   \   /
-                    \ /
-                     D ---- F
-          The corresponding DAG using a dictionary is given by
-            dag = { 'A': ( 'B' ),
-                    'B': ( 'C' , 'D' ),
-                    'C': ([None]),
-                    'D': ( 'E' , 'F' ),
-                    'E': ([None]),
-                    'F': ([None])         }
-          Note that in the above we used tuples (e.g. ()) to define the neighbour vertices.
         """
+
+        #Arg:
+        #  dag (dict): A dictionary defining vertex to vertex relationships.
+        #              Each vertex must be identified by a string, matching the job name (e.g. Job.name).
+        #              Neighbour vertices (child jobs) must be iteratable,
+        #              so put them in a list,e.g. ['a','b'], or a tuple, e.g. ('a','b').
+        #              Leaf vertices must be identified with the variable None.
+        #              Leaf jobs must also be iteratable, e.g. use {"jobA" : [None] }.
+
+
+        #Examples:
+        #  (i) Consider the graph:
+        #    A --> B
+        #  The corresponding DAG using a dictionary is given by
+        #    dag = { 'A': [ 'B' ],
+        #            'B': [None]    }
+        #  Note that in the above we used a list (e.g. []) to define the neighbour vertices.
+
+        #  (ii) Consider the graph:
+        #            C
+        #           /
+        #    A --- B     E
+        #           \   /
+        #            \ /
+        #             D ---- F
+        #  The corresponding DAG using a dictionary is given by
+        #    dag = { 'A': ( 'B' ),
+        #            'B': ( 'C' , 'D' ),
+        #            'C': ([None]),
+        #            'D': ( 'E' , 'F' ),
+        #            'E': ([None]),
+        #            'F': ([None])         }
+        #  Note that in the above we used tuples (e.g. ()) to define the neighbour vertices.
 
         # Check that the parent name is in the dag
         try:

@@ -39,8 +39,26 @@ class _TestRun:
             self.status_info = ''
 
 class Harness:
+    """ :class:`Harness` is the central user-facing class in SciATH.
 
-    sandbox_sentinel_filename = '.sciath_sandbox'
+    It manages a set of tests, and thus includes:
+
+    * A set of uniquely-named :class:`Test` objects
+    * A :class:`Launcher`
+    * Tools for running and verifying a test suite
+    * Tools for managing "sandboxing" (managing directories in which to run tests)
+
+
+    It is the exclusive location within SciATH for
+
+    * Printing to stdout
+    * Information about where to launch ``Jobs`` from, passed to included ``Launcher``
+
+    A :class:`Harness` object's state is confined to the state of a list of internal
+    :class:`_TestRun` objects.
+    """
+
+    _sandbox_sentinel_filename = '.sciath_sandbox'
 
     def __init__(self,test_list):
         self._create_testruns_from_tests(test_list)
@@ -56,7 +74,7 @@ class Harness:
                 print('[ -- Removing output for Test:',testrun.test.name,'-- ]')
                 self.launcher.clean(testrun.test.job, output_path=testrun.output_path)
                 if testrun.sandbox and os.path.exists(testrun.exec_path):
-                    sentinel_file = os.path.join(testrun.exec_path,self.sandbox_sentinel_filename)
+                    sentinel_file = os.path.join(testrun.exec_path,self._sandbox_sentinel_filename)
                     if not os.path.exists(sentinel_file):
                         raise Exception('[SciATH] did not find expected sentinel file ' + sentinel_file)
                     shutil.rmtree(testrun.exec_path)
@@ -81,7 +99,7 @@ class Harness:
                 if not os.path.exists(testrun.exec_path):
                     os.makedirs(testrun.exec_path)
                 if testrun.sandbox:
-                    sentinel_file = os.path.join(testrun.exec_path,self.sandbox_sentinel_filename)
+                    sentinel_file = os.path.join(testrun.exec_path,self._sandbox_sentinel_filename)
                     if os.path.exists(sentinel_file):
                         raise Exception("[SciATH] Unexpected sentinel file " + sentinel_file)
                     with open(sentinel_file,'w'):

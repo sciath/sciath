@@ -35,72 +35,12 @@ unit testing of software libraries in serial environments.
 The main classes
 ----------------
 
-Note: this material will likely make its way into the docstrings for these
-classes and then be removed.
+SciATH is built around four main classes. See the documentation in the API reference
+for :class:`Job` and :class:`Launcher`, which provide abstractions for executing
+commands on various architectures, and :class:`Test` and :class:`Harness`, which
+provide tools to define and execute a test suite.
 
-Job
-~~~
-
-* A command to be run, that is a string containing an executable and arguments. Note that any relative paths will be interpreted relative to where the command is run.
-* A set of "resources" required. These are system-agnostic details like the number of (MPI) ranks or (OpenMP) threads.
-* A name
-* An optional amount of time required to run
-* An optional user-provided method to clean up after the command, relative to a provided path
-
-Note that this class knows nothing about where it will be run from or how many times (possibly simultaneously).
-Indeed, it is mostly just a collection of data.
-
-Subclasses exist to describe composite sets of ``Job`` objects.
-
-``Job`` objects are "stateless", in the sense that they do not contain
-information specific to the actual execution of a command, rather being instructions
-about how to execute a command.
-
-Launcher
-~~~~~~~~
-
-* The exclusive location for system-specific information
-* The exclusive reader of system-specific configuration (a simple plain-text ``key: value`` file)
-
-Includes methods to operate on a combination of a ``Job`` and a path:
-
-* Run the job from that path. If not on a batch system, blocks until the job completes.
-* Check the status of the job as run from that path
-* Clean up after a job, calling the clean method from the ``Job`` and removing configuration-specific generated files
-
-``Launcher`` does not know about ``Test`` or ``Harness``, and it should be possible
-to use ``Launcher`` and a collection of ``Job`` objects as a convenience to run the
-same commands on various systems.
-
-A ``Launcher`` object's state corresponds only to its configuration,
-not the status of any particular process.
-
-Test
-~~~~
-
-Data include:
-
-* A ``Job``
-* A name
-* An instance of a subclass of ``TestVerifier``, to evaluate test success
-* A set of tags
-
-``Test`` objects are "stateless", in the same sense as ``Job`` objects.
-
-Harness
-~~~~~~~
-
-The central object which users interact with, either in their own scripts
-or via direct invocation of the ``sciath`` module.
-
-* A set of uniquely-named ``Test`` objects
-* A ``Launcher``
-* Exclusive location for interaction with command-line arguments
-* Exclusive location for printing to stdout
-* Tools for running and verifying a test suite
-* Can work with groups of tests defined by tags or resources
-* Exclusive location of information about where to launch ``Jobs`` from, passed to included ``Launcher``
-* Manages sandboxing: defines, creates, and cleans subdirectories used to conduct tests
-
-A ``Harness`` object's state is confined to the state of a list of internal
-``_TestRun`` objects.
+Importantly, see that documentation for important design decisions about
+"what knows about what" (e.g. :class:`Launcher` does not know about :class:`Test`)
+and "what happens where" (e.g. :class:`Harness` is the only place printing to stdout is allowed,
+or where status on particular test runs is stored)
