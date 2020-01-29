@@ -13,9 +13,7 @@ class Verifier:
     # Note: this should more properly be an abstract base class, but we delay this while still trying to support Python 2
 
     def __init__(self,test):
-      self.test = test
-      self.job = test.job
-      self.c_name, self.o_name, self.e_name = test.job.get_output_filenames()
+        self.test = test
 
     def execute(self,output_path,exec_path = None):
         """ Relative to a given output path, fetch file(s) and produce status,report """
@@ -33,7 +31,9 @@ class VerifierExitCode(Verifier):
         status = None
         report = []
 
-        errorfile = os.path.join(output_path,self.c_name)
+        c_name, o_name, e_name = self.test.job.get_output_filenames()
+
+        errorfile = os.path.join(output_path,c_name)
         if not os.path.isfile(errorfile) :
             report.append("[ReturnCodeDiff] File (" + errorfile + ") not found")
             status = sciath_test_status.job_not_run
@@ -44,8 +44,8 @@ class VerifierExitCode(Verifier):
         data = np.asarray(data,dtype=int)
 
         # special
-        if not isinstance(self.job,JobSequence) and not isinstance(self.job,JobDAG):
-            if self.job.exit_code_success != data[0]:
+        if not isinstance(self.test.job,JobSequence) and not isinstance(self.test.job,JobDAG):
+            if self.test.job.exit_code_success != data[0]:
                 status = sciath_test_status.not_ok
                 return status,report
             else:
@@ -53,7 +53,7 @@ class VerifierExitCode(Verifier):
                 return status,report
 
         else:
-            jobs = self.job.getJobList()
+            jobs = self.test.job.getJobList()
 
             if len(data) != len(jobs):
                 report.append("[ReturnCodeDiff] Mismatch in number of error codes found and jobs run. This should never happen.")
@@ -84,7 +84,7 @@ class VerifierExitCode(Verifier):
             s = sciath_test_status.ok
             if anyChildrenFailed == True:
                 s = sciath_test_status.dependent_job_failed
-                if self.job.exit_code_success != data[-1]:
+                if self.test.job.exit_code_success != data[-1]:
                     s = sciath_test_status.parent_and_depjob_failed
             if s != sciath_test_status.ok:
                 msg = "[ReturnCodeDiff] Expected return codes: " + str(exret)

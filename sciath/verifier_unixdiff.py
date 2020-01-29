@@ -14,15 +14,16 @@ from sciath._io import _remove_file
 
 
 class VerifierUnixDiff(Verifier):
-    def __init__(self,test,expected_file,output_file=None):
+    def __init__(self, test, expected_file, output_file = None):
       Verifier.__init__(self,test)
       if expected_file is None:
           raise RuntimeError('[Sciath] Must set expected_file on test')
       self.expected_file = expected_file
+      c_name, o_name, e_name = self.test.job.get_output_filenames()
       if output_file is None:
-          self.output_file = self.o_name[-1]
+          self.output_file = o_name[-1]
 
-    def execute(self,output_path,exec_path = None):
+    def execute(self, output_path, exec_path = None):
 
         status = None
         report = []
