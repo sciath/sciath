@@ -6,7 +6,6 @@ from sciath.job import JobSequence
 from sciath.job import JobDAG
 from sciath.launcher import Launcher
 from sciath.test import Test
-from sciath.verifier_unixdiff import VerifierUnixDiff
 
 OUTPUT_PATH = os.path.join(os.getcwd(),'output')
 VERBOSITY = 0
