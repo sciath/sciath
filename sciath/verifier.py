@@ -5,7 +5,6 @@ import numpy as np
 from sciath.job import Job
 from sciath.job import JobSequence
 from sciath.job import JobDAG
-from sciath.launcher import _getLaunchStandardOutputFileNames
 from sciath import sciath_test_status
 
 class Verifier:
@@ -14,7 +13,7 @@ class Verifier:
     def __init__(self,test):
       self.test = test
       self.job = test.job
-      self.c_name, self.o_name, self.e_name = _getLaunchStandardOutputFileNames(self.job)
+      self.c_name, self.o_name, self.e_name = test.job.get_standard_output_filenames()
 
     def execute(self,output_path,exec_path=None):
         """ Relative to a given output path, fetch file(s) and produce status,report """

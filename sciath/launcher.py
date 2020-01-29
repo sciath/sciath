@@ -53,32 +53,6 @@ def formatMPILaunchCommand(mpiLaunch,ranks,corespernode):
         launch = launch.replace("<RANKS_PER_NODE>",str(corespernode))
     return launch.split()
 
-
-# Returns name lists for error-code file (one per job), stdout, stderr
-def _getLaunchStandardOutputFileNames(job):
-    jobnames = []
-    try:
-        jobnames = job.createJobOrdering()
-    except:
-        jobnames.append(job.name)
-
-    errorCodeName = "sciath.job-" +  job.name + ".errorcode"
-    stdoutName = []
-    stderrName = []
-
-    lc_count = len(jobnames)
-    for i in range(0,len(jobnames)):
-        jprefix = "".join(["sciath.depjob-",str(lc_count),'-',jobnames[i]])
-        if lc_count == 1: # we do something special for the last job in a sequence/DAG list
-            jprefix = "sciath.job-" + job.name
-
-        stdoutName.append( jprefix + ".stdout" )
-        stderrName.append( jprefix + ".stderr" )
-
-        lc_count -= 1
-
-    return errorCodeName, stdoutName, stderrName
-
 def _generateLaunch_PBS(launcher,walltime,output_path,job):
 
     if walltime is None:
@@ -95,7 +69,7 @@ def _generateLaunch_PBS(launcher,walltime,output_path,job):
     ranks_per_node = None
     # TODO: Need logic here to compute the number of ranks per node
 
-    c_name,o_name,e_name = _getLaunchStandardOutputFileNames(job)
+    c_name,o_name,e_name = job.get_standard_output_filenames()
 
     filename = os.path.join(output_path,"sciath.job-" + job.name + "-launch." + launcher.queueFileExt)
     file = open(filename,"w")
@@ -163,7 +137,7 @@ def _generateLaunch_LSF(launcher,rusage,walltime,output_path,job):
     ranks_per_node = None
     # TODO: Need logic here to compute the number of ranks per node
 
-    c_name,o_name,e_name = _getLaunchStandardOutputFileNames(job)
+    c_name,o_name,e_name = job.get_standard_output_filenames()
 
     filename = os.path.join(output_path,"sciath.job-" + job.name + "-launch." + launcher.queueFileExt)
     file = open(filename,"w")
@@ -239,7 +213,7 @@ def _generateLaunch_SLURM(launcher,walltime,output_path,job):
     ranks_per_node = None
     # TODO: Need logic here to compute the number of ranks per node
 
-    c_name,o_name,e_name = _getLaunchStandardOutputFileNames(job)
+    c_name,o_name,e_name = job.get_standard_output_filenames()
 
     filename = os.path.join(output_path,"sciath.job-" + job.name + "-launch." + launcher.queueFileExt)
     file = open(filename,"w")
@@ -663,7 +637,7 @@ class Launcher:
                     print(launch_text)
                     print('  [cmd] ',lc)
 
-            c_name,o_name,e_name = _getLaunchStandardOutputFileNames(job)
+            c_name,o_name,e_name = job.get_standard_output_filenames()
 
             file_ecode = open( os.path.join(output_path,c_name) ,'w')
             lc_count = len(launchCmd)
@@ -712,7 +686,7 @@ class Launcher:
         except:
             pass
 
-        c_name,o_name,e_name = _getLaunchStandardOutputFileNames(job)
+        c_name,o_name,e_name = job.get_standard_output_filenames()
         _remove_file( os.path.join(output_path,c_name) )
         for f in o_name:
             _remove_file( os.path.join(output_path,f) )
