@@ -6,8 +6,6 @@ else:
     import subprocess
 
 from sciath.job import Job
-from sciath.job import JobSequence
-from sciath.job import JobDAG
 from sciath.verifier import Verifier
 from sciath import sciath_test_status
 from sciath._io import _remove_file
