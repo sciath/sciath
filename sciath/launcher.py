@@ -69,7 +69,7 @@ def _generateLaunch_PBS(launcher,walltime,output_path,job):
     ranks_per_node = None
     # TODO: Need logic here to compute the number of ranks per node
 
-    c_name,o_name,e_name = job.get_standard_output_filenames()
+    c_name,o_name,e_name = job.get_output_filenames()
 
     filename = os.path.join(output_path,"sciath.job-" + job.name + "-launch." + launcher.queueFileExt)
     file = open(filename,"w")
@@ -137,7 +137,7 @@ def _generateLaunch_LSF(launcher,rusage,walltime,output_path,job):
     ranks_per_node = None
     # TODO: Need logic here to compute the number of ranks per node
 
-    c_name,o_name,e_name = job.get_standard_output_filenames()
+    c_name,o_name,e_name = job.get_output_filenames()
 
     filename = os.path.join(output_path,"sciath.job-" + job.name + "-launch." + launcher.queueFileExt)
     file = open(filename,"w")
@@ -213,7 +213,7 @@ def _generateLaunch_SLURM(launcher,walltime,output_path,job):
     ranks_per_node = None
     # TODO: Need logic here to compute the number of ranks per node
 
-    c_name,o_name,e_name = job.get_standard_output_filenames()
+    c_name,o_name,e_name = job.get_output_filenames()
 
     filename = os.path.join(output_path,"sciath.job-" + job.name + "-launch." + launcher.queueFileExt)
     file = open(filename,"w")
@@ -637,7 +637,7 @@ class Launcher:
                     print(launch_text)
                     print('  [cmd] ',lc)
 
-            c_name,o_name,e_name = job.get_standard_output_filenames()
+            c_name,o_name,e_name = job.get_output_filenames()
 
             file_ecode = open( os.path.join(output_path,c_name) ,'w')
             lc_count = len(launchCmd)
@@ -686,7 +686,7 @@ class Launcher:
         except:
             pass
 
-        c_name,o_name,e_name = job.get_standard_output_filenames()
+        c_name,o_name,e_name = job.get_output_filenames()
         _remove_file( os.path.join(output_path,c_name) )
         for f in o_name:
             _remove_file( os.path.join(output_path,f) )

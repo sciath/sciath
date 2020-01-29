@@ -75,7 +75,7 @@ class Job:
         """
         return
 
-    def get_standard_output_filenames(self):
+    def get_output_filenames(self):
         """ Returns name lists for error-code file (one per job), stdout, stderr """
         jobnames = []
         try:
