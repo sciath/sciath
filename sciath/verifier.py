@@ -7,15 +7,27 @@ from sciath.job import JobSequence
 from sciath.job import JobDAG
 from sciath import sciath_test_status
 
+
 class Verifier:
     """Base class for verification of a Test"""
+    # Note: this should more properly be an abstract base class, but we delay this while still trying to support Python 2
 
     def __init__(self,test):
       self.test = test
       self.job = test.job
       self.c_name, self.o_name, self.e_name = test.job.get_standard_output_filenames()
 
-    def execute(self,output_path,exec_path=None):
+    def execute(self,output_path,exec_path = None):
+        """ Relative to a given output path, fetch file(s) and produce status,report """
+        raise NotImplementedError("Verifier implementations must override execute()")
+
+class VerifierExitCode(Verifier):
+    """ Verifier implementation which checks an error code """
+
+    def __init__(self, test):
+        Verifier.__init__(self, test)
+
+    def execute(self, output_path, exec_path = None):
         """ Relative to a given output path, fetch file(s) and produce status,report """
 
         status = None

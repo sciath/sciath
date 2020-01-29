@@ -5,7 +5,7 @@ import numpy as np
 from sciath.job import Job
 from sciath.job import JobSequence
 from sciath.job import JobDAG
-from sciath.verifier import Verifier
+from sciath.verifier import VerifierExitCode
 
 
 class Test:
@@ -17,7 +17,7 @@ class Test:
 
     * A :class:`Job`, describing how to execute the required operations
     * A name (inherited from the :class:`Job`, if not specified)
-    * A :class:`Verifier`, defining how to determine success
+    * An implementation of the abstract base class :class:`Verifier`, defining how to determine success
     * A set of tags
 
     """
@@ -29,7 +29,7 @@ class Test:
             if job.named_by_default:
                 raise Exception("[SciATH error] to create a Test, you must either name the Test or the Job explicitly")
             self.name = job.name
-        self.verifier = Verifier(self)
+        self.verifier = VerifierExitCode(self)
 
     def verify(self,output_path):
         status,report = self.verifier.execute(output_path)
