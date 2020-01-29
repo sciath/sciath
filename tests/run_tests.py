@@ -94,6 +94,13 @@ def TestTest2():
     t.setUseSandbox()
     return t
 
+def TestTestLine1():
+    t = Test('TestTestLine1',1, ['cp '  + abs_path('./test_conf') + ' ' + 'SciATHBatchQueuingSystem.conf', 'python ' + abs_path('./test/test_line_verifier.py') ], abs_path('test/test_line_verifier.expected'))
+    t.setVerifyMethod(lambda t: t.compareUnixDiff())
+    t.appendKeywords('[Executing') # skip since absolute path is printed
+    t.setUseSandbox()
+    return t
+
 def main():
     print('SciATH Self-tests')
     print('Testing with version',getStableVersion(),'from',stablePackage.__file__)
@@ -109,6 +116,7 @@ def main():
         LauncherTest1(),
         TestTest1(),
         TestTest2(),
+        TestTestLine1(),
         ])
     harness.execute()
     harness.verify()
