@@ -75,6 +75,31 @@ class Job:
         """
         return
 
+    def get_standard_output_filenames(self):
+        """ Returns name lists for error-code file (one per job), stdout, stderr """
+        jobnames = []
+        try:
+            jobnames = self.createJobOrdering()
+        except:
+            jobnames.append(self.name)
+
+        errorCodeName = "sciath.job-" +  self.name + ".errorcode"
+        stdoutName = []
+        stderrName = []
+
+        lc_count = len(jobnames)
+        for i in range(0,len(jobnames)):
+            jprefix = "".join(["sciath.depjob-",str(lc_count),'-',jobnames[i]])
+            if lc_count == 1: # we do something special for the last job in a sequence/DAG list
+                jprefix = "sciath.job-" + self.name
+
+            stdoutName.append( jprefix + ".stdout" )
+            stderrName.append( jprefix + ".stderr" )
+
+            lc_count -= 1
+
+        return errorCodeName, stdoutName, stderrName
+
     def getMaxResources(self):
         """
         Returns a dict() defining the maximum required counts / values.

@@ -6,7 +6,6 @@ from sciath.job import Job
 from sciath.job import JobSequence
 from sciath.job import JobDAG
 from sciath.verifier import Verifier
-from sciath.launcher import _getLaunchStandardOutputFileNames
 
 
 class Test:
