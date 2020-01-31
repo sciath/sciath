@@ -9,6 +9,9 @@ SciATH: Scientific Application Test Harness
     :target: https://sciath.readthedocs.io/en/latest/?badge=latest
     :alt: Documentation Status
 
+.. image:: https://www.codefactor.io/repository/github/sciath/sciath/badge
+   :target: https://www.codefactor.io/repository/github/sciath/sciath
+   :alt: CodeFactor
 
 Information, Documentation and Tutorials
 ----------------------------------------
