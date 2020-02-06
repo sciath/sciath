@@ -467,7 +467,7 @@ class JobDAG(Job):
                 message += '[SciATH error] The DAG key ' + key + ' was not found in the member self.joblist.\n'
                 message += '[SciATH error] Call self.registerJob() to add this key into self.joblist.\n'
                 check1 = False
-        if check1 == False:
+        if not check1:
               raise RuntimeError(message)
         print('[pass] All DAG vertices were found in the registered job list.')
 
@@ -480,7 +480,7 @@ class JobDAG(Job):
             except:
                 message += '[SciATH error] A vertex with key \"' + jobname + '\" was not found in the user-provided DAG.\n'
                 check2 = False
-        if check2 == False:
+        if not check2:
             raise RuntimeError(message)
         print('[pass] All registered jobs were associated with a DAG vertex.')
 
@@ -498,7 +498,7 @@ class JobDAG(Job):
         while Q:
             vertex = Q.pop(0)
             #print('vertex',vertex)
-            if vertex != None:
+            if vertex is not None:
                 if vertex not in visited:
                     visited.add(vertex)
                     #print('vertex',vertex,'cnt',cnt)
