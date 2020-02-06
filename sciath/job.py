@@ -75,13 +75,15 @@ class Job:
         """
         return
 
+    def createJobOrdering(self):
+        """
+        Returns a list of job names in the order they will be executed.
+        """
+        return [self.name]
+
     def get_output_filenames(self):
         """ Returns name lists for error-code file (one per job), stdout, stderr """
-        jobnames = []
-        try:
-            jobnames = self.createJobOrdering()
-        except:
-            jobnames.append(self.name)
+        jobnames = self.createJobOrdering()
 
         errorCodeName = "sciath.job-" +  self.name + ".errorcode"
         stdoutName = []
