@@ -61,7 +61,7 @@ class Job:
             if key == 'wall_time':
                 try:
                     self.wall_time = float(value)
-                except:
+                except ValueError:
                     message = '[SciATH error]: Cannot convert wall_time \"' + str(value) + '\" to float.'
                     raise RuntimeError(message)
 
@@ -393,7 +393,7 @@ class JobDAG(Job):
         """
         try:
             s = self.joblist[ job.name ]
-        except:
+        except KeyError:
             print('not found -> inserting name',job.name)
         else:
             message = '[SciATH error] A job with name',job.name,'has already been registered.'
@@ -448,7 +448,7 @@ class JobDAG(Job):
         # Check that the parent name is in the dag
         try:
             value = dag[ self.name ]
-        except:
+        except KeyError:
             message = '[SciATH error] The root vertex associated with parent job (name = ' + self.name + ' ).\n'
             message += '[SciATH error] was not found in the DAG dictionary - the parent name is essential to the DAG definition.\n'
             raise RuntimeError(message)
@@ -477,7 +477,7 @@ class JobDAG(Job):
         for jobname in self.joblist:
             try:
                 value = dag[ jobname ]
-            except:
+            except KeyError:
                 message += '[SciATH error] A vertex with key \"' + jobname + '\" was not found in the user-provided DAG.\n'
                 check2 = False
         if not check2:
