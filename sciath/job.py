@@ -1,4 +1,7 @@
 import sys
+if sys.version_info[0] < 3: # Remove when Python 2 support is dropped
+    from itertools import izip as zip
+
 from sciath._io import dictView
 
 class Job:
@@ -90,8 +93,8 @@ class Job:
         stderrName = []
 
         lc_count = len(jobnames)
-        for i in range(0,len(jobnames)):
-            jprefix = "".join(["sciath.depjob-",str(lc_count),'-',jobnames[i]])
+        for jobname in jobnames:
+            jprefix = "".join(["sciath.depjob-",str(lc_count),'-',jobname])
             if lc_count == 1: # we do something special for the last job in a sequence/DAG list
                 jprefix = "sciath.job-" + self.name
 
@@ -279,12 +282,7 @@ class JobSequence(Job):
         execute.append(self.cmd)
         resources.append(self.resources)
 
-        # pack and return results in a tuple
-        ex = []
-        for i in range(len(execute)):
-            ex.append( (execute[i],resources[i]) )
-        return ex
-
+        return [x for x in zip(execute,resources)]
 
     # overload
     def getMaxResources(self):
@@ -535,11 +533,7 @@ class JobDAG(Job):
                 execute.append(k[0])
                 resources.append(k[1])
 
-        # pack and return results in a tuple
-        ex = []
-        for i in range(len(execute)):
-            ex.append( (execute[i],resources[i]) )
-        return ex
+        return [x for x in zip(execute,resources)]
 
 
     # overload
