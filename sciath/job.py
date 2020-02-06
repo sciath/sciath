@@ -17,7 +17,7 @@ class Job:
 
     """
 
-    # TODO integrate into docstring or tutorial
+    # This information should be integrated into docstring or tutorial:
     #Args:
     #  cmd          (string): The command used to execute your application.
     #  **kwargs (name=value): A keyword argument list.
