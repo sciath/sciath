@@ -109,14 +109,14 @@ class Job:
         This functionality is required for batch queue systems.
         """
 
-        # Iterate through keys in self.resource, set initial values in max
+        # Iterate through keys in self.resource, set initial values in max_resources
         # We are certain no new keys will be added as setResources() will
         # error if unrecognized resources were requested
-        max = dict()
+        max_resources = dict()
         for key in self.resources:
             value = self.resources[key]
-            max.update({key:value})
-        return max
+            max_resources.update({key:value})
+        return max_resources
 
     def getResources(self):
         """
@@ -293,20 +293,20 @@ class JobSequence(Job):
         The max is taken over all jobs registered via JobSequence.append() and the parent job.
         """
 
-        max = dict()
+        max_resources = dict()
         for key in self.resources:
             value = self.resources[key]
-            max.update({key:value})
+            max_resources.update({key:value})
 
         for j in self.sequence:
             max_resources_j = j.getMaxResources()
-            # iterate through keys in max_resources_j, update values in max
+            # iterate through keys in max_resources_j, update values in max_resources
             for key in max_resources_j:
                 value = max_resources_j[key]
-                if value > max[key]:
-                    max.update({key:value})
+                if value > max_resources[key]:
+                    max_resources.update({key:value})
 
-        return max
+        return max_resources
 
     # overload
     def getMaxWallTime(self):
@@ -549,11 +549,11 @@ class JobDAG(Job):
         The max is taken over all jobs defined by the DAG and the parent job.
         """
 
-        max = dict()
+        max_resources = dict()
 
         for key in self.resources:
             value = self.resources[key]
-            max.update({key:value})
+            max_resources.update({key:value})
 
         for jobkey in self.dag:
             # skip parent
@@ -562,13 +562,13 @@ class JobDAG(Job):
 
             job = self.joblist[jobkey]
             max_resources_j = job.getMaxResources()
-            # iterate through keys in max_resources_j, update values in max
+            # iterate through keys in max_resources_j, update values in max_resources
             for key in max_resources_j:
                 value = max_resources_j[key]
-                if value > max[key]:
-                    max.update({key:value})
+                if value > max_resources[key]:
+                    max_resources.update({key:value})
 
-        return max
+        return max_resources
 
     # overload
     def getMaxWallTime(self):
