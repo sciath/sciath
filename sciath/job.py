@@ -1,4 +1,7 @@
 import sys
+if sys.version_info[0] < 3: # Remove when Python 2 support is dropped
+    from itertools import izip as zip
+
 from sciath._io import dictView
 
 class Job:
@@ -17,7 +20,7 @@ class Job:
 
     """
 
-    # TODO integrate into docstring or tutorial
+    # This information should be integrated into docstring or tutorial:
     #Args:
     #  cmd          (string): The command used to execute your application.
     #  **kwargs (name=value): A keyword argument list.
@@ -61,7 +64,7 @@ class Job:
             if key == 'wall_time':
                 try:
                     self.wall_time = float(value)
-                except:
+                except ValueError:
                     message = '[SciATH error]: Cannot convert wall_time \"' + str(value) + '\" to float.'
                     raise RuntimeError(message)
 
@@ -75,21 +78,23 @@ class Job:
         """
         return
 
+    def createJobOrdering(self):
+        """
+        Returns a list of job names in the order they will be executed.
+        """
+        return [self.name]
+
     def get_output_filenames(self):
         """ Returns name lists for error-code file (one per job), stdout, stderr """
-        jobnames = []
-        try:
-            jobnames = self.createJobOrdering()
-        except:
-            jobnames.append(self.name)
+        jobnames = self.createJobOrdering()
 
         errorCodeName = "sciath.job-" +  self.name + ".errorcode"
         stdoutName = []
         stderrName = []
 
         lc_count = len(jobnames)
-        for i in range(0,len(jobnames)):
-            jprefix = "".join(["sciath.depjob-",str(lc_count),'-',jobnames[i]])
+        for jobname in jobnames:
+            jprefix = "".join(["sciath.depjob-",str(lc_count),'-',jobname])
             if lc_count == 1: # we do something special for the last job in a sequence/DAG list
                 jprefix = "sciath.job-" + self.name
 
@@ -107,14 +112,14 @@ class Job:
         This functionality is required for batch queue systems.
         """
 
-        # Iterate through keys in self.resource, set initial values in max
+        # Iterate through keys in self.resource, set initial values in max_resources
         # We are certain no new keys will be added as setResources() will
         # error if unrecognized resources were requested
-        max = dict()
+        max_resources = dict()
         for key in self.resources:
             value = self.resources[key]
-            max.update({key:value})
-        return max
+            max_resources.update({key:value})
+        return max_resources
 
     def getResources(self):
         """
@@ -277,12 +282,7 @@ class JobSequence(Job):
         execute.append(self.cmd)
         resources.append(self.resources)
 
-        # pack and return results in a tuple
-        ex = []
-        for i in range(len(execute)):
-            ex.append( (execute[i],resources[i]) )
-        return ex
-
+        return [x for x in zip(execute,resources)]
 
     # overload
     def getMaxResources(self):
@@ -291,20 +291,20 @@ class JobSequence(Job):
         The max is taken over all jobs registered via JobSequence.append() and the parent job.
         """
 
-        max = dict()
+        max_resources = dict()
         for key in self.resources:
             value = self.resources[key]
-            max.update({key:value})
+            max_resources.update({key:value})
 
         for j in self.sequence:
             max_resources_j = j.getMaxResources()
-            # iterate through keys in max_resources_j, update values in max
+            # iterate through keys in max_resources_j, update values in max_resources
             for key in max_resources_j:
                 value = max_resources_j[key]
-                if value > max[key]:
-                    max.update({key:value})
+                if value > max_resources[key]:
+                    max_resources.update({key:value})
 
-        return max
+        return max_resources
 
     # overload
     def getMaxWallTime(self):
@@ -393,7 +393,7 @@ class JobDAG(Job):
         """
         try:
             s = self.joblist[ job.name ]
-        except:
+        except KeyError:
             print('not found -> inserting name',job.name)
         else:
             message = '[SciATH error] A job with name',job.name,'has already been registered.'
@@ -448,7 +448,7 @@ class JobDAG(Job):
         # Check that the parent name is in the dag
         try:
             value = dag[ self.name ]
-        except:
+        except KeyError:
             message = '[SciATH error] The root vertex associated with parent job (name = ' + self.name + ' ).\n'
             message += '[SciATH error] was not found in the DAG dictionary - the parent name is essential to the DAG definition.\n'
             raise RuntimeError(message)
@@ -467,7 +467,7 @@ class JobDAG(Job):
                 message += '[SciATH error] The DAG key ' + key + ' was not found in the member self.joblist.\n'
                 message += '[SciATH error] Call self.registerJob() to add this key into self.joblist.\n'
                 check1 = False
-        if check1 == False:
+        if not check1:
               raise RuntimeError(message)
         print('[pass] All DAG vertices were found in the registered job list.')
 
@@ -477,10 +477,10 @@ class JobDAG(Job):
         for jobname in self.joblist:
             try:
                 value = dag[ jobname ]
-            except:
+            except KeyError:
                 message += '[SciATH error] A vertex with key \"' + jobname + '\" was not found in the user-provided DAG.\n'
                 check2 = False
-        if check2 == False:
+        if not check2:
             raise RuntimeError(message)
         print('[pass] All registered jobs were associated with a DAG vertex.')
 
@@ -498,7 +498,7 @@ class JobDAG(Job):
         while Q:
             vertex = Q.pop(0)
             #print('vertex',vertex)
-            if vertex != None:
+            if vertex is not None:
                 if vertex not in visited:
                     visited.add(vertex)
                     #print('vertex',vertex,'cnt',cnt)
@@ -533,11 +533,7 @@ class JobDAG(Job):
                 execute.append(k[0])
                 resources.append(k[1])
 
-        # pack and return results in a tuple
-        ex = []
-        for i in range(len(execute)):
-            ex.append( (execute[i],resources[i]) )
-        return ex
+        return [x for x in zip(execute,resources)]
 
 
     # overload
@@ -547,11 +543,11 @@ class JobDAG(Job):
         The max is taken over all jobs defined by the DAG and the parent job.
         """
 
-        max = dict()
+        max_resources = dict()
 
         for key in self.resources:
             value = self.resources[key]
-            max.update({key:value})
+            max_resources.update({key:value})
 
         for jobkey in self.dag:
             # skip parent
@@ -560,13 +556,13 @@ class JobDAG(Job):
 
             job = self.joblist[jobkey]
             max_resources_j = job.getMaxResources()
-            # iterate through keys in max_resources_j, update values in max
+            # iterate through keys in max_resources_j, update values in max_resources
             for key in max_resources_j:
                 value = max_resources_j[key]
-                if value > max[key]:
-                    max.update({key:value})
+                if value > max_resources[key]:
+                    max_resources.update({key:value})
 
-        return max
+        return max_resources
 
     # overload
     def getMaxWallTime(self):
