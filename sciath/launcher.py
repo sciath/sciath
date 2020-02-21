@@ -693,5 +693,3 @@ class Launcher:
         if self.queueFileExt is not None:
             filename = "sciath.job-" + job.name + "-launch." + self.queueFileExt
             _remove_file( os.path.join(output_path,filename) )
-
-        return
