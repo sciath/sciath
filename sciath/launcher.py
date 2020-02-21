@@ -453,7 +453,7 @@ class Launcher:
                 print(' The keyword <ranks> will be replaced by the actual number of MPI ranks (defined by a given test) when the test is launched.')
         self.setMPILaunch(v)
 
-        if self.useBatch == True:
+        if self.useBatch :
             prompt = '[3] specify a constraint (e.g. "gpu" on Piz Daint) (optional - hit enter if not applicable):'
             v = py23input(prompt)
             self.setBatchConstraint(v)
@@ -501,7 +501,7 @@ class Launcher:
         file.write('patchVersion=' + str(patch) + '\n')
         file.write('queuingSystemType=' + self.queuingSystemType + '\n')
         file.write('mpiLaunch=' + self.mpiLaunch + '\n')
-        if self.useBatch == True:
+        if self.useBatch :
             file.write('accountName=' + self.accountName + '\n')
             file.write('batchConstraint=' + self.batchConstraint + '\n')
             file.write('queueName=' + self.queueName + '\n')
@@ -528,7 +528,7 @@ class Launcher:
                     self.setQueueSystemType(value)
                 if key == 'mpiLaunch' :
                     self.setMPILaunch(value)
-                if self.useBatch == True:
+                if self.useBatch :
                     if key == 'batchConstraint' :
                         self.setBatchConstraint(value)
                     if key == 'queueName' :
@@ -544,7 +544,7 @@ class Launcher:
         # Do not accept conf files if the major.minor version is stale, or if versions are missing
         major,minor,patch = getVersion()
         if majorFile < major or (minorFile < minor and majorFile == major) or \
-             majorFile==None or minorFile==None or patchFile==None :
+             majorFile is None or minorFile is None or patchFile is None :
             message = '[SciATH] Incompatible, outdated configuration file ' + self.confFileName + ' detected. Please delete it and re-run to reconfigure.'
             raise RuntimeError(message)
 
