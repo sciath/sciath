@@ -355,42 +355,42 @@ class Launcher:
                     valid_launcher = True
                     break
 
-            if valid_launcher == False:
+            if not valid_launcher:
                 raise RuntimeError('[SciATH] Your MPI launch command must contain the keyword \"<ranks>\"')
 
-    def setQueueSystemType(self,type):
-        if type in ['PBS','pbs']:
+    def setQueueSystemType(self,system_type):
+        if system_type in ['PBS','pbs']:
             self.queuingSystemType = 'pbs'
             self.jobSubmissionCommand = 'qsub'
             self.useBatch = True
             self.queueFileExt = 'pbs'
 
-        elif type in ['LSF','lsf']:
+        elif system_type in ['LSF','lsf']:
             self.queuingSystemType = 'lsf'
             self.jobSubmissionCommand = 'sh -c \'bsub < $0\'' # Note single (escaped) quotes. This is a trick to interpret "<".
             self.useBatch = True
             self.queueFileExt = 'lsf'
 
-        elif type in ['SLURM','slurm']:
+        elif system_type in ['SLURM','slurm']:
             self.queuingSystemType = 'slurm'
             self.jobSubmissionCommand = 'sbatch'
             self.useBatch = True
             self.queueFileExt = 'slurm'
 
-        elif type in ['LoadLeveler','load_leveler','loadleveler','llq']:
+        elif system_type in ['LoadLeveler','load_leveler','loadleveler','llq']:
             self.queuingSystemType = 'load_leveler'
             self.jobSubmissionCommand = 'llsubmit'
             self.useBatch = True
             self.queueFileExt = 'llq'
             raise ValueError('[SciATH] Unsupported: LoadLeveler needs to be updated')
 
-        elif type in ['none', 'None', 'local']:
+        elif system_type in ['none', 'None', 'local']:
             self.queuingSystemType = 'none'
             self.jobSubmissionCommand = ''
             self.queueFileExt = None
 
         else:
-            raise RuntimeError('[SciATH] Unknown or unsupported batch queuing system "' + type + '" specified')
+            raise RuntimeError('[SciATH] Unknown or unsupported batch queuing system "' + system_type + '" specified')
 
     def setMaxRanksPerNode(self,n):
         """ Store an int-valued maximum number of MPI ranks per node """
