@@ -681,10 +681,7 @@ class Launcher:
         if not os.path.isabs(output_path):
             raise ValueError('[SciATH] cannot clean without an absolute output_path')
 
-        try:
-            job.clean()
-        except:
-            pass
+        job.clean()
 
         c_name,o_name,e_name = job.get_output_filenames()
         _remove_file( os.path.join(output_path,c_name) )
