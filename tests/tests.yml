@@ -1,0 +1,44 @@
+-
+  name: test_test1
+  command: sh test_wrapper.sh test_test1 test/test_ex1.py
+  expected: test/test_ex1.expected
+-
+  name: test_test2
+  command: sh test_wrapper.sh test_test2 test/test_ex2.py
+  expected: test/test_ex2.expected
+-
+  name: test_line_test
+  command: sh test_wrapper.sh test_line_test test/test_line_verifier.py
+  expected: test/test_line_verifier.expected
+-
+  name: harness_test1
+  command: sh test_wrapper.sh harness_test1 harness/test1.py
+  expected: harness/test1.expected
+-
+  name: harness_test2
+  command: sh test_wrapper.sh harness_test2 harness/test2.py
+  expected: harness/test2.expected
+-
+  name: harness_test3
+  command: sh test_wrapper.sh harness_test3 harness/test3.py
+  expected: harness/test3.expected
+-
+  name: job_test
+  command: sh test_wrapper.sh job_test job/test_job.py
+  expected: job/test_job.expected
+-
+  name: job_composite_test
+  command: sh test_wrapper.sh job_composite_test job/test_jobcomposite.py
+  expected: job/test_jobcomposite.expected
+-
+  name: job_sequence_test
+  command: sh test_wrapper.sh job_sequence_test job/test_jobsequence.py
+  expected: job/test_jobsequence.expected
+-
+  name: job_dag_test
+  command: sh test_wrapper.sh job_dag_test job/test_jobdag.py
+  expected: job/test_jobdag.expected
+-
+  name: launcher_test1
+  command: sh test_wrapper.sh launcher_test1 launcher/test1.py
+  expected: launcher/test1.expected

@@ -9,9 +9,8 @@ branches:
     - dev
 
 install:
-  - pip install numpy
+  - pip install numpy pyyaml
 
 script:
   - export PYTHONPATH=$PWD:$PYTHONPATH
-  - ./tests/run_tests.py -d # default config
-  - yes | ./tests/run_tests.py -f # run tests, returning error code
+  - cd tests && ./run_tests.sh
