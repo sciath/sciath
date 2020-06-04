@@ -46,7 +46,7 @@ class VerifierLine(Verifier):
 
 # Helper functions to generate rules
 
-# TODO this is just a proof of concept
+# Developer note: the below is largely a proof of concept and is likely to change.
 
 def string_get_floats(line):
     r = []
