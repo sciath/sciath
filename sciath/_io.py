@@ -12,15 +12,13 @@ def py23input(prompt) :
         v = input(prompt)
     return(v)
 
-def _remove_file(file2rm):
+def _remove_file(file2rm, safetyMode=False, debugMode=False):
     """ Remove a file, with some debugging options for development purposes """
-    safetyMode = True
-    debugMode = False
     if os.path.isfile(file2rm) :
         cmd = ['rm',file2rm]
-        if safetyMode == True:
+        if safetyMode:
             cmd = ['rm','-i',file2rm]
-        if debugMode == True:
+        if debugMode:
             print('  removing file: ',file2rm)
             print('  ',cmd)
         else:
