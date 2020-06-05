@@ -1,0 +1,20 @@
+-
+  name: foo
+  command: echo foo
+  expected: foo.expected
+-
+  name: foo2
+  command: echo foo
+  expected: foo.expected
+-
+  name: foo_fail
+  command: echo foox
+  expected: foo.expected
+-
+  name: missing
+  command: echo missing
+  expected: missing.expected
+-
+  name: many words
+  command: echo "many words"
+  expected: many_words.expected

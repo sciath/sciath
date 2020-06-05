@@ -23,6 +23,10 @@
   command: sh test_wrapper.sh harness_test3 harness/test3.py
   expected: harness/test3.expected
 -
+  name: harness_input_test
+  command: sh test_wrapper.sh harness_input_test "harness/test4.py -i ../harness/test4_data/input.yml"
+  expected: harness/test4.expected
+-
   name: job_test
   command: sh test_wrapper.sh job_test job/test_job.py
   expected: job/test_job.expected
