@@ -60,9 +60,14 @@ class Harness:
 
     _sandbox_sentinel_filename = '.sciath_sandbox'
 
-    def __init__(self,test_list):
-        self._create_testruns_from_tests(test_list)
+    def __init__(self,tests):
         self.launcher = None # Created when needed
+        self.testruns = []
+        for test in tests:
+            self.add_test(test)
+
+    def add_test(self, test):
+        self.testruns.append(_TestRun(test))
 
     def clean(self):
         if self.launcher is None:
@@ -213,7 +218,3 @@ class Harness:
                     testrun.active = True
                     found = True
                     break
-
-    def _create_testruns_from_tests(self,test_list):
-        """ Create a list of _TestRuns from a list of Tests"""
-        self.testruns = [_TestRun(test) for test in test_list]
