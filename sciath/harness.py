@@ -97,7 +97,6 @@ class Harness:
         return True
 
     def execute(self):
-        # Always clean before executing
         self.clean()
 
         if self.launcher is None:
