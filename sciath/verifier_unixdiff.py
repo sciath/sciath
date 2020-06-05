@@ -29,13 +29,13 @@ class VerifierUnixDiff(Verifier):
         if not os.path.isfile(self.expected_file) :
             report.append("[UnixDiff] Expected file \"" + self.expected_file + "\" was not found")
             status = sciath_test_status.expected_file_not_found
-            return
+            return status,report
 
         output_full_path = os.path.join(output_path,self.output_file)
         if not os.path.isfile(output_full_path) :
             report.append("[UnixDiff] Output file \"" + output_full_path + "\" was not found")
             status = sciath_test_status.output_file_not_found
-            return
+            return status,report
 
         stdoutfile = os.path.join(output_path,"sciath.verifier-unixdiff.stdout")
         file_o = open( stdoutfile, 'w')

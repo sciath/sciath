@@ -5,8 +5,8 @@ import shutil
 from enum import Enum # Before Python 3.4, you need the enum34 (NOT enum) module
 
 import sciath
-from sciath.test import Test
-from sciath.launcher import Launcher
+import sciath.launcher
+import sciath._test_file
 
 class _TestRunStatus(Enum):
     DEACTIVATED             = 'deactivated'  # Test skipped intentionally
@@ -60,13 +60,24 @@ class Harness:
 
     _sandbox_sentinel_filename = '.sciath_sandbox'
 
-    def __init__(self,test_list):
-        self._create_testruns_from_tests(test_list)
+    def __init__(self, tests=[]):
         self.launcher = None # Created when needed
+        self.testruns = []
+        for test in tests:
+            self.add_test(test)
+
+    def add_test(self, test):
+        if test.name in [testrun.test.name for testrun in self.testruns]:
+            raise Exception("Duplicate test name %s" % test.name)
+        self.testruns.append(_TestRun(test))
+
+    def add_tests_from_file(self, filename):
+        for test in sciath._test_file.create_tests_from_file(filename):
+            self.add_test(test)
 
     def clean(self):
         if self.launcher is None:
-            self.launcher = Launcher()
+            self.launcher = sciath.launcher.Launcher()
 
         # Clean all tests
         for testrun in self.testruns:
@@ -90,7 +101,7 @@ class Harness:
         self.clean()
 
         if self.launcher is None:
-            self.launcher = Launcher()
+            self.launcher = sciath.launcher.Launcher()
 
         for testrun in self.testruns:
             if testrun.active:
@@ -139,10 +150,14 @@ class Harness:
         parser.add_argument('-l', '--list', help='List all registered tests and exit', required=False, action='store_true')
         parser.add_argument('-w','--conf-file',help='Use provided configuration file instead of the default',required=False)
         parser.add_argument('--no-colors',help='Deactivate colored output',required=False,action='store_true')
+        parser.add_argument('-i', '--input-file', help='Parse a file to add tests to the harness', required=False)
         args,unknown = parser.parse_known_args()
 
         if args.no_colors:
             sciath.sciath_colors.set_colors(use_bash = False)
+
+        if args.input_file:
+            self.add_tests_from_file(args.input_file)
 
         if args.list:
             self.print_all_tests()
@@ -155,7 +170,7 @@ class Harness:
             Launcher.writeDefaultDefinition(args.conf_file)
             return
 
-        self.launcher = Launcher(args.conf_file)
+        self.launcher = sciath.launcher.Launcher(args.conf_file)
 
         if args.configure:
             self.launcher.configure()
@@ -213,7 +228,3 @@ class Harness:
                     testrun.active = True
                     found = True
                     break
-
-    def _create_testruns_from_tests(self,test_list):
-        """ Create a list of _TestRuns from a list of Tests"""
-        self.testruns = [_TestRun(test) for test in test_list]
