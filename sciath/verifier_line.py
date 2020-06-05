@@ -18,14 +18,13 @@ class VerifierLine(Verifier):
         passing = True
         report = ''
         for rule in self.rules:
-
             if not os.path.isfile(self.expected_file):
                 status = sciath_test_status.expected_file_not_found
-                break
+                return status, report
             output_file_full = os.path.join(output_path,self.output_file)
             if not os.path.isfile(output_file_full):
                 status = sciath_test_status.output_file_not_found
-                break
+                return status, report
             match_out = {}
             match_expected = {}
             for [match, filename] in [(match_out, output_file_full),(match_expected,self.expected_file)]:
