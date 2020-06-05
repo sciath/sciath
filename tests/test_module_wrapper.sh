@@ -2,7 +2,7 @@
 
 test_name=$1
 sandbox="$test_name""_sandbox"
-script="$PWD""/""$2"
+args=$2
 test_conf="test_conf"
 python=python
 
@@ -10,6 +10,6 @@ rm -rf $sandbox
 mkdir $sandbox
 cp $test_conf "$sandbox""/SciATHBatchQueuingSystem.conf"
 cd $sandbox
-$python $script \
+$python -m sciath $args \
   | sed "s%from /.*_sandbox%from <<PATH STRIPPED>>%" \
   | sed "s%Expected file.*\.expected%Expected file <<PATH STRIPPED>>%"
