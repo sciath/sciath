@@ -1,5 +1,6 @@
 import os
 import re
+import shutil
 
 from sciath.verifier import Verifier
 from sciath import sciath_test_status
@@ -18,14 +19,13 @@ class VerifierLine(Verifier):
         passing = True
         report = ''
         for rule in self.rules:
-
             if not os.path.isfile(self.expected_file):
                 status = sciath_test_status.expected_file_not_found
-                break
+                return status, report
             output_file_full = os.path.join(output_path,self.output_file)
             if not os.path.isfile(output_file_full):
                 status = sciath_test_status.output_file_not_found
-                break
+                return status, report
             match_out = {}
             match_expected = {}
             for [match, filename] in [(match_out, output_file_full),(match_expected,self.expected_file)]:
@@ -43,6 +43,15 @@ class VerifierLine(Verifier):
 
         status = sciath_test_status.ok if passing else sciath_test_status.not_ok
         return status, report
+
+
+    # FIXME: duplication with VerifierUnixDiff - should both inherit from a single class
+    def update_expected(self, output_path):
+        output_full_path = os.path.join(output_path, self.output_file)
+        if not os.path.isfile(output_full_path) :
+            raise Exception("[SciATH] Output file %s could not be found, so cannot update" % output_full_path)
+        # Does not create directories
+        shutil.copyfile(output_full_path, self.expected_file)
 
 # Helper functions to generate rules
 

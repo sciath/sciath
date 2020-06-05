@@ -19,6 +19,23 @@ class Verifier:
         """ Relative to a given output path, fetch file(s) and produce status,report """
         raise NotImplementedError("Verifier implementations must override execute()")
 
+    def update_expected(self, output_path):
+        """ Update reference files from output, if possible
+
+            This function can be overridden to give a Verifier implementation
+            the opportunity to update any reference files it refers to,
+            from the output it usually examines. This is very useful for
+            some implementations, as one can quickly generate or
+            update reference files with the same tools used to run the tests.
+
+            Note that if multiple tests refer to the same reference file,
+            a given reference file may be updated several times, and so
+            even in cases where verification is solely based on refernce files,
+            updating may not be a guarantee that verification will succeed.
+
+            """
+
+
 class VerifierExitCode(Verifier):
     """ Verifier implementation which checks an error code """
 

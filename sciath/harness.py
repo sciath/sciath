@@ -97,7 +97,6 @@ class Harness:
         return True
 
     def execute(self):
-        # Always clean before executing
         self.clean()
 
         if self.launcher is None:
@@ -126,12 +125,15 @@ class Harness:
 
     def report(self):
         """ Compile results into a report and print """
-        for testrun in self.testruns:
-            print(testrun.test.name,":",testrun.status.value,'('+testrun.status_info+')' if testrun.status_info else '')
-        if self.determine_overall_success():
-            print("Overall Success!")
+        if self.testruns:
+            for testrun in self.testruns:
+                print(testrun.test.name,":",testrun.status.value,'('+testrun.status_info+')' if testrun.status_info else '')
+            if self.determine_overall_success():
+                print("Overall Success!")
+            else:
+                print("TEST SUCCESS NOT CONFIRMED")
         else:
-            print("TEST SUCCESS NOT CONFIRMED")
+            print("No tests")
 
     def run_from_args(self):
         """ Perform one or more actions, based on command line options
@@ -151,6 +153,7 @@ class Harness:
         parser.add_argument('-w','--conf-file',help='Use provided configuration file instead of the default',required=False)
         parser.add_argument('--no-colors',help='Deactivate colored output',required=False,action='store_true')
         parser.add_argument('-i', '--input-file', help='Parse a file to add tests to the harness', required=False)
+        parser.add_argument('-u', '--update-expected', help='When well-defined, update reference files with current output before verifyiing', required=False, action='store_true')
         args,unknown = parser.parse_known_args()
 
         if args.no_colors:
@@ -182,6 +185,9 @@ class Harness:
         if not args.verify:
             self.execute()
 
+        if args.update_expected:
+            self.update_expected()
+
         if not args.verify and self.launcher.useBatch:
             # TODO instead test something like self.launcher.is_blocking(), to make it easier to have a local batch system
             print('Not verifying or reporting, since there is a queue')
@@ -192,6 +198,14 @@ class Harness:
         if args.error_on_test_failure:
             if not self.determine_overall_success():
                 sys.exit(1)
+
+
+    def update_expected(self):
+        """ Give each active test the chance to update its reference output """
+        for testrun in self.testruns:
+            if testrun.active:
+                testrun.test.verifier.update_expected(testrun.output_path)
+
 
     def verify(self):
         """ Update the status of all test runs """

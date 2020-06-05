@@ -27,6 +27,10 @@
   command: sh test_wrapper.sh harness_input_test "harness/test4.py -i ../harness/test4_data/input.yml"
   expected: harness/test4.expected
 -
+  name: harness_test5
+  command: sh test_wrapper.sh harness_test5 harness/test5.py
+  expected: harness/test5.expected
+-
   name: module_smoke
   command: sh test_module_wrapper.sh module_smoke
   expected: module/module_smoke.expected

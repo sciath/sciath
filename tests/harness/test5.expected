@@ -1,0 +1,5 @@
+[ -- Removing output for Test: test -- ]
+[36m[Executing job][0m from <<PATH STRIPPED>>
+  [cmd]  ['echo', 'The first number is 1.1\nThe second number is 1.01']
+test : fail (verification failed)
+TEST SUCCESS NOT CONFIRMED

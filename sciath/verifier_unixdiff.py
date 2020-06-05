@@ -4,6 +4,7 @@ if os.name == 'posix' and sys.version_info[0] < 3:
     import subprocess32 as subprocess # To be removed once Python 2 is fully abandoned
 else:
     import subprocess
+import shutil
 
 from sciath.job import Job
 from sciath.verifier import Verifier
@@ -61,3 +62,11 @@ class VerifierUnixDiff(Verifier):
         _remove_file(stdoutfile)
 
         return status,report
+
+    # FIXME: duplication with VerifierLine - should both inherit from a single class
+    def update_expected(self, output_path):
+        output_full_path = os.path.join(output_path,self.output_file)
+        if not os.path.isfile(output_full_path) :
+            raise Exception("[SciATH] Output file %s could not be found, so cannot update" % output_full_path)
+        # Does not create directories
+        shutil.copyfile(output_full_path, self.expected_file)
