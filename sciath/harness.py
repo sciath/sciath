@@ -126,12 +126,15 @@ class Harness:
 
     def report(self):
         """ Compile results into a report and print """
-        for testrun in self.testruns:
-            print(testrun.test.name,":",testrun.status.value,'('+testrun.status_info+')' if testrun.status_info else '')
-        if self.determine_overall_success():
-            print("Overall Success!")
+        if self.testruns:
+            for testrun in self.testruns:
+                print(testrun.test.name,":",testrun.status.value,'('+testrun.status_info+')' if testrun.status_info else '')
+            if self.determine_overall_success():
+                print("Overall Success!")
+            else:
+                print("TEST SUCCESS NOT CONFIRMED")
         else:
-            print("TEST SUCCESS NOT CONFIRMED")
+            print("No tests")
 
     def run_from_args(self):
         """ Perform one or more actions, based on command line options
