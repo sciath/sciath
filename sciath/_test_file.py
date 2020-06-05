@@ -1,7 +1,7 @@
 import os
 import shlex
 
-import yaml  # FIXME: we could and probably should get away with our own simple parser, to avoid this dependency outside the standard modules
+import yaml
 
 import sciath.test
 import sciath.job
