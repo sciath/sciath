@@ -1,0 +1,6 @@
+[ -- Removing output for Test: relpath_test -- ]
+[36m[Executing relpath_test][0m from <<PATH STRIPPED>>
+['sh', '/Users/patrick/code/sciath/tests/module/module_relpath_data/script.sh', '/Users/patrick/code/sciath/tests/module/module_relpath_data/data.txt']
+-- Summary --
+relpath_test : pass (verification was successful)
+Overall Success!

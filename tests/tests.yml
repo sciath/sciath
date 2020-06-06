@@ -47,6 +47,10 @@
   command: sh test_module_wrapper.sh module_multi "-i ../module/module_multi_data/input.yml"
   expected: module/module_multi.expected
 -
+  name: module_relpath
+  command: sh test_module_wrapper.sh module_relpath "-i ../module/module_relpath_data/input.yml"
+  expected: module/module_relpath.expected
+-
   name: job_test
   command: sh test_wrapper.sh job_test job/test_job.py
   expected: job/test_job.expected
