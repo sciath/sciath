@@ -29,7 +29,7 @@ class Verifier:
         """
         raise NotImplementedError("Verifier implementations must override execute()")
 
-    def update_expected(self, output_path):
+    def update_expected(self, output_path=None, exec_path=None):
         """ Update reference files from output, if possible
 
             This function can be overridden to give a Verifier implementation
@@ -157,7 +157,8 @@ class ComparisonVerifier(Verifier):
 
         return status, report
 
-    def update_expected(self, output_path):
+    # FIXME: this also needs to know about exec_path
+    def update_expected(self, output_path, exec_path=None):
         output_full_path = os.path.join(output_path,self.output_file)
         if not os.path.isfile(output_full_path) :
             raise Exception('[SciATH] Cannot update: output file missing: %s' % output_full_path)

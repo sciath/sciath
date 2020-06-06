@@ -210,13 +210,11 @@ class Harness:
             if not self.determine_overall_success():
                 sys.exit(1)
 
-
     def update_expected(self):
         """ Give each active test the chance to update its reference output """
         for testrun in self.testruns:
             if testrun.active:
-                testrun.test.verifier.update_expected(testrun.output_path)
-
+                testrun.test.verifier.update_expected(testrun.output_path, testrun.exec_path)
 
     def verify(self):
         """ Update the status of all test runs """
