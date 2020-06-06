@@ -2,7 +2,7 @@
 [ -- Removing output for Test: foo2 -- ]
 [ -- Removing output for Test: foo_fail -- ]
 [ -- Removing output for Test: missing -- ]
-[ -- Removing output for Test: many_words -- ]
+[ -- Removing output for Test: many words -- ]
 [36m[Executing foo][0m from <<PATH STRIPPED>>
   [cmd]  ['echo', 'foo']
 [36m[Executing foo2][0m from <<PATH STRIPPED>>
@@ -29,5 +29,5 @@ foo : pass (verification was successful)
 foo2 : pass (verification was successful)
 foo_fail : fail (verification failed)
 missing : fail (expected/comparison file not found)
-many_words : pass (verification was successful)
+many words : pass (verification was successful)
 TEST SUCCESS NOT CONFIRMED
