@@ -13,6 +13,18 @@
   [cmd]  ['echo', 'missing']
 [36m[Executing many_words][0m from <<PATH STRIPPED>>
   [cmd]  ['echo', 'many words']
+--- Error Reports ---
+[Report for foo_fail]
+1c1
+< foo
+---
+> foox
+[UnixDiff] Expected and output files are not identical
+[UnixDiff] Expected file <<PATH STRIPPED>>"
+[UnixDiff] Output file  : "sciath.job-foo_fail.stdout"
+[Report for missing]
+[UnixDiff] Expected file <<PATH STRIPPED>>" was not found
+-- Summary --
 foo : pass (verification was successful)
 foo2 : pass (verification was successful)
 foo_fail : fail (verification failed)

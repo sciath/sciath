@@ -17,7 +17,7 @@ class VerifierLine(Verifier):
 
     def execute(self, output_path, exec_path = None):
         passing = True
-        report = ''
+        report = []
         for rule in self.rules:
             if not os.path.isfile(self.expected_file):
                 status = sciath_test_status.expected_file_not_found
@@ -38,8 +38,8 @@ class VerifierLine(Verifier):
             rule_result, rule_report  = rule['function'](match_expected, match_out)
             passing = passing and rule_result
             if rule_report:
-                report = report + 'Report for lines matching: \'' + rule['re'] + '\'\n'
-                report = report + rule_report
+                report.append("Report for lines matching: '" + rule['re'] + "'")
+                report.extend(rule_report)
 
         status = sciath_test_status.ok if passing else sciath_test_status.not_ok
         return status, report
@@ -68,39 +68,39 @@ def string_get_floats(line):
 
 def compare_float_values_rel(line_expected, line_out, rel_tol):
     floats_expected = string_get_floats(line_expected.rstrip())
-    floats_out      = string_get_floats(line_out.rstrip())
+    floats_out = string_get_floats(line_out.rstrip())
     passing = True
-    report = ''
+    report = []
     for (float_expected, float_out) in zip(floats_expected, floats_out):
-        if float_expected == 0.0 and float_out != 0.0:
-            passing = False
-            report = report + 'expected value of 0.0 must be matched exactly (not checking the rest of the line)\n'
-            break
-        if abs(float_out - float_expected)/abs(float_expected) > rel_tol:
+        if float_expected == 0.0:
+            if float_out != 0.0:
+                passing = False
+                report.append('expected value of 0.0 must be matched exactly')
+        elif abs(float_out - float_expected)/abs(float_expected) > rel_tol:
              passing = False
-             report = report + 'expected value of ' + str(float_expected) + ' does not match output value ' + str(float_out) + ' to relative tolerance ' + str(rel_tol)
-             break
-    if passing and len(floats_expected) != len(floats_out):
+             report.append('expected value of %g does not match output value %g to rel. tol. %g' % (float_expected, float_out, rel_tol))
+    if len(floats_expected) != len(floats_out):
         passing = False
-        report = report + 'Wrong number of values found: ' + len(floats_out) + ' instead of ' + len(floats_expected)
+        report.append('Wrong number of values found: %d instead of %d' % (len(floats_out), len(floats_expected)))
     return passing, report
 
 def float_rel_pairs_function(match_expected, match_out, rel_tol, max_err_count = 100):
     passing = True
-    report = ''
+    report = []
     err_count = 0
     for ((lineno_expected,line_expected), (lineno_out,line_out)) in zip(match_expected.items(), match_out.items()):
         line_passing, line_report = compare_float_values_rel(line_expected, line_out, rel_tol)
         if not line_passing:
             passing = False
-            report = report + '(l.' + str(lineno_expected) + '/' + str(lineno_out) + ') Lines did not match: ' + line_report
+            report.append('(l.' + str(lineno_expected) + '/' + str(lineno_out) + ') Lines did not match:')
+            report.extend(line_report)
 
             err_count = err_count + 1
             if err_count > max_err_count:
-                report = report + 'Not checking any more lines after the first ' + max_err_count + '\n'
+                report.append('Not checking any more lines after the first %d' % max_err_count)
     if len(match_expected) != len(match_out):
         passing = False
-        report = report + 'Output and expected had different numbers of matches. Expected ' + len(match_expected) + ' but found ' + len(match_out) + '\n'
+        report.append('Wrong number of matched lines: %d instead of %d' % (len(match_out), len(match_expected)))
     return passing, report
 
 def key_and_float_rule(key,rel_tol=1e-6):
