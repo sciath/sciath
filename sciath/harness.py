@@ -223,7 +223,7 @@ class Harness:
         for testrun in self.testruns:
             if testrun.active:
                 # TODO Need to ask the launcher if the job is completed and update the status, before passing to the verifier
-                status,testrun.report = testrun.test.verifier.execute(testrun.output_path)
+                status, testrun.report = testrun.test.verify(testrun.output_path, testrun.exec_path)
                 verifier_status = status[0]
                 verifier_info = status[1]
                 if verifier_status == 'pass':

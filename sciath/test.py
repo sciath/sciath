@@ -14,7 +14,7 @@ class Test:
     * A set of tags
 
     """
-    def __init__(self, job, name = None):
+    def __init__(self, job, name=None):
         self.job = job
         if name is not None:
             self.name = name
@@ -24,6 +24,6 @@ class Test:
             self.name = job.name
         self.verifier = sciath.verifier.ExitCodeVerifier(self)
 
-    def verify(self,output_path):
-        status,report = self.verifier.execute(output_path)
-        return status,report
+    def verify(self, output_path=None, exec_path=None):
+        status,report = self.verifier.execute(output_path, exec_path)
+        return status, report

@@ -17,7 +17,7 @@ class Verifier:
     def __init__(self, test):
         self.test = test
 
-    def execute(self, output_path, exec_path = None):
+    def execute(self, output_path=None, exec_path=None):
         """ Relative to a given output path, fetch file(s) and produce status,report
 
             Accepts an output path (where the Launcher puts the files it generates)
@@ -52,7 +52,7 @@ class ExitCodeVerifier(Verifier):
     def __init__(self, test):
         super(ExitCodeVerifier,self).__init__(test)
 
-    def execute(self, output_path, exec_path = None):
+    def execute(self, output_path, exec_path=None):
         """ Relative to a given output path, fetch file(s) and produce status,report """
 
         status = None
@@ -138,7 +138,7 @@ class ComparisonVerifier(Verifier):
             self.output_file = o_name[-1]
         # FIXME: there is a problem here - this needs to know whether the comparison file is relative to output_path of exec_path
 
-    def execute(self, output_path, exec_path = None):
+    def execute(self, output_path=None, exec_path=None):
         report = []
         status = None
 
