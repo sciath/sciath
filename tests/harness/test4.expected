@@ -15,15 +15,13 @@
 ['echo', 'many words']
 --- Error Reports ---
 [Report for foo_fail]
-1c1
-< foo
----
-> foox
-[UnixDiff] Expected and output files are not identical
-[UnixDiff] Expected file: "../harness/test4_data/foo.expected"
-[UnixDiff] Output file  : "sciath.job-foo_fail.stdout"
+--- ../harness/test4_data/foo.expected
++++ <<TEST DIR STRIPPED>>/harness_input_test_sandbox/foo_fail_output/sciath.job-foo_fail.stdout
+@@ -1 +1 @@
+-foo
++foox
 [Report for missing]
-[UnixDiff] Expected file "../harness/test4_data/missing.expected" was not found
+[Comparison] Expected file "../harness/test4_data/missing.expected" was not found
 -- Summary --
 foo : pass (verification was successful)
 foo2 : pass (verification was successful)

@@ -2,40 +2,30 @@ import os
 import re
 import shutil
 
-from sciath.verifier import Verifier
+from sciath.verifier import ComparisonVerifier
 from sciath import sciath_test_status
 
-class VerifierLine(Verifier):
+
+class VerifierLine(ComparisonVerifier):
 
     def __init__(self, test, expected_file, output_file = None):
-      Verifier.__init__(self, test)
-      self.expected_file = expected_file
-      c_name, o_name, e_name = self.test.job.get_output_filenames()
-      if output_file is None:
-          self.output_file = o_name[-1]
+      super(VerifierLine, self).__init__(test, expected_file, output_file)
       self.rules = []
 
-    def execute(self, output_path, exec_path = None):
+    def _compare_files(self, from_filename, to_filename):
         passing = True
         report = []
         for rule in self.rules:
-            if not os.path.isfile(self.expected_file):
-                status = sciath_test_status.expected_file_not_found
-                return status, report
-            output_file_full = os.path.join(output_path,self.output_file)
-            if not os.path.isfile(output_file_full):
-                status = sciath_test_status.output_file_not_found
-                return status, report
-            match_out = {}
-            match_expected = {}
-            for [match, filename] in [(match_out, output_file_full),(match_expected,self.expected_file)]:
-                with open(filename,'r') as f:
+            match_from = {}
+            match_to = {}
+            for [match, filename] in [(match_from, from_filename), (match_to, to_filename)]:
+                with open(filename, 'r') as f:
                     line_number = 0
                     for line in f.readlines():
                         line_number = line_number + 1
                         if re.match(rule['re'],line):
                             match[line_number] = line
-            rule_result, rule_report  = rule['function'](match_expected, match_out)
+            rule_result, rule_report  = rule['function'](match_from, match_to)
             passing = passing and rule_result
             if rule_report:
                 report.append("Report for lines matching: '" + rule['re'] + "'")
@@ -43,15 +33,6 @@ class VerifierLine(Verifier):
 
         status = sciath_test_status.ok if passing else sciath_test_status.not_ok
         return status, report
-
-
-    # FIXME: duplication with VerifierUnixDiff - should both inherit from a single class
-    def update_expected(self, output_path):
-        output_full_path = os.path.join(output_path, self.output_file)
-        if not os.path.isfile(output_full_path) :
-            raise Exception("[SciATH] Output file %s could not be found, so cannot update" % output_full_path)
-        # Does not create directories
-        shutil.copyfile(output_full_path, self.expected_file)
 
 # Helper functions to generate rules
 
@@ -84,6 +65,7 @@ def compare_float_values_rel(line_expected, line_out, rel_tol):
         report.append('Wrong number of values found: %d instead of %d' % (len(floats_out), len(floats_expected)))
     return passing, report
 
+
 def float_rel_pairs_function(match_expected, match_out, rel_tol, max_err_count = 100):
     passing = True
     report = []
@@ -102,6 +84,7 @@ def float_rel_pairs_function(match_expected, match_out, rel_tol, max_err_count =
         passing = False
         report.append('Wrong number of matched lines: %d instead of %d' % (len(match_out), len(match_expected)))
     return passing, report
+
 
 def key_and_float_rule(key,rel_tol=1e-6):
     rule = {}

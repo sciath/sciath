@@ -5,7 +5,7 @@ import yaml
 
 import sciath.test
 import sciath.job
-import sciath.verifier_unixdiff
+import sciath.verifier
 import sciath.verifier_line
 
 def create_tests_from_file(filename):
@@ -53,7 +53,6 @@ def create_tests_from_file(filename):
         if not os.path.isabs(expected):
             expected = os.path.join(os.path.dirname(filename), expected)
 
-
         if len(commands) == 1:
             job = sciath.job.Job(commands[0], name=entry['name'])
         else:
@@ -66,7 +65,7 @@ def create_tests_from_file(filename):
         if verifier_type == 'text_diff':
             if 'expected' not in entry or not entry['expected']:
                 raise Exception('Each test entry must defined an expected file')
-            test.verifier = sciath.verifier_unixdiff.VerifierUnixDiff(test, expected)
+            test.verifier = sciath.verifier.ComparisonVerifier(test, expected)
         elif verifier_type == 'float_lines':
             if 'expected' not in entry or not entry['expected']:
                 raise Exception('Each test entry must defined an expected file')
@@ -75,6 +74,9 @@ def create_tests_from_file(filename):
             test.verifier.rules.append(sciath.verifier_line.key_and_float_rule(key))
         else:
             raise Exception('[SciATH] unrecognized type %s' % verifier_type)
+
+        if 'comparison_file' in entry:
+            test.setComparisonFile(entry['comparison_file'])
 
         tests.append(test)
 
