@@ -3,5 +3,5 @@
 3d2
 < 
 [UnixDiff] Expected and output files are not identical
-[UnixDiff] Expected file <<PATH STRIPPED>>"
+[UnixDiff] Expected file: "<<TEST DIR STRIPPED>>/test/./expected/t1.expected"
 [UnixDiff] Output file  : "sciath.job-Test_2_ud.stdout"

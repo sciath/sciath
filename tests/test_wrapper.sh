@@ -1,8 +1,9 @@
 #!/usr/bin/env sh
 
 test_name=$1
+test_dir=$(pwd)
 sandbox="$test_name""_sandbox"
-script="$PWD""/""$2"
+script="$test_dir""/""$2"
 test_conf="test_conf"
 python=python
 
@@ -11,5 +12,4 @@ mkdir $sandbox
 cp $test_conf "$sandbox""/SciATHBatchQueuingSystem.conf"
 cd $sandbox
 $python $script \
-  | sed "s%from /.*/sandbox%from <<PATH STRIPPED>>%" \
-  | sed "s%Expected file.*\.expected%Expected file <<PATH STRIPPED>>%"
+  | sed "s%$test_dir%<<TEST DIR STRIPPED>>%g"

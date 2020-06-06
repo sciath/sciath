@@ -3,15 +3,15 @@
 [ -- Removing output for Test: foo_fail -- ]
 [ -- Removing output for Test: missing -- ]
 [ -- Removing output for Test: many words -- ]
-[36m[Executing foo][0m from <<PATH STRIPPED>>
+[36m[Executing foo][0m from <<TEST DIR STRIPPED>>/harness_input_test_sandbox/foo_output/sandbox
 ['echo', 'foo']
-[36m[Executing foo2][0m from <<PATH STRIPPED>>
+[36m[Executing foo2][0m from <<TEST DIR STRIPPED>>/harness_input_test_sandbox/foo2_output/sandbox
 ['echo', 'foo']
-[36m[Executing foo_fail][0m from <<PATH STRIPPED>>
+[36m[Executing foo_fail][0m from <<TEST DIR STRIPPED>>/harness_input_test_sandbox/foo_fail_output/sandbox
 ['echo', 'foox']
-[36m[Executing missing][0m from <<PATH STRIPPED>>
+[36m[Executing missing][0m from <<TEST DIR STRIPPED>>/harness_input_test_sandbox/missing_output/sandbox
 ['echo', 'missing']
-[36m[Executing many_words][0m from <<PATH STRIPPED>>
+[36m[Executing many_words][0m from <<TEST DIR STRIPPED>>/harness_input_test_sandbox/many words_output/sandbox
 ['echo', 'many words']
 --- Error Reports ---
 [Report for foo_fail]
@@ -20,10 +20,10 @@
 ---
 > foox
 [UnixDiff] Expected and output files are not identical
-[UnixDiff] Expected file <<PATH STRIPPED>>"
+[UnixDiff] Expected file: "../harness/test4_data/foo.expected"
 [UnixDiff] Output file  : "sciath.job-foo_fail.stdout"
 [Report for missing]
-[UnixDiff] Expected file <<PATH STRIPPED>>" was not found
+[UnixDiff] Expected file "../harness/test4_data/missing.expected" was not found
 -- Summary --
 foo : pass (verification was successful)
 foo2 : pass (verification was successful)
