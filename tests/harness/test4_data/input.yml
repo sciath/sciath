@@ -18,3 +18,8 @@
   name: many words
   command: echo "many words"
   expected: many_words.expected
+ #-
+ #  name: comp_file
+ #  command: sh -c "echo qux > compare_me.txt"
+ #  comparison_file: compare_me.txt
+ #  expected: comp_file.expected

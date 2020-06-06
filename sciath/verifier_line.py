@@ -6,10 +6,10 @@ from sciath.verifier import ComparisonVerifier
 from sciath import sciath_test_status
 
 
-class VerifierLine(ComparisonVerifier):
+class LineVerifier(ComparisonVerifier):
 
     def __init__(self, test, expected_file, output_file = None):
-      super(VerifierLine, self).__init__(test, expected_file, output_file)
+      super(LineVerifier, self).__init__(test, expected_file, output_file)
       self.rules = []
 
     def _compare_files(self, from_filename, to_filename):

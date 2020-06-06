@@ -70,7 +70,7 @@ def create_tests_from_file(filename):
             if 'expected' not in entry or not entry['expected']:
                 raise Exception('Each test entry must defined an expected file')
             key = entry['key'] if 'key' in entry else ''
-            test.verifier = sciath.verifier_line.VerifierLine(test, expected)
+            test.verifier = sciath.verifier_line.LineVerifier(test, expected)
             test.verifier.rules.append(sciath.verifier_line.key_and_float_rule(key))
         else:
             raise Exception('[SciATH] unrecognized type %s' % verifier_type)

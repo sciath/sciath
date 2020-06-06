@@ -46,11 +46,11 @@ class Verifier:
             """
 
 
-class VerifierExitCode(Verifier):
+class ExitCodeVerifier(Verifier):
     """ Verifier implementation which checks an error code """
 
     def __init__(self, test):
-        super(VerifierExitCode,self).__init__(test)
+        super(ExitCodeVerifier,self).__init__(test)
 
     def execute(self, output_path, exec_path = None):
         """ Relative to a given output path, fetch file(s) and produce status,report """

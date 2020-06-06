@@ -4,7 +4,7 @@ import os
 from sciath.job import Job
 from sciath.launcher import Launcher
 from sciath.test import Test
-from sciath.verifier_line import VerifierLine, key_and_float_rule
+from sciath.verifier_line import LineVerifier, key_and_float_rule
 
 this_dir = os.path.dirname(os.path.realpath(__file__))
 
@@ -20,7 +20,7 @@ def test1(output_path):
     cmd = ['printf' , '  key 1.0 2 -3.4 1e10\nx\n\n  key 1.0\n  key  \nkey\nkey 1e-10 3.0 4.0\n  key 1e-12\n']
     name = 'Line1'
     t = Test(Job(cmd, name))
-    v = VerifierLine(t, expected_file = os.path.join(this_dir,"./expected/line1.expected"))
+    v = LineVerifier(t, expected_file = os.path.join(this_dir,"./expected/line1.expected"))
     v.rules.append({'re':'  key', 'function':comparison_function})
     t.verifier = v
     return t
@@ -30,7 +30,7 @@ def test2(output_path):
     cmd = ['printf' , 'should fail\nx\n\n  key 1.0\n  key  \nkey\nkey 1e-10 3.0 4.0\n  key 1e-12\n']
     name = 'Line2'
     t = Test(Job(cmd, name))
-    v = VerifierLine(t, expected_file = os.path.join(this_dir,"./expected/line1.expected"))
+    v = LineVerifier(t, expected_file = os.path.join(this_dir,"./expected/line1.expected"))
     v.rules.append({'re':'  key', 'function':comparison_function})
     t.verifier = v
     return t
@@ -40,7 +40,7 @@ def test3(output_path):
     cmd = ['printf' , '  key 2.0 2 -3.4 1e10\nx\n\n  key 1.0\n  key  \nkey\nkey 1e-10 1.0 4.0\n  key 1e-12\n']
     name = 'Line3'
     t = Test(Job(cmd, name))
-    v = VerifierLine(t, expected_file = os.path.join(this_dir,"./expected/line1.expected"))
+    v = LineVerifier(t, expected_file = os.path.join(this_dir,"./expected/line1.expected"))
     v.rules.append(key_and_float_rule('  key'))
     t.verifier = v
     return t
@@ -50,7 +50,7 @@ def test4(output_path):
     cmd = ['printf' , '  key 7.0 2 -3.4 1e10\nx\n\n  key 1.0\n  key  \nkey\nkey 1e10 1.0 4.0\n  key 1e-12\n']
     name = 'Line4'
     t = Test(Job(cmd, name))
-    v = VerifierLine(t, expected_file = os.path.join(this_dir,"./expected/line1.expected"))
+    v = LineVerifier(t, expected_file = os.path.join(this_dir,"./expected/line1.expected"))
     v.rules.append(key_and_float_rule('  key'))
     t.verifier = v
     return t
@@ -60,7 +60,7 @@ def test5(output_path):
     cmd = ['printf' , '  key 2.0 2 -3.4 1e10\nx\n\n  key 1.0\n  key  \nkey\nkey 1e10 1.0 4.0\n  key 1e+12\n']
     name = 'Line5'
     t = Test(Job(cmd, name))
-    v = VerifierLine(t, expected_file = os.path.join(this_dir,"./expected/line1.expected"))
+    v = LineVerifier(t, expected_file = os.path.join(this_dir,"./expected/line1.expected"))
     v.rules.append(key_and_float_rule('  key'))
     t.verifier = v
     return t
