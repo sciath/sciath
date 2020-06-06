@@ -1,0 +1,22 @@
+[ -- Removing output for Test: testA -- ]
+[ -- Removing output for Test: testA_too -- ]
+[ -- Removing output for Test: testB -- ]
+[36m[Executing job_sequence (1/3)][0m from <<PATH STRIPPED>>
+  [cmd]  ['echo', 'command', '1', 'of', '3']
+[36m[Executing job_sequence (2/3)][0m from <<PATH STRIPPED>>
+  [cmd]  ['echo', 'command', '2', 'of', '3']
+[36m[Executing job_sequence (3/3)][0m from <<PATH STRIPPED>>
+  [cmd]  ['echo', 'command', '3', 'of', '3']
+[36m[Executing job_sequence (1/3)][0m from <<PATH STRIPPED>>
+  [cmd]  ['echo', 'command', '1', 'of', '3']
+[36m[Executing job_sequence (2/3)][0m from <<PATH STRIPPED>>
+  [cmd]  ['echo', 'command', '2', 'of', '3']
+[36m[Executing job_sequence (3/3)][0m from <<PATH STRIPPED>>
+  [cmd]  ['echo', 'command', '3', 'of', '3']
+[36m[Executing testB][0m from <<PATH STRIPPED>>
+  [cmd]  ['echo', 'testB']
+-- Summary --
+testA : pass (verification was successful)
+testA_too : pass (verification was successful)
+testB : pass (verification was successful)
+Overall Success!
