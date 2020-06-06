@@ -1,15 +1,15 @@
 [ -- Removing output for Test: testA -- ]
 [ -- Removing output for Test: testA_too -- ]
 [ -- Removing output for Test: testB -- ]
-[36m[Executing testA][0m from <<PATH STRIPPED>>
+[36m[Executing testA][0m from <<TEST DIR STRIPPED>>/module_multi_sandbox/testA_output/sandbox
 ['echo', 'command', '1', 'of', '3']
 ['echo', 'command', '2', 'of', '3']
 ['echo', 'command', '3', 'of', '3']
-[36m[Executing testA_too][0m from <<PATH STRIPPED>>
+[36m[Executing testA_too][0m from <<TEST DIR STRIPPED>>/module_multi_sandbox/testA_too_output/sandbox
 ['echo', 'command', '1', 'of', '3']
 ['echo', 'command', '2', 'of', '3']
 ['echo', 'command', '3', 'of', '3']
-[36m[Executing testB][0m from <<PATH STRIPPED>>
+[36m[Executing testB][0m from <<TEST DIR STRIPPED>>/module_multi_sandbox/testB_output/sandbox
 ['echo', 'testB']
 -- Summary --
 testA : pass (verification was successful)

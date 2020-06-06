@@ -1,0 +1,6 @@
+[ -- Removing output for Test: relpath_test -- ]
+[36m[Executing relpath_test][0m from <<TEST DIR STRIPPED>>/module_relpath_sandbox/relpath_test_output/sandbox
+['sh', '<<TEST DIR STRIPPED>>/module/module_relpath_data/script.sh', '<<TEST DIR STRIPPED>>/module/module_relpath_data/data.txt']
+-- Summary --
+relpath_test : pass (verification was successful)
+Overall Success!

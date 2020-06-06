@@ -1,0 +1,4 @@
+-
+  name: relpath_test
+  command: sh HERE/script.sh HERE/data.txt
+  expected: HERE/relpath_test.expected

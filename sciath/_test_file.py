@@ -40,14 +40,19 @@ def create_tests_from_file(filename):
             commands = commands_raw
         else:
             raise Exception('command: or commands: fields must be a string or a sequence')
+
+        commands = [_replace_here_marker(command, filename) for command in commands]
+
         commands = [shlex.split(command) for command in commands]  # split, respecting quotes
         for command in commands:
             if not command:
                 raise Exception('Commands cannot be empty')
 
         expected = entry['expected']
+        expected = _replace_here_marker(expected, filename)
         if not os.path.isabs(expected):
             expected = os.path.join(os.path.dirname(filename), expected)
+
 
         if len(commands) == 1:
             job = sciath.job.Job(commands[0], name=entry['name'])
@@ -74,3 +79,8 @@ def create_tests_from_file(filename):
         tests.append(test)
 
     return tests
+
+
+def _replace_here_marker(string, filename):
+    # FIXME: this string could easily clash. It should probably be changeable from the command line.
+    return string.replace('HERE', os.path.abspath(os.path.dirname(filename)))
