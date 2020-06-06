@@ -143,12 +143,12 @@ class ComparisonVerifier(Verifier):
         status = None
 
         if not os.path.isfile(self.expected_file) :
-            report.append('[Comparison] Expected file "%s" was not found' % self.expected_file)
+            report.append('[Comparison] Expected file missing: %s' % self.expected_file)
             status = sciath_test_status.expected_file_not_found
 
         output_full_path = os.path.join(output_path, self.output_file)
         if not os.path.isfile(output_full_path) :
-            report.append('[Comparison] Output file "%s" was not found' % output_full_path)
+            report.append('[Comparison] Output file missing: %s' % output_full_path)
             status = sciath_test_status.output_file_not_found
             return status, report
 
@@ -160,7 +160,7 @@ class ComparisonVerifier(Verifier):
     def update_expected(self, output_path):
         output_full_path = os.path.join(output_path,self.output_file)
         if not os.path.isfile(output_full_path) :
-            raise Exception("[SciATH] Output file %s could not be found, so cannot update" % output_full_path)
+            raise Exception('[SciATH] Cannot update: output file missing: %s' % output_full_path)
         # Does not create directories
         shutil.copyfile(output_full_path, self.expected_file)
 

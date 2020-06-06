@@ -21,7 +21,7 @@
 -foo
 +foox
 [Report for missing]
-[Comparison] Expected file "../harness/test4_data/missing.expected" was not found
+[Comparison] Expected file missing: ../harness/test4_data/missing.expected
 -- Summary --
 foo : pass (verification was successful)
 foo2 : pass (verification was successful)
