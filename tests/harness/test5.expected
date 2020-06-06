@@ -1,6 +1,6 @@
 [ -- Removing output for Test: test -- ]
 [36m[Executing job][0m from <<PATH STRIPPED>>
-  [cmd]  ['echo', 'The first number is 1.1\nThe second number is 1.01']
+['echo', 'The first number is 1.1\nThe second number is 1.01']
 --- Error Reports ---
 [Report for test]
 Report for lines matching: '^The\ first\ number\ is'

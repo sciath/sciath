@@ -3,13 +3,13 @@
 [ -- Removing output for Test: test3 -- ]
 [ -- Removing output for Test: test4 -- ]
 [36m[Executing job][0m from <<PATH STRIPPED>>
-  [cmd]  ['echo', 'Hello, I am Test #1']
+['echo', 'Hello, I am Test #1']
 [36m[Executing job][0m from <<PATH STRIPPED>>
-  [cmd]  ['printf', 'Hello, I am Test #2\n']
+['printf', 'Hello, I am Test #2\n']
 [36m[Executing job][0m from <<PATH STRIPPED>>
-  [cmd]  ['touch', 'test3.dat']
+['touch', 'test3.dat']
 [36m[Executing job][0m from <<PATH STRIPPED>>
-  [cmd]  ['grep', 'foo', 'bar']
+['grep', 'foo', 'bar']
 -- Summary --
 test1 : pass (verification was successful)
 test2 : pass (verification was successful)

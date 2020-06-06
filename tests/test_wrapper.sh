@@ -11,5 +11,5 @@ mkdir $sandbox
 cp $test_conf "$sandbox""/SciATHBatchQueuingSystem.conf"
 cd $sandbox
 $python $script \
-  | sed "s%from /.*_sandbox%from <<PATH STRIPPED>>%" \
+  | sed "s%from /.*/sandbox%from <<PATH STRIPPED>>%" \
   | sed "s%Expected file.*\.expected%Expected file <<PATH STRIPPED>>%"

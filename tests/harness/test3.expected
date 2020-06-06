@@ -1,9 +1,9 @@
 [ -- Removing output for Test: test1 -- ]
 [ -- Removing output for Test: test2 -- ]
 [36m[Executing job][0m from <<PATH STRIPPED>>
-  [cmd]  ['echo', 'Hello, I am Test #1']
+['echo', 'Hello, I am Test #1']
 [36m[Executing job][0m from <<PATH STRIPPED>>
-  [cmd]  ['printf', 'Hello, I am Test #2\n']
+['printf', 'Hello, I am Test #2\n']
 -- Summary --
 test1 : pass (verification was successful)
 test2 : pass (verification was successful)

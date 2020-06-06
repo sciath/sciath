@@ -625,17 +625,9 @@ class Launcher:
                 launchCmd.append(launch)
 
             if self.verbosity_level > 0:
-                lc_len = len(launchCmd)
-                lc_count = 0
+                print('%s[Executing %s]%s from %s' % (sciath_colors.SUBHEADER, job.name, sciath_colors.ENDC, exec_path))
                 for lc in launchCmd:
-                    lc_count = lc_count + 1
-                    launch_text = sciath_colors.SUBHEADER + '[Executing ' + job.name
-                    if lc_len > 1 :
-                        launch_text = launch_text + ' (' + str(lc_count) + '/' + str(lc_len) + ')'
-                    launch_text = launch_text + ']' + sciath_colors.ENDC
-                    launch_text = launch_text + ' from ' + os.getcwd()
-                    print(launch_text)
-                    print('  [cmd] ',lc)
+                    print(lc)
 
             c_name,o_name,e_name = job.get_output_filenames()
 
@@ -663,8 +655,8 @@ class Launcher:
             cwd_back = os.getcwd()
             os.chdir(exec_path)
             if self.verbosity_level > 0:
-                print(sciath_colors.SUBHEADER + '[Executing ' + job.name + ']' + sciath_colors.ENDC + ' from ' + os.getcwd())
-                print('  [cmd] ',launchCmd)
+                print('%s[Executing %s]%s from %s' % (sciath_colors.SUBHEADER, job.name, sciath_colors.ENDC, exec_path))
+                print(launchCmd)
             subprocess.run(launchCmd, universal_newlines=True)
             os.chdir(cwd_back)
             setBlockingIOStdout()
