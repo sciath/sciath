@@ -37,6 +37,7 @@ class _TestRun:
             self.sandbox = True
             self.status = _TestRunStatus.UNKNOWN
             self.status_info = ''
+            self.report = []
 
 class Harness:
     """ :class:`Harness` is the central user-facing class in SciATH.
@@ -126,6 +127,16 @@ class Harness:
     def report(self):
         """ Compile results into a report and print """
         if self.testruns:
+            report_header_printed = False
+            for testrun in self.testruns:
+                if testrun.report:
+                    if not report_header_printed:
+                        print('--- Error Reports ---')
+                        report_header_printed = True
+                    print('[Report for %s]' % testrun.test.name)
+                    for line in testrun.report:
+                        print(line)
+            print('-- Summary --')
             for testrun in self.testruns:
                 print(testrun.test.name,":",testrun.status.value,'('+testrun.status_info+')' if testrun.status_info else '')
             if self.determine_overall_success():
@@ -212,8 +223,7 @@ class Harness:
         for testrun in self.testruns:
             if testrun.active:
                 # TODO Need to ask the launcher if the job is completed and update the status, before passing to the verifier
-                status,report = testrun.test.verifier.execute(testrun.output_path)
-                # TODO report is not currently used (use when improving reporting)
+                status,testrun.report = testrun.test.verifier.execute(testrun.output_path)
                 verifier_status = status[0]
                 verifier_info = status[1]
                 if verifier_status == 'pass':

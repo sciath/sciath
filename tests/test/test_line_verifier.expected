@@ -1,23 +1,23 @@
 [36m[Executing Line1][0m from <<PATH STRIPPED>>
   [cmd]  ['printf', '  key 1.0 2 -3.4 1e10\nx\n\n  key 1.0\n  key  \nkey\nkey 1e-10 3.0 4.0\n  key 1e-12\n']
 ['pass', 'verification was successful']
-
 [36m[Executing Line2][0m from <<PATH STRIPPED>>
   [cmd]  ['printf', 'should fail\nx\n\n  key 1.0\n  key  \nkey\nkey 1e-10 3.0 4.0\n  key 1e-12\n']
 ['fail', 'verification failed']
 Report for lines matching: '  key'
-Failure: Different numbers of matching lines found: 4 expected but 3 found
+Failure: Different numbers of matching lines found: 3 instead of 4
 [36m[Executing Line3][0m from <<PATH STRIPPED>>
   [cmd]  ['printf', '  key 2.0 2 -3.4 1e10\nx\n\n  key 1.0\n  key  \nkey\nkey 1e-10 1.0 4.0\n  key 1e-12\n']
 ['pass', 'verification was successful']
-
 [36m[Executing Line4][0m from <<PATH STRIPPED>>
   [cmd]  ['printf', '  key 7.0 2 -3.4 1e10\nx\n\n  key 1.0\n  key  \nkey\nkey 1e10 1.0 4.0\n  key 1e-12\n']
 ['fail', 'verification failed']
 Report for lines matching: '^\ \ key'
-(l.1/1) Lines did not match: expected value of 2.0 does not match output value 7.0 to relative tolerance 1e-06
+(l.1/1) Lines did not match:
+expected value of 2 does not match output value 7 to rel. tol. 1e-06
 [36m[Executing Line5][0m from <<PATH STRIPPED>>
   [cmd]  ['printf', '  key 2.0 2 -3.4 1e10\nx\n\n  key 1.0\n  key  \nkey\nkey 1e10 1.0 4.0\n  key 1e+12\n']
 ['fail', 'verification failed']
 Report for lines matching: '^\ \ key'
-(l.8/8) Lines did not match: expected value of 1e-12 does not match output value 1000000000000.0 to relative tolerance 1e-06
+(l.8/8) Lines did not match:
+expected value of 1e-12 does not match output value 1e+12 to rel. tol. 1e-06

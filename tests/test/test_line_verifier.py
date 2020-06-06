@@ -13,7 +13,7 @@ def comparison_function(match_expected, match_out):
     n_expected = len(match_expected)
     n_found = len(match_out)
     passing = n_found == n_expected
-    report = None if passing else 'Failure: Different numbers of matching lines found: ' + str(n_expected) + ' expected but ' + str(n_found) + ' found'
+    report = [] if passing else ['Failure: Different numbers of matching lines found: %d instead of %d' % (n_found, n_expected)]
     return passing, report
 
 def test1(output_path):
@@ -74,7 +74,8 @@ def main():
         launcher.submitJob(t.job, output_path = output_path)
         status, report = t.verify(output_path = output_path) # only makes sense if submitJob blocks
         print(status)
-        print(report)
+        for line in report:
+            print(line)
 
 
 if __name__ == "__main__":
