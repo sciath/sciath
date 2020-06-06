@@ -50,9 +50,9 @@ def create_tests_from_file(filename):
             expected = os.path.join(os.path.dirname(filename), expected)
 
         if len(commands) == 1:
-            job = sciath.job.Job(commands[0], entry['name'])
+            job = sciath.job.Job(commands[0], name=entry['name'])
         else:
-            job = sciath.job.JobSequence(commands[-1])
+            job = sciath.job.JobSequence(commands[-1], name=entry['name'])
             for i in reversed(range(len(commands)-1)):
                 job.append(sciath.job.Job(commands[i]))
         test = sciath.test.Test(job, entry['name'])
