@@ -5,10 +5,12 @@ if sys.version_info[0] < 3: # Remove when Python 2 support is dropped
 from sciath._io import dictView
 
 class Job:
-    """:class:`Job` describes a command to be run with a given set of resources.
+    """:class:`Job` describes a set of commands to be run with a given set of resources.
 
-    It describes how to execute such a command, not information about any particular "run".
-    The :class:`Launcher` object executes tasks described by a :class:`Job`.
+    It describes the commands themselves, not information about any
+    particular "run" (handled within :class:`Harness`) or how one might
+    interpret the results of such a run (handled by :class:`Test`).  A
+    :class:`Launcher` object executes tasks described by a :class:`Job`.
 
     Data include
 
