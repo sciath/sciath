@@ -51,16 +51,6 @@ class NamedColors:
 # two space tab for formatted print statements
 tab = '  '
 
-# verbosity-regulated printing
-def printv(level,verbosityLevel,*vargs):
-    if level >= verbosityLevel:
-        line = ''
-        N = len(vargs)
-        for i in range(N-1):
-            line += str(vargs[i])
-            line += ' '
-        line += str(vargs[N-1])
-        print(line)
 
 def dictView(d):
     if isinstance(d,dict):
