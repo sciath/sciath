@@ -92,6 +92,9 @@ def float_rel_pairs_function(match_expected, match_out, rel_tol, max_err_count =
 
 def key_and_float_rule(key,rel_tol=1e-6):
     rule = {}
-    rule['re'] = '^'+re.escape(key) # match on lines starting with key
+    if key:
+        rule['re'] = '^'+re.escape(key) # match on lines starting with key
+    else:
+        rule['re'] = '^' # match any line
     rule['function'] = lambda e,o : float_rel_pairs_function(e,o,rel_tol=rel_tol)
     return rule

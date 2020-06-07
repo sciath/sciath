@@ -12,3 +12,6 @@
   type: float_lines
   expected: bar.expected
   command: printf "a 34.3\nb43.3\n0.0\nx"
+  rules:
+    -
+      key:

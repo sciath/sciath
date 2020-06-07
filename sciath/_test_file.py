@@ -73,10 +73,25 @@ def create_tests_from_file(filename):
         elif verifier_type == 'float_lines':
             if 'expected' not in entry or not entry['expected']:
                 raise Exception('Each test entry must defined an expected file')
-            key = entry['key'] if 'key' in entry else ''
             test.verifier = sciath.verifier_line.LineVerifier(
                     test, expected, comparison_file=comparison_file)
-            test.verifier.rules.append(sciath.verifier_line.key_and_float_rule(key))
+            if 'rules' not in entry:
+                raise Exception('rules: expected')
+            rules = entry['rules']
+            if not isinstance(rules, list):
+                raise Exception('rules: should contain a sequence')
+            for rule in rules:
+                if not isinstance(rule, dict):
+                    raise Exception('Each rule should be a mapping')
+                if 'key' not in rule:
+                    raise Exception('Each rule should have a key:')
+                key = rule['key']
+                if 'rtol' in rule:
+                    rule_func = sciath.verifier_line.key_and_float_rule(
+                            key, rel_tol=float(rule['rtol']))
+                else:
+                    rule_func = sciath.verifier_line.key_and_float_rule(key)
+                test.verifier.rules.append(rule_func)
         else:
             raise Exception('[SciATH] unrecognized type %s' % verifier_type)
 
