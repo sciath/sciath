@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 import os
 import sys
 if os.name == 'posix' and sys.version_info[0] < 3:
@@ -48,17 +50,3 @@ class NamedColors:
 
 # two space tab for formatted print statements
 tab = '  '
-
-
-def dictView(d):
-    if isinstance(d,dict):
-        string = '{'
-        for key in sorted(d):
-            value = d[key]
-            string += "'" + str(key) + "': " + str(value) + ", "
-        string = string[:-2] # remove last two characters - yes, I could have used a generator...
-        string += '}'
-        return string
-    else:
-        print('[SciATH error] dictView() requires a dictionary as input.')
-        sys.exit(1)

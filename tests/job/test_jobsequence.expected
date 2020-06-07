@@ -1,50 +1,38 @@
 Execute command + resources for jD
-  cmd = echo "dependent job 3 <exec 1>" res = {'mpiranks': 40, 'threads': 27, 'idlempirankspernode': 0}
+  cmd = echo "dependent job 3 <exec 1>"
+  mpiranks : 40
+  idlempirankspernode : 0
+  threads : 27
 Execute command + resources for jA
-  cmd = echo "dependent job 3 <exec 1>" res = {'mpiranks': 40, 'threads': 27, 'idlempirankspernode': 0}
-  cmd = echo "dependent job 2 <exec 2>" res = {'mpiranks': 1, 'threads': 1, 'idlempirankspernode': 0}
-  cmd = echo "dependent job 1 <exec 3>" res = {'mpiranks': 140, 'threads': 1, 'idlempirankspernode': 0}
-  cmd = echo "job A" res = {'mpiranks': 4, 'threads': 11, 'idlempirankspernode': 0}
-Resources required for jD:      name = job  : {'mpiranks': 40, 'threads': 27, 'idlempirankspernode': 0}
-Max. resources required for jD: name = job  : {'mpiranks': 40, 'threads': 27, 'idlempirankspernode': 0}
-============================================================================
-Job: Job name: job
-Command: echo "dependent job 3 <exec 1>"
-Exit code success: 0
-Resources: {'idlempirankspernode': 0, 'mpiranks': 40, 'threads': 27}
-Max. resources (incl. dependencies): {'idlempirankspernode': 0, 'mpiranks': 40, 'threads': 27}
-============================================================================
-Resources required for jA:      name = DMDA_interpolation_<exec_4>  : {'mpiranks': 4, 'threads': 11, 'idlempirankspernode': 0}
-Max. resources required for jA: name = DMDA_interpolation_<exec_4>  : {'mpiranks': 140, 'threads': 27, 'idlempirankspernode': 0}
-============================================================================
-Job: Job name: DMDA_interpolation_<exec_4>
-Command: echo "job A"
-Exit code success: 0
-Resources: {'idlempirankspernode': 0, 'mpiranks': 4, 'threads': 11}
-Max. resources (incl. dependencies): {'idlempirankspernode': 0, 'mpiranks': 140, 'threads': 27}
-JobSequence:
-Dependencies: found 3
-[Child job index 0 ]
-Job: Job name: job
-Command: echo "dependent job 1 <exec 3>"
-Exit code success: 0
-Resources: {'idlempirankspernode': 0, 'mpiranks': 140, 'threads': 1}
-Max. resources (incl. dependencies): {'idlempirankspernode': 0, 'mpiranks': 140, 'threads': 1}
-[Child job index 1 ]
-Job: Job name: job
-Command: echo "dependent job 2 <exec 2>"
-Exit code success: 0
-Resources: {'idlempirankspernode': 0, 'mpiranks': 1, 'threads': 1}
-Max. resources (incl. dependencies): {'idlempirankspernode': 0, 'mpiranks': 1, 'threads': 1}
-[Child job index 2 ]
-Job: Job name: job
-Command: echo "dependent job 3 <exec 1>"
-Exit code success: 0
-Resources: {'idlempirankspernode': 0, 'mpiranks': 40, 'threads': 27}
-Max. resources (incl. dependencies): {'idlempirankspernode': 0, 'mpiranks': 40, 'threads': 27}
-[Execution order]
-  order 0 : echo "dependent job 3 <exec 1>"
-  order 1 : echo "dependent job 2 <exec 2>"
-  order 2 : echo "dependent job 1 <exec 3>"
-  order 3 : echo "job A"
-============================================================================
+  cmd = echo "dependent job 3 <exec 1>"
+  mpiranks : 40
+  idlempirankspernode : 0
+  threads : 27
+  cmd = echo "dependent job 2 <exec 2>"
+  mpiranks : 1
+  idlempirankspernode : 0
+  threads : 1
+  cmd = echo "dependent job 1 <exec 3>"
+  mpiranks : 140
+  idlempirankspernode : 0
+  threads : 1
+  cmd = echo "job A"
+  mpiranks : 4
+  idlempirankspernode : 0
+  threads : 11
+Resources required for jD:      name = job  :
+mpiranks : 40
+idlempirankspernode : 0
+threads : 27
+Max. resources required for jD: name = job  :
+mpiranks : 40
+idlempirankspernode : 0
+threads : 27
+Resources required for jA:      name = DMDA_interpolation_<exec_4>  :
+mpiranks : 4
+idlempirankspernode : 0
+threads : 11
+Max. resources required for jA: name = DMDA_interpolation_<exec_4>  :
+mpiranks : 140
+idlempirankspernode : 0
+threads : 27
