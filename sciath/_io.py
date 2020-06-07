@@ -24,6 +24,16 @@ def _remove_file(file2rm, safetyMode=False, debugMode=False):
         else:
             subprocess.call(cmd)
 
+def command_join(command):
+    """ Convert a command (as would go to subprocess.run()) to a copy-pasteable string
+
+    Do something similar to shlex.join (Python 3.8+), attempting to quote arguments
+    that contain spaces, and escape newlines in the result. """
+
+    joined = ' '.join(["'"+term+"'" if ' ' in term else term for term in command])
+    joined = joined.replace('\n','\\n')
+    return joined
+
 class NamedColors:
     def __init__(self):
         self.set_colors()
@@ -35,22 +45,10 @@ class NamedColors:
         self.WARNING   = '\033[93m' if use_bash else ''
         self.FAIL      = '\033[91m' if use_bash else ''
         self.ENDC      = '\033[0m'  if use_bash else ''
-        self.BOLD      = '\033[1m'  if use_bash else ''
-        self.UNDERLINE = '\033[4m'  if use_bash else ''
 
 # two space tab for formatted print statements
 tab = '  '
 
-# verbosity-regulated printing
-def printv(level,verbosityLevel,*vargs):
-    if level >= verbosityLevel:
-        line = ''
-        N = len(vargs)
-        for i in range(N-1):
-            line += str(vargs[i])
-            line += ' '
-        line += str(vargs[N-1])
-        print(line)
 
 def dictView(d):
     if isinstance(d,dict):

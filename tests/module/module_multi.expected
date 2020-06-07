@@ -1,18 +1,21 @@
+[35m[ *** Cleanup *** ][0m
 [ -- Removing output for Test: testA -- ]
 [ -- Removing output for Test: testA_too -- ]
 [ -- Removing output for Test: testB -- ]
+[35m[ *** Executing Tests *** ][0m
 [36m[Executing testA][0m from <<TEST DIR STRIPPED>>/module_multi_sandbox/testA_output/sandbox
-['echo', 'command', '1', 'of', '3']
-['echo', 'command', '2', 'of', '3']
-['echo', 'command', '3', 'of', '3']
+echo command 1 of 3
+echo command 2 of 3
+echo command 3 of 3
 [36m[Executing testA_too][0m from <<TEST DIR STRIPPED>>/module_multi_sandbox/testA_too_output/sandbox
-['echo', 'command', '1', 'of', '3']
-['echo', 'command', '2', 'of', '3']
-['echo', 'command', '3', 'of', '3']
+echo command 1 of 3
+echo command 2 of 3
+echo command 3 of 3
 [36m[Executing testB][0m from <<TEST DIR STRIPPED>>/module_multi_sandbox/testB_output/sandbox
-['echo', 'testB']
--- Summary --
-testA : pass (verification was successful)
-testA_too : pass (verification was successful)
-testB : pass (verification was successful)
-Overall Success!
+echo testB
+[35m[ *** Summary *** ][0m
+[32m[testA]  pass[0m (verification was successful)
+[32m[testA_too]  pass[0m (verification was successful)
+[32m[testB]  pass[0m (verification was successful)
+
+[32mSUCCESS[0m
