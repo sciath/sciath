@@ -14,7 +14,7 @@ branches:
     - dev
 
 install:
-  - pip install pyyaml subprocess32
+  - pip install pyyaml
 
 script:
   - export PYTHONPATH=$PWD:$PYTHONPATH
