@@ -1,8 +1,9 @@
+from __future__ import print_function
+
 import sys
 if sys.version_info[0] < 3: # Remove when Python 2 support is dropped
     from itertools import izip as zip
 
-from sciath._io import dictView
 
 class Job:
     """:class:`Job` describes a set of commands to be run with a given set of resources.
@@ -210,24 +211,6 @@ class Job:
             raise RuntimeError(message)
 
 
-    def view(self):
-        """
-        Display the contents of an Job instance to stdout.
-        The parent->child relationship will be reported.
-        Uninitialized non-essential members will not be reported.
-        This includes: self.child.
-        """
-
-        print('Job: Job name:',self.name)
-        print('Command:',self.cmd)
-        print('Exit code success:',self.exit_code_success)
-        #print('MPI ranks:',self.resources["mpiranks"],', Threads:',self.resources["threads"])
-        print('Resources:',dictView(self.resources))
-        maxR = self.getMaxResources()
-        print('Max. resources (incl. dependencies):', dictView(maxR))
-
-
-
 class JobSequence(Job):
     """ A SciATH linear job sequence (inherits from :class:`Job`)
     """
@@ -318,32 +301,6 @@ class JobSequence(Job):
             sum_wt += j.getMaxWallTime()
 
         return sum_wt
-
-
-    # overload
-    def view(self):
-        """
-        Display the contents of an job sequence to stdout.
-        The parent will be reported first followed by its dependencies.
-        Uninitialized non-essential members will not be reported.
-        This includes: self.child.
-        """
-
-        Job.view(self)
-        # view dependencies
-        print('JobSequence:')
-        print('Dependencies: found',len(self.sequence))
-        cnt = 0
-        for j in self.sequence:
-            print('[Child job index',cnt,']')
-            j.view()
-            cnt += 1
-        print('[Execution order]')
-        cr = self.createExecuteCommand()
-        cnt = 0
-        for i in cr:
-            print('  order',cnt,':',i[0])
-            cnt += 1
 
 
     def createJobOrdering(self):

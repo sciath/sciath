@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 import os
 import filecmp
 import difflib
@@ -8,7 +10,7 @@ from sciath.job import JobSequence
 from sciath import sciath_test_status
 
 
-class Verifier:
+class Verifier (object):
     """Base class for verification of a Test"""
     # Note: this should more properly be an abstract base class, but we delay this while still trying to support Python 2
 

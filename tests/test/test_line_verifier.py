@@ -65,9 +65,19 @@ def test5(output_path):
     t.verifier = v
     return t
 
+
+def mkdir_p(path):
+    try:
+        os.makedirs(path)
+    except OSError as exc:
+        if exc.errno == errno.EEXIST:
+            pass
+        else: raise
+
+
 def main():
     output_path = os.path.join(os.getcwd(),'output')
-    os.makedirs(output_path, exist_ok = True)
+    mkdir_p(output_path)
 
     launcher = Launcher()
     for t in [test1(output_path), test2(output_path), test3(output_path), test4(output_path), test5(output_path)]:
