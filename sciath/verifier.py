@@ -3,8 +3,6 @@ import filecmp
 import difflib
 import shutil
 
-import numpy as np
-
 from sciath.job import Job
 from sciath.job import JobSequence
 from sciath.job import JobDAG
@@ -69,11 +67,10 @@ class ExitCodeVerifier(Verifier):
 
         with open(errorfile, 'r') as f:
             data = f.readlines()
-        data = np.asarray(data,dtype=int)
 
         # special
         if not isinstance(self.test.job,JobSequence) and not isinstance(self.test.job,JobDAG):
-            if self.test.job.exit_code_success != data[0]:
+            if self.test.job.exit_code_success != int(data[0]):
                 status = sciath_test_status.not_ok
                 return status,report
             else:
@@ -85,9 +82,9 @@ class ExitCodeVerifier(Verifier):
 
             if len(data) != len(jobs):
                 report.append("[ReturnCodeDiff] Mismatch in number of error codes found and jobs run. This should never happen.")
-                exret = np.zeros(len(jobs))
-                for j in range(0,len(jobs)):
-                    exret[j] = int(jobs[j].exit_code_success)
+                exret = []
+                for job in jobs:
+                    exret.append(int(job.exit_code_success))
                 msg = "[ReturnCodeDiff] Expected return codes: " + str(exret)
                 report.append(msg)
                 msg = "[ReturnCodeDiff] Output return codes  : " + str(data)
@@ -105,9 +102,9 @@ class ExitCodeVerifier(Verifier):
                     anyChildrenFailed = True
                 i += 1
 
-            exret = np.copy(data)
-            for j in range(0,L):
-                exret[j] = int(jobs[j].exit_code_success)
+            exret = []
+            for job in jobs:
+                exret.append(int(job.exit_code_success))
 
             s = sciath_test_status.ok
             if anyChildrenFailed == True:

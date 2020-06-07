@@ -42,13 +42,13 @@ SciATH provides:
 How do I use this ?
 ===================
 
-1. SciATH depends on Python 3 (or Python 2.4+) and numpy
+1. SciATH depends on Python 3 (and possibly it'll work for Python 2.4+, but this is unsupported)
 
-2. When using Python 3, it is highly recommended you set the environment
+2. It is highly recommended you set the environment
    variable ``PYTHONUNBUFFERED``, e.g. ``export PYTHONUNBUFFERED``
 
 3. Make sure you modify your ``PYTHONPATH`` environment variable to include
-   this directory
+   this root `sciath` directory (containing the `sciath` package directory)
 
 Topics
 ======
