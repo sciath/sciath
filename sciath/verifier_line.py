@@ -26,7 +26,10 @@ class LineVerifier(ComparisonVerifier):
                         if re.match(rule['re'],line):
                             match[line_number] = line
             rule_result, rule_report  = rule['function'](match_from, match_to)
-            passing = passing and rule_result
+            if passing and not rule_result:
+                passing = False
+                report.append('--- %s' % from_file)
+                report.append('+++ %s' % to_file)
             if rule_report:
                 report.append("Report for lines matching: '" + rule['re'] + "'")
                 report.extend(rule_report)
@@ -46,6 +49,7 @@ def string_get_floats(line):
         if match:
             r.append(float(match.group()))
     return r
+
 
 def compare_float_values_rel(line_expected, line_out, rel_tol):
     floats_expected = string_get_floats(line_expected.rstrip())
