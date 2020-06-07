@@ -55,18 +55,6 @@
   command: sh test_wrapper.sh job_test job/test_job.py
   expected: job/test_job.expected
 -
-  name: job_composite_test
-  command: sh test_wrapper.sh job_composite_test job/test_jobcomposite.py
-  expected: job/test_jobcomposite.expected
--
   name: job_sequence_test
   command: sh test_wrapper.sh job_sequence_test job/test_jobsequence.py
   expected: job/test_jobsequence.expected
--
-  name: job_dag_test
-  command: sh test_wrapper.sh job_dag_test job/test_jobdag.py
-  expected: job/test_jobdag.expected
--
-  name: launcher_test1
-  command: sh test_wrapper.sh launcher_test1 launcher/test1.py
-  expected: launcher/test1.expected

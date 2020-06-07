@@ -3,7 +3,6 @@ import os
 
 from sciath.job import Job
 from sciath.job import JobSequence
-from sciath.job import JobDAG
 from sciath.launcher import Launcher
 from sciath.test import Test
 

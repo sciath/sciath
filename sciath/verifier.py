@@ -5,7 +5,6 @@ import shutil
 
 from sciath.job import Job
 from sciath.job import JobSequence
-from sciath.job import JobDAG
 from sciath import sciath_test_status
 
 
@@ -69,7 +68,7 @@ class ExitCodeVerifier(Verifier):
             data = f.readlines()
 
         # special
-        if not isinstance(self.test.job,JobSequence) and not isinstance(self.test.job,JobDAG):
+        if not isinstance(self.test.job,JobSequence):
             if self.test.job.exit_code_success != int(data[0]):
                 status = sciath_test_status.not_ok
                 return status,report
