@@ -80,21 +80,21 @@ class Harness:
             self.add_test(test)
 
     def clean(self):
-        if self.testruns:
-            if self.launcher is None:
-                self.launcher = sciath.launcher.Launcher()
+        if self.launcher is None:
+            self.launcher = sciath.launcher.Launcher()
 
-            # Clean all tests
+        # Clean all tests
+        if self.testruns:
             print(sciath_colors.HEADER+'[ *** Cleanup *** ]'+sciath_colors.ENDC)
-            for testrun in self.testruns:
-                if testrun.active:
-                    print('[ -- Removing output for Test:',testrun.test.name,'-- ]')
-                    self.launcher.clean(testrun.test.job, output_path=testrun.output_path)
-                    if testrun.sandbox and os.path.exists(testrun.exec_path):
-                        sentinel_file = os.path.join(testrun.exec_path,self._sandbox_sentinel_filename)
-                        if not os.path.exists(sentinel_file):
-                            raise Exception('[SciATH] did not find expected sentinel file ' + sentinel_file)
-                        shutil.rmtree(testrun.exec_path)
+        for testrun in self.testruns:
+            if testrun.active:
+                print('[ -- Removing output for Test:',testrun.test.name,'-- ]')
+                self.launcher.clean(testrun.test.job, output_path=testrun.output_path)
+                if testrun.sandbox and os.path.exists(testrun.exec_path):
+                    sentinel_file = os.path.join(testrun.exec_path,self._sandbox_sentinel_filename)
+                    if not os.path.exists(sentinel_file):
+                        raise Exception('[SciATH] did not find expected sentinel file ' + sentinel_file)
+                    shutil.rmtree(testrun.exec_path)
 
     def determine_overall_success(self):
         for testrun in self.testruns:
@@ -103,29 +103,29 @@ class Harness:
         return True
 
     def execute(self):
+        self.clean()
+
+        if self.launcher is None:
+            self.launcher = sciath.launcher.Launcher()
+
         if self.testruns:
-            self.clean()
-
-            if self.launcher is None:
-                self.launcher = sciath.launcher.Launcher()
-
             print(sciath_colors.HEADER + '[ *** Executing Tests *** ]' + sciath_colors.ENDC)
-            for testrun in self.testruns:
-                if testrun.active:
-                    if not os.path.exists(testrun.output_path):
-                        os.makedirs(testrun.output_path)
-                    if not os.path.exists(testrun.exec_path):
-                        os.makedirs(testrun.exec_path)
-                    if testrun.sandbox:
-                        sentinel_file = os.path.join(testrun.exec_path,self._sandbox_sentinel_filename)
-                        if os.path.exists(sentinel_file):
-                            raise Exception("[SciATH] Unexpected sentinel file " + sentinel_file)
-                        with open(sentinel_file,'w'):
-                            pass
-                    self.launcher.submitJob(
-                            testrun.test.job,
-                            output_path=testrun.output_path,
-                            exec_path = testrun.exec_path)
+        for testrun in self.testruns:
+            if testrun.active:
+                if not os.path.exists(testrun.output_path):
+                    os.makedirs(testrun.output_path)
+                if not os.path.exists(testrun.exec_path):
+                    os.makedirs(testrun.exec_path)
+                if testrun.sandbox:
+                    sentinel_file = os.path.join(testrun.exec_path,self._sandbox_sentinel_filename)
+                    if os.path.exists(sentinel_file):
+                        raise Exception("[SciATH] Unexpected sentinel file " + sentinel_file)
+                    with open(sentinel_file,'w'):
+                        pass
+                self.launcher.submitJob(
+                        testrun.test.job,
+                        output_path=testrun.output_path,
+                        exec_path = testrun.exec_path)
 
     def print_all_tests(self):
         for testrun in self.testruns:
