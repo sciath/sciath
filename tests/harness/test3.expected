@@ -1,9 +1,9 @@
 [ -- Removing output for Test: test1 -- ]
 [ -- Removing output for Test: test2 -- ]
 [36m[Executing job][0m from <<TEST DIR STRIPPED>>/harness_test3_sandbox/test1_output/sandbox
-['echo', 'Hello, I am Test #1']
+echo 'Hello, I am Test #1'
 [36m[Executing job][0m from <<TEST DIR STRIPPED>>/harness_test3_sandbox/test2_output/sandbox
-['printf', 'Hello, I am Test #2\n']
+printf 'Hello, I am Test #2\n'
 -- Summary --
 test1 : pass (verification was successful)
 test2 : pass (verification was successful)

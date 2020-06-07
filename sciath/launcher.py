@@ -1,4 +1,5 @@
 from __future__ import print_function
+
 import os
 import sys
 import shutil
@@ -7,9 +8,10 @@ if os.name == 'posix' and sys.version_info[0] < 3:
     import subprocess32 as subprocess # To be removed once Python 2 is fully abandoned
 else:
     import subprocess
+
 from   sciath import sciath_colors
 from   sciath import getVersion
-from   sciath._io import py23input, _remove_file
+from   sciath._io import py23input, _remove_file, command_join
 
 # mpiexec has been observed to set non-blocking I/O, which
 #  has been observed to cause problems on OS X with errors like
@@ -52,6 +54,7 @@ def formatMPILaunchCommand(mpiLaunch,ranks,corespernode):
         launch = launch.replace("<RANKSPERNODE>",str(corespernode))
         launch = launch.replace("<RANKS_PER_NODE>",str(corespernode))
     return launch.split()
+
 
 def _generateLaunch_PBS(launcher,walltime,output_path,job):
 
@@ -627,7 +630,7 @@ class Launcher:
             if self.verbosity_level > 0:
                 print('%s[Executing %s]%s from %s' % (sciath_colors.SUBHEADER, job.name, sciath_colors.ENDC, exec_path))
                 for lc in launchCmd:
-                    print(lc)
+                    print(command_join(lc))
 
             c_name,o_name,e_name = job.get_output_filenames()
 
@@ -656,7 +659,7 @@ class Launcher:
             os.chdir(exec_path)
             if self.verbosity_level > 0:
                 print('%s[Executing %s]%s from %s' % (sciath_colors.SUBHEADER, job.name, sciath_colors.ENDC, exec_path))
-                print(launchCmd)
+                print(command_join(launchCmd))
             subprocess.run(launchCmd, universal_newlines=True)
             os.chdir(cwd_back)
             setBlockingIOStdout()

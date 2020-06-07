@@ -1,6 +1,6 @@
 [ -- Removing output for Test: test -- ]
 [36m[Executing job][0m from <<TEST DIR STRIPPED>>/harness_test5_sandbox/test_output/sandbox
-['echo', 'The first number is 1.1\nThe second number is 1.01']
+echo 'The first number is 1.1\nThe second number is 1.01'
 --- Error Reports ---
 [Report for test]
 --- <<TEST DIR STRIPPED>>/harness/test5_data/test.expected

@@ -6,19 +6,19 @@
 [ -- Removing output for Test: comp_file -- ]
 [ -- Removing output for Test: comp_file_fail -- ]
 [36m[Executing foo][0m from <<TEST DIR STRIPPED>>/harness_input_test_sandbox/foo_output/sandbox
-['echo', 'foo']
+echo foo
 [36m[Executing foo2][0m from <<TEST DIR STRIPPED>>/harness_input_test_sandbox/foo2_output/sandbox
-['echo', 'foo']
+echo foo
 [36m[Executing foo_fail][0m from <<TEST DIR STRIPPED>>/harness_input_test_sandbox/foo_fail_output/sandbox
-['echo', 'foox']
+echo foox
 [36m[Executing missing][0m from <<TEST DIR STRIPPED>>/harness_input_test_sandbox/missing_output/sandbox
-['echo', 'missing']
+echo missing
 [36m[Executing many_words][0m from <<TEST DIR STRIPPED>>/harness_input_test_sandbox/many words_output/sandbox
-['echo', 'many words']
+echo 'many words'
 [36m[Executing comp_file][0m from <<TEST DIR STRIPPED>>/harness_input_test_sandbox/comp_file_output/sandbox
-['sh', '-c', 'echo qux > compare_me.txt']
+sh -c 'echo qux > compare_me.txt'
 [36m[Executing comp_file_fail][0m from <<TEST DIR STRIPPED>>/harness_input_test_sandbox/comp_file_fail_output/sandbox
-['sh', '-c', 'echo qux > compare_me.txt']
+sh -c 'echo qux > compare_me.txt'
 --- Error Reports ---
 [Report for foo_fail]
 --- ../harness/test4_data/foo.expected
