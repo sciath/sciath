@@ -45,8 +45,6 @@ class NamedColors:
         self.WARNING   = '\033[93m' if use_bash else ''
         self.FAIL      = '\033[91m' if use_bash else ''
         self.ENDC      = '\033[0m'  if use_bash else ''
-        self.BOLD      = '\033[1m'  if use_bash else ''
-        self.UNDERLINE = '\033[4m'  if use_bash else ''
 
 # two space tab for formatted print statements
 tab = '  '

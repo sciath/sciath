@@ -1,3 +1,4 @@
+[35m[ *** Cleanup *** ][0m
 [ -- Removing output for Test: foo -- ]
 [ -- Removing output for Test: foo2 -- ]
 [ -- Removing output for Test: foo_fail -- ]
@@ -5,6 +6,7 @@
 [ -- Removing output for Test: many words -- ]
 [ -- Removing output for Test: comp_file -- ]
 [ -- Removing output for Test: comp_file_fail -- ]
+[35m[ *** Executing Tests *** ][0m
 [36m[Executing foo][0m from <<TEST DIR STRIPPED>>/module_input_sandbox/foo_output/sandbox
 echo foo
 [36m[Executing foo2][0m from <<TEST DIR STRIPPED>>/module_input_sandbox/foo2_output/sandbox
@@ -19,27 +21,30 @@ echo 'many words'
 sh -c 'echo qux > compare_me.txt'
 [36m[Executing comp_file_fail][0m from <<TEST DIR STRIPPED>>/module_input_sandbox/comp_file_fail_output/sandbox
 sh -c 'echo qux > compare_me.txt'
---- Error Reports ---
-[Report for foo_fail]
+[35m[ *** Verification Reports *** ][0m
+[36m[Report for foo_fail][0m
 --- ../harness/test4_data/foo.expected
 +++ <<TEST DIR STRIPPED>>/module_input_sandbox/foo_fail_output/sciath.job-foo_fail.stdout
 @@ -1 +1 @@
 -foo
 +foox
-[Report for missing]
+[36m[Report for missing][0m
 [Comparison] Expected file missing: ../harness/test4_data/missing.expected
-[Report for comp_file_fail]
+[36m[Report for comp_file_fail][0m
 --- ../harness/test4_data/comp_file_fail.expected
 +++ <<TEST DIR STRIPPED>>/module_input_sandbox/comp_file_fail_output/sandbox/compare_me.txt
 @@ -1 +1 @@
 -foo
 +qux
--- Summary --
-foo : pass (verification was successful)
-foo2 : pass (verification was successful)
-foo_fail : fail (verification failed)
-missing : fail (expected/comparison file not found)
-many words : pass (verification was successful)
-comp_file : pass (verification was successful)
-comp_file_fail : fail (verification failed)
-TEST SUCCESS NOT CONFIRMED
+[35m[ *** Summary *** ][0m
+[32m[foo]  pass[0m (verification was successful)
+[32m[foo2]  pass[0m (verification was successful)
+[91m[foo_fail]  fail[0m (verification failed)
+[91m[missing]  fail[0m (expected/comparison file not found)
+[32m[many words]  pass[0m (verification was successful)
+[32m[comp_file]  pass[0m (verification was successful)
+[91m[comp_file_fail]  fail[0m (verification failed)
+
+[91mFAILURE[0m
+To re-run failed tests, use e.g.
+  -t foo_fail,missing,comp_file_fail

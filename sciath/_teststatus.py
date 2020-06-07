@@ -3,10 +3,11 @@
 class SciathTestStatusDefinition:
     def __init__(self,sciath_colors):
         self.status_color_type = {
-            "pass" : sciath_colors.OK ,
-            "fail" : sciath_colors.FAIL ,
-            "warn" : sciath_colors.WARNING ,
-            "skip" : sciath_colors.WARNING }
+            "pass" : sciath_colors.OK,
+            "fail" : sciath_colors.FAIL,
+            "warn" : sciath_colors.WARNING,
+            "skip" : sciath_colors.WARNING,
+            "deactivated" : sciath_colors.ENDC, }
         self.set_status_type()
 
     def set_status_type(self):
@@ -23,7 +24,7 @@ class SciathTestStatusDefinition:
         self.expected_file_missing_key = [ 'fail' , 'expected/comparison file missing key' ]
         self.expected_file_wrong_value = [ 'fail' , 'expected/comparison file contains wrong (key,value) pair' ]
 
-        self.output_file_not_found   = [ 'fail' , 'ouput file not found' ]
+        self.output_file_not_found   = [ 'fail' , 'output file not found' ]
         self.output_file_missing_key = [ 'fail' , 'output file missing key' ]
         self.output_file_wrong_value = [ 'fail' , 'output file contains wrong (key,value) pair' ]
 

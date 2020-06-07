@@ -9,6 +9,7 @@ from enum import Enum # Before Python 3.4, you need the enum34 (NOT enum) module
 import sciath
 import sciath.launcher
 import sciath._test_file
+from sciath import sciath_colors
 
 class _TestRunStatus(Enum):
     DEACTIVATED             = 'deactivated'  # Test skipped intentionally
@@ -83,6 +84,7 @@ class Harness:
             self.launcher = sciath.launcher.Launcher()
 
         # Clean all tests
+        print(sciath_colors.HEADER+'[ *** Cleanup *** ]'+sciath_colors.ENDC)
         for testrun in self.testruns:
             if testrun.active:
                 print('[ -- Removing output for Test:',testrun.test.name,'-- ]')
@@ -105,6 +107,7 @@ class Harness:
         if self.launcher is None:
             self.launcher = sciath.launcher.Launcher()
 
+        print(sciath_colors.HEADER + '[ *** Executing Tests *** ]' + sciath_colors.ENDC)
         for testrun in self.testruns:
             if testrun.active:
                 if not os.path.exists(testrun.output_path):
@@ -128,23 +131,35 @@ class Harness:
 
     def report(self):
         """ Compile results into a report and print """
+        failed_names = []
         if self.testruns:
             report_header_printed = False
             for testrun in self.testruns:
                 if testrun.report:
                     if not report_header_printed:
-                        print('--- Error Reports ---')
+                        print(sciath_colors.HEADER+'[ *** Verification Reports *** ]'+sciath_colors.ENDC)
                         report_header_printed = True
-                    print('[Report for %s]' % testrun.test.name)
+                    print('%s[Report for %s]%s' % (sciath_colors.SUBHEADER,testrun.test.name,sciath_colors.ENDC))
                     for line in testrun.report:
                         print(line)
-            print('-- Summary --')
+            print(sciath_colors.HEADER+'[ *** Summary *** ]'+sciath_colors.ENDC)
             for testrun in self.testruns:
-                print(testrun.test.name,":",testrun.status.value,'('+testrun.status_info+')' if testrun.status_info else '')
+                if testrun.status.value == 'fail':
+                    failed_names.append(testrun.test.name)
+                print(sciath.sciath_test_status.status_color_type[testrun.status.value], end='')
+                print('[%s]  %s' %(testrun.test.name, testrun.status.value), end='')
+                print(sciath_colors.ENDC, end='')
+                if testrun.status_info:
+                    print(' (' + testrun.status_info + ')', end='')
+                print()
+            print()
             if self.determine_overall_success():
-                print("Overall Success!")
+                print(sciath_colors.OK + "SUCCESS" + sciath_colors.ENDC)
             else:
-                print("TEST SUCCESS NOT CONFIRMED")
+                print(sciath_colors.FAIL + "FAILURE" + sciath_colors.ENDC)
+                if failed_names:
+                    print('To re-run failed tests, use e.g.')
+                    print('  -t ' + ','.join(failed_names))
         else:
             print("No tests")
 
