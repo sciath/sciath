@@ -62,7 +62,7 @@ def create_tests_from_file(filename):
                 job.append(sciath.job.Job(commands[i]))
         test = sciath.test.Test(job, entry['name'])
 
-        comparison_file = entry['comparison_file'] if 'comparison_file' in entry else None
+        comparison_file = entry['comparison'] if 'comparison' in entry else None
 
         verifier_type = entry['type'] if 'type' in entry else 'text_diff'
         if verifier_type == 'text_diff':

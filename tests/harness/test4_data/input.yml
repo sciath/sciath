@@ -21,10 +21,10 @@
 -
   name: comp_file
   command: sh -c "echo qux > compare_me.txt"
-  comparison_file: compare_me.txt
+  comparison: compare_me.txt
   expected: comp_file.expected
 -
   name: comp_file_fail
   command: sh -c "echo qux > compare_me.txt"
-  comparison_file: compare_me.txt
+  comparison: compare_me.txt
   expected: comp_file_fail.expected
