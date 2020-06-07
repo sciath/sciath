@@ -1,6 +1,7 @@
 import os
 import filecmp
 import difflib
+import shutil
 
 import numpy as np
 
@@ -128,54 +129,67 @@ class ExitCodeVerifier(Verifier):
 class ComparisonVerifier(Verifier):
     """ A :class:`Verifier` which compares an output file against a reference file """
 
-    def __init__(self, test, expected_file, output_file = None):
-        super(ComparisonVerifier,self).__init__(test)
+    def __init__(self, test, expected_file, output_file=None, comparison_file=None):
+        super(ComparisonVerifier, self).__init__(test)
 
         self.expected_file = expected_file
 
+        if comparison_file and output_file:
+            raise Exception('Cannot specify an output_file with a comparison_file')
+        self.comparison_file = comparison_file
+
         c_name, o_name, e_name = self.test.job.get_output_filenames()
-        if not output_file:
+        if not output_file and not comparison_file:
             self.output_file = o_name[-1]
-        # FIXME: there is a problem here - this needs to know whether the comparison file is relative to output_path of exec_path
+        # FIXME: I envision that there should only ever be one "output file" to consider. Having multiple stdout and stderr files just really doesn't seem worth the complication
 
     def execute(self, output_path=None, exec_path=None):
         report = []
         status = None
 
         if not os.path.isfile(self.expected_file) :
-            report.append('[Comparison] Expected file missing: %s' % self.expected_file)
             status = sciath_test_status.expected_file_not_found
-
-        output_full_path = os.path.join(output_path, self.output_file)
-        if not os.path.isfile(output_full_path) :
-            report.append('[Comparison] Output file missing: %s' % output_full_path)
-            status = sciath_test_status.output_file_not_found
+            report.append('[Comparison] Expected file missing: %s' % self.expected_file)
             return status, report
 
-        if not status:
-            status, report = self._compare_files(self.expected_file, output_full_path)
+        from_file = self._from_file(output_path, exec_path)
+        if not os.path.isfile(from_file) :
+            status = sciath_test_status.output_file_not_found
+            report.append('[Comparison] Output file missing: %s' % from_file)
+            return status, report
 
-        return status, report
+        return self._compare_files(self.expected_file, from_file)
 
-    # FIXME: this also needs to know about exec_path
-    def update_expected(self, output_path, exec_path=None):
-        output_full_path = os.path.join(output_path,self.output_file)
-        if not os.path.isfile(output_full_path) :
-            raise Exception('[SciATH] Cannot update: output file missing: %s' % output_full_path)
-        # Does not create directories
-        shutil.copyfile(output_full_path, self.expected_file)
+    def update_expected(self, output_path=None, exec_path=None):
+        from_file = self._from_file(output_path, exec_path)
+        if not os.path.isfile(from_file) :
+            print('[SciATH] Cannot update: source file missing: %s' % from_file)
+        else:
+            # Does not create directories
+            shutil.copyfile(from_file, self.expected_file)
 
-    def _compare_files(self, from_filename, to_filename):
-        if filecmp.cmp(from_filename, to_filename):
+    def _compare_files(self, from_file, to_file):
+        if filecmp.cmp(from_file, to_file):
             return sciath_test_status.ok,[]
         else:
-            with open(from_filename, 'r') as from_file:
-                lines_from = from_file.readlines()
-            with open(to_filename, 'r') as to_file:
-                lines_to = to_file.readlines()
+            with open(from_file, 'r') as from_handle:
+                lines_from = from_handle.readlines()
+            with open(to_file, 'r') as to_handle:
+                lines_to = to_handle.readlines()
             report = []
             for line in difflib.unified_diff(lines_from, lines_to,
-                                             fromfile=from_filename,
-                                             tofile=to_filename):
+                                             fromfile=from_file,
+                                             tofile=to_file):
                 report.append(line.rstrip('\n'))
             return sciath_test_status.not_ok, report
+
+    def _from_file(self, output_path=None, exec_path=None):
+        """ Determine the full path to the file to compare against the expected file """
+        if self.comparison_file:
+            if not exec_path:
+                raise Exception("exec_path must be provided, when a comparison file is specified")
+            return os.path.join(exec_path, self.comparison_file)
+        else:
+            if not output_path:
+                raise Exception("output_path must be provided, when comparing to an output file")
+            return os.path.join(output_path, self.output_file)

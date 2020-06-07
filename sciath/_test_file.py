@@ -8,6 +8,7 @@ import sciath.job
 import sciath.verifier
 import sciath.verifier_line
 
+
 def create_tests_from_file(filename):
 
     with open(filename, 'r') as input_file:
@@ -61,22 +62,23 @@ def create_tests_from_file(filename):
                 job.append(sciath.job.Job(commands[i]))
         test = sciath.test.Test(job, entry['name'])
 
+        comparison_file = entry['comparison_file'] if 'comparison_file' in entry else None
+
         verifier_type = entry['type'] if 'type' in entry else 'text_diff'
         if verifier_type == 'text_diff':
             if 'expected' not in entry or not entry['expected']:
                 raise Exception('Each test entry must defined an expected file')
-            test.verifier = sciath.verifier.ComparisonVerifier(test, expected)
+            test.verifier = sciath.verifier.ComparisonVerifier(
+                    test, expected, comparison_file=comparison_file)
         elif verifier_type == 'float_lines':
             if 'expected' not in entry or not entry['expected']:
                 raise Exception('Each test entry must defined an expected file')
             key = entry['key'] if 'key' in entry else ''
-            test.verifier = sciath.verifier_line.LineVerifier(test, expected)
+            test.verifier = sciath.verifier_line.LineVerifier(
+                    test, expected, comparison_file=comparison_file)
             test.verifier.rules.append(sciath.verifier_line.key_and_float_rule(key))
         else:
             raise Exception('[SciATH] unrecognized type %s' % verifier_type)
-
-        if 'comparison_file' in entry:
-            test.setComparisonFile(entry['comparison_file'])
 
         tests.append(test)
 

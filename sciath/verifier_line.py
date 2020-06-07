@@ -8,21 +8,21 @@ from sciath import sciath_test_status
 
 class LineVerifier(ComparisonVerifier):
 
-    def __init__(self, test, expected_file, output_file = None):
+    def __init__(self, test, expected_file, output_file=None, comparison_file=None):
       super(LineVerifier, self).__init__(test, expected_file, output_file)
       self.rules = []
 
-    def _compare_files(self, from_filename, to_filename):
+    def _compare_files(self, from_file, to_file):
         passing = True
         report = []
         for rule in self.rules:
             match_from = {}
             match_to = {}
-            for [match, filename] in [(match_from, from_filename), (match_to, to_filename)]:
-                with open(filename, 'r') as f:
+            for [match, source_file] in [(match_from, from_file), (match_to, to_file)]:
+                with open(source_file, 'r') as handle:
                     line_number = 0
-                    for line in f.readlines():
-                        line_number = line_number + 1
+                    for line in handle.readlines():
+                        line_number += 1
                         if re.match(rule['re'],line):
                             match[line_number] = line
             rule_result, rule_report  = rule['function'](match_from, match_to)
