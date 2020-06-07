@@ -9,7 +9,7 @@ from sciath import sciath_test_status
 class LineVerifier(ComparisonVerifier):
 
     def __init__(self, test, expected_file, output_file=None, comparison_file=None):
-      super(LineVerifier, self).__init__(test, expected_file, output_file)
+      super(LineVerifier, self).__init__(test, expected_file, output_file, comparison_file)
       self.rules = []
 
     def _compare_files(self, from_file, to_file):
@@ -26,7 +26,10 @@ class LineVerifier(ComparisonVerifier):
                         if re.match(rule['re'],line):
                             match[line_number] = line
             rule_result, rule_report  = rule['function'](match_from, match_to)
-            passing = passing and rule_result
+            if passing and not rule_result:
+                passing = False
+                report.append('--- %s' % from_file)
+                report.append('+++ %s' % to_file)
             if rule_report:
                 report.append("Report for lines matching: '" + rule['re'] + "'")
                 report.extend(rule_report)
@@ -46,6 +49,7 @@ def string_get_floats(line):
         if match:
             r.append(float(match.group()))
     return r
+
 
 def compare_float_values_rel(line_expected, line_out, rel_tol):
     floats_expected = string_get_floats(line_expected.rstrip())
@@ -88,6 +92,9 @@ def float_rel_pairs_function(match_expected, match_out, rel_tol, max_err_count =
 
 def key_and_float_rule(key,rel_tol=1e-6):
     rule = {}
-    rule['re'] = '^'+re.escape(key) # match on lines starting with key
+    if key:
+        rule['re'] = '^'+re.escape(key) # match on lines starting with key
+    else:
+        rule['re'] = '^' # match any line
     rule['function'] = lambda e,o : float_rel_pairs_function(e,o,rel_tol=rel_tol)
     return rule
