@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 import os
 import filecmp
 import difflib
@@ -5,11 +7,10 @@ import shutil
 
 from sciath.job import Job
 from sciath.job import JobSequence
-from sciath.job import JobDAG
 from sciath import sciath_test_status
 
 
-class Verifier:
+class Verifier (object):
     """Base class for verification of a Test"""
     # Note: this should more properly be an abstract base class, but we delay this while still trying to support Python 2
 
@@ -69,7 +70,7 @@ class ExitCodeVerifier(Verifier):
             data = f.readlines()
 
         # special
-        if not isinstance(self.test.job,JobSequence) and not isinstance(self.test.job,JobDAG):
+        if not isinstance(self.test.job,JobSequence):
             if self.test.job.exit_code_success != int(data[0]):
                 status = sciath_test_status.not_ok
                 return status,report

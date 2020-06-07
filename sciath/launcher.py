@@ -600,7 +600,6 @@ class Launcher:
 
         if not self.useBatch:
             mpiLaunch = self.mpiLaunch
-            # This supports DAG jobs
             resources = job.getMaxResources()
             ranks = resources["mpiranks"]
             threads = resources["threads"]

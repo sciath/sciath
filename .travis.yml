@@ -1,5 +1,10 @@
 language: python
 
+python:
+  - "2.7"
+  - "3.5"
+  - "3.7"
+
 git:
   depth: false
 
@@ -9,7 +14,7 @@ branches:
     - dev
 
 install:
-  - pip install numpy pyyaml
+  - pip install pyyaml subprocess32
 
 script:
   - export PYTHONPATH=$PWD:$PYTHONPATH

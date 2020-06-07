@@ -1,8 +1,9 @@
+from __future__ import print_function
+
 import sys
 if sys.version_info[0] < 3: # Remove when Python 2 support is dropped
     from itertools import izip as zip
 
-from sciath._io import dictView
 
 class Job:
     """:class:`Job` describes a set of commands to be run with a given set of resources.
@@ -97,7 +98,7 @@ class Job:
         lc_count = len(jobnames)
         for jobname in jobnames:
             jprefix = "".join(["sciath.depjob-",str(lc_count),'-',jobname])
-            if lc_count == 1: # we do something special for the last job in a sequence/DAG list
+            if lc_count == 1: # we do something special for the last job in a sequence list
                 jprefix = "sciath.job-" + self.name
 
             stdoutName.append( jprefix + ".stdout" )
@@ -210,24 +211,6 @@ class Job:
             raise RuntimeError(message)
 
 
-    def view(self):
-        """
-        Display the contents of an Job instance to stdout.
-        The parent->child relationship will be reported.
-        Uninitialized non-essential members will not be reported.
-        This includes: self.child.
-        """
-
-        print('Job: Job name:',self.name)
-        print('Command:',self.cmd)
-        print('Exit code success:',self.exit_code_success)
-        #print('MPI ranks:',self.resources["mpiranks"],', Threads:',self.resources["threads"])
-        print('Resources:',dictView(self.resources))
-        maxR = self.getMaxResources()
-        print('Max. resources (incl. dependencies):', dictView(maxR))
-
-
-
 class JobSequence(Job):
     """ A SciATH linear job sequence (inherits from :class:`Job`)
     """
@@ -320,32 +303,6 @@ class JobSequence(Job):
         return sum_wt
 
 
-    # overload
-    def view(self):
-        """
-        Display the contents of an job sequence to stdout.
-        The parent will be reported first followed by its dependencies.
-        Uninitialized non-essential members will not be reported.
-        This includes: self.child.
-        """
-
-        Job.view(self)
-        # view dependencies
-        print('JobSequence:')
-        print('Dependencies: found',len(self.sequence))
-        cnt = 0
-        for j in self.sequence:
-            print('[Child job index',cnt,']')
-            j.view()
-            cnt += 1
-        print('[Execution order]')
-        cr = self.createExecuteCommand()
-        cnt = 0
-        for i in cr:
-            print('  order',cnt,':',i[0])
-            cnt += 1
-
-
     def createJobOrdering(self):
         """
         Returns a list of job names in the order they will be executed.
@@ -364,263 +321,4 @@ class JobSequence(Job):
         for j in self.sequence:
             jobs.append(j)
         jobs.reverse()
-        return jobs
-
-
-class JobDAG(Job):
-    """
-    A SciATH job sequence defined by a directed acyclic graph (DAG) (inherits from Job).
-    The job sequence is determininstic and defined by performing
-    a depth first search (DFS) on the provided DAG.
-
-    """
-    #Args:
-    #  cmd          (string): The command used to execute your application.
-    #  **kwargs (name=value): A keyword argument list.
-    #                         The Job constructor will recognize the following names:
-    #                           name        (string): textual name you want to assign to the job.
-    #                           exitCode       (int): the exit code which should be used to infer success.
-
-    def __init__(self,cmd,name='job_dag',**kwargs):
-        Job.__init__(self,cmd,name,**kwargs)
-        self.dag = []
-        self.order = []
-        self.joblist = dict()
-        # Keep track of how many jobs have been added.
-
-    def registerJob(self,job):
-        """
-        Register a dependent job.
-        All jobs which will appear in your DAG must be registered.
-        """
-        try:
-            s = self.joblist[ job.name ]
-        except KeyError:
-            print('not found -> inserting name',job.name)
-        else:
-            message = '[SciATH error] A job with name',job.name,'has already been registered.'
-            raise RuntimeError(message)
-
-        self.joblist.update({job.name: job})
-
-
-    def insert(self,dag):
-        """
-        Insert a directed acyclic graph (DAG) defining the job sequence.
-        The parent job (self) must be present in the DAG.
-        The parent job will be implicitly used as the root of the DAG when
-        performing the depth first search required to infer the order the jobs
-        will be executed.
-
-        """
-
-        #Arg:
-        #  dag (dict): A dictionary defining vertex to vertex relationships.
-        #              Each vertex must be identified by a string, matching the job name (e.g. Job.name).
-        #              Neighbour vertices (child jobs) must be iteratable,
-        #              so put them in a list,e.g. ['a','b'], or a tuple, e.g. ('a','b').
-        #              Leaf vertices must be identified with the variable None.
-        #              Leaf jobs must also be iteratable, e.g. use {"jobA" : [None] }.
-
-
-        #Examples:
-        #  (i) Consider the graph:
-        #    A --> B
-        #  The corresponding DAG using a dictionary is given by
-        #    dag = { 'A': [ 'B' ],
-        #            'B': [None]    }
-        #  Note that in the above we used a list (e.g. []) to define the neighbour vertices.
-
-        #  (ii) Consider the graph:
-        #            C
-        #           /
-        #    A --- B     E
-        #           \   /
-        #            \ /
-        #             D ---- F
-        #  The corresponding DAG using a dictionary is given by
-        #    dag = { 'A': ( 'B' ),
-        #            'B': ( 'C' , 'D' ),
-        #            'C': ([None]),
-        #            'D': ( 'E' , 'F' ),
-        #            'E': ([None]),
-        #            'F': ([None])         }
-        #  Note that in the above we used tuples (e.g. ()) to define the neighbour vertices.
-
-        # Check that the parent name is in the dag
-        try:
-            value = dag[ self.name ]
-        except KeyError:
-            message = '[SciATH error] The root vertex associated with parent job (name = ' + self.name + ' ).\n'
-            message += '[SciATH error] was not found in the DAG dictionary - the parent name is essential to the DAG definition.\n'
-            raise RuntimeError(message)
-
-        else:
-            print('[pass] The root vertex associated with parent job (name = ' + self.name + ') was found in the DAG.')
-
-        # Check that the key for each vertex is in self.joblist
-        check1 = True
-        message = '\n'
-        for key in dag:
-            # skip parent
-            if key == self.name:
-                continue
-            if key not in self.joblist:
-                message += '[SciATH error] The DAG key ' + key + ' was not found in the member self.joblist.\n'
-                message += '[SciATH error] Call self.registerJob() to add this key into self.joblist.\n'
-                check1 = False
-        if not check1:
-              raise RuntimeError(message)
-        print('[pass] All DAG vertices were found in the registered job list.')
-
-        # Check that every member in self.joblist is a key in the dag
-        check2 = True
-        message = '\n'
-        for jobname in self.joblist:
-            try:
-                value = dag[ jobname ]
-            except KeyError:
-                message += '[SciATH error] A vertex with key \"' + jobname + '\" was not found in the user-provided DAG.\n'
-                check2 = False
-        if not check2:
-            raise RuntimeError(message)
-        print('[pass] All registered jobs were associated with a DAG vertex.')
-
-        self.dag = dag
-
-
-    def __DFS(self,dag,root_key):
-        """
-        Depth First Search - Returns the order (list) which jobs should be executed.
-        """
-        visited, Q = set(), [root_key]
-        cnt = 0
-        order = [-1] * len(dag)
-
-        while Q:
-            vertex = Q.pop(0)
-            #print('vertex',vertex)
-            if vertex is not None:
-                if vertex not in visited:
-                    visited.add(vertex)
-                    #print('vertex',vertex,'cnt',cnt)
-                    order[cnt] = vertex
-                    cnt += 1
-                    for i in dag[vertex]:
-                        Q.append(i)
-        order.reverse()
-        return order
-
-
-    # overload
-    def createExecuteCommand(self):
-        """
-        Returns a list of command, resource tuples associated with a job DAG.
-        The commands should be executed in order from first to last.
-        """
-
-        order = self.__DFS(self.dag,self.name)
-        print('dag -> order =',order)
-
-        execute = []
-        resources = []
-
-        for jkey in order:
-            if jkey == self.name:
-                er = [( self.cmd, self.resources )] # make iteratable
-            else:
-                job = self.joblist[jkey]
-                er = job.createExecuteCommand()
-            for k in er:
-                execute.append(k[0])
-                resources.append(k[1])
-
-        return [x for x in zip(execute,resources)]
-
-
-    # overload
-    def getMaxResources(self):
-        """
-        Returns the max. resources required for a job seqeunce defined by a DAG.
-        The max is taken over all jobs defined by the DAG and the parent job.
-        """
-
-        max_resources = dict()
-
-        for key in self.resources:
-            value = self.resources[key]
-            max_resources.update({key:value})
-
-        for jobkey in self.dag:
-            # skip parent
-            if jobkey == self.name:
-                continue
-
-            job = self.joblist[jobkey]
-            max_resources_j = job.getMaxResources()
-            # iterate through keys in max_resources_j, update values in max_resources
-            for key in max_resources_j:
-                value = max_resources_j[key]
-                if value > max_resources[key]:
-                    max_resources.update({key:value})
-
-        return max_resources
-
-    # overload
-    def getMaxWallTime(self):
-        """
-        Returns a floating point number which is the sum of all wall_time values associated with JobDAG
-        """
-        jobs = self.getJobList()
-        sum_wt = self.wall_time
-        for j in jobs:
-            if j != self:
-                sum_wt += j.getMaxWallTime()
-
-        return sum_wt
-
-
-    # overload
-    def view(self):
-        """
-        Display the contents of the job sequence via the DAG.
-        The provided DAG will be displayed, along with the
-        specific ordering in which the jobs will be executed.
-        """
-        Job.view(self)
-        # view DAG
-        print('JobDAG:')
-        print('[Registered jobs]')
-        cnt = 0
-        for key in self.joblist:
-            print('  job',cnt,'key =',key)
-            cnt += 1
-        print('[Provided DAG]')
-        #print(self.dag)
-        for key in self.dag:
-            print('  \"'+key+'\" ->',self.dag[key])
-        print('[Execution order]')
-        order = self.createJobOrdering()
-        cnt = 0
-        for i in order:
-            print('  order',cnt,':',i)
-            cnt += 1
-
-
-    def createJobOrdering(self):
-        """
-        Returns a list of job names in the order they will be executed.
-        """
-        order = self.__DFS(self.dag,self.name)
-        return order
-
-    def getJobList(self):
-        """
-        Returns a list of jobs in the order they will be executed.
-        """
-        names = self.createJobOrdering()
-        jobs = []
-        for i in range(0,len(names)-1): # skip the last job as this is NOT stored in self.joblist
-            jobs.append( self.joblist[ names[i] ] )
-        jobs.append( self )
         return jobs
