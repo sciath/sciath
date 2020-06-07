@@ -210,20 +210,18 @@ class Harness:
             if not self.determine_overall_success():
                 sys.exit(1)
 
-
     def update_expected(self):
         """ Give each active test the chance to update its reference output """
         for testrun in self.testruns:
             if testrun.active:
-                testrun.test.verifier.update_expected(testrun.output_path)
-
+                testrun.test.verifier.update_expected(testrun.output_path, testrun.exec_path)
 
     def verify(self):
         """ Update the status of all test runs """
         for testrun in self.testruns:
             if testrun.active:
                 # TODO Need to ask the launcher if the job is completed and update the status, before passing to the verifier
-                status,testrun.report = testrun.test.verifier.execute(testrun.output_path)
+                status, testrun.report = testrun.test.verify(testrun.output_path, testrun.exec_path)
                 verifier_status = status[0]
                 verifier_info = status[1]
                 if verifier_status == 'pass':

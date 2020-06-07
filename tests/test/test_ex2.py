@@ -6,7 +6,7 @@ from sciath.job import JobSequence
 from sciath.job import JobDAG
 from sciath.launcher import Launcher
 from sciath.test import Test
-from sciath.verifier_unixdiff import VerifierUnixDiff
+from sciath.verifier import ComparisonVerifier
 
 this_dir = os.path.dirname(os.path.realpath(__file__))
 
@@ -26,7 +26,7 @@ def test1_ud(): # result: pass
     cmd = ['sh' , os.path.join(this_dir,'write_test1_ud.sh') ]
 
     t = Test(Job(cmd, 'Test_1_ud'))
-    t.verifier = VerifierUnixDiff(t, os.path.join(this_dir,"./expected/t1.expected"))
+    t.verifier = ComparisonVerifier(t, os.path.join(this_dir,"./expected/t1.expected"))
 
     job_launcher.submitJob( t.job, output_path = OUTPUT_PATH, exec_path = OUTPUT_PATH )
     t.verify(output_path = OUTPUT_PATH)
@@ -37,7 +37,7 @@ def test2_ud(): # result: fail
     cmd = ['sh' , os.path.join(this_dir,'write_test2_ud.sh') ]
 
     t = Test(Job(cmd, 'Test_2_ud'))
-    t.verifier = VerifierUnixDiff(t, os.path.join(this_dir,"./expected/t1.expected"))
+    t.verifier = ComparisonVerifier(t, os.path.join(this_dir,"./expected/t1.expected"))
 
     job_launcher.submitJob( t.job, output_path = OUTPUT_PATH, exec_path = OUTPUT_PATH )
     t.verify(output_path = OUTPUT_PATH)

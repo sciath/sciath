@@ -1,11 +1,4 @@
-import os
-
-import numpy as np
-
-from sciath.job import Job
-from sciath.job import JobSequence
-from sciath.job import JobDAG
-from sciath.verifier import VerifierExitCode
+import sciath.verifier
 
 
 class Test:
@@ -21,7 +14,7 @@ class Test:
     * A set of tags
 
     """
-    def __init__(self, job, name = None):
+    def __init__(self, job, name=None):
         self.job = job
         if name is not None:
             self.name = name
@@ -29,8 +22,8 @@ class Test:
             if job.named_by_default:
                 raise Exception("[SciATH error] to create a Test, you must either name the Test or the Job explicitly")
             self.name = job.name
-        self.verifier = VerifierExitCode(self)
+        self.verifier = sciath.verifier.ExitCodeVerifier(self)
 
-    def verify(self,output_path):
-        status,report = self.verifier.execute(output_path)
-        return status,report
+    def verify(self, output_path=None, exec_path=None):
+        status,report = self.verifier.execute(output_path, exec_path)
+        return status, report
