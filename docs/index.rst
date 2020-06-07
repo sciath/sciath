@@ -42,7 +42,9 @@ SciATH provides:
 How do I use this ?
 ===================
 
-1. SciATH depends on Python 3 (and possibly it'll work for Python 2.4+, but this is unsupported)
+1. SciATH depends on Python 3. It currently also works with Python 2.7 (but
+   Python 2 is no longer supported, so we will hopefully not have to maintain
+   this much longer).
 
 2. It is highly recommended you set the environment
    variable ``PYTHONUNBUFFERED``, e.g. ``export PYTHONUNBUFFERED``
