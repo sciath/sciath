@@ -4,14 +4,11 @@ import os
 import sys
 import shutil
 import fcntl
-if os.name == 'posix' and sys.version_info[0] < 3:
-    import subprocess32 as subprocess # To be removed once Python 2 is fully abandoned
-else:
-    import subprocess
+import subprocess
 
 from   sciath import sciath_colors
 from   sciath import getVersion
-from   sciath._io import py23input, _remove_file, command_join
+from   sciath._io import py23input, _remove_file_if_it_exists, command_join
 
 # mpiexec has been observed to set non-blocking I/O, which
 #  has been observed to cause problems on OS X with errors like
@@ -98,7 +95,7 @@ def _generateLaunch_PBS(launcher,walltime,output_path,job):
     # Dependent jobs have their stdout collected in separate files (one per job)
     # The stdout/stderr for the parent job is collected via the queue system
 
-    _remove_file( os.path.join(output_path,c_name) )
+    _remove_file_if_it_exists( os.path.join(output_path,c_name) )
 
     command_resource = job.createExecuteCommand()
     njobs = len(command_resource)
@@ -171,7 +168,7 @@ def _generateLaunch_LSF(launcher,rusage,walltime,output_path,job):
     # Dependent jobs have their stdout collected in separate files (one per job)
     # The stdout/stderr for the parent job is collected via the queue system
 
-    _remove_file( os.path.join(output_path,c_name) )
+    _remove_file_if_it_exists( os.path.join(output_path,c_name) )
 
     command_resource = job.createExecuteCommand()
     njobs = len(command_resource)
@@ -250,7 +247,7 @@ def _generateLaunch_SLURM(launcher,walltime,output_path,job):
     # Dependent jobs have their stdout collected in separate files (one per job)
     # The stdout/stderr for the parent job is collected via the queue system
 
-    _remove_file( os.path.join(output_path,c_name) )
+    _remove_file_if_it_exists( os.path.join(output_path,c_name) )
 
     command_resource = job.createExecuteCommand()
     njobs = len(command_resource)
@@ -275,6 +272,26 @@ def _generateLaunch_SLURM(launcher,walltime,output_path,job):
 
     file.close()
     return filename
+
+
+def _subprocess_run(command, **kwargs):
+    """ Wrapper for subprocess.run, to allow usage from Python 2
+
+        It returns the error code.
+
+        This is to avoid a dependency like subprocess32. It of course can
+        and should be replaced by subprocess.run, once Python 2 is
+        abandoned
+    """
+    if sys.version_info[0] >= 3:
+        ctx = subprocess.run(command, **kwargs)
+        returncode =  ctx.returncode
+    else:
+        for key in ['stdout', 'stderr']:
+            if key in kwargs and kwargs[key] == 'PIPE':
+                raise Exception('The current implementation cannot handle pipes. See the subprocess documentation for an alternative')
+        returncode =  subprocess.call(command, **kwargs)
+    return returncode
 
 
 class Launcher:
@@ -640,11 +657,11 @@ class Launcher:
                 file_o = open( os.path.join(output_path,o_name[i]), 'w')
                 cwd_back = os.getcwd()
                 os.chdir(exec_path)
-                ctx = subprocess.run( launchCmd[i], universal_newlines=True, stdout=file_o, stderr=file_e)
+                returncode = _subprocess_run(launchCmd[i], universal_newlines=True, stdout=file_o, stderr=file_e)
                 os.chdir(cwd_back)
                 file_o.close()
                 file_e.close()
-                file_ecode.write(str(ctx.returncode)+"\n") # exit code
+                file_ecode.write(str(returncode)+"\n") # exit code
                 setBlockingIOStdout()
             file_ecode.close()
 
@@ -659,7 +676,7 @@ class Launcher:
             if self.verbosity_level > 0:
                 print('%s[Executing %s]%s from %s' % (sciath_colors.SUBHEADER, job.name, sciath_colors.ENDC, exec_path))
                 print(command_join(launchCmd))
-            subprocess.run(launchCmd, universal_newlines=True)
+            _subprocess_run(launchCmd, universal_newlines=True)
             os.chdir(cwd_back)
             setBlockingIOStdout()
 
@@ -678,12 +695,12 @@ class Launcher:
         job.clean()
 
         c_name,o_name,e_name = job.get_output_filenames()
-        _remove_file( os.path.join(output_path,c_name) )
+        _remove_file_if_it_exists( os.path.join(output_path,c_name) )
         for f in o_name:
-            _remove_file( os.path.join(output_path,f) )
+            _remove_file_if_it_exists( os.path.join(output_path,f) )
         for f in e_name:
-            _remove_file( os.path.join(output_path,f) )
+            _remove_file_if_it_exists( os.path.join(output_path,f) )
 
         if self.queueFileExt is not None:
             filename = "sciath.job-" + job.name + "-launch." + self.queueFileExt
-            _remove_file( os.path.join(output_path,filename) )
+            _remove_file_if_it_exists( os.path.join(output_path,filename) )
