@@ -9,7 +9,7 @@ from sciath import sciath_test_status
 class LineVerifier(ComparisonVerifier):
 
     def __init__(self, test, expected_file, output_file=None, comparison_file=None):
-      super(LineVerifier, self).__init__(test, expected_file, output_file)
+      super(LineVerifier, self).__init__(test, expected_file, output_file, comparison_file)
       self.rules = []
 
     def _compare_files(self, from_file, to_file):
