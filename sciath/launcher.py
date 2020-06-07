@@ -11,7 +11,7 @@ else:
 
 from   sciath import sciath_colors
 from   sciath import getVersion
-from   sciath._io import py23input, _remove_file, command_join
+from   sciath._io import py23input, _remove_file_if_it_exists, command_join
 
 # mpiexec has been observed to set non-blocking I/O, which
 #  has been observed to cause problems on OS X with errors like
@@ -98,7 +98,7 @@ def _generateLaunch_PBS(launcher,walltime,output_path,job):
     # Dependent jobs have their stdout collected in separate files (one per job)
     # The stdout/stderr for the parent job is collected via the queue system
 
-    _remove_file( os.path.join(output_path,c_name) )
+    _remove_file_if_it_exists( os.path.join(output_path,c_name) )
 
     command_resource = job.createExecuteCommand()
     njobs = len(command_resource)
@@ -171,7 +171,7 @@ def _generateLaunch_LSF(launcher,rusage,walltime,output_path,job):
     # Dependent jobs have their stdout collected in separate files (one per job)
     # The stdout/stderr for the parent job is collected via the queue system
 
-    _remove_file( os.path.join(output_path,c_name) )
+    _remove_file_if_it_exists( os.path.join(output_path,c_name) )
 
     command_resource = job.createExecuteCommand()
     njobs = len(command_resource)
@@ -250,7 +250,7 @@ def _generateLaunch_SLURM(launcher,walltime,output_path,job):
     # Dependent jobs have their stdout collected in separate files (one per job)
     # The stdout/stderr for the parent job is collected via the queue system
 
-    _remove_file( os.path.join(output_path,c_name) )
+    _remove_file_if_it_exists( os.path.join(output_path,c_name) )
 
     command_resource = job.createExecuteCommand()
     njobs = len(command_resource)
@@ -678,12 +678,12 @@ class Launcher:
         job.clean()
 
         c_name,o_name,e_name = job.get_output_filenames()
-        _remove_file( os.path.join(output_path,c_name) )
+        _remove_file_if_it_exists( os.path.join(output_path,c_name) )
         for f in o_name:
-            _remove_file( os.path.join(output_path,f) )
+            _remove_file_if_it_exists( os.path.join(output_path,f) )
         for f in e_name:
-            _remove_file( os.path.join(output_path,f) )
+            _remove_file_if_it_exists( os.path.join(output_path,f) )
 
         if self.queueFileExt is not None:
             filename = "sciath.job-" + job.name + "-launch." + self.queueFileExt
-            _remove_file( os.path.join(output_path,filename) )
+            _remove_file_if_it_exists( os.path.join(output_path,filename) )

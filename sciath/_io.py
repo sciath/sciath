@@ -2,10 +2,6 @@ from __future__ import print_function
 
 import os
 import sys
-if os.name == 'posix' and sys.version_info[0] < 3:
-    import subprocess32 as subprocess # To be removed once Python 2 is fully abandoned
-else:
-    import subprocess
 
 def py23input(prompt) :
     if sys.version_info[0] == 2 :
@@ -14,17 +10,13 @@ def py23input(prompt) :
         v = input(prompt)
     return(v)
 
-def _remove_file(file2rm, safetyMode=False, debugMode=False):
-    """ Remove a file, with some debugging options for development purposes """
-    if os.path.isfile(file2rm) :
-        cmd = ['rm',file2rm]
-        if safetyMode:
-            cmd = ['rm','-i',file2rm]
-        if debugMode:
-            print('  removing file: ',file2rm)
-            print('  ',cmd)
-        else:
-            subprocess.call(cmd)
+
+def _remove_file_if_it_exists(filename):
+    try:
+        os.remove(filename)
+    except OSError:
+        pass
+
 
 def command_join(command):
     """ Convert a command (as would go to subprocess.run()) to a copy-pasteable string
