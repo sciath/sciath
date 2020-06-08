@@ -12,7 +12,6 @@ from sciath import sciath_test_status
 
 class Verifier (object):
     """Base class for verification of a Test"""
-    # Note: this should more properly be an abstract base class, but we delay this while still trying to support Python 2
 
     def __init__(self, test):
         self.test = test
