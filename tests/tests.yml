@@ -51,10 +51,10 @@
   command: sh test_module_wrapper.sh module_relpath "-i ../test_data/module_relpath_data/input.yml"
   expected: test_data/module_relpath.expected
 -
-  name: job_test
-  command: sh test_wrapper.sh job_test job/test_job.py
-  expected: job/test_job.expected
+  name: job
+  command: sh test_wrapper.sh job test_data/job/test_job.py
+  expected: test_data/job.expected
 -
-  name: job_sequence_test
-  command: sh test_wrapper.sh job_sequence_test job/test_jobsequence.py
-  expected: job/test_jobsequence.expected
+  name: job_sequence
+  command: sh test_wrapper.sh job_sequence test_data/job_sequence/test_jobsequence.py
+  expected: test_data/jobsequence.expected
