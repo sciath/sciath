@@ -381,25 +381,25 @@ class Launcher:
     def setQueueSystemType(self,system_type):
         if system_type in ['PBS','pbs']:
             self.queuingSystemType = 'pbs'
-            self.jobSubmissionCommand = 'qsub'
+            self.jobSubmissionCommand = ['qsub']
             self.useBatch = True
             self.queueFileExt = 'pbs'
 
         elif system_type in ['LSF','lsf']:
             self.queuingSystemType = 'lsf'
-            self.jobSubmissionCommand = 'sh -c \'bsub < $0\'' # Note single (escaped) quotes. This is a trick to interpret "<".
+            self.jobSubmissionCommand = ['sh','-c','bsub < $0'] # This allows "<".
             self.useBatch = True
             self.queueFileExt = 'lsf'
 
         elif system_type in ['SLURM','slurm']:
             self.queuingSystemType = 'slurm'
-            self.jobSubmissionCommand = 'sbatch'
+            self.jobSubmissionCommand = ['sbatch']
             self.useBatch = True
             self.queueFileExt = 'slurm'
 
         elif system_type in ['LoadLeveler','load_leveler','loadleveler','llq']:
             self.queuingSystemType = 'load_leveler'
-            self.jobSubmissionCommand = 'llsubmit'
+            self.jobSubmissionCommand = ['llsubmit']
             self.useBatch = True
             self.queueFileExt = 'llq'
             raise ValueError('[SciATH] Unsupported: LoadLeveler needs to be updated')
@@ -425,7 +425,7 @@ class Launcher:
         print('  Queue system:      ',self.queuingSystemType)
         print('  MPI launcher:      ',self.mpiLaunch)
         if self.useBatch:
-            print('  Submit command:    ', self.jobSubmissionCommand)
+            print('  Submit command:    ', command_join(self.jobSubmissionCommand))
             if self.accountName:
                 print('  Account:           ',self.accountName)
             if self.queueName:
@@ -670,7 +670,7 @@ class Launcher:
             walltime = job.getMaxWallTime()
 
             launchfile = self.__createJobSubmissionFile(job,walltime,output_path)
-            launchCmd = [self.jobSubmissionCommand,launchfile]
+            launchCmd = self.jobSubmissionCommand + [launchfile]
             cwd_back = os.getcwd()
             os.chdir(exec_path)
             if self.verbosity_level > 0:
