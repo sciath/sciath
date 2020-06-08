@@ -21,4 +21,3 @@ sciath_colors = NamedColors()
 
 # Default codes/status/message/colors for test verification
 sciath_test_status = SciathTestStatusDefinition(sciath_colors)
-
