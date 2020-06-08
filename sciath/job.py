@@ -52,10 +52,12 @@ class Job:
         # Design note: we use a dict to enable developers to easily add support for different resource requests
         self.resources = dict()
         self.setResources(**kwargs) # looking in kwargs for any resources
-        if len(self.resources) == 0: # set defaults
-            self.resources.update({"mpiranks":1}) # mpi parallel resource data
-            self.resources.update({"threads":1}) # thread parallel (e.g. OMP) resource data
-            self.resources.update({"idlempirankspernode":0}) # idle ranks-per-compute-node resource data
+        if 'mpiranks' not in self.resources:
+            self.resources['mpiranks'] = 1
+        if 'threads' not in self.resources:
+            self.resources['threads'] = 1
+        if 'idlempirankspernode' not in self.resources:
+            self.resources['idlempirankspernode'] = 0
 
         # optional info not needing a setter (e.g. they are not special enough)
         self.exit_code_success = 0
