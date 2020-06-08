@@ -276,9 +276,7 @@ def _subprocess_run(command, **kwargs):
 
         It returns the error code.
 
-        This is to avoid a dependency like subprocess32. It of course can
-        and should be replaced by subprocess.run, once Python 2 is
-        abandoned
+        This is to avoid a dependency like subprocess32.
     """
     if sys.version_info[0] >= 3:
         ctx = subprocess.run(command, **kwargs)

@@ -1,7 +1,7 @@
 from __future__ import print_function
 
 import sys
-if sys.version_info[0] < 3: # Remove when Python 2 support is dropped
+if sys.version_info[0] < 3:
     from itertools import izip as zip
 
 
