@@ -1,12 +1,12 @@
 [35m[ *** Cleanup *** ][0m
 [ -- Removing output for Test: test -- ]
 [35m[ *** Executing Tests *** ][0m
-[36m[Executing job][0m from <<TEST DIR STRIPPED>>/harness_test5_sandbox/test_output/sandbox
+[36m[Executing job][0m from <<TEST DIR STRIPPED>>/harness5_sandbox/test_output/sandbox
 echo 'The first number is 1.1\nThe second number is 1.01'
 [35m[ *** Verification Reports *** ][0m
 [36m[Report for test][0m
---- <<TEST DIR STRIPPED>>/harness/test5_data/test.expected
-+++ <<TEST DIR STRIPPED>>/harness_test5_sandbox/test_output/sciath.job-job.stdout
+--- <<TEST DIR STRIPPED>>/test_data/harness5/test.expected
++++ <<TEST DIR STRIPPED>>/harness5_sandbox/test_output/sciath.job-job.stdout
 Report for lines matching: '^The\ first\ number\ is'
 (l.1/1) Lines did not match:
 expected value of 7 does not match output value 1.1 to rel. tol. 1e-06

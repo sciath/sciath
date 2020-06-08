@@ -7,32 +7,32 @@
 [ -- Removing output for Test: comp_file -- ]
 [ -- Removing output for Test: comp_file_fail -- ]
 [35m[ *** Executing Tests *** ][0m
-[36m[Executing foo][0m from <<TEST DIR STRIPPED>>/module_input_sandbox/foo_output/sandbox
+[36m[Executing foo][0m from <<TEST DIR STRIPPED>>/harness4_sandbox/foo_output/sandbox
 echo foo
-[36m[Executing foo2][0m from <<TEST DIR STRIPPED>>/module_input_sandbox/foo2_output/sandbox
+[36m[Executing foo2][0m from <<TEST DIR STRIPPED>>/harness4_sandbox/foo2_output/sandbox
 echo foo
-[36m[Executing foo_fail][0m from <<TEST DIR STRIPPED>>/module_input_sandbox/foo_fail_output/sandbox
+[36m[Executing foo_fail][0m from <<TEST DIR STRIPPED>>/harness4_sandbox/foo_fail_output/sandbox
 echo foox
-[36m[Executing missing][0m from <<TEST DIR STRIPPED>>/module_input_sandbox/missing_output/sandbox
+[36m[Executing missing][0m from <<TEST DIR STRIPPED>>/harness4_sandbox/missing_output/sandbox
 echo missing
-[36m[Executing many_words][0m from <<TEST DIR STRIPPED>>/module_input_sandbox/many words_output/sandbox
+[36m[Executing many_words][0m from <<TEST DIR STRIPPED>>/harness4_sandbox/many words_output/sandbox
 echo 'many words'
-[36m[Executing comp_file][0m from <<TEST DIR STRIPPED>>/module_input_sandbox/comp_file_output/sandbox
+[36m[Executing comp_file][0m from <<TEST DIR STRIPPED>>/harness4_sandbox/comp_file_output/sandbox
 sh -c 'echo qux > compare_me.txt'
-[36m[Executing comp_file_fail][0m from <<TEST DIR STRIPPED>>/module_input_sandbox/comp_file_fail_output/sandbox
+[36m[Executing comp_file_fail][0m from <<TEST DIR STRIPPED>>/harness4_sandbox/comp_file_fail_output/sandbox
 sh -c 'echo qux > compare_me.txt'
 [35m[ *** Verification Reports *** ][0m
 [36m[Report for foo_fail][0m
---- ../harness/test4_data/foo.expected
-+++ <<TEST DIR STRIPPED>>/module_input_sandbox/foo_fail_output/sciath.job-foo_fail.stdout
+--- ../test_data/harness4/foo.expected
++++ <<TEST DIR STRIPPED>>/harness4_sandbox/foo_fail_output/sciath.job-foo_fail.stdout
 @@ -1 +1 @@
 -foo
 +foox
 [36m[Report for missing][0m
-[Comparison] Expected file missing: ../harness/test4_data/missing.expected
+[Comparison] Expected file missing: ../test_data/harness4/missing.expected
 [36m[Report for comp_file_fail][0m
---- ../harness/test4_data/comp_file_fail.expected
-+++ <<TEST DIR STRIPPED>>/module_input_sandbox/comp_file_fail_output/sandbox/compare_me.txt
+--- ../test_data/harness4/comp_file_fail.expected
++++ <<TEST DIR STRIPPED>>/harness4_sandbox/comp_file_fail_output/sandbox/compare_me.txt
 @@ -1 +1 @@
 -foo
 +qux

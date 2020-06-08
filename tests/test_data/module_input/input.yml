@@ -1,0 +1,30 @@
+-
+  name: foo
+  command: echo foo
+  expected: foo.expected
+-
+  name: foo2
+  command: echo foo
+  expected: foo.expected
+-
+  name: foo_fail
+  command: echo foox
+  expected: foo.expected
+-
+  name: missing
+  command: echo missing
+  expected: missing.expected
+-
+  name: many words
+  command: echo "many words"
+  expected: many_words.expected
+-
+  name: comp_file
+  command: sh -c "echo qux > compare_me.txt"
+  comparison: compare_me.txt
+  expected: comp_file.expected
+-
+  name: comp_file_fail
+  command: sh -c "echo qux > compare_me.txt"
+  comparison: compare_me.txt
+  expected: comp_file_fail.expected
