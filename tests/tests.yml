@@ -36,7 +36,7 @@
   expected: test_data/module_smoke.expected
 -
   name: module_input
-  command: sh test_module_wrapper.sh module_input "-i ../test_data/harness4/input.yml"
+  command: sh test_module_wrapper.sh module_input "-i ../test_data/module_input/input.yml"
   expected: test_data/module_input.expected
 -
   name: module_line_verifier
