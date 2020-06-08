@@ -419,21 +419,21 @@ class Launcher:
         self.maxRanksPerNode = n
 
     def view(self):
-        print('SciATH: Batch queueing system configuration [',self.confFileName,']')
-        major,minor,patch=getVersion()
-        print('  Version:           ',str(major)+'.'+str(minor)+'.'+str(patch))
-        print('  Queue system:      ',self.queuingSystemType)
-        print('  MPI launcher:      ',self.mpiLaunch)
-        if self.useBatch:
-            print('  Submit command:    ', command_join(self.jobSubmissionCommand))
-            if self.accountName:
-                print('  Account:           ',self.accountName)
-            if self.queueName:
-                print('  Queue:             ',self.queueName)
-            if self.batchConstraint :
-                print('  Constraint:        ', self.batchConstraint)
-            if self.maxRanksPerNode :
-                print('  Max Ranks Per Node:', self.maxRanksPerNode)
+        if self.verbosity_level > 0:
+            print('[SciATH] Batch queueing system configuration [%s]' % self.confFileName)
+            print('  Version:           %d.%d.%d' % getVersion())
+            print('  Queue system:      %s' % self.queuingSystemType)
+            print('  MPI launcher:      %s' % self.mpiLaunch)
+            if self.useBatch:
+                print('  Submit command:    %s' % command_join(self.jobSubmissionCommand))
+                if self.accountName:
+                    print('  Account:           %s' % self.accountName)
+                if self.queueName:
+                    print('  Queue:             %s' % self.queueName)
+                if self.batchConstraint :
+                    print('  Constraint:        %s' % self.batchConstraint)
+                if self.maxRanksPerNode :
+                    print('  Max Ranks Per Node:%s' % self.maxRanksPerNode)
 
     def configure(self):
         print('----------------------------------------------------------------')
