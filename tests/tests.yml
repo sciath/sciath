@@ -11,32 +11,32 @@
   command: sh test_wrapper.sh test_line_test test/test_line_verifier.py
   expected: test/test_line_verifier.expected
 -
-  name: harness_test1
-  command: sh test_wrapper.sh harness_test1 harness/test1.py
-  expected: harness/test1.expected
+  name: harness1
+  command: sh test_wrapper.sh harness1 test_data/harness1/test1.py
+  expected: test_data/harness1.expected
 -
-  name: harness_test2
-  command: sh test_wrapper.sh harness_test2 harness/test2.py
-  expected: harness/test2.expected
+  name: harness2
+  command: sh test_wrapper.sh harness2 test_data/harness2/test2.py
+  expected: test_data/harness2.expected
 -
-  name: harness_test3
-  command: sh test_wrapper.sh harness_test3 harness/test3.py
-  expected: harness/test3.expected
+  name: harness3
+  command: sh test_wrapper.sh harness3 test_data/harness3/test3.py
+  expected: test_data/harness3.expected
 -
-  name: harness_input_test
-  command: sh test_wrapper.sh harness_input_test "harness/test4.py -i ../harness/test4_data/input.yml"
-  expected: harness/test4.expected
+  name: harness4
+  command: sh test_wrapper.sh harness4 "test_data/harness4/test4.py -i ../test_data/harness4/input.yml"
+  expected: test_data/harness4.expected
 -
-  name: harness_test5
-  command: sh test_wrapper.sh harness_test5 harness/test5.py
-  expected: harness/test5.expected
+  name: harness5
+  command: sh test_wrapper.sh harness5 test_data/harness5/test5.py
+  expected: test_data/harness5.expected
 -
   name: module_smoke
   command: sh test_module_wrapper.sh module_smoke
   expected: test_data/module_smoke.expected
 -
   name: module_input
-  command: sh test_module_wrapper.sh module_input "-i ../harness/test4_data/input.yml"
+  command: sh test_module_wrapper.sh module_input "-i ../test_data/harness4/input.yml"
   expected: test_data/module_input.expected
 -
   name: module_line_verifier

@@ -4,13 +4,13 @@
 [ -- Removing output for Test: test3 -- ]
 [ -- Removing output for Test: test4 -- ]
 [35m[ *** Executing Tests *** ][0m
-[36m[Executing job][0m from <<TEST DIR STRIPPED>>/harness_test2_sandbox/test1_output/sandbox
+[36m[Executing job][0m from <<TEST DIR STRIPPED>>/harness2_sandbox/test1_output/sandbox
 echo 'Hello, I am Test #1'
-[36m[Executing job][0m from <<TEST DIR STRIPPED>>/harness_test2_sandbox/test2_output/sandbox
+[36m[Executing job][0m from <<TEST DIR STRIPPED>>/harness2_sandbox/test2_output/sandbox
 printf 'Hello, I am Test #2\n'
-[36m[Executing job][0m from <<TEST DIR STRIPPED>>/harness_test2_sandbox/test3_output/sandbox
+[36m[Executing job][0m from <<TEST DIR STRIPPED>>/harness2_sandbox/test3_output/sandbox
 touch test3.dat
-[36m[Executing job][0m from <<TEST DIR STRIPPED>>/harness_test2_sandbox/test4_output/sandbox
+[36m[Executing job][0m from <<TEST DIR STRIPPED>>/harness2_sandbox/test4_output/sandbox
 grep foo bar
 [35m[ *** Summary *** ][0m
 [32m[test1]  pass[0m (verification was successful)
