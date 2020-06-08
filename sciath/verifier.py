@@ -74,8 +74,6 @@ class ExitCodeVerifier(Verifier):
                 status = sciath_test_status.not_ok
             else:
                 status = sciath_test_status.ok
-            return status, report
-
         else:
             jobs = self.test.job.getJobList()
 
