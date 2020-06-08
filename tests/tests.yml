@@ -7,9 +7,9 @@
   command: sh test_wrapper.sh test_test2 test/test_ex2.py
   expected: test/test_ex2.expected
 -
-  name: test_line_test
-  command: sh test_wrapper.sh test_line_test test/test_line_verifier.py
-  expected: test/test_line_verifier.expected
+  name: verifier_line
+  command: sh test_wrapper.sh verifier_line test_data/verifier_line/test_line_verifier.py
+  expected: test_data/verifier_line.expected
 -
   name: harness1
   command: sh test_wrapper.sh harness1 test_data/harness1/test1.py
@@ -57,4 +57,4 @@
 -
   name: job_sequence
   command: sh test_wrapper.sh job_sequence test_data/job_sequence/test_jobsequence.py
-  expected: test_data/jobsequence.expected
+  expected: test_data/job_sequence.expected
