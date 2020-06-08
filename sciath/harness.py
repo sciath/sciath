@@ -110,6 +110,7 @@ class Harness:
 
         if self.testruns:
             print(sciath_colors.HEADER + '[ *** Executing Tests *** ]' + sciath_colors.ENDC)
+            self.launcher.view()
         for testrun in self.testruns:
             if testrun.active:
                 if not os.path.exists(testrun.output_path):
