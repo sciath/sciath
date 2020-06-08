@@ -79,7 +79,6 @@ class Job:
         Care will have to be taken with paths as the Job may get executed from a
         different directory to where the executable lives.
         """
-        pass
 
     def createJobOrdering(self):
         """
