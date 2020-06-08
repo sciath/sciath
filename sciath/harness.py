@@ -220,7 +220,6 @@ class Harness:
             self.update_expected()
 
         if not args.verify and self.launcher.useBatch:
-            # TODO instead test something like self.launcher.is_blocking(), to make it easier to have a local batch system
             print('Not verifying or reporting, since there is a queue')
         else:
             self.verify()
@@ -240,14 +239,13 @@ class Harness:
         """ Update the status of all test runs """
         for testrun in self.testruns:
             if testrun.active:
-                # TODO Need to ask the launcher if the job is completed and update the status, before passing to the verifier
                 status, testrun.report = testrun.test.verify(testrun.output_path, testrun.exec_path)
                 verifier_status = status[0]
                 verifier_info = status[1]
                 if verifier_status == 'pass':
                     testrun.status = _TestRunStatus.PASS
                     testrun.status_info = verifier_info
-                elif verifier_status in ['fail','warn']: # TODO get rid of warn?
+                elif verifier_status in ['fail','warn']:
                     testrun.status = _TestRunStatus.FAIL
                     testrun.status_info = verifier_info
                 elif verifier_status == 'skip':

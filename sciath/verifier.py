@@ -139,7 +139,6 @@ class ComparisonVerifier(Verifier):
         c_name, o_name, e_name = self.test.job.get_output_filenames()
         if not output_file and not comparison_file:
             self.output_file = o_name[-1]
-        # FIXME: I envision that there should only ever be one "output file" to consider. Having multiple stdout and stderr files just really doesn't seem worth the complication
 
     def execute(self, output_path=None, exec_path=None):
         report = []

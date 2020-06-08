@@ -67,7 +67,6 @@ def _generateLaunch_PBS(launcher,walltime,output_path,job):
     ranks = resources["mpiranks"]
     idle_ranks_per_node = resources["idlempirankspernode"]
     ranks_per_node = None
-    # TODO: Need logic here to compute the number of ranks per node
 
     c_name,o_name,e_name = job.get_output_filenames()
 
@@ -135,7 +134,6 @@ def _generateLaunch_LSF(launcher,rusage,walltime,output_path,job):
     ranks = resources["mpiranks"]
     idle_ranks_per_node = resources["idlempirankspernode"]
     ranks_per_node = None
-    # TODO: Need logic here to compute the number of ranks per node
 
     c_name,o_name,e_name = job.get_output_filenames()
 
@@ -211,7 +209,6 @@ def _generateLaunch_SLURM(launcher,walltime,output_path,job):
     ranks = resources["mpiranks"]
     idle_ranks_per_node = resources["idlempirankspernode"]
     ranks_per_node = None
-    # TODO: Need logic here to compute the number of ranks per node
 
     c_name,o_name,e_name = job.get_output_filenames()
 
