@@ -11,7 +11,7 @@ echo foo
 printf 'a 34.3\nb43.3\n0.0\nx'
 [35m[ *** Verification Reports *** ][0m
 [36m[Report for bar][0m
---- ../test_data/module_line_verifier_data/bar.expected
+--- ../test_data/module_line_verifier/bar.expected
 +++ <<TEST DIR STRIPPED>>/module_input_sandbox/bar_output/sciath.job-bar.stdout
 Report for lines matching: '^'
 (l.3/3) Lines did not match:

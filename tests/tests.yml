@@ -40,15 +40,15 @@
   expected: test_data/module_input.expected
 -
   name: module_line_verifier
-  command: sh test_module_wrapper.sh module_input "-i ../test_data/module_line_verifier_data/input.yml"
+  command: sh test_module_wrapper.sh module_input "-i ../test_data/module_line_verifier/input.yml"
   expected: test_data/module_line_verifier.expected
 -
   name: module_multi
-  command: sh test_module_wrapper.sh module_multi "-i ../test_data/module_multi_data/input.yml"
+  command: sh test_module_wrapper.sh module_multi "-i ../test_data/module_multi/input.yml"
   expected: test_data/module_multi.expected
 -
   name: module_relpath
-  command: sh test_module_wrapper.sh module_relpath "-i ../test_data/module_relpath_data/input.yml"
+  command: sh test_module_wrapper.sh module_relpath "-i ../test_data/module_relpath/input.yml"
   expected: test_data/module_relpath.expected
 -
   name: job
