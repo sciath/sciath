@@ -100,6 +100,5 @@ def create_tests_from_file(filename):
     return tests
 
 
-def _replace_here_marker(string, filename):
-    # FIXME: this string could easily clash. It should probably be changeable from the command line.
-    return string.replace('HERE', os.path.abspath(os.path.dirname(filename)))
+def _replace_here_marker(string, filename, marker='HERE'):
+    return string.replace(marker, os.path.abspath(os.path.dirname(filename)))
