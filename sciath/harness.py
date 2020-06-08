@@ -201,7 +201,7 @@ class Harness:
             self._activate_tests_from_argument(args.test_subset)
 
         if args.configure_default:
-            Launcher.writeDefaultDefinition(args.conf_file)
+            sciath.launcher.Launcher.writeDefaultDefinition(args.conf_file)
             return
 
         self.launcher = sciath.launcher.Launcher(args.conf_file)
@@ -249,10 +249,10 @@ class Harness:
                     testrun.status = _TestRunStatus.FAIL
                     testrun.status_info = verifier_info
                 elif verifier_status == 'skip':
-                    testrun.status = _TestRunStatus.SKIP
+                    testrun.status = _TestRunStatus.SKIPPED
                     testrun.status_info = verifier_info
                 else:
-                    testrun.status = _TestRunStatus.INVALID
+                    testrun.status = _TestRunStatus.FAIL
                     testrun.status_info = "Verifier returned unrecognized status and info: " + verifier_status + ", " + verifier_info
             else:
                 testrun.status = _TestRunStatus.DEACTIVATED
