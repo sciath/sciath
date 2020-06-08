@@ -1,11 +1,11 @@
 -
-  name: test_test1
-  command: sh test_wrapper.sh test_test1 test/test_ex1.py
-  expected: test/test_ex1.expected
+  name: test1
+  command: sh test_wrapper.sh test1 test_data/test1/test_ex1.py
+  expected: test_data/test1.expected
 -
-  name: test_test2
-  command: sh test_wrapper.sh test_test2 test/test_ex2.py
-  expected: test/test_ex2.expected
+  name: test2
+  command: sh test_wrapper.sh test2 test_data/test2/test_ex2.py
+  expected: test_data/test2.expected
 -
   name: verifier_line
   command: sh test_wrapper.sh verifier_line test_data/verifier_line/test_line_verifier.py
