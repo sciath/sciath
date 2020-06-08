@@ -54,12 +54,17 @@ def test4(): # result: pass
     return t
 
 
+def mkdir_p(path):
+    try:
+        os.makedirs(path)
+    except OSError as exc:
+        if exc.errno == errno.EEXIST:
+            pass
+        else: raise
+
 
 def main():
-    try:
-        os.mkdir(OUTPUT_PATH)
-    except:
-        pass
+    mkdir_p(OUTPUT_PATH)
 
     # test using default verifier
     t1 = test1()

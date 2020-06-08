@@ -44,11 +44,16 @@ def test2_ud(): # result: fail
     return t
 
 
-def main():
+def mkdir_p(path):
     try:
-        os.mkdir(OUTPUT_PATH)
-    except:
-        pass
+        os.makedirs(path)
+    except OSError as exc:
+        if exc.errno == errno.EEXIST:
+            pass
+        else: raise
+
+def main():
+    mkdir_p(OUTPUT_PATH)
 
     # test using unix-diff verifierr
     t1_ud = test1_ud()
