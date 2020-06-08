@@ -73,10 +73,9 @@ class ExitCodeVerifier(Verifier):
         if not isinstance(self.test.job,JobSequence):
             if self.test.job.exit_code_success != int(data[0]):
                 status = sciath_test_status.not_ok
-                return status,report
             else:
                 status = sciath_test_status.ok
-                return status,report
+            return status, report
 
         else:
             jobs = self.test.job.getJobList()
@@ -108,7 +107,7 @@ class ExitCodeVerifier(Verifier):
                 exret.append(int(job.exit_code_success))
 
             s = sciath_test_status.ok
-            if anyChildrenFailed == True:
+            if anyChildrenFailed:
                 s = sciath_test_status.dependent_job_failed
                 if self.test.job.exit_code_success != data[-1]:
                     s = sciath_test_status.parent_and_depjob_failed
@@ -166,27 +165,29 @@ class ComparisonVerifier(Verifier):
             shutil.copyfile(from_file, self.expected_file)
 
     def _compare_files(self, from_file, to_file):
+        report = []
         if filecmp.cmp(from_file, to_file):
-            return sciath_test_status.ok,[]
+            status = sciath_test_status.ok
         else:
             with open(from_file, 'r') as from_handle:
                 lines_from = from_handle.readlines()
             with open(to_file, 'r') as to_handle:
                 lines_to = to_handle.readlines()
-            report = []
             for line in difflib.unified_diff(lines_from, lines_to,
                                              fromfile=from_file,
                                              tofile=to_file):
                 report.append(line.rstrip('\n'))
-            return sciath_test_status.not_ok, report
+            status = sciath_test_status.not_ok
+        return status, report
 
     def _from_file(self, output_path=None, exec_path=None):
         """ Determine the full path to the file to compare against the expected file """
         if self.comparison_file:
             if not exec_path:
                 raise Exception("exec_path must be provided, when a comparison file is specified")
-            return os.path.join(exec_path, self.comparison_file)
+            path = os.path.join(exec_path, self.comparison_file)
         else:
             if not output_path:
                 raise Exception("output_path must be provided, when comparing to an output file")
-            return os.path.join(output_path, self.output_file)
+            path = os.path.join(output_path, self.output_file)
+        return path
