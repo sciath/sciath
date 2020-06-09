@@ -10,7 +10,7 @@ import sciath
 import sciath.launcher
 import sciath._test_file
 from sciath import sciath_colors
-from sciath._io import py23input
+from sciath._sciath_io import py23input
 
 class _TestRunStatus(Enum):
     DEACTIVATED             = 'deactivated'  # Test skipped intentionally
