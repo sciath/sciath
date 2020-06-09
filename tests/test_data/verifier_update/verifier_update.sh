@@ -22,7 +22,7 @@ printf '  expected: expected\n' >> input.yml
 $python -m sciath $args1 \
   | sed "s%$test_dir%<<TEST DIR STRIPPED>>%g"
 
-$python -m sciath $args2 \
+printf 'yessiree' | $python -m sciath $args2 \
   | sed "s%$test_dir%<<TEST DIR STRIPPED>>%g"
 
 $python -m sciath $args1 \

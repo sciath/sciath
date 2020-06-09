@@ -10,6 +10,7 @@ import sciath
 import sciath.launcher
 import sciath._test_file
 from sciath import sciath_colors
+from sciath._io import py23input
 
 class _TestRunStatus(Enum):
     DEACTIVATED             = 'deactivated'  # Test skipped intentionally
@@ -189,6 +190,13 @@ class Harness:
 
         if args.no_colors:
             sciath.sciath_colors.set_colors(use_bash = False)
+
+        if args.update_expected:
+            print("[SciATH] You have provided an argument to updated expected files.")
+            print("[SciATH] This will attempt to OVERWRITE your expected files!")
+            if py23input("[SciATH] Are you sure? Type 'y' to continue: ")[0] not in ['y','Y']:
+                print("[SciATH] Aborting.")
+                return
 
         if args.input_file:
             self.add_tests_from_file(args.input_file)
