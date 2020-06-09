@@ -89,9 +89,7 @@ class ExitCodeVerifier(Verifier):
 
             s = sciath_test_status.ok
             if anyChildrenFailed:
-                s = sciath_test_status.dependent_job_failed
-                if self.test.job.exit_code_success != data[-1]:
-                    s = sciath_test_status.parent_and_depjob_failed
+                s = sciath_test_status.not_ok
             if s != sciath_test_status.ok:
                 msg = "[ReturnCodeDiff] Expected return codes: " + str(exret)
                 report.append(msg)

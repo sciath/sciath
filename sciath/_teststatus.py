@@ -5,7 +5,6 @@ class SciathTestStatusDefinition:
         self.status_color_type = {
             "pass" : sciath_colors.OK,
             "fail" : sciath_colors.FAIL,
-            "warn" : sciath_colors.WARNING,
             "skip" : sciath_colors.WARNING,
             "deactivated" : sciath_colors.ENDC, }
         self.set_status_type()
@@ -16,8 +15,6 @@ class SciathTestStatusDefinition:
 
         self.job_not_run              = [ 'fail' , 'test.job has not executed - sentinal file not found' ]
         self.file_not_found           = [ 'fail' , 'file not found' ]
-        self.dependent_job_failed     = [ 'warn' , 'test passed, at least one dependent job returned non-success error code' ]
-        self.parent_and_depjob_failed = [ 'fail' , 'test failed, at least one dependent one failed' ]
 
         self.expected_file_not_found   = [ 'fail' , 'expected/comparison file not found' ]
         self.expected_file_incomplete  = [ 'fail' , 'problem with expected/comparison file' ]
