@@ -5,7 +5,7 @@ import sys
 
 def py23input(prompt) :
     if sys.version_info[0] == 2 :
-        v = raw_input(prompt)
+        v = raw_input(prompt)  # pylint: disable=undefined-variable
     else :
         v = input(prompt)
     return(v)

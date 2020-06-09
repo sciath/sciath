@@ -8,7 +8,7 @@ import subprocess
 
 from   sciath import sciath_colors
 from   sciath import getVersion
-from   sciath._io import py23input, _remove_file_if_it_exists, command_join
+from   sciath._sciath_io import py23input, _remove_file_if_it_exists, command_join
 
 # mpiexec has been observed to set non-blocking I/O, which
 #  has been observed to cause problems on OS X with errors like
@@ -279,7 +279,7 @@ def _subprocess_run(command, **kwargs):
         This is to avoid a dependency like subprocess32.
     """
     if sys.version_info[0] >= 3:
-        ctx = subprocess.run(command, **kwargs)
+        ctx = subprocess.run(command, **kwargs)  #pylint: disable=no-member
         returncode =  ctx.returncode
     else:
         for key in ['stdout', 'stderr']:

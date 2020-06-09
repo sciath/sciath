@@ -2,7 +2,7 @@ from __future__ import print_function
 
 import sys
 if sys.version_info[0] < 3:
-    from itertools import izip as zip
+    from itertools import izip as zip  #pylint: disable=no-name-in-module
 
 
 class Job:

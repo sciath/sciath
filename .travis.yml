@@ -14,8 +14,9 @@ branches:
     - dev
 
 install:
-  - pip install pyyaml
+  - pip install pyyaml pylint
 
 script:
   - export PYTHONPATH=$PWD:$PYTHONPATH
-  - cd tests && ./run_tests.sh
+  - cd tests && ./run_tests.sh && cd ..
+  - cd sciath && ls | grep '.py$' | xargs pylint --errors-only && cd ..

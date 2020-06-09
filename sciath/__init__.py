@@ -5,7 +5,7 @@ import math as math
 import re
 
 import sciath
-from sciath._io import NamedColors
+from sciath._sciath_io import NamedColors
 from sciath._teststatus import SciathTestStatusDefinition
 
 def getVersion() :
