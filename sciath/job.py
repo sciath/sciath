@@ -19,7 +19,6 @@ class Job:
     * A set of "resources" required. These are system-agnostic details like the number of (MPI) ranks or (OpenMP) threads.
     * A name, set to a default value if not provided
     * An amount of time required to run (optional)
-    * A user-provided method to clean up after the command, relative to a provided path (optional)
 
     """
 
@@ -73,14 +72,6 @@ class Job:
                     message = '[SciATH error]: Cannot convert wall_time \"' + str(value) + '\" to float.'
                     raise RuntimeError(message)
 
-
-    def clean(self):
-        """
-        Responsible for deleting any data Job creates.
-        User should over-ride this method with their own deletion rules.
-        Care will have to be taken with paths as the Job may get executed from a
-        different directory to where the executable lives.
-        """
 
     def createJobOrdering(self):
         """

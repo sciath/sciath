@@ -687,8 +687,6 @@ class Launcher:
         if not os.path.isabs(output_path):
             raise ValueError('[SciATH] cannot clean without an absolute output_path')
 
-        job.clean()
-
         c_name,o_name,e_name = job.get_output_filenames()
         _remove_file_if_it_exists( os.path.join(output_path,c_name) )
         for f in o_name:
