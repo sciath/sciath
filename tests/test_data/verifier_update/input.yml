@@ -1,0 +1,4 @@
+-
+  name: foo
+  command: echo foo
+  ## expected here:

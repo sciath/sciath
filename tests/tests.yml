@@ -58,3 +58,7 @@
   name: job_sequence
   command: sh test_wrapper.sh job_sequence test_data/job_sequence/test_jobsequence.py
   expected: test_data/job_sequence.expected
+-
+  name: verifier_update
+  command: sh test_data/verifier_update/verifier_update.sh
+  expected: test_data/verifier_update.expected

@@ -10,6 +10,7 @@ import sciath
 import sciath.launcher
 import sciath._test_file
 from sciath import sciath_colors
+from sciath._io import py23input
 
 class _TestRunStatus(Enum):
     DEACTIVATED             = 'deactivated'  # Test skipped intentionally
@@ -190,6 +191,13 @@ class Harness:
         if args.no_colors:
             sciath.sciath_colors.set_colors(use_bash = False)
 
+        if args.update_expected:
+            print("[SciATH] You have provided an argument to updated expected files.")
+            print("[SciATH] This will attempt to OVERWRITE your expected files!")
+            if py23input("[SciATH] Are you sure? Type 'y' to continue: ")[0] not in ['y','Y']:
+                print("[SciATH] Aborting.")
+                return
+
         if args.input_file:
             self.add_tests_from_file(args.input_file)
 
@@ -231,9 +239,15 @@ class Harness:
 
     def update_expected(self):
         """ Give each active test the chance to update its reference output """
+        if self.testruns:
+            print(sciath_colors.HEADER + '[ *** Updating Expected Output *** ]' + sciath_colors.ENDC)
         for testrun in self.testruns:
             if testrun.active:
-                testrun.test.verifier.update_expected(testrun.output_path, testrun.exec_path)
+                if hasattr(testrun.test.verifier, 'update_expected'):
+                    print('[ -- Updating output for Test:',testrun.test.name,'-- ]')
+                    testrun.test.verifier.update_expected(testrun.output_path, testrun.exec_path)
+                else:
+                    print('[ -- Output updated not supported for Test:',testrun.test.name,'-- ]')
 
     def verify(self):
         """ Update the status of all test runs """

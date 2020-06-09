@@ -1,0 +1,52 @@
+[35m[ *** Cleanup *** ][0m
+[ -- Removing output for Test: foo -- ]
+[35m[ *** Executing Tests *** ][0m
+[SciATH] Batch queueing system configuration [SciATHBatchQueuingSystem.conf]
+  Version:           0.5.4
+  Queue system:      none
+  MPI launcher:      none
+[36m[Executing foo][0m from <<TEST DIR STRIPPED>>/verifier_update_sandbox/foo_output/sandbox
+echo foo
+[35m[ *** Verification Reports *** ][0m
+[36m[Report for foo][0m
+--- expected
++++ <<TEST DIR STRIPPED>>/verifier_update_sandbox/foo_output/sciath.job-foo.stdout
+@@ -1 +1 @@
+-bar
++foo
+[35m[ *** Summary *** ][0m
+[91m[foo]  fail[0m (verification failed)
+
+[91mFAILURE[0m
+To re-run failed tests, use e.g.
+  -t foo
+[SciATH] You have provided an argument to updated expected files.
+[SciATH] This will attempt to OVERWRITE your expected files!
+[SciATH] Are you sure? Type 'y' to continue: [35m[ *** Cleanup *** ][0m
+[ -- Removing output for Test: foo -- ]
+[35m[ *** Executing Tests *** ][0m
+[SciATH] Batch queueing system configuration [SciATHBatchQueuingSystem.conf]
+  Version:           0.5.4
+  Queue system:      none
+  MPI launcher:      none
+[36m[Executing foo][0m from <<TEST DIR STRIPPED>>/verifier_update_sandbox/foo_output/sandbox
+echo foo
+[35m[ *** Updating Expected Output *** ][0m
+[ -- Updating output for Test: foo -- ]
+[35m[ *** Summary *** ][0m
+[32m[foo]  pass[0m (verification was successful)
+
+[32mSUCCESS[0m
+[35m[ *** Cleanup *** ][0m
+[ -- Removing output for Test: foo -- ]
+[35m[ *** Executing Tests *** ][0m
+[SciATH] Batch queueing system configuration [SciATHBatchQueuingSystem.conf]
+  Version:           0.5.4
+  Queue system:      none
+  MPI launcher:      none
+[36m[Executing foo][0m from <<TEST DIR STRIPPED>>/verifier_update_sandbox/foo_output/sandbox
+echo foo
+[35m[ *** Summary *** ][0m
+[32m[foo]  pass[0m (verification was successful)
+
+[32mSUCCESS[0m
