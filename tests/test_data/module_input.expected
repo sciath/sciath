@@ -28,7 +28,7 @@ sh -c 'echo qux > compare_me.txt'
 [35m[ *** Verification Reports *** ][0m
 [36m[Report for foo_fail][0m
 --- ../test_data/module_input/foo.expected
-+++ <<TEST DIR STRIPPED>>/module_input_sandbox/foo_fail_output/sciath.job-foo_fail.stdout
++++ <<TEST DIR STRIPPED>>/module_input_sandbox/foo_fail_output/sciath.job-0-foo_fail.stdout
 @@ -1 +1 @@
 -foo
 +foox

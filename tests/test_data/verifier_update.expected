@@ -10,7 +10,7 @@ echo foo
 [35m[ *** Verification Reports *** ][0m
 [36m[Report for foo][0m
 --- expected
-+++ <<TEST DIR STRIPPED>>/verifier_update_sandbox/foo_output/sciath.job-foo.stdout
++++ <<TEST DIR STRIPPED>>/verifier_update_sandbox/foo_output/sciath.job-0-foo.stdout
 @@ -1 +1 @@
 -bar
 +foo

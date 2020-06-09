@@ -70,31 +70,18 @@ class Job:
                     message = '[SciATH error]: Cannot convert wall_time \"' + str(value) + '\" to float.'
                     raise RuntimeError(message)
 
-
-    def createJobOrdering(self):
-        """
-        Returns a list of job names in the order they will be executed.
-        """
-        return [self.name]
+        self.sequence = []
 
     def get_output_filenames(self):
         """ Returns name lists for error-code file (one per job), stdout, stderr """
-        jobnames = self.createJobOrdering()
-
         errorCodeName = "sciath.job-" +  self.name + ".errorcode"
         stdoutName = []
         stderrName = []
 
-        lc_count = len(jobnames)
-        for jobname in jobnames:
-            jprefix = "".join(["sciath.depjob-",str(lc_count),'-',jobname])
-            if lc_count == 1: # we do something special for the last job in a sequence list
-                jprefix = "sciath.job-" + self.name
-
+        for count in range(1 + len(self.sequence)):
+            jprefix = "sciath.job-%d-%s" % (count, self.name)
             stdoutName.append( jprefix + ".stdout" )
             stderrName.append( jprefix + ".stderr" )
-
-            lc_count -= 1
 
         return errorCodeName, stdoutName, stderrName
 
@@ -292,23 +279,5 @@ class JobSequence(Job):
 
         return sum_wt
 
-
-    def createJobOrdering(self):
-        """
-        Returns a list of job names in the order they will be executed.
-        """
-        # collect the user defined job list and reverse it (leave self.sequence untouched)
-        jname = []
-        jname.append(self.name)
-        for j in self.sequence:
-            jname.append(j.name)
-        jname.reverse()
-        return jname
-
     def getJobList(self):
-        jobs = []
-        jobs.append(self)
-        for j in self.sequence:
-            jobs.append(j)
-        jobs.reverse()
-        return jobs
+        return list(reversed([self] + self.sequence))
