@@ -9,7 +9,7 @@ class Test:
     Thus, it contains:
 
     * A :class:`Job`, describing how to execute the required operations
-    * A name (inherited from the :class:`Job`, if not specified)
+    * A name
     * An implementation of the abstract base class :class:`Verifier`, defining how to determine success
     * A set of tags
 

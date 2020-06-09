@@ -15,10 +15,8 @@ class Job:
 
     Data include
 
-    * A command to be run: a string containing an executable and arguments. Relative paths (not recommended) will be interpreted relative to where the command is run.
-    * A set of "resources" required. These are system-agnostic details like the number of (MPI) ranks or (OpenMP) threads.
-    * A name, set to a default value if not provided
-    * An amount of time required to run (optional)
+    * An ordered list of :class:`Task` objects describing one or more commands to be run, and required resources for each.
+    * A name
 
     """
 

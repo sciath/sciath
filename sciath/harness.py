@@ -57,7 +57,7 @@ class Harness:
     It is the exclusive location within SciATH for
 
     * Printing to stdout
-    * Information about where to launch ``Jobs`` from, passed to included ``Launcher``
+    * Information about where to launch :class:`Job`s from, passed to included `Launcher`s
 
     A :class:`Harness` object's state is confined to the state of a list of internal
     :class:`_TestRun` objects.
