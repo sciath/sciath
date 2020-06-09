@@ -231,9 +231,15 @@ class Harness:
 
     def update_expected(self):
         """ Give each active test the chance to update its reference output """
+        if self.testruns:
+            print(sciath_colors.HEADER + '[ *** Updating Expected Output *** ]' + sciath_colors.ENDC)
         for testrun in self.testruns:
             if testrun.active:
-                testrun.test.verifier.update_expected(testrun.output_path, testrun.exec_path)
+                if hasattr(testrun.test.verifier, 'update_expected'):
+                    print('[ -- Updating output for Test:',testrun.test.name,'-- ]')
+                    testrun.test.verifier.update_expected(testrun.output_path, testrun.exec_path)
+                else:
+                    print('[ -- Output updated not supported for Test:',testrun.test.name,'-- ]')
 
     def verify(self):
         """ Update the status of all test runs """
