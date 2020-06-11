@@ -5,6 +5,7 @@ import yaml
 
 import sciath.test
 import sciath.job
+import sciath.task
 import sciath.verifier
 import sciath.verifier_line
 
@@ -57,12 +58,8 @@ def _create_job_from_entry(entry, filename):
 
     ranks = int(entry['ranks']) if 'ranks' in entry else 1
 
-    if len(commands) == 1:
-        job = sciath.job.Job(commands[0], name=entry['name'], ranks=ranks)
-    else:
-        job = sciath.job.JobSequence(commands[-1], name=entry['name'], ranks=ranks)
-        for i in reversed(range(len(commands)-1)):
-            job.append(sciath.job.Job(commands[i], ranks=ranks))
+    tasks = [sciath.task.Task(command, ranks=ranks) for command in commands]
+    job = sciath.job.Job(tasks, name=entry['name'])
     return job
 
 

@@ -1,4 +1,6 @@
 ['Test_1', 'pass', 'verification was successful']
 ['Test_2', 'pass', 'verification was successful']
 ['Test_3', 'fail', 'verification failed']
+[ExitCodeDiff] Expected exit code(s): [1]
+[ExitCodeDiff] Output exit code(s)  : [0]
 ['Test_4', 'pass', 'verification was successful']

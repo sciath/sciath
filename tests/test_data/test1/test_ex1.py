@@ -1,10 +1,11 @@
 #!/usr/bin/env python
 import os
+import errno
 
-from sciath.job import Job
-from sciath.job import JobSequence
 from sciath.launcher import Launcher
 from sciath.test import Test
+from sciath.job import Job
+from sciath.task import Task
 
 OUTPUT_PATH = os.path.join(os.getcwd(),'output')
 VERBOSITY = 0
@@ -22,7 +23,7 @@ def test_print(test, output_path):
 def test1(): # result: pass
     cmd = ['echo' , '"aBc";' , 'echo' '"kspits=30"' , 'echo ""' ]
 
-    t = Test(Job(cmd, 'Test_1'))
+    t = Test(Job(Task(cmd), 'Test_1'))
     job_launcher.submitJob( t.job, output_path = OUTPUT_PATH )
     t.verify(output_path = OUTPUT_PATH)
     test_print(t, output_path = OUTPUT_PATH)
@@ -31,7 +32,7 @@ def test1(): # result: pass
 def test2(): # result: pass
     cmd = ['echo' , '"aBc";' , 'echo' '"kspits=30"' ]
 
-    t = Test( Job(cmd, 'Test_2'))
+    t = Test( Job(Task(cmd), 'Test_2'))
     job_launcher.submitJob( t.job, output_path = OUTPUT_PATH )
     t.verify(output_path = OUTPUT_PATH)
     test_print(t, output_path = OUTPUT_PATH)
@@ -40,7 +41,7 @@ def test2(): # result: pass
 def test3(): # result: fail
     cmd = ['echo' , '"aBc";' , 'echo' '"kspits=30"' ]
 
-    t = Test(Job(cmd, 'Test_3', exitCode = 1))
+    t = Test(Job(Task(cmd, exitCode=1), 'Test_3'))
     job_launcher.submitJob( t.job, output_path = OUTPUT_PATH )
     t.verify(output_path = OUTPUT_PATH)
     test_print(t, output_path = OUTPUT_PATH)
@@ -49,7 +50,7 @@ def test3(): # result: fail
 def test4(): # result: pass
     cmd = ['echo' , '"aBc";' , 'echo' '"kspits=30"' ]
 
-    t = Test(Job(cmd, 'Test_4'))
+    t = Test(Job(Task(cmd), 'Test_4'))
     job_launcher.submitJob( t.job, output_path = OUTPUT_PATH )
     return t
 

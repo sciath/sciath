@@ -4,10 +4,11 @@
 
 from sciath.harness import Harness
 from sciath.test import Test
+from sciath.task import Task
 from sciath.job import Job
 
-test1 = Test(Job(['echo','Hello, I am Test #1']),'test1')
-test2 = Test(Job(['printf','Hello, I am Test #2\n']),'test2')
+test1 = Test(Job(Task(['echo','Hello, I am Test #1'])),'test1')
+test2 = Test(Job(Task(['printf','Hello, I am Test #2\n'])),'test2')
 test_list = [test1,test2]
 
 harness = Harness(test_list)

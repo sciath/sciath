@@ -6,7 +6,6 @@ import difflib
 import shutil
 
 from sciath.job import Job
-from sciath.job import JobSequence
 from sciath import sciath_test_status
 
 
@@ -50,55 +49,15 @@ class ExitCodeVerifier(Verifier):
             return status,report
 
         with open(errorfile, 'r') as f:
-            data = f.readlines()
+            exit_codes = [int(line) for line in f.readlines()]
 
-        # special
-        if not isinstance(self.test.job,JobSequence):
-            if self.test.job.exit_code_success != int(data[0]):
-                status = sciath_test_status.not_ok
-            else:
-                status = sciath_test_status.ok
+        exit_codes_success = self.test.job.exit_codes_success()
+        if exit_codes != exit_codes_success:
+            report.append("[ExitCodeDiff] Expected exit code(s): " + str(exit_codes_success))
+            report.append("[ExitCodeDiff] Output exit code(s)  : " + str(exit_codes))
+            status = sciath_test_status.not_ok
         else:
-            jobs = self.test.job.getJobList()
-
-            if len(data) != len(jobs):
-                report.append("[ReturnCodeDiff] Mismatch in number of error codes found and jobs run. This should never happen.")
-                exret = []
-                for job in jobs:
-                    exret.append(int(job.exit_code_success))
-                msg = "[ReturnCodeDiff] Expected return codes: " + str(exret)
-                report.append(msg)
-                msg = "[ReturnCodeDiff] Output return codes  : " + str(data)
-                report.append(msg)
-                report.append("[ReturnCodeDiff] Output file: " + errorfile)
-                status = sciath_test_status.not_ok
-                return status,report
-
-            L = len(data)
-            anyChildrenFailed = False
-            i = 0
-            for j in range(0,L-1):
-                j_job = jobs[i]
-                if j_job.exit_code_success != data[i]:
-                    anyChildrenFailed = True
-                i += 1
-
-            exret = []
-            for job in jobs:
-                exret.append(int(job.exit_code_success))
-
-            s = sciath_test_status.ok
-            if anyChildrenFailed:
-                s = sciath_test_status.not_ok
-            if s != sciath_test_status.ok:
-                msg = "[ReturnCodeDiff] Expected return codes: " + str(exret)
-                report.append(msg)
-                msg = "[ReturnCodeDiff] Output return codes  : " + str(data)
-                report.append(msg)
-                report.append("[ReturnCodeDiff] Output file: " + errorfile)
-
-            status = s
-
+            status = sciath_test_status.ok
         return status,report
 
 

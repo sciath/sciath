@@ -1,18 +1,16 @@
-Execute command + resources for jD
-  cmd = echo "dependent job 3"
-  mpiranks : 40
-  idlempirankspernode : 0
-  threads : 27
-Execute command + resources for jA
-  cmd = echo "job A"
+Execute command + resources for job
+  cmd = echo "task 1"
   mpiranks : 4
-  idlempirankspernode : 0
   threads : 11
-Resources required for jA:      name = DMDA_interpolation  :
-mpiranks : 4
-idlempirankspernode : 0
-threads : 11
-Max. resources required for jA: name = DMDA_interpolation  :
-mpiranks : 4
-idlempirankspernode : 0
-threads : 11
+  cmd = echo "task 2"
+  mpiranks : 140
+  threads : 1
+  cmd = echo "task 3"
+  mpiranks : 1
+  threads : 1
+  cmd = echo "task 4"
+  mpiranks : 40
+  threads : 27
+Max. resources required for job
+mpiranks : 140
+threads : 27
