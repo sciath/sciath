@@ -14,22 +14,18 @@ class Task(object):
        time to allocate.
     """
 
-    def __init__(self, command, exitCode=0, **kwargs):
+    def __init__(self, command, **kwargs):
         self.command = command
         self.resources = dict()
         for key, value in kwargs.items():
             self.resources[key] = value
 
-        # Design note: we use a dict to enable developers to easily add support for different resource requests
-        self.resources = dict()
         self.setResources(**kwargs) # looking in kwargs for any resources
         if 'mpiranks' not in self.resources:
             self.resources['mpiranks'] = 1
         if 'threads' not in self.resources:
             self.resources['threads'] = 1
 
-        # optional info not needing a setter (e.g. they are not special enough)
-        self.exit_code_success = exitCode
         self.wall_time         = 10.0/60.0 # 10 secs (in minutes)
 
         for key, value in kwargs.items():

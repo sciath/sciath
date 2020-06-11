@@ -46,9 +46,6 @@ class Job:
         """
         return [task.createExecuteCommand() for task in self.tasks]
 
-    def exit_codes_success(self):
-        return [task.exit_code_success for task in self.tasks]
-
     def get_output_filenames(self):
         """ Returns name lists for error-code file (one per job), stdout, stderr """
         errorCodeName = "sciath.job-" +  self.name + ".errorcode"
@@ -77,6 +74,9 @@ class Job:
                 if value > max_resources[key]:
                     max_resources[key] = value
         return max_resources
+
+    def number_tasks(self):
+        return len(self.tasks)
 
     def total_wall_time(self):
         """

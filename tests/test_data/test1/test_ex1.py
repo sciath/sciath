@@ -41,7 +41,8 @@ def test2(): # result: pass
 def test3(): # result: fail
     cmd = ['echo' , '"aBc";' , 'echo' '"kspits=30"' ]
 
-    t = Test(Job(Task(cmd, exitCode=1), 'Test_3'))
+    t = Test(Job(Task(cmd), 'Test_3'))
+    t.verifier.set_exit_codes_success([1])
     job_launcher.submitJob( t.job, output_path = OUTPUT_PATH )
     t.verify(output_path = OUTPUT_PATH)
     test_print(t, output_path = OUTPUT_PATH)
