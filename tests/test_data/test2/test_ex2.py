@@ -1,10 +1,11 @@
 #!/usr/bin/env python
 import os
+import errno
 
-from sciath.job import Job
-from sciath.job import JobSequence
 from sciath.launcher import Launcher
 from sciath.test import Test
+from sciath.job import Job
+from sciath.task import Task
 from sciath.verifier import ComparisonVerifier
 
 this_dir = os.path.dirname(os.path.realpath(__file__))
@@ -24,7 +25,7 @@ def test_print(test, output_path):
 def test1_ud(): # result: pass
     cmd = ['sh' , os.path.join(this_dir,'write_test1_ud.sh') ]
 
-    t = Test(Job(cmd, 'Test_1_ud'))
+    t = Test(Job(Task(cmd), 'Test_1_ud'))
     t.verifier = ComparisonVerifier(t, os.path.join(this_dir,"t1.expected"))
 
     job_launcher.submitJob( t.job, output_path = OUTPUT_PATH, exec_path = OUTPUT_PATH )
@@ -35,7 +36,7 @@ def test1_ud(): # result: pass
 def test2_ud(): # result: fail
     cmd = ['sh' , os.path.join(this_dir,'write_test2_ud.sh') ]
 
-    t = Test(Job(cmd, 'Test_2_ud'))
+    t = Test(Job(Task(cmd), 'Test_2_ud'))
     t.verifier = ComparisonVerifier(t, os.path.join(this_dir,"t1.expected"))
 
     job_launcher.submitJob( t.job, output_path = OUTPUT_PATH, exec_path = OUTPUT_PATH )

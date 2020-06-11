@@ -31,16 +31,3 @@ We found that most existing solutions were optimized for a rather different purp
 unit testing of software libraries in serial environments.
 
 .. _pTatin3D: https://bitbucket.org/ptatin/ptatin3d
-
-The main classes
-----------------
-
-SciATH is built around four main classes. See the documentation in the API reference
-for :class:`Job` and :class:`Launcher`, which provide abstractions for executing
-commands on various architectures, and :class:`Test` and :class:`Harness`, which
-provide tools to define and execute a test suite.
-
-Importantly, see that documentation for important design decisions about
-"what knows about what" (e.g. :class:`Launcher` does not know about :class:`Test`)
-and "what happens where" (e.g. :class:`Harness` is the only place printing to stdout is allowed,
-or where status on particular test runs is stored)

@@ -1,39 +1,31 @@
 #!/usr/bin/env python
 from __future__ import print_function
 
-from sciath.job import Job
+import sciath.job
+import sciath.task
 
-resources_to_print = ['mpiranks','idlempirankspernode','threads']
+resources_to_print = ['mpiranks','threads']
 
-# Example usage
-jA = Job('echo \"job A\"',name='DMDA interpolation')
-jA.setResources(ranks=4,threads=11)
+taskA = sciath.task.Task('echo \"task 1\"')
+taskA.setResources(ranks=4,threads=11)
 
-jB = Job('echo \"dependent job 1\"')
-jB.setResources(ranks=140)
+taskB = sciath.task.Task('echo \"task 2\"')
+taskB.setResources(ranks=140)
 
-jC = Job('echo \"dependent job 2\"')
+taskC = sciath.task.Task('echo \"task 3\"')
 
-jD = Job('echo \"dependent job 3\"',exitCode=0) # Job which will run first
-jD.setResources(threads=27,ranks=40)
+taskD = sciath.task.Task('echo \"task 4\"',exitCode=0)
+taskD.setResources(threads=27,ranks=40)
 
-er = jD.createExecuteCommand()
-print('Execute command + resources for jD')
+job = sciath.job.Job([taskA, taskB, taskC, taskD], name='Four-task job')
+
+er = job.createExecuteCommand()
+print('Execute command + resources for job')
 for i in er:
     print('  cmd =',i[0])
     for r in resources_to_print:
         print(' ',r,':',i[1][r])
 
-er = jA.createExecuteCommand()
-print('Execute command + resources for jA')
-for i in er:
-    print('  cmd =',i[0])
-    for r in resources_to_print:
-        print(' ',r,':',i[1][r])
-
-print('Resources required for jA:      name =',jA.name,' :')
+print('Max. resources required for job')
 for r in resources_to_print:
-    print(r,':',jA.getResources()[r])
-print('Max. resources required for jA: name =',jA.name,' :')
-for r in resources_to_print:
-    print(r,':',jA.getMaxResources()[r])
+    print(r,':',job.getMaxResources()[r])

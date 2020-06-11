@@ -57,7 +57,7 @@ class Harness:
     It is the exclusive location within SciATH for
 
     * Printing to stdout
-    * Information about where to launch ``Jobs`` from, passed to included ``Launcher``
+    * Information about where to launch :class:`Job`s from, passed to included `Launcher`s
 
     A :class:`Harness` object's state is confined to the state of a list of internal
     :class:`_TestRun` objects.
@@ -259,7 +259,7 @@ class Harness:
                 if verifier_status == 'pass':
                     testrun.status = _TestRunStatus.PASS
                     testrun.status_info = verifier_info
-                elif verifier_status in ['fail','warn']:
+                elif verifier_status == 'fail':
                     testrun.status = _TestRunStatus.FAIL
                     testrun.status_info = verifier_info
                 elif verifier_status == 'skip':

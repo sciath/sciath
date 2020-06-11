@@ -35,21 +35,12 @@ def FormattedHourMinSec(seconds):
     wt = "%02d:%02d:%02d" % (h, m,s)
     return(wt)
 
-def formatMPILaunchCommand(mpiLaunch,ranks,corespernode):
+def formatMPILaunchCommand(mpiLaunch,ranks):
     launch = mpiLaunch
     launch = launch.replace("<ranks>",str(ranks))
     launch = launch.replace("<cores>",str(ranks))
     launch = launch.replace("<tasks>",str(ranks))
     launch = launch.replace("<RANKS>",str(ranks))
-    if corespernode:
-        launch = launch.replace("<corespernode>",str(corespernode))
-        launch = launch.replace("<cores_per_node>",str(corespernode))
-        launch = launch.replace("<CORESPERNODE>",str(corespernode))
-        launch = launch.replace("<CORES_PER_NODE>",str(corespernode))
-        launch = launch.replace("<rankspernode>",str(corespernode))
-        launch = launch.replace("<ranks_per_node>",str(corespernode))
-        launch = launch.replace("<RANKSPERNODE>",str(corespernode))
-        launch = launch.replace("<RANKS_PER_NODE>",str(corespernode))
     return launch.split()
 
 
@@ -65,8 +56,6 @@ def _generateLaunch_PBS(launcher,walltime,output_path,job):
 
     resources = job.getMaxResources()
     ranks = resources["mpiranks"]
-    idle_ranks_per_node = resources["idlempirankspernode"]
-    ranks_per_node = None
 
     c_name,o_name,e_name = job.get_output_filenames()
 
@@ -102,7 +91,7 @@ def _generateLaunch_PBS(launcher,walltime,output_path,job):
         j = command_resource[i]
         j_ranks = j[1]["mpiranks"]
         launch = []
-        launch += formatMPILaunchCommand(mpiLaunch,j_ranks,ranks_per_node)
+        launch += formatMPILaunchCommand(mpiLaunch,j_ranks)
         if isinstance(j[0], list):
             for c in j[0]:
                 launch.append(c)
@@ -132,8 +121,6 @@ def _generateLaunch_LSF(launcher,rusage,walltime,output_path,job):
 
     resources = job.getMaxResources()
     ranks = resources["mpiranks"]
-    idle_ranks_per_node = resources["idlempirankspernode"]
-    ranks_per_node = None
 
     c_name,o_name,e_name = job.get_output_filenames()
 
@@ -174,7 +161,7 @@ def _generateLaunch_LSF(launcher,rusage,walltime,output_path,job):
         j = command_resource[i]
         j_ranks = j[1]["mpiranks"]
         launch = []
-        launch += formatMPILaunchCommand(mpiLaunch,j_ranks,ranks_per_node)
+        launch += formatMPILaunchCommand(mpiLaunch,j_ranks)
         if isinstance(j[0], list):
             for c in j[0]:
                 launch.append(c)
@@ -207,8 +194,6 @@ def _generateLaunch_SLURM(launcher,walltime,output_path,job):
 
     resources = job.getMaxResources()
     ranks = resources["mpiranks"]
-    idle_ranks_per_node = resources["idlempirankspernode"]
-    ranks_per_node = None
 
     c_name,o_name,e_name = job.get_output_filenames()
 
@@ -230,8 +215,6 @@ def _generateLaunch_SLURM(launcher,walltime,output_path,job):
         file.write("#SBATCH --partition=" + queuename + "\n")
 
     file.write("#SBATCH --ntasks=" + str(ranks) + "\n")
-    #if ranks_per_node:
-    #  file.write("#SBATCH --ntasks-per-node=" + str(ranks_per_node) + "\n")
 
     if constraint :
         file.write("#SBATCH --constraint=" + constraint + "\n")
@@ -252,7 +235,7 @@ def _generateLaunch_SLURM(launcher,walltime,output_path,job):
         j = command_resource[i]
         j_ranks = j[1]["mpiranks"]
         launch = []
-        launch += formatMPILaunchCommand(mpiLaunch,j_ranks,ranks_per_node)
+        launch += formatMPILaunchCommand(mpiLaunch,j_ranks)
         if isinstance(j[0], list):
             for c in j[0]:
                 launch.append(c)
@@ -290,13 +273,13 @@ def _subprocess_run(command, **kwargs):
 
 
 class Launcher:
-    """ :class:`Launcher` is responsible for executing tasks specified by a :class:`Job`,
+    """ :class:`Launcher` is responsible for executing :class:`Task`s specified by a :class:`Job`,
     depending on its system-dependent configuration.
 
     Thus, it is:
 
     * The exclusive location for system-specific information
-    * The exclusive reader of system-specific configuration (a simple plain-text ``key: value`` file)
+    * The exclusive reader of system-specific configuration file
 
     :class:`Launcher` include methods to operate on a combination of a :class:`Job` and a path:
 
@@ -305,11 +288,11 @@ class Launcher:
     * Clean up after a job, calling the clean method from the :class:`Job` and removing configuration-specific generated files
 
     :class:`Launcher` does not know about :class:`Test` or :class:`Harness`, and it should be possible
-    to use :class:`Launcher` and a collection of :class:`Job` objects as a convenience to run the
-    same commands on various systems.
+    to use :class:`Launcher` and a collection of :class:`Job` objects as a convenience to execute
+    sets of tasks on various systems.
 
     A :class:`Launcher`'s state corresponds only to its configuration,
-    not the status of any particular "run".
+    not the status of any particular "run" of a :class:`Job`.
     """
     defaultConfFileName = 'SciATHBatchQueuingSystem.conf'
 
@@ -571,11 +554,6 @@ class Launcher:
             message = '[SciATH] Constraints are only currently supported with SLURM'
             raise RuntimeError(message)
 
-        idle_ranks_per_node = job.resources["idlempirankspernode"]
-        if idle_ranks_per_node != 0:
-            message = '[SciATH] Job requests with a reduced number of ranks-per-node is currently not supported'
-            raise RuntimeError(message)
-
         if self.queuingSystemType == 'pbs':
             filename = _generateLaunch_PBS(self,walltime,output_path,job)
         elif self.queuingSystemType == 'lsf':
@@ -624,18 +602,12 @@ class Launcher:
 
             command_resource = job.createExecuteCommand()
             launchCmd = []
-            for j in command_resource:
+            for command, resource in command_resource:
                 launch = []
                 if self.mpiLaunch != 'none':
-                    j_ranks = j[1]["mpiranks"]
-                    launch += formatMPILaunchCommand(mpiLaunch,j_ranks,None)
-
-                if isinstance(j[0], list):
-                    for c in j[0]:
-                        launch.append(c)
-                else:
-                    launch.append(j[0])
-
+                    j_ranks = resource["mpiranks"]
+                    launch += formatMPILaunchCommand(mpiLaunch,j_ranks)
+                launch.extend(command)
                 launchCmd.append(launch)
 
             if self.verbosity_level > 0:
@@ -661,8 +633,7 @@ class Launcher:
             file_ecode.close()
 
         else:
-            walltime = 0.0
-            walltime = job.getMaxWallTime()
+            walltime = job.total_wall_time()
 
             launchfile = self.__createJobSubmissionFile(job,walltime,output_path)
             launchCmd = self.jobSubmissionCommand + [launchfile]
@@ -686,8 +657,6 @@ class Launcher:
             raise ValueError('[SciATH] cannot clean without an explicit output_path')
         if not os.path.isabs(output_path):
             raise ValueError('[SciATH] cannot clean without an absolute output_path')
-
-        job.clean()
 
         c_name,o_name,e_name = job.get_output_filenames()
         _remove_file_if_it_exists( os.path.join(output_path,c_name) )
