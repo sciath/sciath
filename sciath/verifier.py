@@ -29,10 +29,11 @@ class Verifier (object):
 
 
 class ExitCodeVerifier(Verifier):
-    """ Verifier implementation which checks an error code """
+    """ Verifier implementation which checks exit codes """
 
     def __init__(self, test):
-        super(ExitCodeVerifier,self).__init__(test)
+        super(ExitCodeVerifier, self).__init__(test)
+        self.exit_codes_success = [0] * test.job.number_tasks()
 
     def execute(self, output_path, exec_path=None):
         """ Relative to a given output path, fetch file(s) and produce status,report """
@@ -42,23 +43,31 @@ class ExitCodeVerifier(Verifier):
 
         c_name, o_name, e_name = self.test.job.get_output_filenames()
 
-        errorfile = os.path.join(output_path,c_name)
-        if not os.path.isfile(errorfile) :
-            report.append("[ReturnCodeDiff] File (" + errorfile + ") not found")
+        exit_code_file = os.path.join(output_path, c_name)
+        if not os.path.isfile(exit_code_file) :
+            report.append("[ReturnCodeDiff] File (" + exit_code_file + ") not found")
             status = sciath_test_status.job_not_run
-            return status,report
+            return status, report
 
-        with open(errorfile, 'r') as f:
+        with open(exit_code_file, 'r') as f:
             exit_codes = [int(line) for line in f.readlines()]
 
-        exit_codes_success = self.test.job.exit_codes_success()
-        if exit_codes != exit_codes_success:
-            report.append("[ExitCodeDiff] Expected exit code(s): " + str(exit_codes_success))
+        exit_codes_success = self.exit_codes_success
+        if exit_codes != self.exit_codes_success:
+            report.append("[ExitCodeDiff] Expected exit code(s): " + str(self.exit_codes_success))
             report.append("[ExitCodeDiff] Output exit code(s)  : " + str(exit_codes))
             status = sciath_test_status.not_ok
         else:
             status = sciath_test_status.ok
-        return status,report
+        return status, report
+
+    def set_exit_codes_success(self, exit_codes_success):
+        if len(exit_codes_success) != self.test.job.number_tasks():
+            raise Exception('You must provide one exit code per Task')
+        for code in exit_codes_success:
+            if not isinstance(code, int):
+                raise Exception('Exit codes must be integers')
+        self.exit_codes_success = exit_codes_success
 
 
 class ComparisonVerifier(Verifier):

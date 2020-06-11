@@ -14,7 +14,7 @@ taskB.setResources(ranks=140)
 
 taskC = sciath.task.Task('echo \"task 3\"')
 
-taskD = sciath.task.Task('echo \"task 4\"',exitCode=0)
+taskD = sciath.task.Task('echo \"task 4\"')
 taskD.setResources(threads=27,ranks=40)
 
 job = sciath.job.Job([taskA, taskB, taskC, taskD], name='Four-task job')
