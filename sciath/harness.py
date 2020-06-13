@@ -185,7 +185,7 @@ class Harness:
         parser.add_argument('-w','--conf-file',help='Use provided configuration file instead of the default',required=False)
         parser.add_argument('--no-colors',help='Deactivate colored output',required=False,action='store_true')
         parser.add_argument('-i', '--input-file', help='Parse a file to add tests to the harness', required=False)
-        parser.add_argument('-u', '--update-expected', help='When well-defined, update reference files with current output before verifyiing', required=False, action='store_true')
+        parser.add_argument('-u', '--update-expected', help='When well-defined, update reference files with current output before verifying', required=False, action='store_true')
         args,unknown = parser.parse_known_args()
 
         if args.no_colors:
