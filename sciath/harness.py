@@ -230,7 +230,8 @@ class Harness:
             self.update_expected()
 
         if args.execute or (not args.verify and self.launcher.useBatch):
-            print('[SciATH] Not verifying or reporting')
+            if self.testruns:
+                print('[SciATH] Not verifying or reporting')
         else:
             self.verify()
             self.report()
