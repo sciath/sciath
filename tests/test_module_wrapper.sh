@@ -11,4 +11,4 @@ mkdir $sandbox
 cd $sandbox
 $python -m sciath --configure-default
 $python -m sciath $args \
-  | sed "s%$test_dir%<<TEST DIR STRIPPED>>%g"
+  | $test_dir/filter $test_dir
