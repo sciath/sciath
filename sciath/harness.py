@@ -175,7 +175,6 @@ class Harness:
         """
 
         parser = argparse.ArgumentParser(description='SciATH')
-        parser.add_argument('-v', '--verify', help='Perform test verification (and not execution)', required=False, action='store_true')
         parser.add_argument('-c', '--configure', help='Configure queuing system information', required=False, action='store_true')
         parser.add_argument('-t', '--test-subset', help='Comma-separated list of test names', required=False)
         parser.add_argument('-p', '--purge-output', help='Delete generated output', required=False, action='store_true')
@@ -186,6 +185,9 @@ class Harness:
         parser.add_argument('--no-colors',help='Deactivate colored output',required=False,action='store_true')
         parser.add_argument('-i', '--input-file', help='Parse a file to add tests to the harness', required=False)
         parser.add_argument('-u', '--update-expected', help='When well-defined, update reference files with current output before verifying', required=False, action='store_true')
+        stage_skip_group = parser.add_mutually_exclusive_group()
+        stage_skip_group.add_argument('-v', '--verify', help='Perform test verification, and not execution', required=False, action='store_true')
+        stage_skip_group.add_argument('-e','--execute', help='Perform test execution, and not verification', required=False, action='store_true')
         args,unknown = parser.parse_known_args()
 
         if args.no_colors:
@@ -227,8 +229,8 @@ class Harness:
         if args.update_expected:
             self.update_expected()
 
-        if not args.verify and self.launcher.useBatch:
-            print('Not verifying or reporting, since there is a queue')
+        if args.execute or (not args.verify and self.launcher.useBatch):
+            print('[SciATH] Not verifying or reporting')
         else:
             self.verify()
             self.report()
