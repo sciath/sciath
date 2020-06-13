@@ -1,6 +1,14 @@
 #!/usr/bin/env sh
 # Additional arguments (e.g. --update) are passed through
 
+minisciath=minisciath/minisciath.py
+
+if [ ! -f "$minisciath" ]; then
+  printf "MiniSciATH is required. Update submodules, e.g.\n" 
+  printf "  cd .. && git submodule init && git submodule update && cd -\n"
+  exit 1
+fi
+
 python -m sciath  # prompt to generate configuration file, if missing
 ./minisciath/minisciath.py --exclude-group mpi_verify tests.yml $@
 
