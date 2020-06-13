@@ -1,5 +1,5 @@
 -
   name: two_ranks
-  command: printf ''
+  command: echo foo
   ranks: 2
   expected: expected
