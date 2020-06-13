@@ -7,7 +7,4 @@
   MPI launcher:      /Users/patrick/code/petsc/arch-mpich-only/bin/mpiexec -n <ranks>
 [36m[Executing two_ranks][0m from <<TEST DIR STRIPPED>>/mpi_smoke_sandbox/two_ranks_output/sandbox
 /Users/patrick/code/petsc/arch-mpich-only/bin/mpiexec -n 2 printf 
-[35m[ *** Summary *** ][0m
-[32m[two_ranks]  pass[0m (verification was successful)
-
-[32mSUCCESS[0m
+[SciATH] Not verifying or reporting
