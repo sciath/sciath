@@ -18,5 +18,5 @@ install:
 
 script:
   - export PYTHONPATH=$PWD:$PYTHONPATH
-  - cd tests && ./minisciath/minisciath.py tests.yml --exclude-group mpi && cd ..
+  - cd tests && ./minisciath/minisciath.py tests.yml --only-group default_configuration && cd ..
   - sh -c "pylint --errors-only sciath/*.py tests/test_data/*/*.py"
