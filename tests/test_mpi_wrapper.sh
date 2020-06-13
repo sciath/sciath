@@ -23,4 +23,4 @@ fi
 cp $configuration_file $sandbox
 cd $sandbox
 $python -m sciath $args \
-  | $test_dir/filter $test_dir
+  | $test_dir/filter.sh $test_dir

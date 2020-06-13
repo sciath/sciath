@@ -1,72 +1,72 @@
 -
   name: test1
   group: default_configuration
-  command: sh test_wrapper.sh test1 test_data/test1/test_ex1.py
+  command: sh test_api_wrapper.sh test1 test_data/test1/test_ex1.py
   expected: test_data/test1.expected
 -
   name: test2
   group: default_configuration
-  command: sh test_wrapper.sh test2 test_data/test2/test_ex2.py
+  command: sh test_api_wrapper.sh test2 test_data/test2/test_ex2.py
   expected: test_data/test2.expected
 -
   name: verifier_line
   group: default_configuration
-  command: sh test_wrapper.sh verifier_line test_data/verifier_line/test_line_verifier.py
+  command: sh test_api_wrapper.sh verifier_line test_data/verifier_line/test_line_verifier.py
   expected: test_data/verifier_line.expected
 -
   name: harness1
   group: default_configuration
-  command: sh test_wrapper.sh harness1 test_data/harness1/test1.py
+  command: sh test_api_wrapper.sh harness1 test_data/harness1/test1.py
   expected: test_data/harness1.expected
 -
   name: harness2
   group: default_configuration
-  command: sh test_wrapper.sh harness2 test_data/harness2/test2.py
+  command: sh test_api_wrapper.sh harness2 test_data/harness2/test2.py
   expected: test_data/harness2.expected
 -
   name: harness3
   group: default_configuration
-  command: sh test_wrapper.sh harness3 test_data/harness3/test3.py
+  command: sh test_api_wrapper.sh harness3 test_data/harness3/test3.py
   expected: test_data/harness3.expected
 -
   name: harness4
   group: default_configuration
-  command: sh test_wrapper.sh harness4 "test_data/harness4/test4.py -i ../test_data/harness4/input.yml"
+  command: sh test_api_wrapper.sh harness4 "test_data/harness4/test4.py -i ../test_data/harness4/input.yml"
   expected: test_data/harness4.expected
 -
   name: harness5
   group: default_configuration
-  command: sh test_wrapper.sh harness5 test_data/harness5/test5.py
+  command: sh test_api_wrapper.sh harness5 test_data/harness5/test5.py
   expected: test_data/harness5.expected
 -
   name: module_smoke
   group: default_configuration
-  command: sh test_module_wrapper.sh module_smoke
+  command: sh test_wrapper.sh module_smoke
   expected: test_data/module_smoke.expected
 -
   name: module_input
   group: default_configuration
-  command: sh test_module_wrapper.sh module_input "-i ../test_data/module_input/input.yml"
+  command: sh test_wrapper.sh module_input "-i ../test_data/module_input/input.yml"
   expected: test_data/module_input.expected
 -
   name: module_line_verifier
   group: default_configuration
-  command: sh test_module_wrapper.sh module_input "-i ../test_data/module_line_verifier/input.yml"
+  command: sh test_wrapper.sh module_input "-i ../test_data/module_line_verifier/input.yml"
   expected: test_data/module_line_verifier.expected
 -
   name: module_multi
   group: default_configuration
-  command: sh test_module_wrapper.sh module_multi "-i ../test_data/module_multi/input.yml"
+  command: sh test_wrapper.sh module_multi "-i ../test_data/module_multi/input.yml"
   expected: test_data/module_multi.expected
 -
   name: module_relpath
   group: default_configuration
-  command: sh test_module_wrapper.sh module_relpath "-i ../test_data/module_relpath/input.yml"
+  command: sh test_wrapper.sh module_relpath "-i ../test_data/module_relpath/input.yml"
   expected: test_data/module_relpath.expected
 -
   name: job
   group: default_configuration
-  command: sh test_wrapper.sh job test_data/job/test_job.py
+  command: sh test_api_wrapper.sh job test_data/job/test_job.py
   expected: test_data/job.expected
 -
   name: verifier_update
@@ -76,7 +76,7 @@
 -
   name: multiple_ranks_no_mpi
   group: default_configuration
-  command: sh test_module_wrapper.sh multiple_ranks_no_mpi "-i ../test_data/multiple_ranks_no_mpi/input.yml"
+  command: sh test_wrapper.sh multiple_ranks_no_mpi "-i ../test_data/multiple_ranks_no_mpi/input.yml"
   expected: test_data/multiple_ranks_no_mpi.expected
 -
   name: mpi_smoke_execute
