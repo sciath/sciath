@@ -2,4 +2,4 @@
   name: two_ranks
   command: printf ''
   ranks: 2
-  expected: test_data/multiple_ranks_smoke/expected
+  expected: expected

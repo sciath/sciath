@@ -59,7 +59,16 @@
   command: sh test_data/verifier_update/verifier_update.sh
   expected: test_data/verifier_update.expected
 -
-  name: multiple_ranks_smoke
-  group: multiple_ranks
-  command: sh test_module_wrapper.sh multiple_ranks_smoke "-i ../test_data/multiple_ranks_smoke/input.yml"
-  expected: test_data/multiple_ranks_smoke.expected
+  name: multiple_ranks_no_mpi
+  command: sh test_module_wrapper.sh multiple_ranks_no_mpi "-i ../test_data/multiple_ranks_no_mpi/input.yml"
+  expected: test_data/multiple_ranks_no_mpi.expected
+-
+  name: mpi_smoke
+  group: mpi
+  command: sh test_mpi_wrapper.sh mpi_smoke "-i ../test_data/mpi_smoke/input.yml"
+  expected: test_data/mpi_smoke.expected
+-
+  name: mpi_smoke_two_ranks
+  group: mpi
+  command: sh test_mpi_wrapper.sh mpi_smoke_two_ranks "-i ../test_data/mpi_smoke_two_ranks/input.yml"
+  expected: test_data/mpi_smoke_two_ranks.expected

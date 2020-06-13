@@ -1,4 +1,5 @@
 #!/usr/bin/env sh
 # Additional arguments (e.g. --update) are passed through
 
-python minisciath/minisciath.py tests.yml --exclude-group multiple_ranks $@
+python -m sciath  # prompt to generate configuration file, if missing
+./minisciath/minisciath.py tests.yml $@
