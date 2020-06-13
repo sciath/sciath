@@ -80,11 +80,21 @@
   expected: test_data/multiple_ranks_no_mpi.expected
 -
   name: mpi_smoke_execute
-  group: mpi_execute_execute
-  command: sh test_mpi_wrapper.sh mpi_smoke "-e -i ../test_data/mpi_smoke/input.yml"
-  expected: test_data/mpi_smoke.expected
+  group: mpi_execute
+  command: sh test_mpi_wrapper.sh mpi_smoke_execute "-e -i ../test_data/mpi_smoke/input.yml"
+  expected: test_data/mpi_smoke_execute.expected
+-
+  name: mpi_smoke_verify
+  group: mpi_verify
+  command: sh test_mpi_wrapper.sh mpi_smoke_verify "-v -i ../test_data/mpi_smoke/input.yml" mpi_smoke_execute
+  expected: test_data/mpi_smoke_verify.expected
 -
   name: mpi_smoke_two_ranks_execute
   group: mpi_execute
-  command: sh test_mpi_wrapper.sh mpi_smoke_two_ranks "-e -i ../test_data/mpi_smoke_two_ranks/input.yml"
-  expected: test_data/mpi_smoke_two_ranks.expected
+  command: sh test_mpi_wrapper.sh mpi_smoke_two_ranks_execute "-e -i ../test_data/mpi_smoke_two_ranks/input.yml"
+  expected: test_data/mpi_smoke_two_ranks_execute.expected
+-
+  name: mpi_smoke_two_ranks_verify
+  group: mpi_verify
+  command: sh test_mpi_wrapper.sh mpi_smoke_two_ranks_verify "-v -i ../test_data/mpi_smoke_two_ranks/input.yml" mpi_smoke_two_ranks_execute
+  expected: test_data/mpi_smoke_two_ranks_verify.expected
