@@ -58,3 +58,8 @@
   name: verifier_update
   command: sh test_data/verifier_update/verifier_update.sh
   expected: test_data/verifier_update.expected
+-
+  name: multiple_ranks_smoke
+  group: multiple_ranks
+  command: sh test_module_wrapper.sh multiple_ranks_smoke "-i ../test_data/multiple_ranks_smoke/input.yml"
+  expected: test_data/multiple_ranks_smoke.expected
