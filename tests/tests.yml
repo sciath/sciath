@@ -1,4 +1,9 @@
 -
+  name: yaml_parse
+  group: default_configuration
+  command: sh test_api_wrapper.sh yaml_parse test_data/yaml_parse/test.py
+  expected: test_data/yaml_parse.expected
+-
   name: test1
   group: default_configuration
   command: sh test_api_wrapper.sh test1 test_data/test1/test_ex1.py
