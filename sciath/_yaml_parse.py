@@ -34,11 +34,14 @@ def parse_yaml_subset_from_file(filename):
         if content.startswith('-'):
             entry_type = 's'
             value = content[1:].strip()
-        else:
+        elif ':' in content:
             entry_type = 'm'
             key, value = content.split(':')
             key = key.strip()
             value = value.strip()
+        else:
+            _parse_error(filename, line_number,
+                         'Lines must either start with a dash (-) or contain a colon (:)')
 
         # Add content to nested structure
         if not stack:
