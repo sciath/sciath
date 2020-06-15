@@ -4,7 +4,6 @@ import os
 import sys
 import argparse
 import shutil
-from enum import Enum # Before Python 3.4, you need the enum34 (NOT enum) module
 
 import sciath
 import sciath.launcher
@@ -12,7 +11,7 @@ import sciath._test_file
 from sciath import sciath_colors
 from sciath._sciath_io import py23input
 
-class _TestRunStatus(Enum):
+class _TestRunStatus:
     DEACTIVATED             = 'deactivated'  # Test skipped intentionally
     UNKNOWN                 = 'unknown'      # Neither checked for completion nor verified
     NOT_LAUNCHED            = 'not launched' # Launcher reports test has not been launched
@@ -148,10 +147,10 @@ class Harness:
                         print(line)
             print(sciath_colors.HEADER+'[ *** Summary *** ]'+sciath_colors.ENDC)
             for testrun in self.testruns:
-                if testrun.status.value == 'fail':
+                if testrun.status == 'fail':
                     failed_names.append(testrun.test.name)
-                print(sciath.sciath_test_status.status_color_type[testrun.status.value], end='')
-                print('[%s]  %s' %(testrun.test.name, testrun.status.value), end='')
+                print(sciath.sciath_test_status.status_color_type[testrun.status], end='')
+                print('[%s]  %s' %(testrun.test.name, testrun.status), end='')
                 print(sciath_colors.ENDC, end='')
                 if testrun.status_info:
                     print(' (' + testrun.status_info + ')', end='')
