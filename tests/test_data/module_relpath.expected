@@ -2,7 +2,7 @@
 [ -- Removing output for Test: relpath_test -- ]
 [35m[ *** Executing Tests *** ][0m
 [SciATH] Batch queueing system configuration [SciATHBatchQueuingSystem.conf]
-  Version:           0.5.4
+  Version:           0.6.0
   Queue system:      none
   MPI launcher:      none
 [36m[Executing relpath_test][0m from <<TEST DIR STRIPPED>>/module_relpath_sandbox/relpath_test_output/sandbox

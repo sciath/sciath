@@ -6,6 +6,7 @@ import shutil
 import fcntl
 import subprocess
 
+import sciath._yaml_parse
 from   sciath import sciath_colors
 from   sciath import getVersion
 from   sciath._sciath_io import py23input, _remove_file_if_it_exists, command_join
@@ -294,21 +295,20 @@ class Launcher:
     A :class:`Launcher`'s state corresponds only to its configuration,
     not the status of any particular "run" of a :class:`Job`.
     """
-    defaultConfFileName = 'SciATHBatchQueuingSystem.conf'
+    _default_conf_filename = 'SciATHBatchQueuingSystem.conf'
 
     @staticmethod
-    def writeDefaultDefinition(confFileNameIn=None):
-        confFileName = confFileNameIn if confFileNameIn else Launcher.defaultConfFileName
-        file = open(confFileName,'w')
-        major,minor,patch=getVersion()
-        file.write('majorVersion=' + str(major) + '\n')
-        file.write('minorVersion=' + str(minor) + '\n')
-        file.write('patchVersion=' + str(patch) + '\n')
-        file.write('queuingSystemType=none\n' )
-        file.write('mpiLaunch=none\n' )
-        file.close()
+    def writeDefaultDefinition(conf_filename_in=None):
+        major, minor, patch=getVersion()
+        conf_filename = conf_filename_in if conf_filename_in else Launcher._default_conf_filename
+        with open(conf_filename, 'w') as conf_file:
+            conf_file.write('majorVersion: %s\n' % major)
+            conf_file.write('minorVersion: %s\n' % minor)
+            conf_file.write('patchVersion: %s\n' % patch)
+            conf_file.write('queuingSystemType: none\n' )
+            conf_file.write('mpiLaunch: none\n' )
 
-    def __init__(self,confFileName=None):
+    def __init__(self,conf_filename=None):
         self.accountName = []
         self.queueName = []
         self.mpiLaunch = []
@@ -318,10 +318,10 @@ class Launcher:
         self.jobSubmissionCommand = []
         self.useBatch = False
         self.verbosity_level = 1
-        if confFileName :
-            self.confFileName = confFileName
+        if conf_filename :
+            self.conf_filename = conf_filename
         else :
-            self.confFileName = Launcher.defaultConfFileName
+            self.conf_filename = Launcher._default_conf_filename
 
         self.setup()
 
@@ -398,7 +398,7 @@ class Launcher:
 
     def view(self):
         if self.verbosity_level > 0:
-            print('[SciATH] Batch queueing system configuration [%s]' % self.confFileName)
+            print('[SciATH] Batch queueing system configuration [%s]' % self.conf_filename)
             print('  Version:           %d.%d.%d' % getVersion())
             print('  Queue system:      %s' % self.queuingSystemType)
             print('  MPI launcher:      %s' % self.mpiLaunch)
@@ -415,7 +415,7 @@ class Launcher:
 
     def configure(self):
         print('----------------------------------------------------------------')
-        print('Creating new configuration file ',self.confFileName)
+        print('Creating new configuration file ',self.conf_filename)
         v = None
         while not v :
             prompt = '[1] Batch queuing system type <pbs,lsf,slurm,llq,none>: '
@@ -480,7 +480,7 @@ class Launcher:
         self.writeDefinition()
         print('\n')
         print('** If you wish to change the config for your batch system, either')
-        print('**  (i) delete the file',self.confFileName,' or')
+        print('**  (i) delete the file',self.conf_filename,' or')
         print('** (ii) re-run with the command line arg --configure')
         print('----------------------------------------------------------------')
 
@@ -492,58 +492,53 @@ class Launcher:
             self.writeDefinition()
 
     def writeDefinition(self):
-        file = open(self.confFileName,'w')
-        major,minor,patch=getVersion()
-        file.write('majorVersion=' + str(major) + '\n')
-        file.write('minorVersion=' + str(minor) + '\n')
-        file.write('patchVersion=' + str(patch) + '\n')
-        file.write('queuingSystemType=' + self.queuingSystemType + '\n')
-        file.write('mpiLaunch=' + self.mpiLaunch + '\n')
-        if self.useBatch :
-            file.write('accountName=' + self.accountName + '\n')
-            file.write('batchConstraint=' + self.batchConstraint + '\n')
-            file.write('queueName=' + self.queueName + '\n')
-            if self.maxRanksPerNode:
-                file.write('maxRanksPerNode=' + str(self.maxRanksPerNode) + '\n')
-        file.close()
+        major, minor, patch=getVersion()
+        with open(self.conf_filename, 'w') as conf_file:
+            conf_file.write('majorVersion: %s\n' % major)
+            conf_file.write('minorVersion: %s\n' % minor)
+            conf_file.write('patchVersion: %s\n' % patch)
+            conf_file.write('queuingSystemType: %s\n' % self.queuingSystemType)
+            conf_file.write('mpiLaunch: %s\n' % self.mpiLaunch)
+            if self.useBatch :
+                conf_file.write('accountName: %s\n' % self.accountName)
+                conf_file.write('batchConstraint: %s\n' % self.batchConstraint)
+                conf_file.write('queueName: %s\n' % self.queueName)
+                if self.maxRanksPerNode:
+                    conf_file.write('maxRanksPerNode: %s\n' % self.maxRanksPerNode)
 
     def loadDefinition(self):
+        majorFile = None
+        minorFile = None
+        patchFile = None
         try:
-            majorFile = None
-            minorFile = None
-            patchFile = None
-            file = open(self.confFileName,'r')
-            for v in file :
-                key,value = v.split('=',1)
-                value = value.rstrip()
-                if key == 'majorVersion' :
-                    majorFile = int(value)
-                if key == 'minorVersion' :
-                    minorFile = int(value)
-                if key == 'patchVersion' :
-                    patchFile = int(value)
-                if key == 'queuingSystemType' :
-                    self.setQueueSystemType(value)
-                if key == 'mpiLaunch' :
-                    self.setMPILaunch(value)
-                if self.useBatch :
-                    if key == 'batchConstraint' :
-                        self.setBatchConstraint(value)
-                    if key == 'queueName' :
-                        self.setQueueName(value)
-                    if key == 'accountName' :
-                        self.setHPCAccountName(value)
-                    if key == 'maxRanksPerNode' :
-                        self.setMaxRanksPerNode(int(value))
-            file.close()
+            data = sciath._yaml_parse.parse_yaml_subset_from_file(self.conf_filename)
+            if 'majorVersion' in data:
+                majorFile = int(data['majorVersion'])
+            if 'minorVersion' in data:
+                minorFile = int(data['minorVersion'])
+            if 'patchVersion' in data:
+                patchFile = int(data['patchVersion'])
+            if 'queuingSystemType' in data:
+                self.setQueueSystemType(data['queuingSystemType'])
+            if 'mpiLaunch' in data:
+                self.setMPILaunch(data['mpiLaunch'])
+            if self.useBatch :
+                if 'batchConstraint' in data:
+                    self.setBatchConstraint(data['batchConstraint'])
+                if 'queueName' in data:
+                    self.setQueueName(data['queueName'])
+                if 'accountName' in data:
+                    self.setHPCAccountName(data['accountName'])
+                if 'maxRanksPerNode' in data:
+                    self.setMaxRanksPerNode(int(data['maxRanksPerNode']))
         except:
-            raise SciATHLoadException('[SciATH] You must execute configure(), and or writeDefinition() first')
+            raise SciATHLoadException('[SciATH] Configuration file missing. You must execute configure(), and or writeDefinition() first')
 
         # Do not accept conf files if the major.minor version is stale, or if versions are missing
         major,minor,patch = getVersion()
         if majorFile < major or (minorFile < minor and majorFile == major) or \
              majorFile is None or minorFile is None or patchFile is None :
-            message = '[SciATH] Incompatible, outdated configuration file ' + self.confFileName + ' detected. Please delete it and re-run to reconfigure.'
+            message = '[SciATH] Incompatible, outdated configuration file ' + self.conf_filename + ' detected. Please delete it and re-run to reconfigure.'
             raise RuntimeError(message)
 
 
