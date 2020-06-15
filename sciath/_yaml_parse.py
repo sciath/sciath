@@ -1,14 +1,14 @@
-""" A simple, inefficient parser for a subset of YAML files
+""" A very simple, inefficient parser for a subset of YAML files
 
     Generally, one would prefer to use a full-featured Python module like
-    strictyaml or PyYAML.
+    strictyaml, ruamel.yaml or PyYAML.
 """
 
 
 def parse_yaml_subset_from_file(filename):
     """ Parse a subset of YAML files into a nested structure of list and dict objects
 
-        All data are interpreted as strings.
+        All data are interpreted as strings, ignoring "#" and any trailing characters.
         Flow style is not supported, only block collections.
     """
     with open(filename, 'r') as input_file:
