@@ -1,5 +1,6 @@
--
-  name: two_ranks
-  command: echo foo
-  ranks: 1
-  expected: expected
+tests:
+  -
+    name: two_ranks
+    command: echo foo
+    ranks: 1
+    expected: expected
