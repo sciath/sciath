@@ -1,17 +1,18 @@
--
-  name: foo
-  expected: foo.expected
-  command: echo foo
--
-  name: foo_again
-  type: text_diff
-  expected: foo.expected
-  command: echo foo
--
-  name: bar
-  type: float_lines
-  expected: bar.expected
-  command: printf "a 34.3\nb43.3\n0.0\nx"
-  rules:
-    -
-      key:
+tests:
+  -
+    name: foo
+    expected: foo.expected
+    command: echo foo
+  -
+    name: foo_again
+    type: text_diff
+    expected: foo.expected
+    command: echo foo
+  -
+    name: bar
+    type: float_lines
+    expected: bar.expected
+    command: printf "a 34.3\nb43.3\n0.0\nx"
+    rules:
+      -
+        key:

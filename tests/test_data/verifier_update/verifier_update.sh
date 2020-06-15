@@ -15,7 +15,7 @@ cd $sandbox
 # Generate an expected file, since it'll be changed
 echo bar > expected
 cp ../test_data/verifier_update/input.yml .
-printf '  expected: expected\n' >> input.yml
+printf '    expected: expected\n' >> input.yml
 
 $python -m sciath --configure-default
 $python -m sciath $args1 \

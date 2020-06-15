@@ -1,18 +1,19 @@
--
-  name: testA
-  commands:
-    - echo command 1 of 3
-    - echo command 2 of 3
-    - echo command 3 of 3
-  expected: testA.expected
--
-  name: testA_too
-  command:
-    - echo command 1 of 3
-    - echo command 2 of 3
-    - echo command 3 of 3
-  expected: testA.expected
--
-  name: testB
-  commands: echo testB
-  expected: testB.expected
+tests:
+  -
+    name: testA
+    commands:
+      - echo command 1 of 3
+      - echo command 2 of 3
+      - echo command 3 of 3
+    expected: testA.expected
+  -
+    name: testA_too
+    command:
+      - echo command 1 of 3
+      - echo command 2 of 3
+      - echo command 3 of 3
+    expected: testA.expected
+  -
+    name: testB
+    commands: echo testB
+    expected: testB.expected

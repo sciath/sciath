@@ -15,11 +15,11 @@ def create_tests_from_file(filename):
     if not data:
         raise Exception("[SciATH] did not successfully read from %s" % filename)
 
-    if not isinstance(data, list):
-        raise Exception('Tests file must be a sequence')
+    if not isinstance(data, dict) or 'tests' not in data or not isinstance(data['tests'], list):
+        raise Exception("Tests file must be top-level map with a 'tests:' entry containing a sequence of test entries")
 
     tests = []
-    for entry in data:
+    for entry in data['tests']:
         if not isinstance(entry, dict):
             raise Exception('Incorrectly formatted test entry (must be a mapping)')
         job = _create_job_from_entry(entry, filename)
