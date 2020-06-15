@@ -1,0 +1,41 @@
+
+hello:
+  -
+    foo:
+      - a  # comment
+      - b
+      -        c
+  -
+    bar:
+  -
+    baz:
+      alpha:
+      beta:
+        -
+        -
+            -xx
+            -xy
+        - y
+        # comment
+      gamma:
+          epsilon:
+    # junk
+  # junk
+now:
+  - then
+  - forever
+  -
+    whence:
+      -
+          - nonce
+    dunce:
+      trounce:
+       - thimble
+       - crumble
+  - again
+finally:
+    finally:
+      finally:
+                       - we are done now
+                       - really
+

@@ -1,18 +1,16 @@
 import os
 import shlex
 
-import yaml
-
 import sciath.test
 import sciath.job
 import sciath.task
 import sciath.verifier
 import sciath.verifier_line
+import sciath._yaml_parse
 
 
 def create_tests_from_file(filename):
-    with open(filename, 'r') as input_file:
-        data = yaml.safe_load(input_file)
+    data = sciath._yaml_parse.parse_yaml_subset_from_file(filename)
 
     if not data:
         raise Exception("[SciATH] did not successfully read from %s" % filename)
