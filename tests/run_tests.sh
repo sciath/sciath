@@ -16,4 +16,4 @@ fi
 ./minisciath/minisciath.py --exclude-group mpi_verify tests.yml $@
 
 printf "You should run additional tests to verify MPI tests. Wait until any queued jobs are completed, and then run\n"
-printf "  ./minisciath/minisciath.py --only-group mpi_verify tests.yml\n"
+printf "  ./verify_tests.sh\n"
