@@ -21,6 +21,12 @@ hello:
           epsilon:
     # junk
   # junk
+mapping_with_a_colon: echo 'foo:'
+sequence_with_a_colon:
+  - echo 'foo:'
+  - x:y:z
+commmand: echo 'foo' && mv $FILE $FILE.bak
+
 now:
   - then
   - forever

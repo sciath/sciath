@@ -36,7 +36,7 @@ def parse_yaml_subset_from_file(filename):
             value = content[1:].strip()
         elif ':' in content:
             entry_type = 'm'
-            key, value = content.split(':')
+            key, value = content.split(':', 1)
             key = key.strip()
             value = value.strip()
         else:
