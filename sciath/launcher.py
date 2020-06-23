@@ -33,7 +33,7 @@ def FormattedHourMin(seconds):
 def FormattedHourMinSec(seconds):
     m, s = divmod(seconds, 60)
     h, m = divmod(m, 60)
-    wt = "%02d:%02d:%02d" % (h, m,s)
+    wt = "%02d:%02d:%02d" % (h, m, s)
     return(wt)
 
 def formatMPILaunchCommand(mpiLaunch,ranks):

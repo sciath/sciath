@@ -26,7 +26,7 @@ class Task(object):
         if 'threads' not in self.resources:
             self.resources['threads'] = 1
 
-        self.wall_time         = 10.0/60.0 # 10 secs (in minutes)
+        self.wall_time = 2.0  # minutes
 
         for key, value in kwargs.items():
             if key == 'exitCode':
