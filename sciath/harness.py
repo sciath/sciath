@@ -195,7 +195,10 @@ class Harness:
         if args.update_expected:
             print("[SciATH] You have provided an argument to updated expected files.")
             print("[SciATH] This will attempt to OVERWRITE your expected files!")
-            if py23input("[SciATH] Are you sure? Type 'y' to continue: ")[0] not in ['y','Y']:
+            user_input = None
+            while not user_input:
+                user_input = py23input("[SciATH] Are you sure? Type 'y' to continue: ")
+            if user_input[0] not in ['y', 'Y']:
                 print("[SciATH] Aborting.")
                 return
 
