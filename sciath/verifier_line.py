@@ -74,6 +74,10 @@ def float_rel_pairs_function(match_expected, match_out, rel_tol, max_err_count =
     passing = True
     report = []
     err_count = 0
+    if not match_expected:
+        report.append('Expected file had no matches, so declaring failure')
+        passing = False
+        return passing, report
     for ((lineno_expected,line_expected), (lineno_out,line_out)) in zip(match_expected.items(), match_out.items()):
         line_passing, line_report = compare_float_values_rel(line_expected, line_out, rel_tol)
         if not line_passing:
