@@ -129,8 +129,14 @@ class Harness:
                         exec_path = testrun.exec_path)
 
     def print_all_tests(self):
+        """ Display information about all tests """
         for testrun in self.testruns:
-            print(testrun.test.name)
+            info_string = [testrun.test.name]
+            if testrun.test.groups:
+                info_string.append(' (')
+                info_string.append(', '.join(testrun.test.groups))
+                info_string.append(')')
+            print(''.join(info_string))
 
     def report(self):
         """ Compile results into a report and print """
@@ -187,6 +193,9 @@ class Harness:
         stage_skip_group = parser.add_mutually_exclusive_group()
         stage_skip_group.add_argument('-v', '--verify', help='Perform test verification, and not execution', required=False, action='store_true')
         stage_skip_group.add_argument('-e','--execute', help='Perform test execution, and not verification', required=False, action='store_true')
+        parser.add_argument('-g', '--groups', help='Comma-separated list of test groups. Tests not in these groups are excluded', required=False)
+        parser.add_argument('-x', '--exclude-groups', help='Comma-separated list of test groups. Tests in these groups are excluded', required=False)
+
         args,unknown = parser.parse_known_args()
 
         if args.no_colors:
@@ -195,7 +204,10 @@ class Harness:
         if args.update_expected:
             print("[SciATH] You have provided an argument to updated expected files.")
             print("[SciATH] This will attempt to OVERWRITE your expected files!")
-            if py23input("[SciATH] Are you sure? Type 'y' to continue: ")[0] not in ['y','Y']:
+            user_input = None
+            while not user_input:
+                user_input = py23input("[SciATH] Are you sure? Type 'y' to continue: ")
+            if user_input[0] not in ['y', 'Y']:
                 print("[SciATH] Aborting.")
                 return
 
@@ -207,7 +219,10 @@ class Harness:
             return
 
         if args.test_subset:
-            self._activate_tests_from_argument(args.test_subset)
+            self._activate_tests_from_list(args.test_subset)
+
+        if args.groups or args.exclude_groups:
+            self._activate_test_groups(args.groups, args.exclude_groups)
 
         if args.configure_default:
             sciath.launcher.Launcher.writeDefaultDefinition(args.conf_file)
@@ -273,14 +288,28 @@ class Harness:
             else:
                 testrun.status = _TestRunStatus.DEACTIVATED
 
-    def _activate_tests_from_argument(self, test_subset_arg):
-        test_subset_names = test_subset_arg.split(',')
+    def _activate_tests_from_list(self, test_subset_string):
+        """ Deactivate test runs not named in a comma-separated string """
         for testrun in self.testruns:
-            testrun.active = False
-        for name in test_subset_names:
-            found = False
-            for testrun in self.testruns:
-                if name == testrun.test.name:
-                    testrun.active = True
-                    found = True
-                    break
+            if testrun.test.name not in test_subset_string.split(','):
+                testrun.active = False
+
+    def _activate_test_groups(self, only_groups_string, exclude_groups_string):
+        """ Deactivate all tests which are not one set or which are in another
+
+            Accepts a comma-separated strings. Trailing and leading whitespace
+            is stripped
+        """
+        if only_groups_string:
+            only_groups = [group.strip() for group in only_groups_string.split(',')]
+        else:
+            only_groups = None
+        if exclude_groups_string:
+            exclude_groups = [group.strip() for group in exclude_groups_string.split(',')]
+        else:
+            exclude_groups = []
+        for testrun in self.testruns:
+            if only_groups and not testrun.test.groups.intersection(only_groups):
+                testrun.active = False
+            if testrun.test.groups.intersection(exclude_groups):
+                testrun.active = False

@@ -1,0 +1,41 @@
+tests:
+  -
+    name: testA
+    commands:
+      - echo command 1 of 3
+      - echo command 2 of 3
+      - echo command 3 of 3
+    expected: testA.expected
+    group: group_one
+  -
+    name: testA_too
+    command:
+      - echo command 1 of 3
+      - echo command 2 of 3
+      - echo command 3 of 3
+    expected: testA.expected
+    groups: group_one
+  -
+    name: testB
+    commands: echo testB
+    expected: testB.expected
+    groups:
+        - group_one
+        - group_two
+  -
+    name: testC
+    commands: echo testC
+    expected: testC.expected
+    groups:
+        - group_two
+  -
+    name: testD
+    commands: echo testD
+    expected: testD.expected
+  -
+    name: testE
+    commands: echo testE
+    expected: testE.expected
+    group:
+        - group_three
+        - group_four

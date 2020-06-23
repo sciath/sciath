@@ -11,7 +11,7 @@ class Test:
     * A :class:`Job`, describing how to execute the required operations
     * A name
     * An implementation of the abstract base class :class:`Verifier`, defining how to determine success
-    * A set of tags
+    * A set of group tags
 
     """
     def __init__(self, job, name=None):
@@ -23,6 +23,13 @@ class Test:
                 raise Exception("[SciATH error] to create a Test, you must either name the Test or the Job explicitly")
             self.name = job.name
         self.verifier = sciath.verifier.ExitCodeVerifier(self)
+        self.groups = set()
+
+    def add_group(self, group):
+        """ Tag the test with a space-free string """
+        if ' ' in group:
+            raise Exception('[SciATH] group names cannot have spaces')
+        self.groups.add(group)
 
     def verify(self, output_path=None, exec_path=None):
         status,report = self.verifier.execute(output_path, exec_path)
