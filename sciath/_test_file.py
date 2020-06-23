@@ -63,7 +63,26 @@ def _create_job_from_entry(entry, filename):
 
 def _create_test_from_entry(job, entry, filename):
     test = sciath.test.Test(job)
+    _populate_verifier_from_entry(test, entry, filename)
+    _populate_groups_from_entry(test, entry)
+    return test
 
+
+def _populate_groups_from_entry(test, entry):
+    if 'group' in entry and 'groups' in entry:
+        raise Exception('[SciATH] Cannot specify both group: and groups:')
+    if 'group' in entry or 'groups' in entry:
+        groups_raw = entry['group'] if 'group' in entry else entry['groups']
+        if isinstance(groups_raw, str):
+            groups_list = [groups_raw]
+        elif isinstance(groups_raw, list):
+            groups_list = groups_raw
+        else:
+            raise Exception('group: or groups: fields must be a string or a sequence')
+        for group in groups_list:
+            test.add_group(group)
+
+def _populate_verifier_from_entry(test, entry, filename):
     expected = entry['expected']
     expected = _replace_here_marker(expected, filename)
     if not os.path.isabs(expected):
@@ -101,8 +120,6 @@ def _create_test_from_entry(job, entry, filename):
             test.verifier.rules.append(rule_func)
     else:
         raise Exception('[SciATH] unrecognized type %s' % verifier_type)
-    return test
-
 
 def _replace_here_marker(string, filename, marker='HERE'):
     return string.replace(marker, os.path.abspath(os.path.dirname(filename)))

@@ -84,6 +84,11 @@
   command: sh test_wrapper.sh multiple_ranks_no_mpi "-i ../test_data/multiple_ranks_no_mpi/input.yml"
   expected: test_data/multiple_ranks_no_mpi.expected
 -
+  name: groups
+  group: default_configuration
+  command: sh test_wrapper.sh groups "-i ../test_data/groups/input.yml -g group_one,group_four -x group_two"
+  expected: test_data/groups.expected
+-
   name: mpi_smoke_execute
   group: mpi_execute
   command: sh test_mpi_wrapper.sh mpi_smoke_execute "-e -i ../test_data/mpi_smoke/input.yml"
