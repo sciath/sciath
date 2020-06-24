@@ -1,3 +1,4 @@
+""" Logic to create SciATH Tests from a specification file """
 import os
 import shlex
 
@@ -6,17 +7,18 @@ import sciath.job
 import sciath.task
 import sciath.verifier
 import sciath.verifier_line
-import sciath._yaml_parse
+from sciath import yaml_parse
 
 
 def create_tests_from_file(filename):
-    data = sciath._yaml_parse.parse_yaml_subset_from_file(filename)
+    """ Creates a list of SciATH tests from a YAML file """
+    data = yaml_parse.parse_yaml_subset_from_file(filename)
 
     if not data:
         raise Exception("[SciATH] did not successfully read from %s" % filename)
 
     if not isinstance(data, dict) or 'tests' not in data or not isinstance(data['tests'], list):
-        raise Exception("Tests file must be top-level map with a 'tests:' entry containing a sequence of test entries")
+        raise Exception("[SciATH] file needs 'tests:' containing a sequence of test entries")
 
     tests = []
     for entry in data['tests']:
@@ -95,12 +97,12 @@ def _populate_verifier_from_entry(test, entry, filename):
         if 'expected' not in entry or not entry['expected']:
             raise Exception('Each test entry must defined an expected file')
         test.verifier = sciath.verifier.ComparisonVerifier(
-                test, expected, comparison_file=comparison_file)
+            test, expected, comparison_file=comparison_file)
     elif verifier_type == 'float_lines':
         if 'expected' not in entry or not entry['expected']:
             raise Exception('Each test entry must defined an expected file')
         test.verifier = sciath.verifier_line.LineVerifier(
-                test, expected, comparison_file=comparison_file)
+            test, expected, comparison_file=comparison_file)
         if 'rules' not in entry:
             raise Exception('rules: expected')
         rules = entry['rules']
@@ -117,7 +119,7 @@ def _populate_verifier_from_entry(test, entry, filename):
             rtol = float(rtol_string) if rtol_string else None
             atol = float(atol_string) if atol_string else None
             rule_func = sciath.verifier_line.key_and_float_rule(
-                    key, rel_tol=rtol, abs_tol=atol)
+                key, rel_tol=rtol, abs_tol=atol)
             test.verifier.rules.append(rule_func)
     else:
         raise Exception('[SciATH] unrecognized type %s' % verifier_type)

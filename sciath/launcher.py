@@ -7,9 +7,9 @@ import fcntl
 import subprocess
 
 import sciath
-import sciath._yaml_parse
-from   sciath import SCIATH_COLORS
-from   sciath._sciath_io import py23input, _remove_file_if_it_exists, command_join
+from sciath import yaml_parse
+from sciath import SCIATH_COLORS
+from sciath._sciath_io import py23input, _remove_file_if_it_exists, command_join
 
 # mpiexec has been observed to set non-blocking I/O, which
 #  has been observed to cause problems on OS X with errors like
@@ -511,7 +511,7 @@ class Launcher:
         minorFile = None
         patchFile = None
         try:
-            data = sciath._yaml_parse.parse_yaml_subset_from_file(self.conf_filename)
+            data = yaml_parse.parse_yaml_subset_from_file(self.conf_filename)
             if 'majorVersion' in data:
                 majorFile = int(data['majorVersion'])
             if 'minorVersion' in data:
