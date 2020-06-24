@@ -55,7 +55,7 @@ def _generateLaunch_PBS(launcher,walltime,output_path,job):
     queuename = launcher.queueName
     mpiLaunch = launcher.mpiLaunch
 
-    resources = job.getMaxResources()
+    resources = job.get_max_resources()
     ranks = resources["mpiranks"]
 
     c_name,o_name,e_name = job.get_output_filenames()
@@ -86,7 +86,7 @@ def _generateLaunch_PBS(launcher,walltime,output_path,job):
 
     _remove_file_if_it_exists( os.path.join(output_path,c_name) )
 
-    command_resource = job.createExecuteCommand()
+    command_resource = job.create_execute_command()
     njobs = len(command_resource)
     for i in range(0,njobs):
         j = command_resource[i]
@@ -120,7 +120,7 @@ def _generateLaunch_LSF(launcher,rusage,walltime,output_path,job):
     queuename = launcher.queueName
     mpiLaunch = launcher.mpiLaunch
 
-    resources = job.getMaxResources()
+    resources = job.get_max_resources()
     ranks = resources["mpiranks"]
 
     c_name,o_name,e_name = job.get_output_filenames()
@@ -156,7 +156,7 @@ def _generateLaunch_LSF(launcher,rusage,walltime,output_path,job):
 
     _remove_file_if_it_exists( os.path.join(output_path,c_name) )
 
-    command_resource = job.createExecuteCommand()
+    command_resource = job.create_execute_command()
     njobs = len(command_resource)
     for i in range(0,njobs):
         j = command_resource[i]
@@ -193,7 +193,7 @@ def _generateLaunch_SLURM(launcher,walltime,output_path,job):
     constraint = launcher.batchConstraint
     mpiLaunch = launcher.mpiLaunch
 
-    resources = job.getMaxResources()
+    resources = job.get_max_resources()
     ranks = resources["mpiranks"]
 
     c_name,o_name,e_name = job.get_output_filenames()
@@ -230,7 +230,7 @@ def _generateLaunch_SLURM(launcher,walltime,output_path,job):
 
     _remove_file_if_it_exists( os.path.join(output_path,c_name) )
 
-    command_resource = job.createExecuteCommand()
+    command_resource = job.create_execute_command()
     njobs = len(command_resource)
     for i in range(0,njobs):
         j = command_resource[i]
@@ -585,7 +585,7 @@ class Launcher:
 
         if not self.useBatch:
             mpiLaunch = self.mpiLaunch
-            resources = job.getMaxResources()
+            resources = job.get_max_resources()
             ranks = resources["mpiranks"]
             threads = resources["threads"]
             if threads != 1:
@@ -595,7 +595,7 @@ class Launcher:
                 print('[Failed to launch test \"' + job.name + '\" as test uses > 1 MPI ranks and no MPI launcher was provided]')
                 return
 
-            command_resource = job.createExecuteCommand()
+            command_resource = job.create_execute_command()
             launchCmd = []
             for command, resource in command_resource:
                 launch = []

@@ -1,6 +1,5 @@
+""" SciATH Job class """
 from __future__ import print_function
-
-import sys
 
 import sciath.task
 
@@ -15,8 +14,8 @@ class Job:
 
     Data include
 
-    * An ordered list of :class:`Task` objects describing one or more commands to be run, and required resources for each.
     * A name
+    * An ordered list of :class:`Task`s describing commands to be run and required resources
 
     """
 
@@ -27,7 +26,7 @@ class Job:
             self.name = Job._default_job_name
             self.named_by_default = True
         else:
-            self.name = name.replace(' ','_')
+            self.name = name.replace(' ', '_')
             self.named_by_default = False
 
         if isinstance(task_or_tasks, sciath.task.Task):
@@ -35,34 +34,32 @@ class Job:
         elif isinstance(task_or_tasks, list):
             for task in task_or_tasks:
                 if not isinstance(task, sciath.task.Task):
-                    raise Exception('A Task, or list of Task objects was expected')
+                    raise Exception('A Task or list of Tasks was expected')
                 self.tasks = task_or_tasks
         else:
             raise Exception('A Task or list of Tasks was expected')
 
-    def createExecuteCommand(self):
+    def create_execute_command(self):
         """
         Returns a list containing the command, resource tuple for a job.
         """
-        return [task.createExecuteCommand() for task in self.tasks]
+        return [task.create_execute_command() for task in self.tasks]
 
     def get_output_filenames(self):
         """ Returns name lists for error-code file (one per job), stdout, stderr """
-        errorCodeName = "sciath.job-" +  self.name + ".errorcode"
-        stdoutName = []
-        stderrName = []
+        exit_code_name = "sciath.job-" + self.name + ".errorcode"
+        stdout_name = []
+        stderr_name = []
 
         for count in range(len(self.tasks)):
             jprefix = "sciath.job-%d-%s" % (count, self.name)
-            stdoutName.append( jprefix + ".stdout" )
-            stderrName.append( jprefix + ".stderr" )
+            stdout_name.append(jprefix + ".stdout")
+            stderr_name.append(jprefix + ".stderr")
 
-        return errorCodeName, stdoutName, stderrName
+        return exit_code_name, stdout_name, stderr_name
 
-    def getMaxResources(self):
-        """
-        Returns a dict() defining the maximum required counts / values
-        """
+    def get_max_resources(self):
+        """ Returns a dict() defining the maximum required counts / values """
 
         # Use the first Task to determine which resources to consider
         max_resources = dict()
@@ -76,12 +73,11 @@ class Job:
         return max_resources
 
     def number_tasks(self):
+        """ Returns the number of tasks within the Job """
         return len(self.tasks)
 
     def total_wall_time(self):
-        """
-        Returns the total wall time required for all Tasks
-        """
+        """ Returns the total wall time required for all Tasks """
         total_wall_time = 0
         for task in self.tasks:
             total_wall_time += task.wall_time
