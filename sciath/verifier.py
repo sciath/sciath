@@ -4,6 +4,7 @@ import os
 import filecmp
 import difflib
 import shutil
+import errno
 
 from sciath.job import Job
 from sciath import sciath_test_status
@@ -116,8 +117,13 @@ class ComparisonVerifier(Verifier):
         if not os.path.isfile(from_file) :
             print('[SciATH] Cannot update: source file missing: %s' % from_file)
         else:
-            # Does not create directories
-            shutil.copyfile(from_file, self.expected_file)
+            try:
+                shutil.copy(from_file, self.expected_file)
+            except IOError as io_err:
+                if io_err.errno != errno.ENOENT:
+                    raise
+                os.makedirs(os.path.dirname(self.expected_file))
+                shutil.copyfile(from_file, self.expected_file)
 
     def _compare_files(self, from_file, to_file):
         report = []

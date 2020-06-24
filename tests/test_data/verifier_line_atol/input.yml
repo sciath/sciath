@@ -1,0 +1,75 @@
+tests:
+  -
+    name: rtol_only_default_fail
+    command: cat HERE/cat_me
+    expected: expected
+    type: float_lines
+    rules:
+        -
+          key:   key
+  -
+    name: rtol_only_fail
+    command: cat HERE/cat_me
+    expected: expected
+    type: float_lines
+    rules:
+        -
+          key:   key
+          rtol: 1e-3
+  -
+    name: atol_only_fail
+    command: cat HERE/cat_me
+    expected: expected
+    type: float_lines
+    rules:
+        -
+          key:   key
+          atol: 1e-12
+  -
+    name: both_tols_fail
+    command: cat HERE/cat_me
+    expected: expected
+    type: float_lines
+    rules:
+        -
+          key:   key
+          rtol: 1e-10
+          atol: 1e-99
+  -
+    name: atol_zero_fail
+    command: cat HERE/cat_me
+    expected: expected
+    type: float_lines
+    rules:
+        -
+          key:   key
+          atol: 0
+  -
+    name: rtol_zero_fail
+    command: cat HERE/cat_me
+    expected: expected
+    type: float_lines
+    rules:
+        -
+          key:   key
+          rtol: 0
+  -
+    name: both_tols_zero_fail
+    command: cat HERE/cat_me
+    expected: expected
+    type: float_lines
+    rules:
+        -
+          key:   key
+          rtol: 0
+          atol: 0
+  -
+    name: both_tols_pass
+    command: cat HERE/cat_me
+    expected: expected
+    type: float_lines
+    rules:
+        -
+          key:   key
+          rtol: 1e-3
+          atol: 1e-12

@@ -18,7 +18,7 @@ printf 'a 34.3\nb43.3\n0.0\nx'
 --- ../test_data/module_line_verifier/bar.expected
 +++ <<TEST DIR STRIPPED>>/module_input_sandbox/bar_output/sciath.job-0-bar.stdout
 Report for lines matching: '^'
-(l.3/3) Lines did not match:
+Output line 3 did not match line 3 in expected output:
 Wrong number of values found: 1 instead of 0
 Wrong number of matched lines: 4 instead of 3
 [35m[ *** Summary *** ][0m
