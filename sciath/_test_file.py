@@ -112,11 +112,12 @@ def _populate_verifier_from_entry(test, entry, filename):
             if 'key' not in rule:
                 raise Exception('Each rule should have a key:')
             key = rule['key']
-            if 'rtol' in rule:
-                rule_func = sciath.verifier_line.key_and_float_rule(
-                        key, rel_tol=float(rule['rtol']))
-            else:
-                rule_func = sciath.verifier_line.key_and_float_rule(key)
+            rtol_string = rule.get('rtol', None)
+            atol_string = rule.get('atol', None)
+            rtol = float(rtol_string) if rtol_string else None
+            atol = float(atol_string) if atol_string else None
+            rule_func = sciath.verifier_line.key_and_float_rule(
+                    key, rel_tol=rtol, abs_tol=atol)
             test.verifier.rules.append(rule_func)
     else:
         raise Exception('[SciATH] unrecognized type %s' % verifier_type)

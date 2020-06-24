@@ -11,9 +11,9 @@ echo 'The first number is 1.1\nThe second number is 1.01'
 [36m[Report for test][0m
 --- <<TEST DIR STRIPPED>>/test_data/harness5/test.expected
 +++ <<TEST DIR STRIPPED>>/harness5_sandbox/test_output/sciath.job-0-job.stdout
-Report for lines matching: '^The\ first\ number\ is'
-(l.1/1) Lines did not match:
-expected value of 7 does not match output value 1.1 to rel. tol. 1e-06
+Report for lines matching: '^\s*The\ first\ number\ is'
+Output line 1 did not match line 1 in expected output:
+1.1 does not match expected 7 to rel. tol. 1e-06 (rel. err. 0.842857)
 [35m[ *** Summary *** ][0m
 [91m[test]  fail[0m (verification failed)
 
