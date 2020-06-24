@@ -7,7 +7,7 @@ import shutil
 import errno
 
 from sciath.job import Job
-from sciath import sciath_test_status
+from sciath import SCIATH_TEST_STATUS
 
 
 class Verifier (object):
@@ -47,7 +47,7 @@ class ExitCodeVerifier(Verifier):
         exit_code_file = os.path.join(output_path, c_name)
         if not os.path.isfile(exit_code_file) :
             report.append("[ReturnCodeDiff] File (" + exit_code_file + ") not found")
-            status = sciath_test_status.job_not_run
+            status = SCIATH_TEST_STATUS.job_not_run
             return status, report
 
         with open(exit_code_file, 'r') as f:
@@ -57,9 +57,9 @@ class ExitCodeVerifier(Verifier):
         if exit_codes != self.exit_codes_success:
             report.append("[ExitCodeDiff] Expected exit code(s): " + str(self.exit_codes_success))
             report.append("[ExitCodeDiff] Output exit code(s)  : " + str(exit_codes))
-            status = sciath_test_status.not_ok
+            status = SCIATH_TEST_STATUS.not_ok
         else:
-            status = sciath_test_status.ok
+            status = SCIATH_TEST_STATUS.ok
         return status, report
 
     def set_exit_codes_success(self, exit_codes_success):
@@ -92,13 +92,13 @@ class ComparisonVerifier(Verifier):
         status = None
 
         if not os.path.isfile(self.expected_file) :
-            status = sciath_test_status.expected_file_not_found
+            status = SCIATH_TEST_STATUS.expected_file_not_found
             report.append('[Comparison] Expected file missing: %s' % self.expected_file)
             return status, report
 
         from_file = self._from_file(output_path, exec_path)
         if not os.path.isfile(from_file) :
-            status = sciath_test_status.output_file_not_found
+            status = SCIATH_TEST_STATUS.output_file_not_found
             report.append('[Comparison] Output file missing: %s' % from_file)
             return status, report
 
@@ -128,7 +128,7 @@ class ComparisonVerifier(Verifier):
     def _compare_files(self, from_file, to_file):
         report = []
         if filecmp.cmp(from_file, to_file):
-            status = sciath_test_status.ok
+            status = SCIATH_TEST_STATUS.ok
         else:
             with open(from_file, 'r') as from_handle:
                 lines_from = from_handle.readlines()
@@ -138,7 +138,7 @@ class ComparisonVerifier(Verifier):
                                              fromfile=from_file,
                                              tofile=to_file):
                 report.append(line.rstrip('\n'))
-            status = sciath_test_status.not_ok
+            status = SCIATH_TEST_STATUS.not_ok
         return status, report
 
     def _from_file(self, output_path=None, exec_path=None):

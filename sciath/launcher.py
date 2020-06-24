@@ -6,10 +6,10 @@ import shutil
 import fcntl
 import subprocess
 
-import sciath._yaml_parse
-from   sciath import sciath_colors
-from   sciath import getVersion
-from   sciath._sciath_io import py23input, _remove_file_if_it_exists, command_join
+import sciath
+from sciath import yaml_parse
+from sciath import SCIATH_COLORS
+from sciath._sciath_io import py23input, _remove_file_if_it_exists, command_join
 
 # mpiexec has been observed to set non-blocking I/O, which
 #  has been observed to cause problems on OS X with errors like
@@ -55,7 +55,7 @@ def _generateLaunch_PBS(launcher,walltime,output_path,job):
     queuename = launcher.queueName
     mpiLaunch = launcher.mpiLaunch
 
-    resources = job.getMaxResources()
+    resources = job.get_max_resources()
     ranks = resources["mpiranks"]
 
     c_name,o_name,e_name = job.get_output_filenames()
@@ -86,7 +86,7 @@ def _generateLaunch_PBS(launcher,walltime,output_path,job):
 
     _remove_file_if_it_exists( os.path.join(output_path,c_name) )
 
-    command_resource = job.createExecuteCommand()
+    command_resource = job.create_execute_command()
     njobs = len(command_resource)
     for i in range(0,njobs):
         j = command_resource[i]
@@ -120,7 +120,7 @@ def _generateLaunch_LSF(launcher,rusage,walltime,output_path,job):
     queuename = launcher.queueName
     mpiLaunch = launcher.mpiLaunch
 
-    resources = job.getMaxResources()
+    resources = job.get_max_resources()
     ranks = resources["mpiranks"]
 
     c_name,o_name,e_name = job.get_output_filenames()
@@ -156,7 +156,7 @@ def _generateLaunch_LSF(launcher,rusage,walltime,output_path,job):
 
     _remove_file_if_it_exists( os.path.join(output_path,c_name) )
 
-    command_resource = job.createExecuteCommand()
+    command_resource = job.create_execute_command()
     njobs = len(command_resource)
     for i in range(0,njobs):
         j = command_resource[i]
@@ -193,7 +193,7 @@ def _generateLaunch_SLURM(launcher,walltime,output_path,job):
     constraint = launcher.batchConstraint
     mpiLaunch = launcher.mpiLaunch
 
-    resources = job.getMaxResources()
+    resources = job.get_max_resources()
     ranks = resources["mpiranks"]
 
     c_name,o_name,e_name = job.get_output_filenames()
@@ -230,7 +230,7 @@ def _generateLaunch_SLURM(launcher,walltime,output_path,job):
 
     _remove_file_if_it_exists( os.path.join(output_path,c_name) )
 
-    command_resource = job.createExecuteCommand()
+    command_resource = job.create_execute_command()
     njobs = len(command_resource)
     for i in range(0,njobs):
         j = command_resource[i]
@@ -299,7 +299,7 @@ class Launcher:
 
     @staticmethod
     def writeDefaultDefinition(conf_filename_in=None):
-        major, minor, patch=getVersion()
+        major, minor, patch = sciath.version()
         conf_filename = conf_filename_in if conf_filename_in else Launcher._default_conf_filename
         with open(conf_filename, 'w') as conf_file:
             conf_file.write('majorVersion: %s\n' % major)
@@ -399,7 +399,7 @@ class Launcher:
     def view(self):
         if self.verbosity_level > 0:
             print('[SciATH] Batch queueing system configuration [%s]' % self.conf_filename)
-            print('  Version:           %d.%d.%d' % getVersion())
+            print('  Version:           %d.%d.%d' % sciath.version())
             print('  Queue system:      %s' % self.queuingSystemType)
             print('  MPI launcher:      %s' % self.mpiLaunch)
             if self.useBatch:
@@ -492,7 +492,7 @@ class Launcher:
             self.writeDefinition()
 
     def writeDefinition(self):
-        major, minor, patch=getVersion()
+        major, minor, patch = sciath.version()
         with open(self.conf_filename, 'w') as conf_file:
             conf_file.write('majorVersion: %s\n' % major)
             conf_file.write('minorVersion: %s\n' % minor)
@@ -511,7 +511,7 @@ class Launcher:
         minorFile = None
         patchFile = None
         try:
-            data = sciath._yaml_parse.parse_yaml_subset_from_file(self.conf_filename)
+            data = yaml_parse.parse_yaml_subset_from_file(self.conf_filename)
             if 'majorVersion' in data:
                 majorFile = int(data['majorVersion'])
             if 'minorVersion' in data:
@@ -535,7 +535,7 @@ class Launcher:
             raise SciATHLoadException('[SciATH] Configuration file missing. You must execute configure(), and or writeDefinition() first')
 
         # Do not accept conf files if the major.minor version is stale, or if versions are missing
-        major,minor,patch = getVersion()
+        major,minor,patch = sciath.version()
         if majorFile < major or (minorFile < minor and majorFile == major) or \
              majorFile is None or minorFile is None or patchFile is None :
             message = '[SciATH] Incompatible, outdated configuration file ' + self.conf_filename + ' detected. Please delete it and re-run to reconfigure.'
@@ -585,7 +585,7 @@ class Launcher:
 
         if not self.useBatch:
             mpiLaunch = self.mpiLaunch
-            resources = job.getMaxResources()
+            resources = job.get_max_resources()
             ranks = resources["mpiranks"]
             threads = resources["threads"]
             if threads != 1:
@@ -595,7 +595,7 @@ class Launcher:
                 print('[Failed to launch test \"' + job.name + '\" as test uses > 1 MPI ranks and no MPI launcher was provided]')
                 return
 
-            command_resource = job.createExecuteCommand()
+            command_resource = job.create_execute_command()
             launchCmd = []
             for command, resource in command_resource:
                 launch = []
@@ -606,7 +606,7 @@ class Launcher:
                 launchCmd.append(launch)
 
             if self.verbosity_level > 0:
-                print('%s[Executing %s]%s from %s' % (sciath_colors.SUBHEADER, job.name, sciath_colors.ENDC, exec_path))
+                print('%s[Executing %s]%s from %s' % (SCIATH_COLORS.SUBHEADER, job.name, SCIATH_COLORS.ENDC, exec_path))
                 for lc in launchCmd:
                     print(command_join(lc))
 
@@ -635,7 +635,7 @@ class Launcher:
             cwd_back = os.getcwd()
             os.chdir(exec_path)
             if self.verbosity_level > 0:
-                print('%s[Executing %s]%s from %s' % (sciath_colors.SUBHEADER, job.name, sciath_colors.ENDC, exec_path))
+                print('%s[Executing %s]%s from %s' % (SCIATH_COLORS.SUBHEADER, job.name, SCIATH_COLORS.ENDC, exec_path))
                 print(command_join(launchCmd))
             _subprocess_run(launchCmd, universal_newlines=True)
             os.chdir(cwd_back)

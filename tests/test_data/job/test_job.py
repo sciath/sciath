@@ -19,7 +19,7 @@ taskD.setResources(threads=27,ranks=40)
 
 job = sciath.job.Job([taskA, taskB, taskC, taskD], name='Four-task job')
 
-er = job.createExecuteCommand()
+er = job.create_execute_command()
 print('Execute command + resources for job')
 for i in er:
     print('  cmd =',i[0])
@@ -28,4 +28,4 @@ for i in er:
 
 print('Max. resources required for job')
 for r in resources_to_print:
-    print(r,':',job.getMaxResources()[r])
+    print(r,':',job.get_max_resources()[r])

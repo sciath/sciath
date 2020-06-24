@@ -38,7 +38,7 @@ class Task(object):
                     message = '[SciATH error]: Cannot convert wall_time \"' + str(value) + '\" to float.'
                     raise RuntimeError(message)
 
-    def createExecuteCommand(self):
+    def create_execute_command(self):
         """
         Returns a  command, resource tuple.
         """
