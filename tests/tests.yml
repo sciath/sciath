@@ -21,7 +21,7 @@
 -
   name: verifier_line_atol
   group: default_configuration
-  command: sh test_wrapper.sh verifier_line_atol "-i ../test_data/verifier_line_atol/input.yml"
+  command: sh test_wrapper.sh verifier_line_atol "../test_data/verifier_line_atol/input.yml"
   expected: test_data/verifier_line_atol.expected
 -
   name: harness1
@@ -41,7 +41,7 @@
 -
   name: harness4
   group: default_configuration
-  command: sh test_api_wrapper.sh harness4 "test_data/harness4/test4.py -i ../test_data/harness4/input.yml"
+  command: sh test_api_wrapper.sh harness4 "test_data/harness4/test4.py ../test_data/harness4/input.yml"
   expected: test_data/harness4.expected
 -
   name: harness5
@@ -56,22 +56,22 @@
 -
   name: module_input
   group: default_configuration
-  command: sh test_wrapper.sh module_input "-i ../test_data/module_input/input.yml"
+  command: sh test_wrapper.sh module_input "../test_data/module_input/input.yml"
   expected: test_data/module_input.expected
 -
   name: module_line_verifier
   group: default_configuration
-  command: sh test_wrapper.sh module_input "-i ../test_data/module_line_verifier/input.yml"
+  command: sh test_wrapper.sh module_input "../test_data/module_line_verifier/input.yml"
   expected: test_data/module_line_verifier.expected
 -
   name: module_multi
   group: default_configuration
-  command: sh test_wrapper.sh module_multi "-i ../test_data/module_multi/input.yml"
+  command: sh test_wrapper.sh module_multi "../test_data/module_multi/input.yml"
   expected: test_data/module_multi.expected
 -
   name: module_relpath
   group: default_configuration
-  command: sh test_wrapper.sh module_relpath "-i ../test_data/module_relpath/input.yml"
+  command: sh test_wrapper.sh module_relpath "../test_data/module_relpath/input.yml"
   expected: test_data/module_relpath.expected
 -
   name: job
@@ -86,30 +86,30 @@
 -
   name: multiple_ranks_no_mpi
   group: default_configuration
-  command: sh test_wrapper.sh multiple_ranks_no_mpi "-i ../test_data/multiple_ranks_no_mpi/input.yml"
+  command: sh test_wrapper.sh multiple_ranks_no_mpi "../test_data/multiple_ranks_no_mpi/input.yml"
   expected: test_data/multiple_ranks_no_mpi.expected
 -
   name: groups
   group: default_configuration
-  command: sh test_wrapper.sh groups "-i ../test_data/groups/input.yml -g group_one,group_four -x group_two"
+  command: sh test_wrapper.sh groups "../test_data/groups/input.yml -g group_one,group_four -x group_two"
   expected: test_data/groups.expected
 -
   name: mpi_smoke_execute
   group: mpi_execute
-  command: sh test_mpi_wrapper.sh mpi_smoke_execute "-e -i ../test_data/mpi_smoke/input.yml"
+  command: sh test_mpi_wrapper.sh mpi_smoke_execute "-e ../test_data/mpi_smoke/input.yml"
   expected: test_data/mpi_smoke_execute.expected
 -
   name: mpi_smoke_verify
   group: mpi_verify
-  command: sh test_mpi_wrapper.sh mpi_smoke_verify "-v -i ../test_data/mpi_smoke/input.yml" mpi_smoke_execute
+  command: sh test_mpi_wrapper.sh mpi_smoke_verify "-v ../test_data/mpi_smoke/input.yml" mpi_smoke_execute
   expected: test_data/mpi_smoke_verify.expected
 -
   name: mpi_smoke_two_ranks_execute
   group: mpi_execute
-  command: sh test_mpi_wrapper.sh mpi_smoke_two_ranks_execute "-e -i ../test_data/mpi_smoke_two_ranks/input.yml"
+  command: sh test_mpi_wrapper.sh mpi_smoke_two_ranks_execute "-e ../test_data/mpi_smoke_two_ranks/input.yml"
   expected: test_data/mpi_smoke_two_ranks_execute.expected
 -
   name: mpi_smoke_two_ranks_verify
   group: mpi_verify
-  command: sh test_mpi_wrapper.sh mpi_smoke_two_ranks_verify "-v -i ../test_data/mpi_smoke_two_ranks/input.yml" mpi_smoke_two_ranks_execute
+  command: sh test_mpi_wrapper.sh mpi_smoke_two_ranks_verify "-v ../test_data/mpi_smoke_two_ranks/input.yml" mpi_smoke_two_ranks_execute
   expected: test_data/mpi_smoke_two_ranks_verify.expected
