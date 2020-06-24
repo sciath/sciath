@@ -1,21 +1,15 @@
-import os
-import sys
-import argparse
-import math as math
-import re
-
-import sciath
+""" SciATH: Scientific Application Test Harness """
 from sciath._sciath_io import NamedColors
 from sciath._teststatus import SciathTestStatusDefinition
 
-def getVersion() :
-    """ Returns major, minor, patch version as integers """
+def version():
+    """ Return major, minor, patch version as integers """
     return 0, 6, 0
 
-__version__ = getVersion()
+__version__ = version()
 
 # A default set of colors
-sciath_colors = NamedColors()
+SCIATH_COLORS = NamedColors()
 
 # Default codes/status/message/colors for test verification
-sciath_test_status = SciathTestStatusDefinition(sciath_colors)
+SCIATH_TEST_STATUS = SciathTestStatusDefinition(SCIATH_COLORS)

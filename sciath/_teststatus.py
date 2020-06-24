@@ -1,12 +1,12 @@
 
 
 class SciathTestStatusDefinition:
-    def __init__(self,sciath_colors):
+    def __init__(self,SCIATH_COLORS):
         self.status_color_type = {
-            "pass" : sciath_colors.OK,
-            "fail" : sciath_colors.FAIL,
-            "skip" : sciath_colors.WARNING,
-            "deactivated" : sciath_colors.ENDC, }
+            "pass" : SCIATH_COLORS.OK,
+            "fail" : SCIATH_COLORS.FAIL,
+            "skip" : SCIATH_COLORS.WARNING,
+            "deactivated" : SCIATH_COLORS.ENDC, }
         self.set_status_type()
 
     def set_status_type(self):

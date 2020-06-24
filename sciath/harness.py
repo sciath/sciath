@@ -8,7 +8,7 @@ import shutil
 import sciath
 import sciath.launcher
 import sciath._test_file
-from sciath import sciath_colors
+from sciath import SCIATH_COLORS
 from sciath._sciath_io import py23input
 
 class _TestRunStatus:
@@ -85,7 +85,7 @@ class Harness:
 
         # Clean all tests
         if self.testruns:
-            print(sciath_colors.HEADER+'[ *** Cleanup *** ]'+sciath_colors.ENDC)
+            print(SCIATH_COLORS.HEADER+'[ *** Cleanup *** ]'+SCIATH_COLORS.ENDC)
         for testrun in self.testruns:
             if testrun.active:
                 print('[ -- Removing output for Test:',testrun.test.name,'-- ]')
@@ -109,7 +109,7 @@ class Harness:
             self.launcher = sciath.launcher.Launcher()
 
         if self.testruns:
-            print(sciath_colors.HEADER + '[ *** Executing Tests *** ]' + sciath_colors.ENDC)
+            print(SCIATH_COLORS.HEADER + '[ *** Executing Tests *** ]' + SCIATH_COLORS.ENDC)
             self.launcher.view()
         for testrun in self.testruns:
             if testrun.active:
@@ -146,26 +146,26 @@ class Harness:
             for testrun in self.testruns:
                 if testrun.report:
                     if not report_header_printed:
-                        print(sciath_colors.HEADER+'[ *** Verification Reports *** ]'+sciath_colors.ENDC)
+                        print(SCIATH_COLORS.HEADER+'[ *** Verification Reports *** ]'+SCIATH_COLORS.ENDC)
                         report_header_printed = True
-                    print('%s[Report for %s]%s' % (sciath_colors.SUBHEADER,testrun.test.name,sciath_colors.ENDC))
+                    print('%s[Report for %s]%s' % (SCIATH_COLORS.SUBHEADER,testrun.test.name,SCIATH_COLORS.ENDC))
                     for line in testrun.report:
                         print(line)
-            print(sciath_colors.HEADER+'[ *** Summary *** ]'+sciath_colors.ENDC)
+            print(SCIATH_COLORS.HEADER+'[ *** Summary *** ]'+SCIATH_COLORS.ENDC)
             for testrun in self.testruns:
                 if testrun.status == 'fail':
                     failed_names.append(testrun.test.name)
-                print(sciath.sciath_test_status.status_color_type[testrun.status], end='')
+                print(sciath.SCIATH_TEST_STATUS.status_color_type[testrun.status], end='')
                 print('[%s]  %s' %(testrun.test.name, testrun.status), end='')
-                print(sciath_colors.ENDC, end='')
+                print(SCIATH_COLORS.ENDC, end='')
                 if testrun.status_info:
                     print(' (' + testrun.status_info + ')', end='')
                 print()
             print()
             if self.determine_overall_success():
-                print(sciath_colors.OK + "SUCCESS" + sciath_colors.ENDC)
+                print(SCIATH_COLORS.OK + "SUCCESS" + SCIATH_COLORS.ENDC)
             else:
-                print(sciath_colors.FAIL + "FAILURE" + sciath_colors.ENDC)
+                print(SCIATH_COLORS.FAIL + "FAILURE" + SCIATH_COLORS.ENDC)
                 if failed_names:
                     print('To re-run failed tests, use e.g.')
                     print('  -t ' + ','.join(failed_names))
@@ -199,7 +199,7 @@ class Harness:
         args,unknown = parser.parse_known_args()
 
         if args.no_colors:
-            sciath.sciath_colors.set_colors(use_bash = False)
+            sciath.SCIATH_COLORS.set_colors(use_bash = False)
 
         if args.update_expected:
             print("[SciATH] You have provided an argument to updated expected files.")
@@ -257,7 +257,7 @@ class Harness:
     def update_expected(self):
         """ Give each active test the chance to update its reference output """
         if self.testruns:
-            print(sciath_colors.HEADER + '[ *** Updating Expected Output *** ]' + sciath_colors.ENDC)
+            print(SCIATH_COLORS.HEADER + '[ *** Updating Expected Output *** ]' + SCIATH_COLORS.ENDC)
         for testrun in self.testruns:
             if testrun.active:
                 if hasattr(testrun.test.verifier, 'update_expected'):

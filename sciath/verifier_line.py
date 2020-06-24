@@ -3,7 +3,7 @@ import re
 import shutil
 
 from sciath.verifier import ComparisonVerifier
-from sciath import sciath_test_status
+from sciath import SCIATH_TEST_STATUS
 
 
 class LineVerifier(ComparisonVerifier):
@@ -41,7 +41,7 @@ class LineVerifier(ComparisonVerifier):
                 report.append("Report for lines matching: '" + rule['re'] + "'")
                 report.extend(rule_report)
 
-        status = sciath_test_status.ok if passing else sciath_test_status.not_ok
+        status = SCIATH_TEST_STATUS.ok if passing else SCIATH_TEST_STATUS.not_ok
         return status, report
 
 
