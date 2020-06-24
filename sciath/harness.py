@@ -162,13 +162,16 @@ class Harness:
                     print(' (' + testrun.status_info + ')', end='')
                 print()
             print()
-            if self.determine_overall_success():
-                print(SCIATH_COLORS.OK + "SUCCESS" + SCIATH_COLORS.ENDC)
+            if any((testrun.active for testrun in self.testruns)):
+                if self.determine_overall_success():
+                    print(SCIATH_COLORS.OK + "SUCCESS" + SCIATH_COLORS.ENDC)
+                else:
+                    print(SCIATH_COLORS.FAIL + "FAILURE" + SCIATH_COLORS.ENDC)
+                    if failed_names:
+                        print('To re-run failed tests, use e.g.')
+                        print('  -t ' + ','.join(failed_names))
             else:
-                print(SCIATH_COLORS.FAIL + "FAILURE" + SCIATH_COLORS.ENDC)
-                if failed_names:
-                    print('To re-run failed tests, use e.g.')
-                    print('  -t ' + ','.join(failed_names))
+                print("No tests active")
         else:
             print("No tests")
 
