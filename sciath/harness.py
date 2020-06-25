@@ -1,3 +1,4 @@
+""" SciATH Harness class """
 from __future__ import print_function
 
 import os
@@ -7,24 +8,26 @@ import shutil
 
 import sciath
 import sciath.launcher
-import sciath._test_file
+import sciath.test_file
 from sciath import SCIATH_COLORS
 from sciath._sciath_io import py23input
 
+
 class _TestRunStatus:
-    DEACTIVATED             = 'deactivated'  # Test skipped intentionally
-    UNKNOWN                 = 'unknown'      # Neither checked for completion nor verified
-    NOT_LAUNCHED            = 'not launched' # Launcher reports test has not been launched
-    INCOMPLETE              = 'incomplete'   # Launcher reports test run incomplete
-    COMPLETE_AND_UNVERIFIED = 'unverified'   # Launcher reports complete, yet verification not performed
-    SKIPPED                 = 'skipped'      # Test skipped because Launcher reports of lack of resources
-    JOB_INVALID             = 'invalid job'  # Launcher reports test's Job is incorrectly specified
-    TEST_INVALID            = 'invalid test' # Verifier reports test/verification is badly specified
-    PASS                    = 'pass'         # Verifier confirms pass
-    FAIL                    = 'fail'         # Verifier confirms fail
+    DEACTIVATED = 'deactivated'  # Test skipped intentionally
+    UNKNOWN = 'unknown'  # Neither checked for completion nor verified
+    NOT_LAUNCHED = 'not launched'  # Launcher reports test has not been launched
+    INCOMPLETE = 'incomplete'  # Launcher reports test run incomplete
+    COMPLETE_AND_UNVERIFIED = 'unverified'  # Launcher reports complete, but not verified
+    SKIPPED = 'skipped'  # Test skipped: Launcher reports of lack of resources
+    JOB_INVALID = 'invalid job'  # Launcher reports test's Job is incorrectly specified
+    TEST_INVALID = 'invalid test'  # Verifier reports test/verification is badly specified
+    PASS = 'pass'  # Verifier confirms pass
+    FAIL = 'fail'  # Verifier confirms fail
+
 
 class _TestRun:
-        """ A private class which adds state about a specific "run" of a Test.
+    """ A private class which adds state about a specific "run" of a Test.
 
         It contains a Test object, which should be thought of as the stateless
         information about a test case, provided by a user. In addition, it
@@ -32,15 +35,16 @@ class _TestRun:
         from, information collected from the Launcher (to use for output), etc.
         """
 
-        def __init__(self,test):
-            self.active = True
-            self.test = test
-            self.output_path = os.path.join(os.getcwd(),test.name + '_output')
-            self.exec_path = os.path.join(self.output_path,'sandbox')
-            self.sandbox = True
-            self.status = _TestRunStatus.UNKNOWN
-            self.status_info = ''
-            self.report = []
+    def __init__(self, test):
+        self.active = True
+        self.test = test
+        self.output_path = os.path.join(os.getcwd(), test.name + '_output')
+        self.exec_path = os.path.join(self.output_path, 'sandbox')
+        self.sandbox = True
+        self.status = _TestRunStatus.UNKNOWN
+        self.status_info = ''
+        self.report = []
+
 
 class Harness:
     """ :class:`Harness` is the central user-facing class in SciATH.
@@ -64,11 +68,12 @@ class Harness:
 
     _sandbox_sentinel_filename = '.sciath_sandbox'
 
-    def __init__(self, tests=[]):
-        self.launcher = None # Created when needed
+    def __init__(self, tests=None):
+        self.launcher = None  # Created when needed
         self.testruns = []
-        for test in tests:
-            self.add_test(test)
+        if tests:
+            for test in tests:
+                self.add_test(test)
 
     def add_test(self, test):
         if test.name in [testrun.test.name for testrun in self.testruns]:
@@ -76,7 +81,7 @@ class Harness:
         self.testruns.append(_TestRun(test))
 
     def add_tests_from_file(self, filename):
-        for test in sciath._test_file.create_tests_from_file(filename):
+        for test in sciath.test_file.create_tests_from_file(filename):
             self.add_test(test)
 
     def clean(self):
@@ -85,20 +90,27 @@ class Harness:
 
         # Clean all tests
         if self.testruns:
-            print(SCIATH_COLORS.HEADER+'[ *** Cleanup *** ]'+SCIATH_COLORS.ENDC)
+            print(SCIATH_COLORS.HEADER + '[ *** Cleanup *** ]' +
+                  SCIATH_COLORS.ENDC)
         for testrun in self.testruns:
             if testrun.active:
-                print('[ -- Removing output for Test:',testrun.test.name,'-- ]')
-                self.launcher.clean(testrun.test.job, output_path=testrun.output_path)
+                print('[ -- Removing output for Test:', testrun.test.name, '-- ]')
+                self.launcher.clean(testrun.test.job,
+                                    output_path=testrun.output_path)
                 if testrun.sandbox and os.path.exists(testrun.exec_path):
-                    sentinel_file = os.path.join(testrun.exec_path,self._sandbox_sentinel_filename)
+                    sentinel_file = os.path.join(
+                        testrun.exec_path, self._sandbox_sentinel_filename)
                     if not os.path.exists(sentinel_file):
-                        raise Exception('[SciATH] did not find expected sentinel file ' + sentinel_file)
+                        raise Exception(
+                            '[SciATH] did not find expected sentinel file ' +
+                            sentinel_file)
                     shutil.rmtree(testrun.exec_path)
 
     def determine_overall_success(self):
         for testrun in self.testruns:
-            if testrun.status not in [_TestRunStatus.DEACTIVATED, _TestRunStatus.PASS] :
+            if testrun.status not in [
+                    _TestRunStatus.DEACTIVATED, _TestRunStatus.PASS
+            ]:
                 return False
         return True
 
@@ -118,15 +130,104 @@ class Harness:
                 if not os.path.exists(testrun.exec_path):
                     os.makedirs(testrun.exec_path)
                 if testrun.sandbox:
-                    sentinel_file = os.path.join(testrun.exec_path,self._sandbox_sentinel_filename)
+                    sentinel_file = os.path.join(
+                        testrun.exec_path, self._sandbox_sentinel_filename)
                     if os.path.exists(sentinel_file):
-                        raise Exception("[SciATH] Unexpected sentinel file " + sentinel_file)
-                    with open(sentinel_file,'w'):
+                        raise Exception("[SciATH] Unexpected sentinel file " +
+                                        sentinel_file)
+                    with open(sentinel_file, 'w'):
                         pass
-                self.launcher.submitJob(
-                        testrun.test.job,
-                        output_path=testrun.output_path,
-                        exec_path = testrun.exec_path)
+                self.launcher.submitJob(testrun.test.job,
+                                        output_path=testrun.output_path,
+                                        exec_path=testrun.exec_path)
+
+    def _parse_args(self):
+        parser = argparse.ArgumentParser(description='SciATH')
+        parser.add_argument(
+            'input_file',
+            help='YAML file to add tests to the harness',
+            nargs='?',
+            default=None)
+        parser.add_argument(
+            '-c',
+            '--configure',
+            help='Configure queuing system information',
+            required=False,
+            action='store_true')
+        parser.add_argument(
+            '-t',
+            '--test-subset',
+            help='Comma-separated list of test names',
+            required=False)
+        parser.add_argument(
+            '-p',
+            '--purge-output',
+            help='Delete generated output',
+            required=False,
+            action='store_true')
+        parser.add_argument(
+            '-f',
+            '--error-on-test-failure',
+            help='Return exit code of 1 if any test failed',
+            required=False,
+            action='store_true')
+        parser.add_argument(
+            '-d',
+            '--configure-default',
+            help=
+            'Write default queuing system config file',
+            required=False,
+            action='store_true')
+        parser.add_argument(
+            '-l',
+            '--list',
+            help='List all registered tests and exit',
+            required=False,
+            action='store_true')
+        parser.add_argument(
+            '-w',
+            '--conf-file',
+            help='Use provided configuration file',
+            required=False)
+        parser.add_argument(
+            '--no-colors',
+            help='Deactivate colored output',
+            required=False,
+            action='store_true')
+        parser.add_argument(
+            '-u',
+            '--update-expected',
+            help=
+            'When well-defined, update reference files with current output',
+            required=False,
+            action='store_true')
+        stage_skip_group = parser.add_mutually_exclusive_group()
+        stage_skip_group.add_argument(
+            '-v',
+            '--verify',
+            help='Perform test verification, and not execution',
+            required=False,
+            action='store_true')
+        stage_skip_group.add_argument(
+            '-e',
+            '--execute',
+            help='Perform test execution, and not verification',
+            required=False,
+            action='store_true')
+        parser.add_argument(
+            '-g',
+            '--groups',
+            help=
+            'Comma-separated list of test groups. Tests not in these groups are excluded',
+            required=False)
+        parser.add_argument(
+            '-x',
+            '--exclude-groups',
+            help=
+            'Comma-separated list of test groups. Tests in these groups are excluded',
+            required=False)
+
+        return parser.parse_args()
 
     def print_all_tests(self):
         """ Display information about all tests """
@@ -146,17 +247,24 @@ class Harness:
             for testrun in self.testruns:
                 if testrun.report:
                     if not report_header_printed:
-                        print(SCIATH_COLORS.HEADER+'[ *** Verification Reports *** ]'+SCIATH_COLORS.ENDC)
+                        print(SCIATH_COLORS.HEADER +
+                              '[ *** Verification Reports *** ]' +
+                              SCIATH_COLORS.ENDC)
                         report_header_printed = True
-                    print('%s[Report for %s]%s' % (SCIATH_COLORS.SUBHEADER,testrun.test.name,SCIATH_COLORS.ENDC))
+                    print('%s[Report for %s]%s' %
+                          (SCIATH_COLORS.SUBHEADER, testrun.test.name,
+                           SCIATH_COLORS.ENDC))
                     for line in testrun.report:
                         print(line)
-            print(SCIATH_COLORS.HEADER+'[ *** Summary *** ]'+SCIATH_COLORS.ENDC)
+            print(SCIATH_COLORS.HEADER + '[ *** Summary *** ]' +
+                  SCIATH_COLORS.ENDC)
             for testrun in self.testruns:
                 if testrun.status == 'fail':
                     failed_names.append(testrun.test.name)
-                print(sciath.SCIATH_TEST_STATUS.status_color_type[testrun.status], end='')
-                print('[%s]  %s' %(testrun.test.name, testrun.status), end='')
+                print(
+                    sciath.SCIATH_TEST_STATUS.status_color_type[testrun.status],
+                    end='')
+                print('[%s]  %s' % (testrun.test.name, testrun.status), end='')
                 print(SCIATH_COLORS.ENDC, end='')
                 if testrun.status_info:
                     print(' (' + testrun.status_info + ')', end='')
@@ -181,35 +289,18 @@ class Harness:
         This essentially defines the "main" function for the typical
         use of SciATH.
         """
-
-        parser = argparse.ArgumentParser(description='SciATH')
-        parser.add_argument('input_file', help='YAML file to add tests to the harness', nargs='?', default=None)
-        parser.add_argument('-c', '--configure', help='Configure queuing system information', required=False, action='store_true')
-        parser.add_argument('-t', '--test-subset', help='Comma-separated list of test names', required=False)
-        parser.add_argument('-p', '--purge-output', help='Delete generated output', required=False, action='store_true')
-        parser.add_argument('-f', '--error-on-test-failure', help='Return exit code of 1 if any test failed', required=False, action='store_true')
-        parser.add_argument('-d', '--configure-default', help='Write default queuing system config file (no mpi, no queuing system)', required=False, action='store_true')
-        parser.add_argument('-l', '--list', help='List all registered tests and exit', required=False, action='store_true')
-        parser.add_argument('-w','--conf-file',help='Use provided configuration file instead of the default',required=False)
-        parser.add_argument('--no-colors',help='Deactivate colored output',required=False,action='store_true')
-        parser.add_argument('-u', '--update-expected', help='When well-defined, update reference files with current output before verifying', required=False, action='store_true')
-        stage_skip_group = parser.add_mutually_exclusive_group()
-        stage_skip_group.add_argument('-v', '--verify', help='Perform test verification, and not execution', required=False, action='store_true')
-        stage_skip_group.add_argument('-e','--execute', help='Perform test execution, and not verification', required=False, action='store_true')
-        parser.add_argument('-g', '--groups', help='Comma-separated list of test groups. Tests not in these groups are excluded', required=False)
-        parser.add_argument('-x', '--exclude-groups', help='Comma-separated list of test groups. Tests in these groups are excluded', required=False)
-
-        args,unknown = parser.parse_known_args()
+        args = self._parse_args()
 
         if args.no_colors:
-            sciath.SCIATH_COLORS.set_colors(use_bash = False)
+            sciath.SCIATH_COLORS.set_colors(use_bash=False)
 
         if args.update_expected:
             print("[SciATH] You have provided an argument to updated expected files.")
             print("[SciATH] This will attempt to OVERWRITE your expected files!")
             user_input = None
             while not user_input:
-                user_input = py23input("[SciATH] Are you sure? Type 'y' to continue: ")
+                user_input = py23input(
+                    "[SciATH] Are you sure? Type 'y' to continue: ")
             if user_input[0] not in ['y', 'Y']:
                 print("[SciATH] Aborting.")
                 return
@@ -260,20 +351,24 @@ class Harness:
     def update_expected(self):
         """ Give each active test the chance to update its reference output """
         if self.testruns:
-            print(SCIATH_COLORS.HEADER + '[ *** Updating Expected Output *** ]' + SCIATH_COLORS.ENDC)
+            print(SCIATH_COLORS.HEADER +
+                  '[ *** Updating Expected Output *** ]' + SCIATH_COLORS.ENDC)
         for testrun in self.testruns:
             if testrun.active:
                 if hasattr(testrun.test.verifier, 'update_expected'):
-                    print('[ -- Updating output for Test:',testrun.test.name,'-- ]')
-                    testrun.test.verifier.update_expected(testrun.output_path, testrun.exec_path)
+                    print('[ -- Updating output for Test:', testrun.test.name, '-- ]')
+                    testrun.test.verifier.update_expected(
+                        testrun.output_path, testrun.exec_path)
                 else:
-                    print('[ -- Output updated not supported for Test:',testrun.test.name,'-- ]')
+                    print('[ -- Output updated not supported for Test:',
+                          testrun.test.name, '-- ]')
 
     def verify(self):
         """ Update the status of all test runs """
         for testrun in self.testruns:
             if testrun.active:
-                status, testrun.report = testrun.test.verify(testrun.output_path, testrun.exec_path)
+                status, testrun.report = testrun.test.verify(
+                    testrun.output_path, testrun.exec_path)
                 verifier_status = status[0]
                 verifier_info = status[1]
                 if verifier_status == 'pass':
@@ -287,7 +382,7 @@ class Harness:
                     testrun.status_info = verifier_info
                 else:
                     testrun.status = _TestRunStatus.FAIL
-                    testrun.status_info = "Verifier returned unrecognized status and info: " + verifier_status + ", " + verifier_info
+                    testrun.status_info = 'Unrecognized: %s, %s' % (verifier_status, verifier_info)
             else:
                 testrun.status = _TestRunStatus.DEACTIVATED
 
@@ -304,15 +399,20 @@ class Harness:
             is stripped
         """
         if only_groups_string:
-            only_groups = [group.strip() for group in only_groups_string.split(',')]
+            only_groups = [
+                group.strip() for group in only_groups_string.split(',')
+            ]
         else:
             only_groups = None
         if exclude_groups_string:
-            exclude_groups = [group.strip() for group in exclude_groups_string.split(',')]
+            exclude_groups = [
+                group.strip() for group in exclude_groups_string.split(',')
+            ]
         else:
             exclude_groups = []
         for testrun in self.testruns:
-            if only_groups and not testrun.test.groups.intersection(only_groups):
+            if only_groups and not testrun.test.groups.intersection(
+                    only_groups):
                 testrun.active = False
             if testrun.test.groups.intersection(exclude_groups):
                 testrun.active = False

@@ -5,8 +5,8 @@ test_dir=$(pwd)
 sandbox="$test_name""_sandbox"
 python=python
 
-args1="-i input.yml"
-args2="-i input.yml -u"
+args1="input.yml"
+args2="input.yml -u"
 
 rm -rf $sandbox
 mkdir $sandbox
