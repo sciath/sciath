@@ -4,6 +4,7 @@
     strictyaml, ruamel.yaml or PyYAML.
 """
 
+from sciath.utility import DotDict
 
 def parse_yaml_subset_from_file(filename):
     """ Parse a subset of YAML files into a nested structure of list and dict objects
@@ -14,13 +15,6 @@ def parse_yaml_subset_from_file(filename):
     with open(filename, 'r') as input_file:
         lines = input_file.readlines()
 
-    class _StackFrame():
-
-        def __init__(self, entry_type, indent, data):
-            self.entry_type = entry_type
-            self.indent = indent
-            self.data = data
-
     stack = []
 
     line_number = 0
@@ -30,18 +24,7 @@ def parse_yaml_subset_from_file(filename):
         if not content:
             continue
 
-        # Parse content
-        if content.startswith('-'):
-            entry_type = 's'
-            value = content[1:].strip()
-        elif ':' in content:
-            entry_type = 'm'
-            key, value = content.split(':', 1)
-            key = key.strip()
-            value = value.strip()
-        else:
-            _parse_error(filename, line_number,
-                         'Lines must either start with a dash (-) or contain a colon (:)')
+        entry_type, key, value = _parse_content(content, filename, line_number)
 
         # Add content to nested structure
         if not stack:
@@ -52,7 +35,7 @@ def parse_yaml_subset_from_file(filename):
             elif entry_type == 'm':
                 data = {key: value}
                 prev_key = key
-            stack = [_StackFrame(entry_type, indent, data)]
+            stack = [DotDict(entry_type=entry_type, indent=indent, data=data)]
         else:
             curr = stack[-1]
             if indent != curr.indent:
@@ -61,7 +44,7 @@ def parse_yaml_subset_from_file(filename):
 
                     # Create a new stack frame with an empty list or dict
                     new_data = {} if entry_type == 'm' else []
-                    stack.append(_StackFrame(entry_type, indent, new_data))
+                    stack.append(DotDict(entry_type=entry_type, indent=indent, data=new_data))
                     curr = stack[-1]
 
                     # Insert new data as value in preceding item
@@ -106,6 +89,26 @@ def parse_yaml_subset_from_file(filename):
     return stack[0].data
 
 
+def _parse_content(content, filename, line_number):
+    if content.startswith('-'):
+        entry_type = 's'
+        key = None
+        value = content[1:].strip()
+    elif ':' in content:
+        entry_type = 'm'
+        key, value = content.split(':', 1)
+        key = key.strip()
+        value = value.strip()
+    else:
+        _parse_error(filename, line_number, 'Lines must start with - or contain :')
+    return entry_type, key, value
+
+
+def _parse_error(filename, line_number, message):
+    raise Exception("[SciATH] %s:%d  File parse error: %s" %
+                    (filename, line_number, message))
+
+
 def _parse_line(line, filename, line_number):
 
     # Determine indentation level
@@ -119,8 +122,3 @@ def _parse_line(line, filename, line_number):
     content = content.split('#')[0].rstrip()
 
     return indent, content
-
-
-def _parse_error(filename, line_number, message):
-    raise Exception("[SciATH] %s:%d  File parse error: %s" %
-                    (filename, line_number, message))
