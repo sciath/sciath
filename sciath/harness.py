@@ -127,6 +127,25 @@ class Harness:
                         testrun.test.job,
                         output_path=testrun.output_path,
                         exec_path = testrun.exec_path)
+    def _parse_args(self):
+        parser = argparse.ArgumentParser(description='SciATH')
+        parser.add_argument('input_file', help='YAML file to add tests to the harness', nargs='?', default=None)
+        parser.add_argument('-c', '--configure', help='Configure queuing system information', required=False, action='store_true')
+        parser.add_argument('-t', '--test-subset', help='Comma-separated list of test names', required=False)
+        parser.add_argument('-p', '--purge-output', help='Delete generated output', required=False, action='store_true')
+        parser.add_argument('-f', '--error-on-test-failure', help='Return exit code of 1 if any test failed', required=False, action='store_true')
+        parser.add_argument('-d', '--configure-default', help='Write default queuing system config file (no mpi, no queuing system)', required=False, action='store_true')
+        parser.add_argument('-l', '--list', help='List all registered tests and exit', required=False, action='store_true')
+        parser.add_argument('-w','--conf-file',help='Use provided configuration file instead of the default',required=False)
+        parser.add_argument('--no-colors',help='Deactivate colored output',required=False,action='store_true')
+        parser.add_argument('-u', '--update-expected', help='When well-defined, update reference files with current output before verifying', required=False, action='store_true')
+        stage_skip_group = parser.add_mutually_exclusive_group()
+        stage_skip_group.add_argument('-v', '--verify', help='Perform test verification, and not execution', required=False, action='store_true')
+        stage_skip_group.add_argument('-e','--execute', help='Perform test execution, and not verification', required=False, action='store_true')
+        parser.add_argument('-g', '--groups', help='Comma-separated list of test groups. Tests not in these groups are excluded', required=False)
+        parser.add_argument('-x', '--exclude-groups', help='Comma-separated list of test groups. Tests in these groups are excluded', required=False)
+
+        return parser.parse_args()
 
     def print_all_tests(self):
         """ Display information about all tests """
@@ -181,25 +200,7 @@ class Harness:
         This essentially defines the "main" function for the typical
         use of SciATH.
         """
-
-        parser = argparse.ArgumentParser(description='SciATH')
-        parser.add_argument('input_file', help='YAML file to add tests to the harness', nargs='?', default=None)
-        parser.add_argument('-c', '--configure', help='Configure queuing system information', required=False, action='store_true')
-        parser.add_argument('-t', '--test-subset', help='Comma-separated list of test names', required=False)
-        parser.add_argument('-p', '--purge-output', help='Delete generated output', required=False, action='store_true')
-        parser.add_argument('-f', '--error-on-test-failure', help='Return exit code of 1 if any test failed', required=False, action='store_true')
-        parser.add_argument('-d', '--configure-default', help='Write default queuing system config file (no mpi, no queuing system)', required=False, action='store_true')
-        parser.add_argument('-l', '--list', help='List all registered tests and exit', required=False, action='store_true')
-        parser.add_argument('-w','--conf-file',help='Use provided configuration file instead of the default',required=False)
-        parser.add_argument('--no-colors',help='Deactivate colored output',required=False,action='store_true')
-        parser.add_argument('-u', '--update-expected', help='When well-defined, update reference files with current output before verifying', required=False, action='store_true')
-        stage_skip_group = parser.add_mutually_exclusive_group()
-        stage_skip_group.add_argument('-v', '--verify', help='Perform test verification, and not execution', required=False, action='store_true')
-        stage_skip_group.add_argument('-e','--execute', help='Perform test execution, and not verification', required=False, action='store_true')
-        parser.add_argument('-g', '--groups', help='Comma-separated list of test groups. Tests not in these groups are excluded', required=False)
-        parser.add_argument('-x', '--exclude-groups', help='Comma-separated list of test groups. Tests in these groups are excluded', required=False)
-
-        args,unknown = parser.parse_known_args()
+        args = self._parse_args()
 
         if args.no_colors:
             sciath.SCIATH_COLORS.set_colors(use_bash = False)
