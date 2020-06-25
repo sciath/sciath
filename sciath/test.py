@@ -1,3 +1,4 @@
+""" SciATH Test class """
 import sciath.verifier
 
 
@@ -10,7 +11,8 @@ class Test:
 
     * A :class:`Job`, describing how to execute the required operations
     * A name
-    * An implementation of the abstract base class :class:`Verifier`, defining how to determine success
+    * An implementation of the abstract base class :class:`Verifier`, defining
+    how to determine success
     * A set of group tags
 
     """
@@ -20,7 +22,8 @@ class Test:
             self.name = name
         else:
             if job.named_by_default:
-                raise Exception("[SciATH error] to create a Test, you must either name the Test or the Job explicitly")
+                raise Exception("[SciATH error] to create a Test, you must either "
+                                "name the Test or the Job explicitly")
             self.name = job.name
         self.verifier = sciath.verifier.ExitCodeVerifier(self)
         self.groups = set()
@@ -32,5 +35,6 @@ class Test:
         self.groups.add(group)
 
     def verify(self, output_path=None, exec_path=None):
-        status,report = self.verifier.execute(output_path, exec_path)
+        """ Return a status and a report, relative to an output and execution path """
+        status, report = self.verifier.execute(output_path, exec_path)
         return status, report
