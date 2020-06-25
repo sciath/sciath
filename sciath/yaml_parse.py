@@ -4,6 +4,7 @@
     strictyaml, ruamel.yaml or PyYAML.
 """
 
+from sciath.utility import DotDict
 
 def parse_yaml_subset_from_file(filename):
     """ Parse a subset of YAML files into a nested structure of list and dict objects
@@ -13,13 +14,6 @@ def parse_yaml_subset_from_file(filename):
     """
     with open(filename, 'r') as input_file:
         lines = input_file.readlines()
-
-    class _StackFrame():
-
-        def __init__(self, entry_type, indent, data):
-            self.entry_type = entry_type
-            self.indent = indent
-            self.data = data
 
     stack = []
 
@@ -52,7 +46,7 @@ def parse_yaml_subset_from_file(filename):
             elif entry_type == 'm':
                 data = {key: value}
                 prev_key = key
-            stack = [_StackFrame(entry_type, indent, data)]
+            stack = [DotDict(entry_type=entry_type, indent=indent, data=data)]
         else:
             curr = stack[-1]
             if indent != curr.indent:
@@ -61,7 +55,7 @@ def parse_yaml_subset_from_file(filename):
 
                     # Create a new stack frame with an empty list or dict
                     new_data = {} if entry_type == 'm' else []
-                    stack.append(_StackFrame(entry_type, indent, new_data))
+                    stack.append(DotDict(entry_type=entry_type, indent=indent, data=new_data))
                     curr = stack[-1]
 
                     # Insert new data as value in preceding item
