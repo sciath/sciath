@@ -24,18 +24,7 @@ def parse_yaml_subset_from_file(filename):
         if not content:
             continue
 
-        # Parse content
-        if content.startswith('-'):
-            entry_type = 's'
-            value = content[1:].strip()
-        elif ':' in content:
-            entry_type = 'm'
-            key, value = content.split(':', 1)
-            key = key.strip()
-            value = value.strip()
-        else:
-            _parse_error(filename, line_number,
-                         'Lines must either start with a dash (-) or contain a colon (:)')
+        entry_type, key, value = _parse_content(content, filename, line_number)
 
         # Add content to nested structure
         if not stack:
@@ -100,6 +89,26 @@ def parse_yaml_subset_from_file(filename):
     return stack[0].data
 
 
+def _parse_content(content, filename, line_number):
+    if content.startswith('-'):
+        entry_type = 's'
+        key = None
+        value = content[1:].strip()
+    elif ':' in content:
+        entry_type = 'm'
+        key, value = content.split(':', 1)
+        key = key.strip()
+        value = value.strip()
+    else:
+        _parse_error(filename, line_number, 'Lines must start with - or contain :')
+    return entry_type, key, value
+
+
+def _parse_error(filename, line_number, message):
+    raise Exception("[SciATH] %s:%d  File parse error: %s" %
+                    (filename, line_number, message))
+
+
 def _parse_line(line, filename, line_number):
 
     # Determine indentation level
@@ -113,8 +122,3 @@ def _parse_line(line, filename, line_number):
     content = content.split('#')[0].rstrip()
 
     return indent, content
-
-
-def _parse_error(filename, line_number, message):
-    raise Exception("[SciATH] %s:%d  File parse error: %s" %
-                    (filename, line_number, message))
