@@ -1,3 +1,4 @@
+""" SciATH Verifier class """
 from __future__ import print_function
 
 import os
@@ -6,17 +7,16 @@ import difflib
 import shutil
 import errno
 
-from sciath.job import Job
 from sciath import SCIATH_TEST_STATUS
 
 
-class Verifier (object):
+class Verifier:  # pylint: disable=too-few-public-methods
     """Base class for verification of a Test"""
 
     def __init__(self, test):
         self.test = test
 
-    def execute(self, output_path=None, exec_path=None):
+    def execute(self, output_path, exec_path=None):
         """ Relative to a given output path, fetch file(s) and produce status,report
 
             Accepts an output path (where the Launcher puts the files it generates)
@@ -42,18 +42,17 @@ class ExitCodeVerifier(Verifier):
         status = None
         report = []
 
-        c_name, o_name, e_name = self.test.job.get_output_filenames()
+        exit_code_name = self.test.job.get_output_filenames()[0]
 
-        exit_code_file = os.path.join(output_path, c_name)
-        if not os.path.isfile(exit_code_file) :
+        exit_code_file = os.path.join(output_path, exit_code_name)
+        if not os.path.isfile(exit_code_file):
             report.append("[ReturnCodeDiff] File (" + exit_code_file + ") not found")
             status = SCIATH_TEST_STATUS.job_not_run
             return status, report
 
-        with open(exit_code_file, 'r') as f:
-            exit_codes = [int(line) for line in f.readlines()]
+        with open(exit_code_file, 'r') as handle:
+            exit_codes = [int(line) for line in handle.readlines()]
 
-        exit_codes_success = self.exit_codes_success
         if exit_codes != self.exit_codes_success:
             report.append("[ExitCodeDiff] Expected exit code(s): " + str(self.exit_codes_success))
             report.append("[ExitCodeDiff] Output exit code(s)  : " + str(exit_codes))
@@ -63,6 +62,7 @@ class ExitCodeVerifier(Verifier):
         return status, report
 
     def set_exit_codes_success(self, exit_codes_success):
+        """ Sets a single exit code per Task to interpret as success """
         if len(exit_codes_success) != self.test.job.number_tasks():
             raise Exception('You must provide one exit code per Task')
         for code in exit_codes_success:
@@ -83,7 +83,7 @@ class ComparisonVerifier(Verifier):
             raise Exception('Cannot specify an output_file with a comparison_file')
         self.comparison_file = comparison_file
 
-        c_name, o_name, e_name = self.test.job.get_output_filenames()
+        exit_code_name, o_name, e_name = self.test.job.get_output_filenames()
         if not output_file and not comparison_file:
             self.output_file = o_name[-1]
 
@@ -91,13 +91,13 @@ class ComparisonVerifier(Verifier):
         report = []
         status = None
 
-        if not os.path.isfile(self.expected_file) :
+        if not os.path.isfile(self.expected_file):
             status = SCIATH_TEST_STATUS.expected_file_not_found
             report.append('[Comparison] Expected file missing: %s' % self.expected_file)
             return status, report
 
         from_file = self._from_file(output_path, exec_path)
-        if not os.path.isfile(from_file) :
+        if not os.path.isfile(from_file):
             status = SCIATH_TEST_STATUS.output_file_not_found
             report.append('[Comparison] Output file missing: %s' % from_file)
             return status, report
@@ -114,7 +114,7 @@ class ComparisonVerifier(Verifier):
 
             """
         from_file = self._from_file(output_path, exec_path)
-        if not os.path.isfile(from_file) :
+        if not os.path.isfile(from_file):
             print('[SciATH] Cannot update: source file missing: %s' % from_file)
         else:
             try:
@@ -125,7 +125,7 @@ class ComparisonVerifier(Verifier):
                 os.makedirs(os.path.dirname(self.expected_file))
                 shutil.copyfile(from_file, self.expected_file)
 
-    def _compare_files(self, from_file, to_file):
+    def _compare_files(self, from_file, to_file):  # pylint: disable=no-self-use
         report = []
         if filecmp.cmp(from_file, to_file):
             status = SCIATH_TEST_STATUS.ok
