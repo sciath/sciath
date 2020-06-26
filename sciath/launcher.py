@@ -280,7 +280,7 @@ def _subprocess_run(command, **kwargs):
         This is to avoid a dependency like subprocess32.
     """
     if sys.version_info[0] >= 3:
-        ctx = subprocess.run(command, **kwargs)  #pylint: disable=no-member
+        ctx = subprocess.run(command, check=False, **kwargs)  #pylint: disable=no-member
         returncode = ctx.returncode
     else:
         for key in ['stdout', 'stderr']:
