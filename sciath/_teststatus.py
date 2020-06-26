@@ -1,20 +1,22 @@
-class SciathTestStatusDefinition:
+""" Test Status definitions """
+class SciathTestStatusDefinition: #pylint: disable=too-few-public-methods,too-many-instance-attributes
+    """ SciATH test statuses """
 
     def __init__(self, SCIATH_COLORS):
         self.status_color_type = {
-            "pass": SCIATH_COLORS.OK,
-            "fail": SCIATH_COLORS.FAIL,
-            "skip": SCIATH_COLORS.WARNING,
-            "deactivated": SCIATH_COLORS.ENDC,
+            "pass": SCIATH_COLORS.okay,
+            "fail": SCIATH_COLORS.fail,
+            "skip": SCIATH_COLORS.warning,
+            "deactivated": SCIATH_COLORS.endc,
         }
-        self.set_status_type()
+        self._set_status_type()
 
-    def set_status_type(self):
-        self.ok = [
+    def _set_status_type(self):
+        self.okay = [
             'pass',
             'verification was successful',
         ]
-        self.not_ok = [
+        self.not_okay = [
             'fail',
             'verification failed',
         ]

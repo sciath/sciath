@@ -13,7 +13,7 @@ from sciath import SCIATH_COLORS
 from sciath._sciath_io import py23input
 
 
-class _TestRunStatus:
+class _TestRunStatus:  #pylint: disable=too-few-public-methods
     DEACTIVATED = 'deactivated'  # Test skipped intentionally
     UNKNOWN = 'unknown'  # Neither checked for completion nor verified
     NOT_LAUNCHED = 'not launched'  # Launcher reports test has not been launched
@@ -26,7 +26,7 @@ class _TestRunStatus:
     FAIL = 'fail'  # Verifier confirms fail
 
 
-class _TestRun:
+class _TestRun:  #pylint: disable=too-few-public-methods, too-many-instance-attributes
     """ A private class which adds state about a specific "run" of a Test.
 
         It contains a Test object, which should be thought of as the stateless
@@ -76,22 +76,24 @@ class Harness:
                 self.add_test(test)
 
     def add_test(self, test):
+        """ Add a Test to be run with the harness """
         if test.name in [testrun.test.name for testrun in self.testruns]:
             raise Exception("Duplicate test name %s" % test.name)
         self.testruns.append(_TestRun(test))
 
     def add_tests_from_file(self, filename):
+        """ Read a file to add Tests to be run with the harness """
         for test in sciath.test_file.create_tests_from_file(filename):
             self.add_test(test)
 
     def clean(self):
+        """ Remove all output from all Tests, preparing or a re-run """
         if self.launcher is None:
             self.launcher = sciath.launcher.Launcher()
 
-        # Clean all tests
         if self.testruns:
-            print(SCIATH_COLORS.HEADER + '[ *** Cleanup *** ]' +
-                  SCIATH_COLORS.ENDC)
+            print(SCIATH_COLORS.header + '[ *** Cleanup *** ]' +
+                  SCIATH_COLORS.endc)
         for testrun in self.testruns:
             if testrun.active:
                 print('[ -- Removing output for Test:', testrun.test.name, '-- ]')
@@ -107,6 +109,7 @@ class Harness:
                     shutil.rmtree(testrun.exec_path)
 
     def determine_overall_success(self):
+        """ Returns a boolean value to denote overall success of the test suite """
         for testrun in self.testruns:
             if testrun.status not in [
                     _TestRunStatus.DEACTIVATED, _TestRunStatus.PASS
@@ -115,13 +118,14 @@ class Harness:
         return True
 
     def execute(self):
+        """ Execute all tests """
         self.clean()
 
         if self.launcher is None:
             self.launcher = sciath.launcher.Launcher()
 
         if self.testruns:
-            print(SCIATH_COLORS.HEADER + '[ *** Executing Tests *** ]' + SCIATH_COLORS.ENDC)
+            print(SCIATH_COLORS.header + '[ *** Executing Tests *** ]' + SCIATH_COLORS.endc)
             self.launcher.view()
         for testrun in self.testruns:
             if testrun.active:
@@ -137,97 +141,10 @@ class Harness:
                                         sentinel_file)
                     with open(sentinel_file, 'w'):
                         pass
-                self.launcher.submitJob(testrun.test.job,
-                                        output_path=testrun.output_path,
-                                        exec_path=testrun.exec_path)
+                self.launcher.submit_job(testrun.test.job,
+                                         output_path=testrun.output_path,
+                                         exec_path=testrun.exec_path)
 
-    def _parse_args(self):
-        parser = argparse.ArgumentParser(description='SciATH')
-        parser.add_argument(
-            'input_file',
-            help='YAML file to add tests to the harness',
-            nargs='?',
-            default=None)
-        parser.add_argument(
-            '-c',
-            '--configure',
-            help='Configure queuing system information',
-            required=False,
-            action='store_true')
-        parser.add_argument(
-            '-t',
-            '--test-subset',
-            help='Comma-separated list of test names',
-            required=False)
-        parser.add_argument(
-            '-p',
-            '--purge-output',
-            help='Delete generated output',
-            required=False,
-            action='store_true')
-        parser.add_argument(
-            '-f',
-            '--error-on-test-failure',
-            help='Return exit code of 1 if any test failed',
-            required=False,
-            action='store_true')
-        parser.add_argument(
-            '-d',
-            '--configure-default',
-            help=
-            'Write default queuing system config file',
-            required=False,
-            action='store_true')
-        parser.add_argument(
-            '-l',
-            '--list',
-            help='List all registered tests and exit',
-            required=False,
-            action='store_true')
-        parser.add_argument(
-            '-w',
-            '--conf-file',
-            help='Use provided configuration file',
-            required=False)
-        parser.add_argument(
-            '--no-colors',
-            help='Deactivate colored output',
-            required=False,
-            action='store_true')
-        parser.add_argument(
-            '-u',
-            '--update-expected',
-            help=
-            'When well-defined, update reference files with current output',
-            required=False,
-            action='store_true')
-        stage_skip_group = parser.add_mutually_exclusive_group()
-        stage_skip_group.add_argument(
-            '-v',
-            '--verify',
-            help='Perform test verification, and not execution',
-            required=False,
-            action='store_true')
-        stage_skip_group.add_argument(
-            '-e',
-            '--execute',
-            help='Perform test execution, and not verification',
-            required=False,
-            action='store_true')
-        parser.add_argument(
-            '-g',
-            '--groups',
-            help=
-            'Comma-separated list of test groups. Tests not in these groups are excluded',
-            required=False)
-        parser.add_argument(
-            '-x',
-            '--exclude-groups',
-            help=
-            'Comma-separated list of test groups. Tests in these groups are excluded',
-            required=False)
-
-        return parser.parse_args()
 
     def print_all_tests(self):
         """ Display information about all tests """
@@ -239,7 +156,7 @@ class Harness:
                 info_string.append(')')
             print(''.join(info_string))
 
-    def report(self):
+    def report(self):  #pylint: disable=too-many-branches
         """ Compile results into a report and print """
         failed_names = []
         if self.testruns:
@@ -247,17 +164,17 @@ class Harness:
             for testrun in self.testruns:
                 if testrun.report:
                     if not report_header_printed:
-                        print(SCIATH_COLORS.HEADER +
+                        print(SCIATH_COLORS.header +
                               '[ *** Verification Reports *** ]' +
-                              SCIATH_COLORS.ENDC)
+                              SCIATH_COLORS.endc)
                         report_header_printed = True
                     print('%s[Report for %s]%s' %
-                          (SCIATH_COLORS.SUBHEADER, testrun.test.name,
-                           SCIATH_COLORS.ENDC))
+                          (SCIATH_COLORS.subheader, testrun.test.name,
+                           SCIATH_COLORS.endc))
                     for line in testrun.report:
                         print(line)
-            print(SCIATH_COLORS.HEADER + '[ *** Summary *** ]' +
-                  SCIATH_COLORS.ENDC)
+            print(SCIATH_COLORS.header + '[ *** Summary *** ]' +
+                  SCIATH_COLORS.endc)
             for testrun in self.testruns:
                 if testrun.status == 'fail':
                     failed_names.append(testrun.test.name)
@@ -265,16 +182,16 @@ class Harness:
                     sciath.SCIATH_TEST_STATUS.status_color_type[testrun.status],
                     end='')
                 print('[%s]  %s' % (testrun.test.name, testrun.status), end='')
-                print(SCIATH_COLORS.ENDC, end='')
+                print(SCIATH_COLORS.endc, end='')
                 if testrun.status_info:
                     print(' (' + testrun.status_info + ')', end='')
                 print()
             print()
             if any((testrun.active for testrun in self.testruns)):
                 if self.determine_overall_success():
-                    print(SCIATH_COLORS.OK + "SUCCESS" + SCIATH_COLORS.ENDC)
+                    print(SCIATH_COLORS.okay + "SUCCESS" + SCIATH_COLORS.endc)
                 else:
-                    print(SCIATH_COLORS.FAIL + "FAILURE" + SCIATH_COLORS.ENDC)
+                    print(SCIATH_COLORS.fail + "FAILURE" + SCIATH_COLORS.endc)
                     if failed_names:
                         print('To re-run failed tests, use e.g.')
                         print('  -t ' + ','.join(failed_names))
@@ -283,13 +200,13 @@ class Harness:
         else:
             print("No tests")
 
-    def run_from_args(self):
+    def run_from_args(self):  #pylint: disable=too-many-branches
         """ Perform one or more actions, based on command line options
 
         This essentially defines the "main" function for the typical
         use of SciATH.
         """
-        args = self._parse_args()
+        args = _parse_args()
 
         if args.no_colors:
             sciath.SCIATH_COLORS.set_colors(use_bash=False)
@@ -319,7 +236,7 @@ class Harness:
             self._activate_test_groups(args.groups, args.exclude_groups)
 
         if args.configure_default:
-            sciath.launcher.Launcher.writeDefaultDefinition(args.conf_file)
+            sciath.launcher.Launcher.write_default_definition(args.conf_file)
             return
 
         self.launcher = sciath.launcher.Launcher(args.conf_file)
@@ -337,7 +254,7 @@ class Harness:
         if args.update_expected:
             self.update_expected()
 
-        if args.execute or (not args.verify and self.launcher.useBatch):
+        if args.execute or (not args.verify and self.launcher.use_batch):
             if self.testruns:
                 print('[SciATH] Not verifying or reporting')
         else:
@@ -351,8 +268,8 @@ class Harness:
     def update_expected(self):
         """ Give each active test the chance to update its reference output """
         if self.testruns:
-            print(SCIATH_COLORS.HEADER +
-                  '[ *** Updating Expected Output *** ]' + SCIATH_COLORS.ENDC)
+            print(SCIATH_COLORS.header +
+                  '[ *** Updating Expected Output *** ]' + SCIATH_COLORS.endc)
         for testrun in self.testruns:
             if testrun.active:
                 if hasattr(testrun.test.verifier, 'update_expected'):
@@ -416,3 +333,91 @@ class Harness:
                 testrun.active = False
             if testrun.test.groups.intersection(exclude_groups):
                 testrun.active = False
+
+def _parse_args():
+    parser = argparse.ArgumentParser(description='SciATH')
+    parser.add_argument(
+        'input_file',
+        help='YAML file to add tests to the harness',
+        nargs='?',
+        default=None)
+    parser.add_argument(
+        '-c',
+        '--configure',
+        help='Configure queuing system information',
+        required=False,
+        action='store_true')
+    parser.add_argument(
+        '-t',
+        '--test-subset',
+        help='Comma-separated list of test names',
+        required=False)
+    parser.add_argument(
+        '-p',
+        '--purge-output',
+        help='Delete generated output',
+        required=False,
+        action='store_true')
+    parser.add_argument(
+        '-f',
+        '--error-on-test-failure',
+        help='Return exit code of 1 if any test failed',
+        required=False,
+        action='store_true')
+    parser.add_argument(
+        '-d',
+        '--configure-default',
+        help=
+        'Write default queuing system config file',
+        required=False,
+        action='store_true')
+    parser.add_argument(
+        '-l',
+        '--list',
+        help='List all registered tests and exit',
+        required=False,
+        action='store_true')
+    parser.add_argument(
+        '-w',
+        '--conf-file',
+        help='Use provided configuration file',
+        required=False)
+    parser.add_argument(
+        '--no-colors',
+        help='Deactivate colored output',
+        required=False,
+        action='store_true')
+    parser.add_argument(
+        '-u',
+        '--update-expected',
+        help=
+        'When well-defined, update reference files with current output',
+        required=False,
+        action='store_true')
+    stage_skip_group = parser.add_mutually_exclusive_group()
+    stage_skip_group.add_argument(
+        '-v',
+        '--verify',
+        help='Perform test verification, and not execution',
+        required=False,
+        action='store_true')
+    stage_skip_group.add_argument(
+        '-e',
+        '--execute',
+        help='Perform test execution, and not verification',
+        required=False,
+        action='store_true')
+    parser.add_argument(
+        '-g',
+        '--groups',
+        help=
+        'Comma-separated list of test groups. Tests not in these groups are excluded',
+        required=False)
+    parser.add_argument(
+        '-x',
+        '--exclude-groups',
+        help=
+        'Comma-separated list of test groups. Tests in these groups are excluded',
+        required=False)
+
+    return parser.parse_args()

@@ -10,7 +10,7 @@ from sciath.task import Task
 OUTPUT_PATH = os.path.join(os.getcwd(),'output')
 VERBOSITY = 0
 job_launcher = Launcher()
-job_launcher.setVerbosityLevel(VERBOSITY)
+job_launcher.verbosity_level = VERBOSITY
 
 def test_print(test, output_path):
     status,report = test.verifier.execute(output_path = output_path)
@@ -24,7 +24,7 @@ def test1(): # result: pass
     cmd = ['echo' , '"aBc";' , 'echo' '"kspits=30"' , 'echo ""' ]
 
     t = Test(Job(Task(cmd), 'Test_1'))
-    job_launcher.submitJob( t.job, output_path = OUTPUT_PATH )
+    job_launcher.submit_job( t.job, output_path = OUTPUT_PATH )
     t.verify(output_path = OUTPUT_PATH)
     test_print(t, output_path = OUTPUT_PATH)
     return t
@@ -33,7 +33,7 @@ def test2(): # result: pass
     cmd = ['echo' , '"aBc";' , 'echo' '"kspits=30"' ]
 
     t = Test( Job(Task(cmd), 'Test_2'))
-    job_launcher.submitJob( t.job, output_path = OUTPUT_PATH )
+    job_launcher.submit_job( t.job, output_path = OUTPUT_PATH )
     t.verify(output_path = OUTPUT_PATH)
     test_print(t, output_path = OUTPUT_PATH)
     return t
@@ -43,7 +43,7 @@ def test3(): # result: fail
 
     t = Test(Job(Task(cmd), 'Test_3'))
     t.verifier.set_exit_codes_success([1])
-    job_launcher.submitJob( t.job, output_path = OUTPUT_PATH )
+    job_launcher.submit_job( t.job, output_path = OUTPUT_PATH )
     t.verify(output_path = OUTPUT_PATH)
     test_print(t, output_path = OUTPUT_PATH)
     return t
@@ -52,7 +52,7 @@ def test4(): # result: pass
     cmd = ['echo' , '"aBc";' , 'echo' '"kspits=30"' ]
 
     t = Test(Job(Task(cmd), 'Test_4'))
-    job_launcher.submitJob( t.job, output_path = OUTPUT_PATH )
+    job_launcher.submit_job( t.job, output_path = OUTPUT_PATH )
     return t
 
 

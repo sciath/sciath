@@ -6,7 +6,7 @@
 
 from sciath.utility import DotDict
 
-def parse_yaml_subset_from_file(filename):
+def parse_yaml_subset_from_file(filename):  #pylint: disable=too-many-branches,too-many-locals
     """ Parse a subset of YAML files into a nested structure of list and dict objects
 
         All data are interpreted as strings, ignoring "#" and any trailing characters.
@@ -18,7 +18,7 @@ def parse_yaml_subset_from_file(filename):
     stack = []
 
     line_number = 0
-    for line_number, line in enumerate(lines, start=1):
+    for line_number, line in enumerate(lines, start=1):  #pylint: disable=too-many-nested-blocks
 
         indent, content = _parse_line(line, filename, line_number)
         if not content:

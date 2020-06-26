@@ -13,7 +13,7 @@ this_dir = os.path.dirname(os.path.realpath(__file__))
 OUTPUT_PATH = os.path.join(os.getcwd(),'output')
 VERBOSITY = 0
 job_launcher = Launcher()
-job_launcher.setVerbosityLevel(VERBOSITY)
+job_launcher.verbosity_level = VERBOSITY
 
 def test_print(test, output_path):
     status,report = test.verifier.execute(output_path = output_path)
@@ -28,7 +28,7 @@ def test1_ud(): # result: pass
     t = Test(Job(Task(cmd), 'Test_1_ud'))
     t.verifier = ComparisonVerifier(t, os.path.join(this_dir,"t1.expected"))
 
-    job_launcher.submitJob( t.job, output_path = OUTPUT_PATH, exec_path = OUTPUT_PATH )
+    job_launcher.submit_job( t.job, output_path = OUTPUT_PATH, exec_path = OUTPUT_PATH )
     t.verify(output_path = OUTPUT_PATH)
     test_print(t, output_path = OUTPUT_PATH)
     return t
@@ -39,7 +39,7 @@ def test2_ud(): # result: fail
     t = Test(Job(Task(cmd), 'Test_2_ud'))
     t.verifier = ComparisonVerifier(t, os.path.join(this_dir,"t1.expected"))
 
-    job_launcher.submitJob( t.job, output_path = OUTPUT_PATH, exec_path = OUTPUT_PATH )
+    job_launcher.submit_job( t.job, output_path = OUTPUT_PATH, exec_path = OUTPUT_PATH )
     t.verify(output_path = OUTPUT_PATH)
     test_print(t, output_path = OUTPUT_PATH)
     return t

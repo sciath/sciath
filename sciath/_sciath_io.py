@@ -1,3 +1,4 @@
+""" SciATH logic and definitions for input and output """
 from __future__ import print_function
 
 import os
@@ -32,15 +33,16 @@ def command_join(command):
     return joined
 
 
-class NamedColors:
+class NamedColors:  #pylint: disable=too-few-public-methods
     """ Color codes to use for SciATH output """
     def __init__(self):
         self.set_colors()
 
     def set_colors(self, use_bash=True):
-        self.HEADER = '\033[35m' if use_bash else ''
-        self.SUBHEADER = '\033[36m' if use_bash else ''
-        self.OK = '\033[32m' if use_bash else ''
-        self.WARNING = '\033[93m' if use_bash else ''
-        self.FAIL = '\033[91m' if use_bash else ''
-        self.ENDC = '\033[0m' if use_bash else ''
+        """ Set color codes, based on whether or not bash colors are used """
+        self.header = '\033[35m' if use_bash else ''
+        self.subheader = '\033[36m' if use_bash else ''
+        self.okay = '\033[32m' if use_bash else ''
+        self.warning = '\033[93m' if use_bash else ''
+        self.fail = '\033[91m' if use_bash else ''
+        self.endc = '\033[0m' if use_bash else ''
