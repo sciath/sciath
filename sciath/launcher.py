@@ -285,9 +285,8 @@ def _subprocess_run(command, **kwargs):
     else:
         for key in ['stdout', 'stderr']:
             if key in kwargs and kwargs[key] == 'PIPE':
-                raise Exception(
-                    'The current implementation cannot handle pipes. See the subprocess documentation for an alternative'
-                )
+                raise Exception(('The current implementation cannot handle pipes. '
+                                 'See the subprocess documentation for an alternative.'))
         returncode = subprocess.call(command, **kwargs)
     return returncode
 
@@ -305,11 +304,11 @@ class Launcher:
 
     * Run the job from that path. If not on a batch system, blocks until the job completes.
     * Check the status of the job as run from that path
-    * Clean up after a job, calling the clean method from the :class:`Job` and removing configuration-specific generated files
+    * Clean up after a job, removing configuration-specific generated files
 
-    :class:`Launcher` does not know about :class:`Test` or :class:`Harness`, and it should be possible
-    to use :class:`Launcher` and a collection of :class:`Job` objects as a convenience to execute
-    sets of tasks on various systems.
+    :class:`Launcher` does not know about :class:`Test` or :class:`Harness`,
+    and it should be possible to use :class:`Launcher` and a collection of
+    :class:`Job` objects as a convenience to execute sets of tasks on various systems.
 
     A :class:`Launcher`'s state corresponds only to its configuration,
     not the status of any particular "run" of a :class:`Job`.
@@ -348,9 +347,8 @@ class Launcher:
 
         if self.use_batch:
             if self.mpi_launch == 'none':
-                raise RuntimeError(
-                    '[SciATH] If using a queuing system, a valid mpi launch command must be provided'
-                )
+                raise RuntimeError(('[SciATH] If using a queuing system, a valid mpi '
+                                    'launch command must be provided'))
 
     def set_queue_name(self, name):
         self.queue_name = name
@@ -458,7 +456,8 @@ class Launcher:
 
         user_input = None
         while not user_input:
-            prompt = '[2] MPI launch command with num. procs. flag (required - hit enter for examples): '
+            prompt = ('[2] MPI launch command with num. procs. flag '
+                      '(required - hit enter for examples): ')
             user_input = py23input(prompt)
             if not user_input:
                 print(' Required. Some example MPI launch commands:')
@@ -475,28 +474,28 @@ class Launcher:
                           os.path.join(petsc_dir, petsc_arch, 'bin', 'mpiexec'),
                           '-n <ranks>')
                 else:
-                    print(
-                        '  Example PETSc MPI wrapper : /users/myname/petsc/arch-xxx/bin/mpiexec -n <ranks>'
-                    )
-                print(
-                    ' Note that the string \"<ranks>\" must be included if the number of ranks is required at launch.'
-                )
-                print(
-                    ' The keyword <ranks> will be replaced by the actual number of MPI ranks (defined by a given test) when the test is launched.'
-                )
+                    print(('  Example PETSc MPI wrapper : '
+                           '/users/myname/petsc/arch-xxx/bin/mpiexec -n <ranks>'))
+                print((' Note that the string \"<ranks>\" must be included if '
+                       'the number of ranks is required at launch.'))
+                print((' The keyword <ranks> will be replaced by the actual number '
+                       'of MPI ranks (defined by a given test) when the test is launched.'))
         self.set_mpi_launch(user_input)
 
         if self.use_batch:
-            prompt = '[3] specify a constraint (e.g. "gpu" on Piz Daint) (optional - hit enter if not applicable):'
+            prompt = ('[3] specify a constraint (e.g. "gpu" on Piz Daint) '
+                      '(optional - hit enter if not applicable):')
             self.set_batch_constraint(py23input(prompt))
 
             prompt = '[4] Account to charge (optional - hit enter if not applicable): '
             self.set_hpc_account_name(py23input(prompt))
 
-            prompt = '[5] Name of queue to submit tests to (optional - hit enter if not applicable): '
+            prompt = ('[5] Name of queue to submit tests to '
+                      '(optional - hit enter if not applicable): ')
             self.set_queue_name(py23input(prompt))
 
-            prompt = '[6] Maximum number of MPI ranks per compute node (optional - hit enter to skip): '
+            prompt = ('[6] Maximum number of MPI ranks per compute node '
+                      '(optional - hit enter to skip): ')
             done = False
             while not done:
                 user_input = py23input(prompt)
@@ -565,15 +564,17 @@ class Launcher:
                 if 'maxRanksPerNode' in data:
                     self.set_max_ranks_per_node(int(data['maxRanksPerNode']))
         except:
-            raise SciATHLoadException(
-                '[SciATH] Configuration file missing. You must execute configure(), and or _write_definition() first'
-            )
+            raise SciATHLoadException(('[SciATH] Configuration file missing. '
+                                       'You must execute configure(), and/or '
+                                       '_write_definition() first'))
 
         # Do not accept conf files if the major.minor version is stale, or if versions are missing
         major, minor, patch = sciath.version()
         if major_file < major or (minor_file < minor and major_file == major) or \
              major_file is None or minor_file is None or patch_file is None:
-            message = '[SciATH] Incompatible, outdated configuration file ' + self.conf_filename + ' detected. Please delete it and re-run to reconfigure.'
+            message = ('[SciATH] Incompatible, outdated configuration file %s '
+                       'detected. Please delete it and re-run to reconfigure.' %
+                       self.conf_filename)
             raise RuntimeError(message)
 
     def _create_job_submission_file(self, job, walltime, output_path):
