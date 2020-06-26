@@ -25,7 +25,4 @@ not performance (e.g. one shouldn't bother using `xrange` instead of `range` in 
 Use the [Google Python style guide](http://google.github.io/styleguide/pyguide.html).
 One can check conformance with `yapf --style=google -d`.
 
-All Python code should be clean with (stock) `pylint`, in all supported versions.
-Disable warnings on individual lines when required for Python 2/3 compatibility, e.g.
-
-    class Foo(object):  # pylint: disable=bad-option-value,useless-object-inheritance
+All Python code should be clean with a recent (stock) `pylint`.

@@ -10,7 +10,7 @@ import errno
 from sciath import SCIATH_TEST_STATUS
 
 
-class Verifier(object):  # pylint: disable=bad-option-value,too-few-public-methods,useless-object-inheritance
+class Verifier(object):  # pylint: disable=too-few-public-methods,useless-object-inheritance
     """Base class for verification of a Test"""
 
     def __init__(self, test):

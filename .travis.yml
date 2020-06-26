@@ -46,7 +46,7 @@ jobs:
       install:
         - pip install pylint
       script: sh -c "pylint --errors-only sciath/*.py tests/test_data/*/*.py"
-    - stage: lint
+    - stage: lint errors
       python: 3.7
       install:
         - pip install pylint
