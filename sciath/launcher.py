@@ -17,10 +17,10 @@ from sciath._sciath_io import py23input, _remove_file_if_it_exists, command_join
 #  "BlockingIOError: [Errno 35] write could not complete without blocking"
 # We use this function to (re)set blocking I/O when launching
 def _set_blocking_io_stdout():
-    fd = sys.stdout
-    flags = fcntl.fcntl(fd, fcntl.F_GETFL)
+    descriptor = sys.stdout
+    flags = fcntl.fcntl(descriptor, fcntl.F_GETFL)
     if flags & os.O_NONBLOCK:
-        fcntl.fcntl(fd, fcntl.F_SETFL, flags & ~os.O_NONBLOCK)
+        fcntl.fcntl(descriptor, fcntl.F_SETFL, flags & ~os.O_NONBLOCK)
 
 
 class SciATHLoadException(Exception):
@@ -39,7 +39,7 @@ def formatted_hour_min_sec(seconds):
     return "%02d:%02d:%02d" % (hours, minutes, seconds)
 
 
-def formatMPILaunchCommand(mpiLaunch, ranks):
+def format_mpi_launch_command(mpiLaunch, ranks):
     launch = mpiLaunch
     launch = launch.replace("<ranks>", str(ranks))
     launch = launch.replace("<cores>", str(ranks))
@@ -97,7 +97,7 @@ def _generateLaunch_PBS(launcher, walltime, output_path, job):
         j = command_resource[i]
         j_ranks = j[1]["mpiranks"]
         launch = []
-        launch += formatMPILaunchCommand(mpiLaunch, j_ranks)
+        launch += format_mpi_launch_command(mpiLaunch, j_ranks)
         if isinstance(j[0], list):
             for c in j[0]:
                 launch.append(c)
@@ -174,7 +174,7 @@ def _generateLaunch_LSF(launcher, rusage, walltime, output_path, job):
         j = command_resource[i]
         j_ranks = j[1]["mpiranks"]
         launch = []
-        launch += formatMPILaunchCommand(mpiLaunch, j_ranks)
+        launch += format_mpi_launch_command(mpiLaunch, j_ranks)
         if isinstance(j[0], list):
             for c in j[0]:
                 launch.append(c)
@@ -254,7 +254,7 @@ def _generateLaunch_SLURM(launcher, walltime, output_path, job):
         j = command_resource[i]
         j_ranks = j[1]["mpiranks"]
         launch = []
-        launch += formatMPILaunchCommand(mpiLaunch, j_ranks)
+        launch += format_mpi_launch_command(mpiLaunch, j_ranks)
         if isinstance(j[0], list):
             for c in j[0]:
                 launch.append(c)
@@ -421,11 +421,11 @@ class Launcher:
                 '[SciATH] Unknown or unsupported batch queuing system "' +
                 system_type + '" specified')
 
-    def set_max_ranks_per_node(self, n):
+    def set_max_ranks_per_node(self, max_ranks_per_node):
         """ Store an int-valued maximum number of MPI ranks per node """
-        if not isinstance(n, int) or n <= 0:
-            raise ValueError("Maximum ranks per node must be a positive int")
-        self.maxRanksPerNode = n
+        if not isinstance(max_ranks_per_node, int) or max_ranks_per_node <= 0:
+            raise ValueError("Maximum ranks per node must be a positive integer")
+        self.maxRanksPerNode = max_ranks_per_node
 
     def view(self):
         if self.verbosity_level > 0:
@@ -447,8 +447,7 @@ class Launcher:
                     print('  Max Ranks Per Node:%s' % self.maxRanksPerNode)
 
     def configure(self):
-        print(
-            '----------------------------------------------------------------')
+        print('----------------------------------------------------------------')
         print('Creating new configuration file ', self.conf_filename)
         user_input = None
         while not user_input:
@@ -459,8 +458,8 @@ class Launcher:
             else:
                 try:
                     self.set_queue_system_type(user_input)
-                except RuntimeError as e:
-                    print(e)
+                except RuntimeError as exception:
+                    print(exception)
                     user_input = None
 
         user_input = None
@@ -652,7 +651,7 @@ class Launcher:
                 launch = []
                 if self.mpiLaunch != 'none':
                     j_ranks = resource["mpiranks"]
-                    launch += formatMPILaunchCommand(mpiLaunch, j_ranks)
+                    launch += format_mpi_launch_command(mpiLaunch, j_ranks)
                 launch.extend(command)
                 launch_command.append(launch)
 
