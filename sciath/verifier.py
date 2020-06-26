@@ -102,7 +102,9 @@ class ComparisonVerifier(Verifier):
             report.append('[Comparison] Output file missing: %s' % from_file)
             return status, report
 
-        return self._compare_files(self.expected_file, from_file)
+        passing, report = self._compare_files(self.expected_file, from_file)
+        status =  SCIATH_TEST_STATUS.ok if passing else SCIATH_TEST_STATUS.not_ok
+        return status, report
 
     def update_expected(self, output_path=None, exec_path=None):
         """ Update reference files from output
@@ -126,9 +128,10 @@ class ComparisonVerifier(Verifier):
                 shutil.copyfile(from_file, self.expected_file)
 
     def _compare_files(self, from_file, to_file):  # pylint: disable=no-self-use
+        passing = True
         report = []
         if filecmp.cmp(from_file, to_file):
-            status = SCIATH_TEST_STATUS.ok
+            return passing, report
         else:
             with open(from_file, 'r') as from_handle:
                 lines_from = from_handle.readlines()
@@ -138,8 +141,8 @@ class ComparisonVerifier(Verifier):
                                              fromfile=from_file,
                                              tofile=to_file):
                 report.append(line.rstrip('\n'))
-            status = SCIATH_TEST_STATUS.not_ok
-        return status, report
+            passing = False
+        return passing, report
 
     def _from_file(self, output_path=None, exec_path=None):
         """ Determine the full path to the file to compare against the expected file """
