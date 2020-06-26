@@ -350,16 +350,8 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
                 raise RuntimeError(('[SciATH] If using a queuing system, a valid mpi '
                                     'launch command must be provided'))
 
-    def set_queue_name(self, name):
-        self.queue_name = name
-
-    def set_batch_constraint(self, argstring):
-        self.batch_constraint = argstring
-
-    def set_hpc_account_name(self, name):
-        self.account_name = name
-
     def set_mpi_launch(self, name):
+        """ Set the MPI launch command and check its form """
         self.mpi_launch = name
         # check for existence of "rank" keyword in the string "name"
         if self.queuing_system_type in ['none', 'None', 'local'] and name != 'none':
@@ -377,6 +369,7 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
                 )
 
     def set_queue_system_type(self, system_type):
+        """ Set queueing system type and derived properties """
         if system_type in ['PBS', 'pbs']:
             self.queuing_system_type = 'pbs'
             self.job_submission_command = ['qsub']
@@ -420,25 +413,30 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
         self.max_ranks_per_node = max_ranks_per_node
 
     def view(self):
+        """ Print information about the Launcher """
         if self.verbosity_level > 0:
-            print('[SciATH] Batch queueing system configuration [%s]' %
-                  self.conf_filename)
-            print('  Version:           %d.%d.%d' % sciath.version())
-            print('  Queue system:      %s' % self.queuing_system_type)
-            print('  MPI launcher:      %s' % self.mpi_launch)
-            if self.use_batch:
-                print('  Submit command:    %s' %
-                      command_join(self.job_submission_command))
-                if self.account_name:
-                    print('  Account:           %s' % self.account_name)
-                if self.queue_name:
-                    print('  Queue:             %s' % self.queue_name)
-                if self.batch_constraint:
-                    print('  Constraint:        %s' % self.batch_constraint)
-                if self.max_ranks_per_node:
-                    print('  Max Ranks Per Node:%s' % self.max_ranks_per_node)
+            print(self)
+
+    def __str__(self):
+        lines = []
+        lines.append('[SciATH] Batch queueing system configuration [%s]' % self.conf_filename)
+        lines.append('  Version:           %d.%d.%d' % sciath.version())
+        lines.append('  Queue system:      %s' % self.queuing_system_type)
+        lines.append('  MPI launcher:      %s' % self.mpi_launch)
+        if self.use_batch:
+            lines.append('  Submit command:    %s' % command_join(self.job_submission_command))
+            if self.account_name:
+                lines.append('  Account:           %s' % self.account_name)
+            if self.queue_name:
+                lines.append('  Queue:             %s' % self.queue_name)
+            if self.batch_constraint:
+                lines.append('  Constraint:        %s' % self.batch_constraint)
+            if self.max_ranks_per_node:
+                lines.append('  Max Ranks Per Node:%s' % self.max_ranks_per_node)
+        return '\n'.join(lines)
 
     def configure(self): #pylint: disable=too-many-branches,too-many-statements
+        """ Create a new configuration file from user input """
         print('----------------------------------------------------------------')
         print('Creating new configuration file ', self.conf_filename)
         user_input = None
@@ -485,14 +483,14 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
         if self.use_batch:
             prompt = ('[3] specify a constraint (e.g. "gpu" on Piz Daint) '
                       '(optional - hit enter if not applicable):')
-            self.set_batch_constraint(py23input(prompt))
+            self.batch_constraint = py23input(prompt)
 
             prompt = '[4] Account to charge (optional - hit enter if not applicable): '
-            self.set_hpc_account_name(py23input(prompt))
+            self.account_name = py23input(prompt)
 
             prompt = ('[5] Name of queue to submit tests to '
                       '(optional - hit enter if not applicable): ')
-            self.set_queue_name(py23input(prompt))
+            self.queue_name = py23input(prompt)
 
             prompt = ('[6] Maximum number of MPI ranks per compute node '
                       '(optional - hit enter to skip): ')
@@ -556,11 +554,11 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
                 self.set_mpi_launch(data['mpiLaunch'])
             if self.use_batch:
                 if 'batchConstraint' in data:
-                    self.set_batch_constraint(data['batchConstraint'])
+                    self.batch_constraint = data['batchConstraint']
                 if 'queueName' in data:
-                    self.set_queue_name(data['queueName'])
+                    self.queue_name = data['queueName']
                 if 'accountName' in data:
-                    self.set_hpc_account_name(data['accountName'])
+                    self.account_name = data['accountName']
                 if 'maxRanksPerNode' in data:
                     self.set_max_ranks_per_node(int(data['maxRanksPerNode']))
         except:
