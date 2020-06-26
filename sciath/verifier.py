@@ -83,7 +83,7 @@ class ComparisonVerifier(Verifier):
             raise Exception('Cannot specify an output_file with a comparison_file')
         self.comparison_file = comparison_file
 
-        exit_code_name, o_name, e_name = self.test.job.get_output_filenames()
+        o_name = self.test.job.get_output_filenames()[1]
         if not output_file and not comparison_file:
             self.output_file = o_name[-1]
 

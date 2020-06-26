@@ -566,7 +566,7 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
                                        'You must execute configure(), and/or '
                                        '_write_definition() first'))
 
-        major, minor, patch = sciath.version()
+        major, minor = sciath.version()[:2]
         if major_file is None or minor_file is None or patch_file is None:
             raise RuntimeError('[SciATH] configuration file %s missing version information. '
                                'Please delete it and re-run to reconfigure.' %
