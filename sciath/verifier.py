@@ -56,9 +56,9 @@ class ExitCodeVerifier(Verifier):
         if exit_codes != self.exit_codes_success:
             report.append("[ExitCodeDiff] Expected exit code(s): " + str(self.exit_codes_success))
             report.append("[ExitCodeDiff] Output exit code(s)  : " + str(exit_codes))
-            status = SCIATH_TEST_STATUS.not_ok
+            status = SCIATH_TEST_STATUS.not_okay
         else:
-            status = SCIATH_TEST_STATUS.ok
+            status = SCIATH_TEST_STATUS.okay
         return status, report
 
     def set_exit_codes_success(self, exit_codes_success):
@@ -103,7 +103,7 @@ class ComparisonVerifier(Verifier):
             return status, report
 
         passing, report = self._compare_files(self.expected_file, from_file)
-        status = SCIATH_TEST_STATUS.ok if passing else SCIATH_TEST_STATUS.not_ok
+        status = SCIATH_TEST_STATUS.okay if passing else SCIATH_TEST_STATUS.not_okay
         return status, report
 
     def update_expected(self, output_path=None, exec_path=None):

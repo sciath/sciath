@@ -189,7 +189,7 @@ class Harness:
             print()
             if any((testrun.active for testrun in self.testruns)):
                 if self.determine_overall_success():
-                    print(SCIATH_COLORS.ok + "SUCCESS" + SCIATH_COLORS.endc)
+                    print(SCIATH_COLORS.okay + "SUCCESS" + SCIATH_COLORS.endc)
                 else:
                     print(SCIATH_COLORS.fail + "FAILURE" + SCIATH_COLORS.endc)
                     if failed_names:
