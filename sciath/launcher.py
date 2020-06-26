@@ -65,7 +65,7 @@ def _generateLaunch_PBS(launcher, walltime, output_path, job):
 
     filename = os.path.join(
         output_path,
-        "sciath.job-" + job.name + "-launch." + launcher.queueFileExt)
+        "sciath.job-" + job.name + "-launch." + launcher.queue_file_extension)
     file = open(filename, "w")
 
     # PBS specifics
@@ -99,8 +99,7 @@ def _generateLaunch_PBS(launcher, walltime, output_path, job):
         launch = []
         launch += format_mpi_launch_command(mpiLaunch, j_ranks)
         if isinstance(j[0], list):
-            for c in j[0]:
-                launch.append(c)
+            launch.extend(j[0])
         else:
             launch.append(j[0])
 
@@ -135,7 +134,7 @@ def _generateLaunch_LSF(launcher, rusage, walltime, output_path, job):
 
     filename = os.path.join(
         output_path,
-        "sciath.job-" + job.name + "-launch." + launcher.queueFileExt)
+        "sciath.job-" + job.name + "-launch." + launcher.queue_file_extension)
     file = open(filename, "w")
 
     # LSF specifics
@@ -176,8 +175,7 @@ def _generateLaunch_LSF(launcher, rusage, walltime, output_path, job):
         launch = []
         launch += format_mpi_launch_command(mpiLaunch, j_ranks)
         if isinstance(j[0], list):
-            for c in j[0]:
-                launch.append(c)
+            launch.extend(j[0])
         else:
             launch.append(j[0])
 
@@ -213,7 +211,7 @@ def _generateLaunch_SLURM(launcher, walltime, output_path, job):
 
     filename = os.path.join(
         output_path,
-        "sciath.job-" + job.name + "-launch." + launcher.queueFileExt)
+        "sciath.job-" + job.name + "-launch." + launcher.queue_file_extension)
     file = open(filename, "w")
 
     # SLURM specifics
@@ -256,8 +254,7 @@ def _generateLaunch_SLURM(launcher, walltime, output_path, job):
         launch = []
         launch += format_mpi_launch_command(mpiLaunch, j_ranks)
         if isinstance(j[0], list):
-            for c in j[0]:
-                launch.append(c)
+            launch.extend(j[0])
         else:
             launch.append(j[0])
 
@@ -337,18 +334,18 @@ class Launcher:
         self.queuingSystemType = []
         self.maxRanksPerNode = None
         self.batchConstraint = []
-        self.jobSubmissionCommand = []
-        self.useBatch = False
+        self.job_submission_command = []
+        self.use_batch = False
         self.verbosity_level = 1
         if conf_filename:
             self.conf_filename = conf_filename
         else:
             self.conf_filename = Launcher._default_conf_filename
-        self.queueFileExt = None
+        self.queue_file_extension = None
 
         self.setup()
 
-        if self.useBatch:
+        if self.use_batch:
             if self.mpiLaunch == 'none':
                 raise RuntimeError(
                     '[SciATH] If using a queuing system, a valid mpi launch command must be provided'
@@ -387,34 +384,34 @@ class Launcher:
     def set_queue_system_type(self, system_type):
         if system_type in ['PBS', 'pbs']:
             self.queuingSystemType = 'pbs'
-            self.jobSubmissionCommand = ['qsub']
-            self.useBatch = True
-            self.queueFileExt = 'pbs'
+            self.job_submission_command = ['qsub']
+            self.use_batch = True
+            self.queue_file_extension = 'pbs'
 
         elif system_type in ['LSF', 'lsf']:
             self.queuingSystemType = 'lsf'
-            self.jobSubmissionCommand = ['sh', '-c', 'bsub < $0']  # This allows "<".
-            self.useBatch = True
-            self.queueFileExt = 'lsf'
+            self.job_submission_command = ['sh', '-c', 'bsub < $0']  # This allows "<".
+            self.use_batch = True
+            self.queue_file_extension = 'lsf'
 
         elif system_type in ['SLURM', 'slurm']:
             self.queuingSystemType = 'slurm'
-            self.jobSubmissionCommand = ['sbatch']
-            self.useBatch = True
-            self.queueFileExt = 'slurm'
+            self.job_submission_command = ['sbatch']
+            self.use_batch = True
+            self.queue_file_extension = 'slurm'
 
         elif system_type in ['LoadLeveler', 'load_leveler', 'loadleveler', 'llq']:
             self.queuingSystemType = 'load_leveler'
-            self.jobSubmissionCommand = ['llsubmit']
-            self.useBatch = True
-            self.queueFileExt = 'llq'
+            self.job_submission_command = ['llsubmit']
+            self.use_batch = True
+            self.queue_file_extension = 'llq'
             raise ValueError(
                 '[SciATH] Unsupported: LoadLeveler needs to be updated')
 
         elif system_type in ['none', 'None', 'local']:
             self.queuingSystemType = 'none'
-            self.jobSubmissionCommand = ''
-            self.queueFileExt = None
+            self.job_submission_command = ''
+            self.queue_file_extension = None
 
         else:
             raise RuntimeError(
@@ -434,9 +431,9 @@ class Launcher:
             print('  Version:           %d.%d.%d' % sciath.version())
             print('  Queue system:      %s' % self.queuingSystemType)
             print('  MPI launcher:      %s' % self.mpiLaunch)
-            if self.useBatch:
+            if self.use_batch:
                 print('  Submit command:    %s' %
-                      command_join(self.jobSubmissionCommand))
+                      command_join(self.job_submission_command))
                 if self.accountName:
                     print('  Account:           %s' % self.accountName)
                 if self.queueName:
@@ -492,7 +489,7 @@ class Launcher:
                 )
         self.set_mpi_launch(user_input)
 
-        if self.useBatch:
+        if self.use_batch:
             prompt = '[3] specify a constraint (e.g. "gpu" on Piz Daint) (optional - hit enter if not applicable):'
             self.set_batch_constraint(py23input(prompt))
 
@@ -539,7 +536,7 @@ class Launcher:
             conf_file.write('patchVersion: %s\n' % patch)
             conf_file.write('queuingSystemType: %s\n' % self.queuingSystemType)
             conf_file.write('mpiLaunch: %s\n' % self.mpiLaunch)
-            if self.useBatch:
+            if self.use_batch:
                 conf_file.write('accountName: %s\n' % self.accountName)
                 conf_file.write('batchConstraint: %s\n' % self.batchConstraint)
                 conf_file.write('queueName: %s\n' % self.queueName)
@@ -563,7 +560,7 @@ class Launcher:
                 self.set_queue_system_type(data['queuingSystemType'])
             if 'mpiLaunch' in data:
                 self.set_mpi_launch(data['mpiLaunch'])
-            if self.useBatch:
+            if self.use_batch:
                 if 'batchConstraint' in data:
                     self.set_batch_constraint(data['batchConstraint'])
                 if 'queueName' in data:
@@ -628,7 +625,7 @@ class Launcher:
 
         _set_blocking_io_stdout()
 
-        if not self.useBatch:
+        if not self.use_batch:
             mpiLaunch = self.mpiLaunch
             resources = job.get_max_resources()
             ranks = resources["mpiranks"]
@@ -686,7 +683,7 @@ class Launcher:
             walltime = job.total_wall_time()
 
             launchfile = self._create_job_submission_file(job, walltime, output_path)
-            launch_command = self.jobSubmissionCommand + [launchfile]
+            launch_command = self.job_submission_command + [launchfile]
             cwd_back = os.getcwd()
             os.chdir(exec_path)
             if self.verbosity_level > 0:
@@ -724,6 +721,6 @@ class Launcher:
         for filename in e_name:
             _remove_file_if_it_exists(os.path.join(output_path, filename))
 
-        if self.queueFileExt is not None:
-            filename = "sciath.job-" + job.name + "-launch." + self.queueFileExt
+        if self.queue_file_extension is not None:
+            filename = "sciath.job-" + job.name + "-launch." + self.queue_file_extension
             _remove_file_if_it_exists(os.path.join(output_path, filename))
