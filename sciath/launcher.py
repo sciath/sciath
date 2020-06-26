@@ -526,7 +526,7 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
             conf_file.write('majorVersion: %s\n' % major)
             conf_file.write('minorVersion: %s\n' % minor)
             conf_file.write('patchVersion: %s\n' % patch)
-            conf_file.write('queuing_system_type: %s\n' % self.queuing_system_type)
+            conf_file.write('queuingSystemType: %s\n' % self.queuing_system_type)
             conf_file.write('mpiLaunch: %s\n' % self.mpi_launch)
             if self.use_batch:
                 conf_file.write('accountName: %s\n' % self.account_name)
