@@ -13,7 +13,7 @@ from sciath import SCIATH_COLORS
 from sciath._sciath_io import py23input
 
 
-class _TestRunStatus:
+class _TestRunStatus:  #pylint: disable=too-few-public-methods
     DEACTIVATED = 'deactivated'  # Test skipped intentionally
     UNKNOWN = 'unknown'  # Neither checked for completion nor verified
     NOT_LAUNCHED = 'not launched'  # Launcher reports test has not been launched
@@ -26,7 +26,7 @@ class _TestRunStatus:
     FAIL = 'fail'  # Verifier confirms fail
 
 
-class _TestRun:
+class _TestRun:  #pylint: disable=too-few-public-methods, too-many-instance-attributes
     """ A private class which adds state about a specific "run" of a Test.
 
         It contains a Test object, which should be thought of as the stateless
@@ -156,7 +156,7 @@ class Harness:
                 info_string.append(')')
             print(''.join(info_string))
 
-    def report(self):
+    def report(self):  #pylint: disable=too-many-branches
         """ Compile results into a report and print """
         failed_names = []
         if self.testruns:
@@ -200,7 +200,7 @@ class Harness:
         else:
             print("No tests")
 
-    def run_from_args(self):
+    def run_from_args(self):  #pylint: disable=too-many-branches
         """ Perform one or more actions, based on command line options
 
         This essentially defines the "main" function for the typical

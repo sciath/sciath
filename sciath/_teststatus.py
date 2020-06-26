@@ -1,5 +1,5 @@
 """ Test Status definitions """
-class SciathTestStatusDefinition:
+class SciathTestStatusDefinition: #pylint: disable=too-few-public-methods,too-many-instance-attributes
     """ SciATH test statuses """
 
     def __init__(self, SCIATH_COLORS):

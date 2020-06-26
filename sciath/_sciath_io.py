@@ -33,7 +33,7 @@ def command_join(command):
     return joined
 
 
-class NamedColors:
+class NamedColors:  #pylint: disable=too-few-public-methods
     """ Color codes to use for SciATH output """
     def __init__(self):
         self.set_colors()

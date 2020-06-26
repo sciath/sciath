@@ -48,7 +48,7 @@ def _format_mpi_launch_command(mpi_launch, ranks):
     return launch.split()
 
 
-def _generate_launch_pbs(launcher, walltime, output_path, job):
+def _generate_launch_pbs(launcher, walltime, output_path, job):  #pylint: disable=too-many-locals
 
     if walltime is None:
         message = "[SciATH] _generate_launch_pbs requires walltime be specified"
@@ -117,7 +117,7 @@ def _generate_launch_pbs(launcher, walltime, output_path, job):
     return filename
 
 
-def _generate_launch_lsf(launcher, rusage, walltime, output_path, job):
+def _generate_launch_lsf(launcher, rusage, walltime, output_path, job):  #pylint: disable=too-many-locals
 
     if walltime is None:
         message = "[SciATH] _generate_launch_lsf requires walltime be specified"
@@ -193,7 +193,7 @@ def _generate_launch_lsf(launcher, rusage, walltime, output_path, job):
     return filename
 
 
-def _generate_launch_slurm(launcher, walltime, output_path, job):
+def _generate_launch_slurm(launcher, walltime, output_path, job):  #pylint: disable=too-many-locals
 
     if walltime is None:
         message = "[SciATH] _generate_launch_slurm requires walltime be specified"
@@ -291,7 +291,7 @@ def _subprocess_run(command, **kwargs):
     return returncode
 
 
-class Launcher:
+class Launcher:  #pylint: disable=too-many-instance-attributes
     """ :class:`Launcher` is responsible for executing :class:`Task`s specified by a :class:`Job`,
     depending on its system-dependent configuration.
 
@@ -438,7 +438,7 @@ class Launcher:
                 if self.max_ranks_per_node:
                     print('  Max Ranks Per Node:%s' % self.max_ranks_per_node)
 
-    def configure(self):
+    def configure(self): #pylint: disable=too-many-branches,too-many-statements
         print('----------------------------------------------------------------')
         print('Creating new configuration file ', self.conf_filename)
         user_input = None
@@ -538,7 +538,7 @@ class Launcher:
                     conf_file.write('maxRanksPerNode: %s\n' %
                                     self.max_ranks_per_node)
 
-    def _load_definition(self):
+    def _load_definition(self): #pylint: disable=too-many-branches
         major_file = None
         minor_file = None
         patch_file = None
@@ -568,14 +568,15 @@ class Launcher:
                                        'You must execute configure(), and/or '
                                        '_write_definition() first'))
 
-        # Do not accept conf files if the major.minor version is stale, or if versions are missing
         major, minor, patch = sciath.version()
-        if major_file < major or (minor_file < minor and major_file == major) or \
-             major_file is None or minor_file is None or patch_file is None:
-            message = ('[SciATH] Incompatible, outdated configuration file %s '
-                       'detected. Please delete it and re-run to reconfigure.' %
-                       self.conf_filename)
-            raise RuntimeError(message)
+        if major_file is None or minor_file is None or patch_file is None:
+            raise RuntimeError('[SciATH] configuration file %s missing version information. '
+                               'Please delete it and re-run to reconfigure.' %
+                               self.conf_filename)
+        if major_file < major or (minor_file < minor and major_file == major):
+            raise RuntimeError('[SciATH] Incompatible, outdated configuration file %s '
+                               'detected. Please delete it and re-run to reconfigure.' %
+                               self.conf_filename)
 
     def _create_job_submission_file(self, job, walltime, output_path):
 
@@ -594,7 +595,7 @@ class Launcher:
         print('Created submission file:', filename)
         return filename
 
-    def submit_job(self, job, **kwargs):
+    def submit_job(self, job, **kwargs):  #pylint: disable=too-many-locals,too-many-branches,too-many-statements
         """ Run a job
 
         Supply output_path to change the location where SciATH's output
