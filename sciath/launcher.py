@@ -649,7 +649,7 @@ class Launcher:
 
             if self.verbosity_level > 0:
                 print('%s[Executing %s]%s from %s' %
-                      (SCIATH_COLORS.SUBHEADER, job.name, SCIATH_COLORS.ENDC,
+                      (SCIATH_COLORS.subheader, job.name, SCIATH_COLORS.endc,
                        exec_path))
                 for term in launch_command:
                     print(command_join(term))
@@ -683,7 +683,7 @@ class Launcher:
             os.chdir(exec_path)
             if self.verbosity_level > 0:
                 print('%s[Executing %s]%s from %s' %
-                      (SCIATH_COLORS.SUBHEADER, job.name, SCIATH_COLORS.ENDC,
+                      (SCIATH_COLORS.subheader, job.name, SCIATH_COLORS.endc,
                        exec_path))
                 print(command_join(launch_command))
             _subprocess_run(launch_command, universal_newlines=True)

@@ -4,10 +4,10 @@ class SciathTestStatusDefinition:
 
     def __init__(self, SCIATH_COLORS):
         self.status_color_type = {
-            "pass": SCIATH_COLORS.OK,
-            "fail": SCIATH_COLORS.FAIL,
-            "skip": SCIATH_COLORS.WARNING,
-            "deactivated": SCIATH_COLORS.ENDC,
+            "pass": SCIATH_COLORS.ok,
+            "fail": SCIATH_COLORS.fail,
+            "skip": SCIATH_COLORS.warning,
+            "deactivated": SCIATH_COLORS.endc,
         }
         self._set_status_type()
 

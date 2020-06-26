@@ -40,9 +40,9 @@ class NamedColors:
 
     def set_colors(self, use_bash=True):
         """ Set color codes, based on whether or not bash colors are used """
-        self.HEADER = '\033[35m' if use_bash else ''
-        self.SUBHEADER = '\033[36m' if use_bash else ''
-        self.OK = '\033[32m' if use_bash else ''
-        self.WARNING = '\033[93m' if use_bash else ''
-        self.FAIL = '\033[91m' if use_bash else ''
-        self.ENDC = '\033[0m' if use_bash else ''
+        self.header = '\033[35m' if use_bash else ''
+        self.subheader = '\033[36m' if use_bash else ''
+        self.ok = '\033[32m' if use_bash else ''
+        self.warning = '\033[93m' if use_bash else ''
+        self.fail = '\033[91m' if use_bash else ''
+        self.endc = '\033[0m' if use_bash else ''
