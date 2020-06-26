@@ -25,7 +25,6 @@ def _set_blocking_io_stdout():
 
 class SciATHLoadException(Exception):
     """ Exception for a failed load of configuration file """
-    pass
 
 
 def _formatted_hour_min(seconds):
@@ -40,7 +39,7 @@ def _formatted_hour_min_sec(seconds):
     return "%02d:%02d:%02d" % (hours, minutes, seconds)
 
 
-def format_mpi_launch_command(mpi_launch, ranks):
+def _format_mpi_launch_command(mpi_launch, ranks):
     launch = mpi_launch
     launch = launch.replace("<ranks>", str(ranks))
     launch = launch.replace("<cores>", str(ranks))
@@ -98,7 +97,7 @@ def _generate_launch_pbs(launcher, walltime, output_path, job):
         j = command_resource[i]
         j_ranks = j[1]["mpiranks"]
         launch = []
-        launch += format_mpi_launch_command(mpi_launch, j_ranks)
+        launch += _format_mpi_launch_command(mpi_launch, j_ranks)
         if isinstance(j[0], list):
             launch.extend(j[0])
         else:
@@ -174,7 +173,7 @@ def _generate_launch_lsf(launcher, rusage, walltime, output_path, job):
         j = command_resource[i]
         j_ranks = j[1]["mpiranks"]
         launch = []
-        launch += format_mpi_launch_command(mpi_launch, j_ranks)
+        launch += _format_mpi_launch_command(mpi_launch, j_ranks)
         if isinstance(j[0], list):
             launch.extend(j[0])
         else:
@@ -253,7 +252,7 @@ def _generate_launch_slurm(launcher, walltime, output_path, job):
         j = command_resource[i]
         j_ranks = j[1]["mpiranks"]
         launch = []
-        launch += format_mpi_launch_command(mpi_launch, j_ranks)
+        launch += _format_mpi_launch_command(mpi_launch, j_ranks)
         if isinstance(j[0], list):
             launch.extend(j[0])
         else:
@@ -319,6 +318,7 @@ class Launcher:
 
     @staticmethod
     def write_default_definition(conf_filename_in=None):
+        """ Writes a default configuration file """
         major, minor, patch = sciath.version()
         conf_filename = conf_filename_in if conf_filename_in else Launcher._default_conf_filename
         with open(conf_filename, 'w') as conf_file:
@@ -352,9 +352,6 @@ class Launcher:
                     '[SciATH] If using a queuing system, a valid mpi launch command must be provided'
                 )
 
-    def set_verbosity_level(self, value):
-        self.verbosity_level = value
-
     def set_queue_name(self, name):
         self.queue_name = name
 
@@ -367,8 +364,7 @@ class Launcher:
     def set_mpi_launch(self, name):
         self.mpi_launch = name
         # check for existence of "rank" keyword in the string "name"
-        if self.queuing_system_type in ['none', 'None', 'local'
-                                     ] and name != 'none':
+        if self.queuing_system_type in ['none', 'None', 'local'] and name != 'none':
             keywordlist = ['<ranks>', '<cores>', '<tasks>', '<RANKS>']
             # check of any of keywordlist[i] appears in name
             valid_launcher = False
@@ -515,12 +511,10 @@ class Launcher:
 
         self._write_definition()
         print('\n')
-        print(
-            '** If you wish to change the config for your batch system, either')
+        print('** If you wish to change the config for your batch system, either')
         print('**  (i) delete the file', self.conf_filename, ' or')
         print('** (ii) re-run with the command line arg --configure')
-        print(
-            '----------------------------------------------------------------')
+        print('----------------------------------------------------------------')
 
     def setup(self):
         try:
@@ -648,7 +642,7 @@ class Launcher:
                 launch = []
                 if self.mpi_launch != 'none':
                     j_ranks = resource["mpiranks"]
-                    launch += format_mpi_launch_command(mpi_launch, j_ranks)
+                    launch += _format_mpi_launch_command(mpi_launch, j_ranks)
                 launch.extend(command)
                 launch_command.append(launch)
 
