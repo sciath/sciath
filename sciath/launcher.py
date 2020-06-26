@@ -56,7 +56,7 @@ def _generate_launch_pbs(launcher, walltime, output_path, job):
         raise RuntimeError(message)
 
     accountname = launcher.account_name
-    queuename = launcher.queueName
+    queuename = launcher.queue_name
     mpi_launch = launcher.mpi_launch
 
     # resources = job.get_max_resources()
@@ -125,7 +125,7 @@ def _generate_launch_lsf(launcher, rusage, walltime, output_path, job):
         raise RuntimeError(message)
 
     accountname = launcher.account_name
-    queuename = launcher.queueName
+    queuename = launcher.queue_name
     mpi_launch = launcher.mpi_launch
 
     resources = job.get_max_resources()
@@ -201,8 +201,8 @@ def _generate_launch_slurm(launcher, walltime, output_path, job):
         raise RuntimeError(message)
 
     accountname = launcher.account_name
-    queuename = launcher.queueName
-    constraint = launcher.batchConstraint
+    queuename = launcher.queue_name
+    constraint = launcher.batch_constraint
     mpi_launch = launcher.mpi_launch
 
     resources = job.get_max_resources()
@@ -330,11 +330,11 @@ class Launcher:
 
     def __init__(self, conf_filename=None):
         self.account_name = []
-        self.queueName = []
+        self.queue_name = []
         self.mpi_launch = []
         self.queuingSystemType = []
-        self.maxRanksPerNode = None
-        self.batchConstraint = []
+        self.max_ranks_per_node = None
+        self.batch_constraint = []
         self.job_submission_command = []
         self.use_batch = False
         self.verbosity_level = 1
@@ -356,10 +356,10 @@ class Launcher:
         self.verbosity_level = value
 
     def set_queue_name(self, name):
-        self.queueName = name
+        self.queue_name = name
 
     def set_batch_constraint(self, argstring):
-        self.batchConstraint = argstring
+        self.batch_constraint = argstring
 
     def set_hpc_account_name(self, name):
         self.account_name = name
@@ -423,7 +423,7 @@ class Launcher:
         """ Store an int-valued maximum number of MPI ranks per node """
         if not isinstance(max_ranks_per_node, int) or max_ranks_per_node <= 0:
             raise ValueError("Maximum ranks per node must be a positive integer")
-        self.maxRanksPerNode = max_ranks_per_node
+        self.max_ranks_per_node = max_ranks_per_node
 
     def view(self):
         if self.verbosity_level > 0:
@@ -437,12 +437,12 @@ class Launcher:
                       command_join(self.job_submission_command))
                 if self.account_name:
                     print('  Account:           %s' % self.account_name)
-                if self.queueName:
-                    print('  Queue:             %s' % self.queueName)
-                if self.batchConstraint:
-                    print('  Constraint:        %s' % self.batchConstraint)
-                if self.maxRanksPerNode:
-                    print('  Max Ranks Per Node:%s' % self.maxRanksPerNode)
+                if self.queue_name:
+                    print('  Queue:             %s' % self.queue_name)
+                if self.batch_constraint:
+                    print('  Constraint:        %s' % self.batch_constraint)
+                if self.max_ranks_per_node:
+                    print('  Max Ranks Per Node:%s' % self.max_ranks_per_node)
 
     def configure(self):
         print('----------------------------------------------------------------')
@@ -539,11 +539,11 @@ class Launcher:
             conf_file.write('mpiLaunch: %s\n' % self.mpi_launch)
             if self.use_batch:
                 conf_file.write('accountName: %s\n' % self.account_name)
-                conf_file.write('batchConstraint: %s\n' % self.batchConstraint)
-                conf_file.write('queueName: %s\n' % self.queueName)
-                if self.maxRanksPerNode:
+                conf_file.write('batchConstraint: %s\n' % self.batch_constraint)
+                conf_file.write('queueName: %s\n' % self.queue_name)
+                if self.max_ranks_per_node:
                     conf_file.write('maxRanksPerNode: %s\n' %
-                                    self.maxRanksPerNode)
+                                    self.max_ranks_per_node)
 
     def _load_definition(self):
         major_file = None
@@ -585,7 +585,7 @@ class Launcher:
     def _create_job_submission_file(self, job, walltime, output_path):
 
         # Verify input, check for generic errors
-        if self.batchConstraint and self.queuingSystemType != 'slurm':
+        if self.batch_constraint and self.queuingSystemType != 'slurm':
             message = '[SciATH] Constraints are only currently supported with SLURM'
             raise RuntimeError(message)
 
