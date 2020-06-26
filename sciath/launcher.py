@@ -27,13 +27,13 @@ class SciATHLoadException(Exception):
     pass
 
 
-def formatted_hour_min(seconds):
+def _formatted_hour_min(seconds):
     minutes = divmod(int(seconds), 60)[0]
     hours, minutes = divmod(minutes, 60)
     return  "%02d:%02d" % (hours, minutes)
 
 
-def formatted_hour_min_sec(seconds):
+def _formatted_hour_min_sec(seconds):
     minutes, seconds = divmod(seconds, 60)
     hours, minutes = divmod(minutes, 60)
     return "%02d:%02d:%02d" % (hours, minutes, seconds)
@@ -48,10 +48,10 @@ def format_mpi_launch_command(mpiLaunch, ranks):
     return launch.split()
 
 
-def _generateLaunch_PBS(launcher, walltime, output_path, job):
+def _generate_launch_pbs(launcher, walltime, output_path, job):
 
     if walltime is None:
-        message = "[SciATH] _generateLaunch_PBS requires walltime be specified"
+        message = "[SciATH] _generate_launch_pbs requires walltime be specified"
         raise RuntimeError(message)
 
     accountname = launcher.accountName
@@ -82,7 +82,7 @@ def _generateLaunch_PBS(launcher, walltime, output_path, job):
     if queuename:
         file.write("#PBS -q " + queuename + "\n")
 
-    walltime_string = formatted_hour_min_sec(float(walltime) * 60.0)
+    walltime_string = _formatted_hour_min_sec(float(walltime) * 60.0)
     file.write("#PBS -l mppwidth=1024,walltime=" + walltime_string + "\n")
 
     # Write out the list of jobs execute commands
@@ -117,10 +117,10 @@ def _generateLaunch_PBS(launcher, walltime, output_path, job):
     return filename
 
 
-def _generateLaunch_LSF(launcher, rusage, walltime, output_path, job):
+def _generate_launch_lsf(launcher, rusage, walltime, output_path, job):
 
     if walltime is None:
-        message = "[SciATH] _generateLaunch_LSF requires walltime be specified"
+        message = "[SciATH] _generate_launch_lsf requires walltime be specified"
         raise RuntimeError(message)
 
     accountname = launcher.accountName
@@ -158,7 +158,7 @@ def _generateLaunch_LSF(launcher, rusage, walltime, output_path, job):
     if rusage:
         file.write("#BSUB -R \'" + rusage + "\'" + "\n")
 
-    walltime_string = formatted_hour_min(float(walltime) * 60.0)
+    walltime_string = _formatted_hour_min(float(walltime) * 60.0)
     file.write("#BSUB -W " + walltime_string + "\n")
 
     # Write out the list of jobs execute commands
@@ -193,10 +193,10 @@ def _generateLaunch_LSF(launcher, rusage, walltime, output_path, job):
     return filename
 
 
-def _generateLaunch_SLURM(launcher, walltime, output_path, job):
+def _generate_launch_slurm(launcher, walltime, output_path, job):
 
     if walltime is None:
-        message = "[SciATH] _generateLaunch_SLURM requires walltime be specified"
+        message = "[SciATH] _generate_launch_slurm requires walltime be specified"
         raise RuntimeError(message)
 
     accountname = launcher.accountName
@@ -237,7 +237,7 @@ def _generateLaunch_SLURM(launcher, walltime, output_path, job):
     if constraint:
         file.write("#SBATCH --constraint=" + constraint + "\n")
 
-    walltime_string = formatted_hour_min_sec(float(walltime) * 60.0)
+    walltime_string = _formatted_hour_min_sec(float(walltime) * 60.0)
     file.write("#SBATCH --time=" + walltime_string + "\n")
 
     # Write out the list of jobs execute commands
@@ -589,12 +589,11 @@ class Launcher:
             raise RuntimeError(message)
 
         if self.queuingSystemType == 'pbs':
-            filename = _generateLaunch_PBS(self, walltime, output_path, job)
+            filename = _generate_launch_pbs(self, walltime, output_path, job)
         elif self.queuingSystemType == 'lsf':
-            filename = _generateLaunch_LSF(self, None, walltime, output_path,
-                                           job)
+            filename = _generate_launch_lsf(self, None, walltime, output_path, job)
         elif self.queuingSystemType == 'slurm':
-            filename = _generateLaunch_SLURM(self, walltime, output_path, job)
+            filename = _generate_launch_slurm(self, walltime, output_path, job)
 
         print('Created submission file:', filename)
         return filename
@@ -656,8 +655,8 @@ class Launcher:
                 print('%s[Executing %s]%s from %s' %
                       (SCIATH_COLORS.SUBHEADER, job.name, SCIATH_COLORS.ENDC,
                        exec_path))
-                for lc in launch_command:
-                    print(command_join(lc))
+                for term in launch_command:
+                    print(command_join(term))
 
             c_name, o_name, e_name = job.get_output_filenames()
 
