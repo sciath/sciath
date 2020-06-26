@@ -103,7 +103,7 @@ class ComparisonVerifier(Verifier):
             return status, report
 
         passing, report = self._compare_files(self.expected_file, from_file)
-        status =  SCIATH_TEST_STATUS.ok if passing else SCIATH_TEST_STATUS.not_ok
+        status = SCIATH_TEST_STATUS.ok if passing else SCIATH_TEST_STATUS.not_ok
         return status, report
 
     def update_expected(self, output_path=None, exec_path=None):
@@ -132,16 +132,15 @@ class ComparisonVerifier(Verifier):
         report = []
         if filecmp.cmp(from_file, to_file):
             return passing, report
-        else:
-            with open(from_file, 'r') as from_handle:
-                lines_from = from_handle.readlines()
-            with open(to_file, 'r') as to_handle:
-                lines_to = to_handle.readlines()
-            for line in difflib.unified_diff(lines_from, lines_to,
-                                             fromfile=from_file,
-                                             tofile=to_file):
-                report.append(line.rstrip('\n'))
-            passing = False
+        with open(from_file, 'r') as from_handle:
+            lines_from = from_handle.readlines()
+        with open(to_file, 'r') as to_handle:
+            lines_to = to_handle.readlines()
+        for line in difflib.unified_diff(lines_from, lines_to,
+                                         fromfile=from_file,
+                                         tofile=to_file):
+            report.append(line.rstrip('\n'))
+        passing = False
         return passing, report
 
     def _from_file(self, output_path=None, exec_path=None):
