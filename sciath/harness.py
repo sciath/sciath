@@ -137,7 +137,7 @@ class Harness:
                                         sentinel_file)
                     with open(sentinel_file, 'w'):
                         pass
-                self.launcher.submitJob(testrun.test.job,
+                self.launcher.submit_job(testrun.test.job,
                                         output_path=testrun.output_path,
                                         exec_path=testrun.exec_path)
 

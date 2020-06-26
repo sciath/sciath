@@ -14,3 +14,18 @@ Conventions
 Package Name
 ------------
 Use "SciATH" as the name of the package, except where all-lowercase names are required or conventional, as in the name of the main module or the git URL.
+
+Style
+=====
+
+Write Python 2.7.0+-compatible code. Do not assume a recent patch version of Python 2.7.
+Prioritize Python 3, only using version-dependent logic when required for correctness,
+not performance (e.g. one shouldn't bother using `xrange` instead of `range` in Python 2).
+
+Use the [Google Python style guide](http://google.github.io/styleguide/pyguide.html).
+One can check conformance with `yapf --style=google -d`.
+
+All Python code should be clean with (stock) `pylint`, in all supported versions.
+Disable warnings on individual lines when required for Python 2/3 compatibility, e.g.
+
+    class Foo(object):  # pylint: disable=bad-option-value,useless-object-inheritance

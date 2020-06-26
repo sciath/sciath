@@ -83,8 +83,8 @@ def main():
 
     launcher = Launcher()
     for t in [test1(output_path), test2(output_path), test3(output_path), test4(output_path), test5(output_path)]:
-        launcher.submitJob(t.job, output_path = output_path)
-        status, report = t.verify(output_path = output_path) # only makes sense if submitJob blocks
+        launcher.submit_job(t.job, output_path = output_path)
+        status, report = t.verify(output_path = output_path) # only makes sense if submit_job blocks
         print(status)
         for line in report:
             print(line)

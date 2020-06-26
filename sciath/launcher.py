@@ -1,8 +1,8 @@
+""" SciATH Launcher class """
 from __future__ import print_function
 
 import os
 import sys
-import shutil
 import fcntl
 import subprocess
 
@@ -30,15 +30,14 @@ class SciATHLoadException(Exception):
 def FormattedHourMin(seconds):
     m, s = divmod(int(seconds), 60)
     h, m = divmod(m, 60)
-    wt = "%02d:%02d" % (h, m)
-    return (wt)
+    return  "%02d:%02d" % (h, m)
 
 
 def FormattedHourMinSec(seconds):
     m, s = divmod(seconds, 60)
     h, m = divmod(m, 60)
     wt = "%02d:%02d:%02d" % (h, m, s)
-    return (wt)
+    return wt
 
 
 def formatMPILaunchCommand(mpiLaunch, ranks):
@@ -346,6 +345,7 @@ class Launcher:
             self.conf_filename = conf_filename
         else:
             self.conf_filename = Launcher._default_conf_filename
+        self.queueFileExt = None
 
         self.setup()
 
@@ -358,16 +358,16 @@ class Launcher:
     def setVerbosityLevel(self, value):
         self.verbosity_level = value
 
-    def setQueueName(self, name):
+    def set_queue_name(self, name):
         self.queueName = name
 
-    def setBatchConstraint(self, argstring):
+    def set_batch_constraint(self, argstring):
         self.batchConstraint = argstring
 
-    def setHPCAccountName(self, name):
+    def set_hpc_account_name(self, name):
         self.accountName = name
 
-    def setMPILaunch(self, name):
+    def set_mpi_launch(self, name):
         self.mpiLaunch = name
         # check for existence of "rank" keyword in the string "name"
         if self.queuingSystemType in ['none', 'None', 'local'
@@ -385,7 +385,7 @@ class Launcher:
                     '[SciATH] Your MPI launch command must contain the keyword \"<ranks>\"'
                 )
 
-    def setQueueSystemType(self, system_type):
+    def set_queue_system_type(self, system_type):
         if system_type in ['PBS', 'pbs']:
             self.queuingSystemType = 'pbs'
             self.jobSubmissionCommand = ['qsub']
@@ -422,7 +422,7 @@ class Launcher:
                 '[SciATH] Unknown or unsupported batch queuing system "' +
                 system_type + '" specified')
 
-    def setMaxRanksPerNode(self, n):
+    def set_max_ranks_per_node(self, n):
         """ Store an int-valued maximum number of MPI ranks per node """
         if not isinstance(n, int) or n <= 0:
             raise ValueError("Maximum ranks per node must be a positive int")
@@ -451,24 +451,24 @@ class Launcher:
         print(
             '----------------------------------------------------------------')
         print('Creating new configuration file ', self.conf_filename)
-        v = None
-        while not v:
+        user_input = None
+        while not user_input:
             prompt = '[1] Batch queuing system type <pbs,lsf,slurm,llq,none>: '
-            v = py23input(prompt)
-            if not v:
+            user_input = py23input(prompt)
+            if not user_input:
                 print('Required.')
             else:
                 try:
-                    self.setQueueSystemType(v)
+                    self.set_queue_system_type(user_input)
                 except RuntimeError as e:
                     print(e)
-                    v = None
+                    user_input = None
 
-        v = None
-        while not v:
+        user_input = None
+        while not user_input:
             prompt = '[2] MPI launch command with num. procs. flag (required - hit enter for examples): '
-            v = py23input(prompt)
-            if not v:
+            user_input = py23input(prompt)
+            if not user_input:
                 print(' Required. Some example MPI launch commands:')
                 print('  No MPI Required           : none')
                 print('  Local Machine (mpirun)    : mpirun -np <ranks>')
@@ -492,35 +492,32 @@ class Launcher:
                 print(
                     ' The keyword <ranks> will be replaced by the actual number of MPI ranks (defined by a given test) when the test is launched.'
                 )
-        self.setMPILaunch(v)
+        self.set_mpi_launch(user_input)
 
         if self.useBatch:
             prompt = '[3] specify a constraint (e.g. "gpu" on Piz Daint) (optional - hit enter if not applicable):'
-            v = py23input(prompt)
-            self.setBatchConstraint(v)
+            self.set_batch_constraint(py23input(prompt))
 
             prompt = '[4] Account to charge (optional - hit enter if not applicable): '
-            v = py23input(prompt)
-            self.setHPCAccountName(v)
+            self.set_hpc_account_name(py23input(prompt))
 
             prompt = '[5] Name of queue to submit tests to (optional - hit enter if not applicable): '
-            v = py23input(prompt)
-            self.setQueueName(v)
+            self.set_queue_name(py23input(prompt))
 
             prompt = '[6] Maximum number of MPI ranks per compute node (optional - hit enter to skip): '
             done = False
             while not done:
-                v = py23input(prompt)
-                if len(v) == 0:
+                user_input = py23input(prompt)
+                if len(user_input) == 0:
                     done = True
                 else:
                     try:
-                        self.setMaxRanksPerNode(int(v))
+                        self.set_max_ranks_per_node(int(user_input))
                         done = True
                     except ValueError:
                         print('Enter a positive integer (or nothing, to skip)')
 
-        self.writeDefinition()
+        self._write_definition()
         print('\n')
         print(
             '** If you wish to change the config for your batch system, either')
@@ -531,12 +528,12 @@ class Launcher:
 
     def setup(self):
         try:
-            self.loadDefinition()
+            self._load_definition()
         except SciATHLoadException:
             self.configure()
-            self.writeDefinition()
+            self._write_definition()
 
-    def writeDefinition(self):
+    def _write_definition(self):
         major, minor, patch = sciath.version()
         with open(self.conf_filename, 'w') as conf_file:
             conf_file.write('majorVersion: %s\n' % major)
@@ -552,44 +549,44 @@ class Launcher:
                     conf_file.write('maxRanksPerNode: %s\n' %
                                     self.maxRanksPerNode)
 
-    def loadDefinition(self):
-        majorFile = None
-        minorFile = None
-        patchFile = None
+    def _load_definition(self):
+        major_file = None
+        minor_file = None
+        patch_file = None
         try:
             data = yaml_parse.parse_yaml_subset_from_file(self.conf_filename)
             if 'majorVersion' in data:
-                majorFile = int(data['majorVersion'])
+                major_file = int(data['majorVersion'])
             if 'minorVersion' in data:
-                minorFile = int(data['minorVersion'])
+                minor_file = int(data['minorVersion'])
             if 'patchVersion' in data:
-                patchFile = int(data['patchVersion'])
+                patch_file = int(data['patchVersion'])
             if 'queuingSystemType' in data:
-                self.setQueueSystemType(data['queuingSystemType'])
+                self.set_queue_system_type(data['queuingSystemType'])
             if 'mpiLaunch' in data:
-                self.setMPILaunch(data['mpiLaunch'])
+                self.set_mpi_launch(data['mpiLaunch'])
             if self.useBatch:
                 if 'batchConstraint' in data:
-                    self.setBatchConstraint(data['batchConstraint'])
+                    self.set_batch_constraint(data['batchConstraint'])
                 if 'queueName' in data:
-                    self.setQueueName(data['queueName'])
+                    self.set_queue_name(data['queueName'])
                 if 'accountName' in data:
-                    self.setHPCAccountName(data['accountName'])
+                    self.set_hpc_account_name(data['accountName'])
                 if 'maxRanksPerNode' in data:
-                    self.setMaxRanksPerNode(int(data['maxRanksPerNode']))
+                    self.set_max_ranks_per_node(int(data['maxRanksPerNode']))
         except:
             raise SciATHLoadException(
-                '[SciATH] Configuration file missing. You must execute configure(), and or writeDefinition() first'
+                '[SciATH] Configuration file missing. You must execute configure(), and or _write_definition() first'
             )
 
         # Do not accept conf files if the major.minor version is stale, or if versions are missing
         major, minor, patch = sciath.version()
-        if majorFile < major or (minorFile < minor and majorFile == major) or \
-             majorFile is None or minorFile is None or patchFile is None :
+        if major_file < major or (minor_file < minor and major_file == major) or \
+             major_file is None or minor_file is None or patch_file is None:
             message = '[SciATH] Incompatible, outdated configuration file ' + self.conf_filename + ' detected. Please delete it and re-run to reconfigure.'
             raise RuntimeError(message)
 
-    def __createJobSubmissionFile(self, job, walltime, output_path):
+    def _create_job_submission_file(self, job, walltime, output_path):
 
         # Verify input, check for generic errors
         if self.batchConstraint and self.queuingSystemType != 'slurm':
@@ -607,7 +604,7 @@ class Launcher:
         print('Created submission file:', filename)
         return filename
 
-    def submitJob(self, job, **kwargs):
+    def submit_job(self, job, **kwargs):
         """ Run a job
 
         Supply output_path to change the location where SciATH's output
@@ -651,32 +648,32 @@ class Launcher:
                 return
 
             command_resource = job.create_execute_command()
-            launchCmd = []
+            launch_command = []
             for command, resource in command_resource:
                 launch = []
                 if self.mpiLaunch != 'none':
                     j_ranks = resource["mpiranks"]
                     launch += formatMPILaunchCommand(mpiLaunch, j_ranks)
                 launch.extend(command)
-                launchCmd.append(launch)
+                launch_command.append(launch)
 
             if self.verbosity_level > 0:
                 print('%s[Executing %s]%s from %s' %
                       (SCIATH_COLORS.SUBHEADER, job.name, SCIATH_COLORS.ENDC,
                        exec_path))
-                for lc in launchCmd:
+                for lc in launch_command:
                     print(command_join(lc))
 
             c_name, o_name, e_name = job.get_output_filenames()
 
             file_ecode = open(os.path.join(output_path, c_name), 'w')
-            lc_count = len(launchCmd)
+            lc_count = len(launch_command)
             for i in range(0, lc_count):
                 file_e = open(os.path.join(output_path, e_name[i]), 'w')
                 file_o = open(os.path.join(output_path, o_name[i]), 'w')
                 cwd_back = os.getcwd()
                 os.chdir(exec_path)
-                returncode = _subprocess_run(launchCmd[i],
+                returncode = _subprocess_run(launch_command[i],
                                              universal_newlines=True,
                                              stdout=file_o,
                                              stderr=file_e)
@@ -690,21 +687,25 @@ class Launcher:
         else:
             walltime = job.total_wall_time()
 
-            launchfile = self.__createJobSubmissionFile(job, walltime,
-                                                        output_path)
-            launchCmd = self.jobSubmissionCommand + [launchfile]
+            launchfile = self._create_job_submission_file(job, walltime, output_path)
+            launch_command = self.jobSubmissionCommand + [launchfile]
             cwd_back = os.getcwd()
             os.chdir(exec_path)
             if self.verbosity_level > 0:
                 print('%s[Executing %s]%s from %s' %
                       (SCIATH_COLORS.SUBHEADER, job.name, SCIATH_COLORS.ENDC,
                        exec_path))
-                print(command_join(launchCmd))
-            _subprocess_run(launchCmd, universal_newlines=True)
+                print(command_join(launch_command))
+            _subprocess_run(launch_command, universal_newlines=True)
             os.chdir(cwd_back)
             setBlockingIOStdout()
 
     def clean(self, job, **kwargs):
+        """ Remove all files created by the Launcher itself
+
+            Note that this does not remove any files created by
+            the Job (via its Tasks).
+        """
 
         output_path = None
         for key, value in kwargs.items():
@@ -720,10 +721,10 @@ class Launcher:
 
         c_name, o_name, e_name = job.get_output_filenames()
         _remove_file_if_it_exists(os.path.join(output_path, c_name))
-        for f in o_name:
-            _remove_file_if_it_exists(os.path.join(output_path, f))
-        for f in e_name:
-            _remove_file_if_it_exists(os.path.join(output_path, f))
+        for filename in o_name:
+            _remove_file_if_it_exists(os.path.join(output_path, filename))
+        for filename in e_name:
+            _remove_file_if_it_exists(os.path.join(output_path, filename))
 
         if self.queueFileExt is not None:
             filename = "sciath.job-" + job.name + "-launch." + self.queueFileExt

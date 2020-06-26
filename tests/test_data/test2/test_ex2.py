@@ -28,7 +28,7 @@ def test1_ud(): # result: pass
     t = Test(Job(Task(cmd), 'Test_1_ud'))
     t.verifier = ComparisonVerifier(t, os.path.join(this_dir,"t1.expected"))
 
-    job_launcher.submitJob( t.job, output_path = OUTPUT_PATH, exec_path = OUTPUT_PATH )
+    job_launcher.submit_job( t.job, output_path = OUTPUT_PATH, exec_path = OUTPUT_PATH )
     t.verify(output_path = OUTPUT_PATH)
     test_print(t, output_path = OUTPUT_PATH)
     return t
@@ -39,7 +39,7 @@ def test2_ud(): # result: fail
     t = Test(Job(Task(cmd), 'Test_2_ud'))
     t.verifier = ComparisonVerifier(t, os.path.join(this_dir,"t1.expected"))
 
-    job_launcher.submitJob( t.job, output_path = OUTPUT_PATH, exec_path = OUTPUT_PATH )
+    job_launcher.submit_job( t.job, output_path = OUTPUT_PATH, exec_path = OUTPUT_PATH )
     t.verify(output_path = OUTPUT_PATH)
     test_print(t, output_path = OUTPUT_PATH)
     return t
