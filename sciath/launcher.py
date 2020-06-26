@@ -39,8 +39,8 @@ def _formatted_hour_min_sec(seconds):
     return "%02d:%02d:%02d" % (hours, minutes, seconds)
 
 
-def format_mpi_launch_command(mpiLaunch, ranks):
-    launch = mpiLaunch
+def format_mpi_launch_command(mpi_launch, ranks):
+    launch = mpi_launch
     launch = launch.replace("<ranks>", str(ranks))
     launch = launch.replace("<cores>", str(ranks))
     launch = launch.replace("<tasks>", str(ranks))
@@ -56,7 +56,7 @@ def _generate_launch_pbs(launcher, walltime, output_path, job):
 
     accountname = launcher.accountName
     queuename = launcher.queueName
-    mpiLaunch = launcher.mpiLaunch
+    mpi_launch = launcher.mpi_launch
 
     resources = job.get_max_resources()
     ranks = resources["mpiranks"]
@@ -97,7 +97,7 @@ def _generate_launch_pbs(launcher, walltime, output_path, job):
         j = command_resource[i]
         j_ranks = j[1]["mpiranks"]
         launch = []
-        launch += format_mpi_launch_command(mpiLaunch, j_ranks)
+        launch += format_mpi_launch_command(mpi_launch, j_ranks)
         if isinstance(j[0], list):
             launch.extend(j[0])
         else:
@@ -125,7 +125,7 @@ def _generate_launch_lsf(launcher, rusage, walltime, output_path, job):
 
     accountname = launcher.accountName
     queuename = launcher.queueName
-    mpiLaunch = launcher.mpiLaunch
+    mpi_launch = launcher.mpi_launch
 
     resources = job.get_max_resources()
     ranks = resources["mpiranks"]
@@ -173,7 +173,7 @@ def _generate_launch_lsf(launcher, rusage, walltime, output_path, job):
         j = command_resource[i]
         j_ranks = j[1]["mpiranks"]
         launch = []
-        launch += format_mpi_launch_command(mpiLaunch, j_ranks)
+        launch += format_mpi_launch_command(mpi_launch, j_ranks)
         if isinstance(j[0], list):
             launch.extend(j[0])
         else:
@@ -202,7 +202,7 @@ def _generate_launch_slurm(launcher, walltime, output_path, job):
     accountname = launcher.accountName
     queuename = launcher.queueName
     constraint = launcher.batchConstraint
-    mpiLaunch = launcher.mpiLaunch
+    mpi_launch = launcher.mpi_launch
 
     resources = job.get_max_resources()
     ranks = resources["mpiranks"]
@@ -252,7 +252,7 @@ def _generate_launch_slurm(launcher, walltime, output_path, job):
         j = command_resource[i]
         j_ranks = j[1]["mpiranks"]
         launch = []
-        launch += format_mpi_launch_command(mpiLaunch, j_ranks)
+        launch += format_mpi_launch_command(mpi_launch, j_ranks)
         if isinstance(j[0], list):
             launch.extend(j[0])
         else:
@@ -330,7 +330,7 @@ class Launcher:
     def __init__(self, conf_filename=None):
         self.accountName = []
         self.queueName = []
-        self.mpiLaunch = []
+        self.mpi_launch = []
         self.queuingSystemType = []
         self.maxRanksPerNode = None
         self.batchConstraint = []
@@ -346,7 +346,7 @@ class Launcher:
         self.setup()
 
         if self.use_batch:
-            if self.mpiLaunch == 'none':
+            if self.mpi_launch == 'none':
                 raise RuntimeError(
                     '[SciATH] If using a queuing system, a valid mpi launch command must be provided'
                 )
@@ -364,7 +364,7 @@ class Launcher:
         self.accountName = name
 
     def set_mpi_launch(self, name):
-        self.mpiLaunch = name
+        self.mpi_launch = name
         # check for existence of "rank" keyword in the string "name"
         if self.queuingSystemType in ['none', 'None', 'local'
                                      ] and name != 'none':
@@ -430,7 +430,7 @@ class Launcher:
                   self.conf_filename)
             print('  Version:           %d.%d.%d' % sciath.version())
             print('  Queue system:      %s' % self.queuingSystemType)
-            print('  MPI launcher:      %s' % self.mpiLaunch)
+            print('  MPI launcher:      %s' % self.mpi_launch)
             if self.use_batch:
                 print('  Submit command:    %s' %
                       command_join(self.job_submission_command))
@@ -535,7 +535,7 @@ class Launcher:
             conf_file.write('minorVersion: %s\n' % minor)
             conf_file.write('patchVersion: %s\n' % patch)
             conf_file.write('queuingSystemType: %s\n' % self.queuingSystemType)
-            conf_file.write('mpiLaunch: %s\n' % self.mpiLaunch)
+            conf_file.write('mpiLaunch: %s\n' % self.mpi_launch)
             if self.use_batch:
                 conf_file.write('accountName: %s\n' % self.accountName)
                 conf_file.write('batchConstraint: %s\n' % self.batchConstraint)
@@ -625,7 +625,7 @@ class Launcher:
         _set_blocking_io_stdout()
 
         if not self.use_batch:
-            mpiLaunch = self.mpiLaunch
+            mpi_launch = self.mpi_launch
             resources = job.get_max_resources()
             ranks = resources["mpiranks"]
             threads = resources["threads"]
@@ -634,7 +634,7 @@ class Launcher:
                     '[SciATH] Unsupported: Job cannot be submitted multi-threaded'
                 )
 
-            if self.mpiLaunch == 'none' and ranks != 1:
+            if self.mpi_launch == 'none' and ranks != 1:
                 print(
                     '[Failed to launch test \"' + job.name +
                     '\" as test uses > 1 MPI ranks and no MPI launcher was provided]'
@@ -645,9 +645,9 @@ class Launcher:
             launch_command = []
             for command, resource in command_resource:
                 launch = []
-                if self.mpiLaunch != 'none':
+                if self.mpi_launch != 'none':
                     j_ranks = resource["mpiranks"]
-                    launch += format_mpi_launch_command(mpiLaunch, j_ranks)
+                    launch += format_mpi_launch_command(mpi_launch, j_ranks)
                 launch.extend(command)
                 launch_command.append(launch)
 
