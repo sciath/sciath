@@ -319,7 +319,7 @@ class Harness:
             self._activate_test_groups(args.groups, args.exclude_groups)
 
         if args.configure_default:
-            sciath.launcher.Launcher.writeDefaultDefinition(args.conf_file)
+            sciath.launcher.Launcher.write_default_definition(args.conf_file)
             return
 
         self.launcher = sciath.launcher.Launcher(args.conf_file)

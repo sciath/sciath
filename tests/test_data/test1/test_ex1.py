@@ -10,7 +10,7 @@ from sciath.task import Task
 OUTPUT_PATH = os.path.join(os.getcwd(),'output')
 VERBOSITY = 0
 job_launcher = Launcher()
-job_launcher.setVerbosityLevel(VERBOSITY)
+job_launcher.set_verbosity_level(VERBOSITY)
 
 def test_print(test, output_path):
     status,report = test.verifier.execute(output_path = output_path)

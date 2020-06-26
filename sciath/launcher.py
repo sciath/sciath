@@ -36,8 +36,7 @@ def FormattedHourMin(seconds):
 def FormattedHourMinSec(seconds):
     m, s = divmod(seconds, 60)
     h, m = divmod(m, 60)
-    wt = "%02d:%02d:%02d" % (h, m, s)
-    return wt
+    return "%02d:%02d:%02d" % (h, m, s)
 
 
 def formatMPILaunchCommand(mpiLaunch, ranks):
@@ -83,8 +82,8 @@ def _generateLaunch_PBS(launcher, walltime, output_path, job):
     if queuename:
         file.write("#PBS -q " + queuename + "\n")
 
-    wt = FormattedHourMinSec(float(walltime) * 60.0)
-    file.write("#PBS -l mppwidth=1024,walltime=" + wt + "\n")
+    walltime_string = FormattedHourMinSec(float(walltime) * 60.0)
+    file.write("#PBS -l mppwidth=1024,walltime=" + walltime_string + "\n")
 
     # Write out the list of jobs execute commands
     # Dependent jobs have their stdout collected in separate files (one per job)
@@ -160,8 +159,8 @@ def _generateLaunch_LSF(launcher, rusage, walltime, output_path, job):
     if rusage:
         file.write("#BSUB -R \'" + rusage + "\'" + "\n")
 
-    wt = FormattedHourMin(float(walltime) * 60.0)
-    file.write("#BSUB -W " + wt + "\n")
+    walltime_string = FormattedHourMin(float(walltime) * 60.0)
+    file.write("#BSUB -W " + walltime_string + "\n")
 
     # Write out the list of jobs execute commands
     # Dependent jobs have their stdout collected in separate files (one per job)
@@ -240,8 +239,8 @@ def _generateLaunch_SLURM(launcher, walltime, output_path, job):
     if constraint:
         file.write("#SBATCH --constraint=" + constraint + "\n")
 
-    wt = FormattedHourMinSec(float(walltime) * 60.0)
-    file.write("#SBATCH --time=" + wt + "\n")
+    walltime_string = FormattedHourMinSec(float(walltime) * 60.0)
+    file.write("#SBATCH --time=" + walltime_string + "\n")
 
     # Write out the list of jobs execute commands
     # Dependent jobs have their stdout collected in separate files (one per job)
@@ -321,7 +320,7 @@ class Launcher:
     _default_conf_filename = 'SciATHBatchQueuingSystem.conf'
 
     @staticmethod
-    def writeDefaultDefinition(conf_filename_in=None):
+    def write_default_definition(conf_filename_in=None):
         major, minor, patch = sciath.version()
         conf_filename = conf_filename_in if conf_filename_in else Launcher._default_conf_filename
         with open(conf_filename, 'w') as conf_file:
@@ -355,7 +354,7 @@ class Launcher:
                     '[SciATH] If using a queuing system, a valid mpi launch command must be provided'
                 )
 
-    def setVerbosityLevel(self, value):
+    def set_verbosity_level(self, value):
         self.verbosity_level = value
 
     def set_queue_name(self, name):
