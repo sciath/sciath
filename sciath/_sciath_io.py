@@ -1,3 +1,4 @@
+""" SciATH logic and definitions for input and output """
 from __future__ import print_function
 
 import os
@@ -38,6 +39,7 @@ class NamedColors:
         self.set_colors()
 
     def set_colors(self, use_bash=True):
+        """ Set color codes, based on whether or not bash colors are used """
         self.HEADER = '\033[35m' if use_bash else ''
         self.SUBHEADER = '\033[36m' if use_bash else ''
         self.OK = '\033[32m' if use_bash else ''

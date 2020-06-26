@@ -343,7 +343,7 @@ class Launcher:
             self.conf_filename = Launcher._default_conf_filename
         self.queue_file_extension = None
 
-        self.setup()
+        self._setup()
 
         if self.use_batch:
             if self.mpi_launch == 'none':
@@ -515,7 +515,7 @@ class Launcher:
         print('** (ii) re-run with the command line arg --configure')
         print('----------------------------------------------------------------')
 
-    def setup(self):
+    def _setup(self):
         try:
             self._load_definition()
         except SciATHLoadException:
