@@ -1,10 +1,5 @@
 language: python
 
-python:
-  - "2.7"
-  - "3.5"
-  - "3.7"
-
 git:
   depth: false
 
@@ -13,17 +8,52 @@ branches:
     - master
     - dev
 
+stages:
+    - lint errors
+    - test
+    - lint all
+
 jobs:
   include:
-      - install:
-          - pip install pyyaml
-        script:
-          - export PYTHONPATH=$PWD:$PYTHONPATH
-          - sh -c "cd tests && ./minisciath/minisciath.py tests.yml --only-group default_configuration"
-      - install:
-          - pip install pylint
-        script: sh -c "pylint --errors-only sciath/*.py tests/test_data/*/*.py"
-      - install:
-          - pip install pylint
-        script:
-          - sh -c "pylint sciath/*.py"
+    - stage: test
+      python: 2.7
+      install:
+        - pip install pyyaml
+      script:
+        - export PYTHONPATH=$PWD:$PYTHONPATH
+        - sh -c "cd tests && ./minisciath/minisciath.py tests.yml --only-group default_configuration"
+    - stage: test
+      python: 3.5
+      install:
+        - pip install pyyaml
+      script:
+        - export PYTHONPATH=$PWD:$PYTHONPATH
+        - sh -c "cd tests && ./minisciath/minisciath.py tests.yml --only-group default_configuration"
+    - stage: test
+      python: 3.7
+      install:
+        - pip install pyyaml
+      script:
+        - export PYTHONPATH=$PWD:$PYTHONPATH
+        - sh -c "cd tests && ./minisciath/minisciath.py tests.yml --only-group default_configuration"
+    - stage: lint errors
+      python: 2.7
+      install:
+        - pip install pylint
+      script: sh -c "pylint --errors-only sciath/*.py tests/test_data/*/*.py"
+    - stage: lint errors
+      python: 3.5
+      install:
+        - pip install pylint
+      script: sh -c "pylint --errors-only sciath/*.py tests/test_data/*/*.py"
+    - stage: lint
+      python: 3.7
+      install:
+        - pip install pylint
+      script: sh -c "pylint --errors-only sciath/*.py tests/test_data/*/*.py"
+    - stage: lint all
+      python: 3.7
+      install:
+        - pip install pylint
+      script:
+        - sh -c "pylint sciath/*.py"
