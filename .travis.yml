@@ -13,15 +13,17 @@ branches:
     - master
     - dev
 
-install:
-  - pip install pyyaml pylint
-
-script:
-  - export PYTHONPATH=$PWD:$PYTHONPATH
-  - sh -c "cd tests && ./minisciath/minisciath.py tests.yml --only-group default_configuration"
-  - sh -c "pylint --errors-only sciath/*.py tests/test_data/*/*.py"
-
 jobs:
   include:
-      - stage: pylint
-        script: sh -c "pylint sciath*.py"
+      - install:
+          - pip install pyyaml
+        script:
+          - export PYTHONPATH=$PWD:$PYTHONPATH
+          - sh -c "cd tests && ./minisciath/minisciath.py tests.yml --only-group default_configuration"
+      - install:
+          - pip install pylint
+        script: sh -c "pylint --errors-only sciath/*.py tests/test_data/*/*.py"
+      - install:
+          - pip install pylint
+        script:
+          - sh -c "pylint sciath/*.py"
