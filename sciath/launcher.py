@@ -332,7 +332,7 @@ class Launcher:
         self.account_name = []
         self.queue_name = []
         self.mpi_launch = []
-        self.queuingSystemType = []
+        self.queuing_system_type = []
         self.max_ranks_per_node = None
         self.batch_constraint = []
         self.job_submission_command = []
@@ -367,7 +367,7 @@ class Launcher:
     def set_mpi_launch(self, name):
         self.mpi_launch = name
         # check for existence of "rank" keyword in the string "name"
-        if self.queuingSystemType in ['none', 'None', 'local'
+        if self.queuing_system_type in ['none', 'None', 'local'
                                      ] and name != 'none':
             keywordlist = ['<ranks>', '<cores>', '<tasks>', '<RANKS>']
             # check of any of keywordlist[i] appears in name
@@ -384,25 +384,25 @@ class Launcher:
 
     def set_queue_system_type(self, system_type):
         if system_type in ['PBS', 'pbs']:
-            self.queuingSystemType = 'pbs'
+            self.queuing_system_type = 'pbs'
             self.job_submission_command = ['qsub']
             self.use_batch = True
             self.queue_file_extension = 'pbs'
 
         elif system_type in ['LSF', 'lsf']:
-            self.queuingSystemType = 'lsf'
+            self.queuing_system_type = 'lsf'
             self.job_submission_command = ['sh', '-c', 'bsub < $0']  # This allows "<".
             self.use_batch = True
             self.queue_file_extension = 'lsf'
 
         elif system_type in ['SLURM', 'slurm']:
-            self.queuingSystemType = 'slurm'
+            self.queuing_system_type = 'slurm'
             self.job_submission_command = ['sbatch']
             self.use_batch = True
             self.queue_file_extension = 'slurm'
 
         elif system_type in ['LoadLeveler', 'load_leveler', 'loadleveler', 'llq']:
-            self.queuingSystemType = 'load_leveler'
+            self.queuing_system_type = 'load_leveler'
             self.job_submission_command = ['llsubmit']
             self.use_batch = True
             self.queue_file_extension = 'llq'
@@ -410,7 +410,7 @@ class Launcher:
                 '[SciATH] Unsupported: LoadLeveler needs to be updated')
 
         elif system_type in ['none', 'None', 'local']:
-            self.queuingSystemType = 'none'
+            self.queuing_system_type = 'none'
             self.job_submission_command = ''
             self.queue_file_extension = None
 
@@ -430,7 +430,7 @@ class Launcher:
             print('[SciATH] Batch queueing system configuration [%s]' %
                   self.conf_filename)
             print('  Version:           %d.%d.%d' % sciath.version())
-            print('  Queue system:      %s' % self.queuingSystemType)
+            print('  Queue system:      %s' % self.queuing_system_type)
             print('  MPI launcher:      %s' % self.mpi_launch)
             if self.use_batch:
                 print('  Submit command:    %s' %
@@ -535,7 +535,7 @@ class Launcher:
             conf_file.write('majorVersion: %s\n' % major)
             conf_file.write('minorVersion: %s\n' % minor)
             conf_file.write('patchVersion: %s\n' % patch)
-            conf_file.write('queuingSystemType: %s\n' % self.queuingSystemType)
+            conf_file.write('queuing_system_type: %s\n' % self.queuing_system_type)
             conf_file.write('mpiLaunch: %s\n' % self.mpi_launch)
             if self.use_batch:
                 conf_file.write('accountName: %s\n' % self.account_name)
@@ -585,15 +585,15 @@ class Launcher:
     def _create_job_submission_file(self, job, walltime, output_path):
 
         # Verify input, check for generic errors
-        if self.batch_constraint and self.queuingSystemType != 'slurm':
+        if self.batch_constraint and self.queuing_system_type != 'slurm':
             message = '[SciATH] Constraints are only currently supported with SLURM'
             raise RuntimeError(message)
 
-        if self.queuingSystemType == 'pbs':
+        if self.queuing_system_type == 'pbs':
             filename = _generate_launch_pbs(self, walltime, output_path, job)
-        elif self.queuingSystemType == 'lsf':
+        elif self.queuing_system_type == 'lsf':
             filename = _generate_launch_lsf(self, None, walltime, output_path, job)
-        elif self.queuingSystemType == 'slurm':
+        elif self.queuing_system_type == 'slurm':
             filename = _generate_launch_slurm(self, walltime, output_path, job)
 
         print('Created submission file:', filename)
