@@ -16,7 +16,7 @@ from sciath._sciath_io import py23input, _remove_file_if_it_exists, command_join
 #  has been observed to cause problems on OS X with errors like
 #  "BlockingIOError: [Errno 35] write could not complete without blocking"
 # We use this function to (re)set blocking I/O when launching
-def setBlockingIOStdout():
+def _set_blocking_io_stdout():
     fd = sys.stdout
     flags = fcntl.fcntl(fd, fcntl.F_GETFL)
     if flags & os.O_NONBLOCK:
@@ -27,16 +27,16 @@ class SciATHLoadException(Exception):
     pass
 
 
-def FormattedHourMin(seconds):
-    m, s = divmod(int(seconds), 60)
-    h, m = divmod(m, 60)
-    return  "%02d:%02d" % (h, m)
+def formatted_hour_min(seconds):
+    minutes = divmod(int(seconds), 60)[0]
+    hours, minutes = divmod(minutes, 60)
+    return  "%02d:%02d" % (hours, minutes)
 
 
-def FormattedHourMinSec(seconds):
-    m, s = divmod(seconds, 60)
-    h, m = divmod(m, 60)
-    return "%02d:%02d:%02d" % (h, m, s)
+def formatted_hour_min_sec(seconds):
+    minutes, seconds = divmod(seconds, 60)
+    hours, minutes = divmod(minutes, 60)
+    return "%02d:%02d:%02d" % (hours, minutes, seconds)
 
 
 def formatMPILaunchCommand(mpiLaunch, ranks):
@@ -82,7 +82,7 @@ def _generateLaunch_PBS(launcher, walltime, output_path, job):
     if queuename:
         file.write("#PBS -q " + queuename + "\n")
 
-    walltime_string = FormattedHourMinSec(float(walltime) * 60.0)
+    walltime_string = formatted_hour_min_sec(float(walltime) * 60.0)
     file.write("#PBS -l mppwidth=1024,walltime=" + walltime_string + "\n")
 
     # Write out the list of jobs execute commands
@@ -159,7 +159,7 @@ def _generateLaunch_LSF(launcher, rusage, walltime, output_path, job):
     if rusage:
         file.write("#BSUB -R \'" + rusage + "\'" + "\n")
 
-    walltime_string = FormattedHourMin(float(walltime) * 60.0)
+    walltime_string = formatted_hour_min(float(walltime) * 60.0)
     file.write("#BSUB -W " + walltime_string + "\n")
 
     # Write out the list of jobs execute commands
@@ -239,7 +239,7 @@ def _generateLaunch_SLURM(launcher, walltime, output_path, job):
     if constraint:
         file.write("#SBATCH --constraint=" + constraint + "\n")
 
-    walltime_string = FormattedHourMinSec(float(walltime) * 60.0)
+    walltime_string = formatted_hour_min_sec(float(walltime) * 60.0)
     file.write("#SBATCH --time=" + walltime_string + "\n")
 
     # Write out the list of jobs execute commands
@@ -475,11 +475,11 @@ class Launcher:
                 print('  SLURM w/ aprun            : aprun -B')
                 print('  Native SLURM              : srun -n $SLURM_NTASKS')
                 print('  LSF (Euler)               : mpirun')
-                PETSC_DIR = os.getenv('PETSC_DIR')
-                PETSC_ARCH = os.getenv('PETSC_ARCH')
-                if PETSC_DIR and PETSC_ARCH:
+                petsc_dir = os.getenv('PETSC_DIR')
+                petsc_arch = os.getenv('PETSC_ARCH')
+                if petsc_dir and petsc_arch:
                     print('  Current PETSc MPI wrapper :',
-                          os.path.join(PETSC_DIR, PETSC_ARCH, 'bin', 'mpiexec'),
+                          os.path.join(petsc_dir, petsc_arch, 'bin', 'mpiexec'),
                           '-n <ranks>')
                 else:
                     print(
@@ -627,7 +627,7 @@ class Launcher:
                     raise ValueError(
                         '[SciATH] Unsupported: exec paths must be absolute')
 
-        setBlockingIOStdout()
+        _set_blocking_io_stdout()
 
         if not self.useBatch:
             mpiLaunch = self.mpiLaunch
@@ -680,7 +680,7 @@ class Launcher:
                 file_o.close()
                 file_e.close()
                 file_ecode.write(str(returncode) + "\n")  # exit code
-                setBlockingIOStdout()
+                _set_blocking_io_stdout()
             file_ecode.close()
 
         else:
@@ -697,7 +697,7 @@ class Launcher:
                 print(command_join(launch_command))
             _subprocess_run(launch_command, universal_newlines=True)
             os.chdir(cwd_back)
-            setBlockingIOStdout()
+            _set_blocking_io_stdout()
 
     def clean(self, job, **kwargs):
         """ Remove all files created by the Launcher itself
