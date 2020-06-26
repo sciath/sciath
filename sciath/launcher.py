@@ -24,13 +24,14 @@ def _set_blocking_io_stdout():
 
 
 class SciATHLoadException(Exception):
+    """ Exception for a failed load of configuration file """
     pass
 
 
 def _formatted_hour_min(seconds):
     minutes = divmod(int(seconds), 60)[0]
     hours, minutes = divmod(minutes, 60)
-    return  "%02d:%02d" % (hours, minutes)
+    return "%02d:%02d" % (hours, minutes)
 
 
 def _formatted_hour_min_sec(seconds):
@@ -54,12 +55,12 @@ def _generate_launch_pbs(launcher, walltime, output_path, job):
         message = "[SciATH] _generate_launch_pbs requires walltime be specified"
         raise RuntimeError(message)
 
-    accountname = launcher.accountName
+    accountname = launcher.account_name
     queuename = launcher.queueName
     mpi_launch = launcher.mpi_launch
 
-    resources = job.get_max_resources()
-    ranks = resources["mpiranks"]
+    # resources = job.get_max_resources()
+    # ranks = resources["mpiranks"]
 
     c_name, o_name, e_name = job.get_output_filenames()
 
@@ -123,7 +124,7 @@ def _generate_launch_lsf(launcher, rusage, walltime, output_path, job):
         message = "[SciATH] _generate_launch_lsf requires walltime be specified"
         raise RuntimeError(message)
 
-    accountname = launcher.accountName
+    accountname = launcher.account_name
     queuename = launcher.queueName
     mpi_launch = launcher.mpi_launch
 
@@ -199,7 +200,7 @@ def _generate_launch_slurm(launcher, walltime, output_path, job):
         message = "[SciATH] _generate_launch_slurm requires walltime be specified"
         raise RuntimeError(message)
 
-    accountname = launcher.accountName
+    accountname = launcher.account_name
     queuename = launcher.queueName
     constraint = launcher.batchConstraint
     mpi_launch = launcher.mpi_launch
@@ -328,7 +329,7 @@ class Launcher:
             conf_file.write('mpiLaunch: none\n')
 
     def __init__(self, conf_filename=None):
-        self.accountName = []
+        self.account_name = []
         self.queueName = []
         self.mpi_launch = []
         self.queuingSystemType = []
@@ -361,7 +362,7 @@ class Launcher:
         self.batchConstraint = argstring
 
     def set_hpc_account_name(self, name):
-        self.accountName = name
+        self.account_name = name
 
     def set_mpi_launch(self, name):
         self.mpi_launch = name
@@ -434,8 +435,8 @@ class Launcher:
             if self.use_batch:
                 print('  Submit command:    %s' %
                       command_join(self.job_submission_command))
-                if self.accountName:
-                    print('  Account:           %s' % self.accountName)
+                if self.account_name:
+                    print('  Account:           %s' % self.account_name)
                 if self.queueName:
                     print('  Queue:             %s' % self.queueName)
                 if self.batchConstraint:
@@ -537,7 +538,7 @@ class Launcher:
             conf_file.write('queuingSystemType: %s\n' % self.queuingSystemType)
             conf_file.write('mpiLaunch: %s\n' % self.mpi_launch)
             if self.use_batch:
-                conf_file.write('accountName: %s\n' % self.accountName)
+                conf_file.write('accountName: %s\n' % self.account_name)
                 conf_file.write('batchConstraint: %s\n' % self.batchConstraint)
                 conf_file.write('queueName: %s\n' % self.queueName)
                 if self.maxRanksPerNode:
