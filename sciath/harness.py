@@ -76,19 +76,21 @@ class Harness:
                 self.add_test(test)
 
     def add_test(self, test):
+        """ Add a Test to be run with the harness """
         if test.name in [testrun.test.name for testrun in self.testruns]:
             raise Exception("Duplicate test name %s" % test.name)
         self.testruns.append(_TestRun(test))
 
     def add_tests_from_file(self, filename):
+        """ Read a file to add Tests to be run with the harness """
         for test in sciath.test_file.create_tests_from_file(filename):
             self.add_test(test)
 
     def clean(self):
+        """ Remove all output from all Tests, preparing or a re-run """
         if self.launcher is None:
             self.launcher = sciath.launcher.Launcher()
 
-        # Clean all tests
         if self.testruns:
             print(SCIATH_COLORS.HEADER + '[ *** Cleanup *** ]' +
                   SCIATH_COLORS.ENDC)
@@ -107,6 +109,7 @@ class Harness:
                     shutil.rmtree(testrun.exec_path)
 
     def determine_overall_success(self):
+        """ Returns a boolean value to denote overall success of the test suite """
         for testrun in self.testruns:
             if testrun.status not in [
                     _TestRunStatus.DEACTIVATED, _TestRunStatus.PASS
@@ -115,6 +118,7 @@ class Harness:
         return True
 
     def execute(self):
+        """ Execute all tests """
         self.clean()
 
         if self.launcher is None:
@@ -138,8 +142,8 @@ class Harness:
                     with open(sentinel_file, 'w'):
                         pass
                 self.launcher.submit_job(testrun.test.job,
-                                        output_path=testrun.output_path,
-                                        exec_path=testrun.exec_path)
+                                         output_path=testrun.output_path,
+                                         exec_path=testrun.exec_path)
 
     def _parse_args(self):
         parser = argparse.ArgumentParser(description='SciATH')
