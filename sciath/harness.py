@@ -5,6 +5,7 @@ import os
 import sys
 import argparse
 import shutil
+import datetime
 
 import sciath
 import sciath.launcher
@@ -67,6 +68,7 @@ class Harness:
     """
 
     _sandbox_sentinel_filename = '.sciath_sandbox'
+    _report_filename = 'sciath_test_report.txt'
 
     def __init__(self, tests=None):
         self.launcher = None  # Created when needed
@@ -157,48 +159,63 @@ class Harness:
             print(''.join(info_string))
 
     def report(self):  #pylint: disable=too-many-branches
-        """ Compile results into a report and print """
+        """ Compile results into a report and print to stdout and file """
+        report = []
         failed_names = []
         if self.testruns:
             report_header_printed = False
             for testrun in self.testruns:
                 if testrun.report:
                     if not report_header_printed:
-                        print(SCIATH_COLORS.header +
-                              '[ *** Verification Reports *** ]' +
-                              SCIATH_COLORS.endc)
+                        report.append(SCIATH_COLORS.header +
+                                      '[ *** Verification Reports *** ]' +
+                                      SCIATH_COLORS.endc)
                         report_header_printed = True
-                    print('%s[Report for %s]%s' %
-                          (SCIATH_COLORS.subheader, testrun.test.name,
-                           SCIATH_COLORS.endc))
+                    report.append('%s[Report for %s]%s' %
+                                  (SCIATH_COLORS.subheader, testrun.test.name,
+                                   SCIATH_COLORS.endc))
                     for line in testrun.report:
-                        print(line)
-            print(SCIATH_COLORS.header + '[ *** Summary *** ]' +
-                  SCIATH_COLORS.endc)
+                        report.append(line)
+            report.append(SCIATH_COLORS.header + '[ *** Summary *** ]' +
+                          SCIATH_COLORS.endc)
             for testrun in self.testruns:
                 if testrun.status == 'fail':
                     failed_names.append(testrun.test.name)
-                print(
-                    sciath.SCIATH_TEST_STATUS.status_color_type[testrun.status],
-                    end='')
-                print('[%s]  %s' % (testrun.test.name, testrun.status), end='')
-                print(SCIATH_COLORS.endc, end='')
+                line = [sciath.SCIATH_TEST_STATUS.status_color_type[testrun.status]]
+                line.append('[%s]  %s' % (testrun.test.name, testrun.status))
+                line.append(SCIATH_COLORS.endc)
                 if testrun.status_info:
-                    print(' (' + testrun.status_info + ')', end='')
-                print()
-            print()
+                    line.append(' (' + testrun.status_info + ')')
+                report.append(''.join(line))
+            report.append('')
             if any((testrun.active for testrun in self.testruns)):
                 if self.determine_overall_success():
-                    print(SCIATH_COLORS.okay + "SUCCESS" + SCIATH_COLORS.endc)
+                    report.append(SCIATH_COLORS.okay + "SUCCESS" + SCIATH_COLORS.endc)
                 else:
-                    print(SCIATH_COLORS.fail + "FAILURE" + SCIATH_COLORS.endc)
+                    report.append(SCIATH_COLORS.fail + "FAILURE" + SCIATH_COLORS.endc)
                     if failed_names:
-                        print('To re-run failed tests, use e.g.')
-                        print('  -t ' + ','.join(failed_names))
+                        report.append('To re-run failed tests, use e.g.')
+                        report.append('  -t ' + ','.join(failed_names))
             else:
-                print("No tests active")
+                report.append("No tests active")
         else:
-            print("No tests")
+            report.append("No tests")
+        for line in report:
+            print(line)
+
+        self._report_to_file(report)
+        print('\nReport written to file:\n  %s' %(self._report_filename))
+
+    def _report_to_file(self, report):
+        """ Dumps a report, as a list of lines (no new-lines) to file
+
+            Prepends additional information, so that the file can be
+            sent elsewhere or referred to later
+        """
+        with open(self._report_filename, 'w') as handle:
+            handle.write(datetime.datetime.now().strftime('%m/%d/%Y, %H:%M:%S') + '\n')
+            handle.write(str(self.launcher) + '\n')
+            handle.write('\n'.join(report) + '\n')
 
     def run_from_args(self):  #pylint: disable=too-many-branches
         """ Perform one or more actions, based on command line options
