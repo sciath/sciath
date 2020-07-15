@@ -68,11 +68,3 @@ class SciathTestStatusDefinition: #pylint: disable=too-few-public-methods,too-ma
             'skip',
             'resource request cannot be satisifed - no MPI exec provided',
         ]
-        self.resources_invalid_gpu = [
-            'skip',
-            'resource request cannot be satisifed - no GPU info provided',
-        ]
-        self.resources_invalid_mpiranks_per_node = [
-            'skip',
-            'resource request cannot be satisifed - insufficient mpiranks-per-node',
-        ]
