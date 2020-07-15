@@ -1,0 +1,9 @@
+tests:
+  -
+    name: run
+    command: sh HERE/run.sh
+    expected: expected
+    type: float_lines
+    rules:
+      -
+        key: a

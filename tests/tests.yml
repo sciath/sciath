@@ -24,6 +24,11 @@
   command: sh test_wrapper.sh verifier_line_atol "../test_data/verifier_line_atol/input.yml"
   expected: test_data/verifier_line_atol.expected
 -
+  name: verifier_line_order
+  group: default_configuration
+  command: sh test_wrapper.sh verifier_line_order "../test_data/verifier_line_order/input.yml"
+  expected: test_data/verifier_line_order.expected
+-
   name: harness1
   group: default_configuration
   command: sh test_api_wrapper.sh harness1 test_data/harness1/test1.py
