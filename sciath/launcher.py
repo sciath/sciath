@@ -332,7 +332,6 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
         self.queue_name = []
         self.mpi_launch = []
         self.queuing_system_type = []
-        self.max_ranks_per_node = None
         self.batch_constraint = []
         self.job_submission_command = []
         self.use_batch = False
@@ -406,12 +405,6 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
                 '[SciATH] Unknown or unsupported batch queuing system "' +
                 system_type + '" specified')
 
-    def set_max_ranks_per_node(self, max_ranks_per_node):
-        """ Store an int-valued maximum number of MPI ranks per node """
-        if not isinstance(max_ranks_per_node, int) or max_ranks_per_node <= 0:
-            raise ValueError("Maximum ranks per node must be a positive integer")
-        self.max_ranks_per_node = max_ranks_per_node
-
     def view(self):
         """ Print information about the Launcher """
         if self.verbosity_level > 0:
@@ -431,8 +424,6 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
                 lines.append('  Queue:             %s' % self.queue_name)
             if self.batch_constraint:
                 lines.append('  Constraint:        %s' % self.batch_constraint)
-            if self.max_ranks_per_node:
-                lines.append('  Max Ranks Per Node:%s' % self.max_ranks_per_node)
         return '\n'.join(lines)
 
     def configure(self): #pylint: disable=too-many-branches,too-many-statements
@@ -492,20 +483,6 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
                       '(optional - hit enter if not applicable): ')
             self.queue_name = py23input(prompt)
 
-            prompt = ('[6] Maximum number of MPI ranks per compute node '
-                      '(optional - hit enter to skip): ')
-            done = False
-            while not done:
-                user_input = py23input(prompt)
-                if len(user_input) == 0:
-                    done = True
-                else:
-                    try:
-                        self.set_max_ranks_per_node(int(user_input))
-                        done = True
-                    except ValueError:
-                        print('Enter a positive integer (or nothing, to skip)')
-
         self._write_definition()
         print('\n')
         print('** If you wish to change the config for your batch system, either')
@@ -532,9 +509,6 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
                 conf_file.write('accountName: %s\n' % self.account_name)
                 conf_file.write('batchConstraint: %s\n' % self.batch_constraint)
                 conf_file.write('queueName: %s\n' % self.queue_name)
-                if self.max_ranks_per_node:
-                    conf_file.write('maxRanksPerNode: %s\n' %
-                                    self.max_ranks_per_node)
 
     def _load_definition(self): #pylint: disable=too-many-branches
         major_file = None
@@ -559,8 +533,6 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
                     self.queue_name = data['queueName']
                 if 'accountName' in data:
                     self.account_name = data['accountName']
-                if 'maxRanksPerNode' in data:
-                    self.set_max_ranks_per_node(int(data['maxRanksPerNode']))
         except:
             raise SciATHLoadException(('[SciATH] Configuration file missing. '
                                        'You must execute configure(), and/or '
