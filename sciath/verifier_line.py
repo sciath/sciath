@@ -1,5 +1,6 @@
 """ SciATH LineVerifier class """
 import re
+import collections
 
 from sciath.verifier import ComparisonVerifier
 
@@ -22,8 +23,8 @@ class LineVerifier(ComparisonVerifier):
         report = []
         passing = True
         for rule in self.rules:
-            match_from = {}
-            match_to = {}
+            match_from = collections.OrderedDict()
+            match_to = collections.OrderedDict()
             for match, source_file in [(match_from, from_file), (match_to, to_file)]:
                 with open(source_file, 'r') as handle:
                     for line_number, line in enumerate(handle.readlines(), 1):
