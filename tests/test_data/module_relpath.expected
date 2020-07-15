@@ -13,4 +13,4 @@ sh <<TEST DIR STRIPPED>>/test_data/module_relpath/script.sh <<TEST DIR STRIPPED>
 [32mSUCCESS[0m
 
 Report written to file:
-  sciath_test_report.txt
+  <<TEST DIR STRIPPED>>/module_relpath_sandbox/sciath_test_report.txt

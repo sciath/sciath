@@ -31,4 +31,4 @@ To re-run failed tests, use e.g.
   -t bar
 
 Report written to file:
-  sciath_test_report.txt
+  <<TEST DIR STRIPPED>>/module_input_sandbox/sciath_test_report.txt
