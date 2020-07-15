@@ -22,7 +22,7 @@ To re-run failed tests, use e.g.
   -t foo
 
 Report written to file:
-  sciath_test_report.txt
+  <<TEST DIR STRIPPED>>/verifier_update_sandbox/sciath_test_report.txt
 [SciATH] You have provided an argument to updated expected files.
 [SciATH] This will attempt to OVERWRITE your expected files!
 [SciATH] Are you sure? Type 'y' to continue: [35m[ *** Cleanup *** ][0m
@@ -42,7 +42,7 @@ echo foo
 [32mSUCCESS[0m
 
 Report written to file:
-  sciath_test_report.txt
+  <<TEST DIR STRIPPED>>/verifier_update_sandbox/sciath_test_report.txt
 [35m[ *** Cleanup *** ][0m
 [ -- Removing output for Test: foo -- ]
 [35m[ *** Executing Tests *** ][0m
@@ -58,4 +58,4 @@ echo foo
 [32mSUCCESS[0m
 
 Report written to file:
-  sciath_test_report.txt
+  <<TEST DIR STRIPPED>>/verifier_update_sandbox/sciath_test_report.txt

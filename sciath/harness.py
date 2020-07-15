@@ -76,6 +76,7 @@ class Harness:
         if tests:
             for test in tests:
                 self.add_test(test)
+        self.report_filename_full = os.path.join(os.getcwd(), self._report_filename)
 
     def add_test(self, test):
         """ Add a Test to be run with the harness """
@@ -204,7 +205,7 @@ class Harness:
             print(line)
 
         self._report_to_file(report)
-        print('\nReport written to file:\n  %s' %(self._report_filename))
+        print('\nReport written to file:\n  %s' %(self.report_filename_full))
 
     def _report_to_file(self, report):
         """ Dumps a report, as a list of lines (no new-lines) to file
@@ -212,7 +213,7 @@ class Harness:
             Prepends additional information, so that the file can be
             sent elsewhere or referred to later
         """
-        with open(self._report_filename, 'w') as handle:
+        with open(self.report_filename_full, 'w') as handle:
             handle.write(datetime.datetime.now().strftime('%m/%d/%Y, %H:%M:%S') + '\n')
             handle.write(str(self.launcher) + '\n')
             handle.write('\n'.join(report) + '\n')

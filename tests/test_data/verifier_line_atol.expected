@@ -155,4 +155,4 @@ To re-run failed tests, use e.g.
   -t rtol_only_default_fail,rtol_only_fail,atol_only_fail,both_tols_fail,atol_zero_fail,rtol_zero_fail,both_tols_zero_fail
 
 Report written to file:
-  sciath_test_report.txt
+  <<TEST DIR STRIPPED>>/verifier_line_atol_sandbox/sciath_test_report.txt
