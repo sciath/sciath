@@ -68,7 +68,7 @@ def compare_float_values_line(line_expected, line_out, abs_tol, rel_tol):
             if abs_tol is not None:
                 abs_err = abs(float_out - float_expected)
                 passing_abs = abs_err <= abs_tol
-            if rel_tol is not None and (not abs_tol or not passing_abs):
+            if rel_tol is not None and (abs_tol is None or not passing_abs):
                 if float_expected == 0.0:  # allow to pass rtol an exact match of zero
                     rel_err = float('inf')
                     passing_rel = float_out == 0.0
@@ -77,13 +77,17 @@ def compare_float_values_line(line_expected, line_out, abs_tol, rel_tol):
                     passing_rel = rel_err <= rel_tol
             if (abs_tol is None or not passing_abs) and (rel_tol is None or not passing_rel):
                 passing = False
-                if abs_tol is not None and not passing_abs:
+                if abs_tol is not None and rel_tol is not None:
                     report.append(
-                        '%g does not match expected %g to abs. tol. %g (abs. err %g)'
+                        '%g != %g to abs. tol. %g (abs. err %g) or rel. tol %g (rel. err %g)'
+                        % (float_out, float_expected, abs_tol, abs_err, rel_tol, rel_err))
+                elif abs_tol is not None:
+                    report.append(
+                        '%g != %g to abs. tol. %g (abs. err %g)'
                         % (float_out, float_expected, abs_tol, abs_err))
-                if rel_tol is not None and not passing_rel:
+                else:
                     report.append(
-                        '%g does not match expected %g to rel. tol. %g (rel. err. %g)'
+                        '%g != %g to rel. tol. %g (rel. err. %g)'
                         % (float_out, float_expected, rel_tol, rel_err))
     return passing, report
 
