@@ -18,7 +18,7 @@ printf '  key 7.0 2 -3.4 1e10\nx\n\n  key 1.0\n  key  \nkey\nkey 1e10 1.0 4.0\n 
 +++ <<TEST DIR STRIPPED>>/verifier_line_sandbox/output/sciath.job-0-Line4.stdout
 Report for lines matching: '^\s*\ \ key'
 Output line 1 did not match line 1 in expected output:
-7 does not match expected 2 to rel. tol. 1e-06 (rel. err. 2.5)
+7 != 2 to rel. tol. 1e-06 (rel. err. 2.5)
 [36m[Executing Line5][0m from <<TEST DIR STRIPPED>>/verifier_line_sandbox
 printf '  key 2.0 2 -3.4 1e10\nx\n\n  key 1.0\n  key  \nkey\nkey 1e10 1.0 4.0\n  key 1e+12\n'
 ['fail', 'verification failed']
@@ -26,4 +26,4 @@ printf '  key 2.0 2 -3.4 1e10\nx\n\n  key 1.0\n  key  \nkey\nkey 1e10 1.0 4.0\n 
 +++ <<TEST DIR STRIPPED>>/verifier_line_sandbox/output/sciath.job-0-Line5.stdout
 Report for lines matching: '^\s*\ \ key'
 Output line 8 did not match line 8 in expected output:
-1e+12 does not match expected 1e-12 to rel. tol. 1e-06 (rel. err. 1e+24)
+1e+12 != 1e-12 to rel. tol. 1e-06 (rel. err. 1e+24)
