@@ -447,7 +447,7 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
         while not user_input:
             prompt = ('[2] MPI launch command with num. procs. flag '
                       '(required - hit enter for examples): ')
-            user_input = py23input(prompt)
+            user_input = os.path.expandvars(py23input(prompt))
             if not user_input:
                 print(' Required. Some example MPI launch commands:')
                 print('  No MPI Required           : none')
