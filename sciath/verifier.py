@@ -42,9 +42,7 @@ class ExitCodeVerifier(Verifier):
         status = None
         report = []
 
-        exit_code_name = self.test.job.get_output_filenames()[0]
-
-        exit_code_file = os.path.join(output_path, exit_code_name)
+        exit_code_file = os.path.join(output_path, self.test.job.exitcode_filename)
         if not os.path.isfile(exit_code_file):
             report.append("[ReturnCodeDiff] File (" + exit_code_file + ") not found")
             status = SCIATH_TEST_STATUS.job_not_run
@@ -83,9 +81,9 @@ class ComparisonVerifier(Verifier):
             raise Exception('Cannot specify an output_file with a comparison_file')
         self.comparison_file = comparison_file
 
-        o_name = self.test.job.get_output_filenames()[1]
+        stdout_name = self.test.job.stdout_filename
         if not output_file and not comparison_file:
-            self.output_file = o_name[-1]
+            self.output_file = stdout_name
 
     def execute(self, output_path=None, exec_path=None):
         report = []

@@ -58,14 +58,11 @@ def _generate_launch_pbs(launcher, walltime, output_path, job):  #pylint: disabl
     queuename = launcher.queue_name
     mpi_launch = launcher.mpi_launch
 
-    # resources = job.get_max_resources()
-    # ranks = resources["mpiranks"]
+    exitcode_name = job.exitcode_filename
+    stdout_name = job.stdout_filename
+    stderr_name = job.stderr_filename
 
-    c_name, o_name, e_name = job.get_output_filenames()
-
-    filename = os.path.join(
-        output_path,
-        "sciath.job-" + job.name + "-launch." + launcher.queue_file_extension)
+    filename = os.path.join(output_path, launcher._batch_filename(job))
     file = open(filename, "w")
 
     # PBS specifics
@@ -73,11 +70,11 @@ def _generate_launch_pbs(launcher, walltime, output_path, job):  #pylint: disabl
     file.write("# SciATH: auto-generated pbs file\n")
 
     if accountname:
-        file.write("#PBS -A " + accountname + "\n")  # account to charge
+        file.write("#PBS -A " + accountname + "\n")
 
-    file.write("#PBS -N \"" + "sciath.job-" + job.name + "\"" + "\n")  # jobname
-    file.write("#PBS -o " + os.path.join(output_path, o_name[-1]) + "\n")
-    file.write("#PBS -e " + os.path.join(output_path, e_name[-1]) + "\n")
+    file.write("#PBS -N \"" + "sciath.job-" + job.name + "\"" + "\n")
+    file.write("#PBS -o " + os.path.join(output_path, stdout_name) + "\n")
+    file.write("#PBS -e " + os.path.join(output_path, stderr_name) + "\n")
 
     if queuename:
         file.write("#PBS -q " + queuename + "\n")
@@ -85,15 +82,11 @@ def _generate_launch_pbs(launcher, walltime, output_path, job):  #pylint: disabl
     walltime_string = _formatted_hour_min_sec(float(walltime) * 60.0)
     file.write("#PBS -l mppwidth=1024,walltime=" + walltime_string + "\n")
 
-    # Write out the list of jobs execute commands
-    # Dependent jobs have their stdout collected in separate files (one per job)
-    # The stdout/stderr for the parent job is collected via the queue system
-
-    _remove_file_if_it_exists(os.path.join(output_path, c_name))
+    _remove_file_if_it_exists(os.path.join(output_path, exitcode_name))
 
     command_resource = job.create_execute_command()
-    njobs = len(command_resource)
-    for i in range(0, njobs):
+    n_tasks = len(command_resource)
+    for i in range(0, n_tasks):
         j = command_resource[i]
         j_ranks = j[1]["mpiranks"]
         launch = []
@@ -103,16 +96,9 @@ def _generate_launch_pbs(launcher, walltime, output_path, job):  #pylint: disabl
         else:
             launch.append(j[0])
 
-        if i < njobs - 1:
-            file.write(" ".join(launch) + " > " +
-                       os.path.join(output_path, o_name[i]) +
-                       "\n")  # launch command
-            file.write("echo $? >> " + os.path.join(output_path, c_name) + "\n")
-    # Command for the parent job
-    file.write(" ".join(launch) + "\n")  # launch command
-    file.write("echo $? >> " + os.path.join(output_path, c_name) + "\n")
+        file.write(" ".join(launch) + " \n")
+        file.write("echo $? >> " + os.path.join(output_path, exitcode_name) + "\n")
     file.write("\n")
-
     file.close()
     return filename
 
@@ -130,11 +116,11 @@ def _generate_launch_lsf(launcher, rusage, walltime, output_path, job):  #pylint
     resources = job.get_max_resources()
     ranks = resources["mpiranks"]
 
-    c_name, o_name, e_name = job.get_output_filenames()
+    exitcode_name = job.exitcode_filename
+    stdout_name = job.stdout_filename
+    stderr_name = job.stderr_filename
 
-    filename = os.path.join(
-        output_path,
-        "sciath.job-" + job.name + "-launch." + launcher.queue_file_extension)
+    filename = os.path.join(output_path, launcher._batch_filename(job))
     file = open(filename, "w")
 
     # LSF specifics
@@ -144,11 +130,9 @@ def _generate_launch_lsf(launcher, rusage, walltime, output_path, job):  #pylint
     if accountname:
         file.write("#BSUB -G " + accountname + "\n")
 
-    file.write("#BSUB -J " + "sciath.job-" + job.name + "\n")  # jobname
-    file.write("#BSUB -o " + os.path.join(output_path, o_name[-1]) +
-               "\n")  # jobname.stdout
-    file.write("#BSUB -e " + os.path.join(output_path, e_name[-1]) +
-               "\n")  # jobname.stderr
+    file.write("#BSUB -J " + "sciath.job-" + job.name + "\n")
+    file.write("#BSUB -o " + os.path.join(output_path, stdout_name) + "\n")
+    file.write("#BSUB -e " + os.path.join(output_path, stderr_name) + "\n")
 
     if queuename:
         file.write("#BSUB -q " + queuename + "\n")
@@ -161,15 +145,11 @@ def _generate_launch_lsf(launcher, rusage, walltime, output_path, job):  #pylint
     walltime_string = _formatted_hour_min(float(walltime) * 60.0)
     file.write("#BSUB -W " + walltime_string + "\n")
 
-    # Write out the list of jobs execute commands
-    # Dependent jobs have their stdout collected in separate files (one per job)
-    # The stdout/stderr for the parent job is collected via the queue system
-
-    _remove_file_if_it_exists(os.path.join(output_path, c_name))
+    _remove_file_if_it_exists(os.path.join(output_path, exitcode_name))
 
     command_resource = job.create_execute_command()
-    njobs = len(command_resource)
-    for i in range(0, njobs):
+    n_tasks = len(command_resource)
+    for i in range(0, n_tasks):
         j = command_resource[i]
         j_ranks = j[1]["mpiranks"]
         launch = []
@@ -179,16 +159,9 @@ def _generate_launch_lsf(launcher, rusage, walltime, output_path, job):  #pylint
         else:
             launch.append(j[0])
 
-        if i < njobs - 1:
-            file.write(" ".join(launch) + " > " +
-                       os.path.join(output_path, o_name[i]) +
-                       "\n")  # launch command
-            file.write("echo $? >> " + os.path.join(output_path, c_name) + "\n")
-    # Command for the parent job
-    file.write(" ".join(launch) + "\n")  # launch command
-    file.write("echo $? >> " + os.path.join(output_path, c_name) + "\n")
+        file.write(" ".join(launch) + "\n")
+        file.write("echo $? >> " + os.path.join(output_path, exitcode_name) + "\n")
     file.write("\n")
-
     file.close()
     return filename
 
@@ -207,11 +180,11 @@ def _generate_launch_slurm(launcher, walltime, output_path, job):  #pylint: disa
     resources = job.get_max_resources()
     ranks = resources["mpiranks"]
 
-    c_name, o_name, e_name = job.get_output_filenames()
+    exitcode_name = job.exitcode_filename
+    stdout_name = job.stdout_filename
+    stderr_name = job.stderr_filename
 
-    filename = os.path.join(
-        output_path,
-        "sciath.job-" + job.name + "-launch." + launcher.queue_file_extension)
+    filename = os.path.join(output_path, launcher._batch_filename(job))
     file = open(filename, "w")
 
     # SLURM specifics
@@ -222,12 +195,9 @@ def _generate_launch_slurm(launcher, walltime, output_path, job):  #pylint: disa
         file.write("#SBATCH --account=" + accountname +
                    "\n")  # account to charge
 
-    file.write("#SBATCH --job-name=\"" + "sciath.job-" + job.name + "\"" +
-               "\n")  # jobname
-    file.write("#SBATCH --output=" + os.path.join(output_path, o_name[-1]) +
-               "\n")  # jobname.stdout
-    file.write("#SBATCH --error=" + os.path.join(output_path, e_name[-1]) +
-               "\n")  # jobname.stderr
+    file.write("#SBATCH --job-name=\"" + "sciath.job-" + job.name + "\"" + "\n")
+    file.write("#SBATCH --output=" + os.path.join(output_path, stdout_name) + "\n")
+    file.write("#SBATCH --error=" + os.path.join(output_path, stderr_name) + "\n")
 
     if queuename:
         file.write("#SBATCH --partition=" + queuename + "\n")
@@ -240,15 +210,11 @@ def _generate_launch_slurm(launcher, walltime, output_path, job):  #pylint: disa
     walltime_string = _formatted_hour_min_sec(float(walltime) * 60.0)
     file.write("#SBATCH --time=" + walltime_string + "\n")
 
-    # Write out the list of jobs execute commands
-    # Dependent jobs have their stdout collected in separate files (one per job)
-    # The stdout/stderr for the parent job is collected via the queue system
-
-    _remove_file_if_it_exists(os.path.join(output_path, c_name))
+    _remove_file_if_it_exists(os.path.join(output_path, exitcode_name))
 
     command_resource = job.create_execute_command()
-    njobs = len(command_resource)
-    for i in range(0, njobs):
+    n_tasks = len(command_resource)
+    for i in range(0, n_tasks):
         j = command_resource[i]
         j_ranks = j[1]["mpiranks"]
         launch = []
@@ -258,16 +224,9 @@ def _generate_launch_slurm(launcher, walltime, output_path, job):  #pylint: disa
         else:
             launch.append(j[0])
 
-        if i < njobs - 1:
-            file.write(" ".join(launch) + " > " +
-                       os.path.join(output_path, o_name[i]) +
-                       "\n")  # launch command
-            file.write("echo $? >> " + os.path.join(output_path, c_name) + "\n")
-    # Command for the parent job
-    file.write(" ".join(launch) + "\n")  # launch command
-    file.write("echo $? >> " + os.path.join(output_path, c_name) + "\n")
+        file.write(" ".join(launch) + "\n")
+        file.write("echo $? >> " + os.path.join(output_path, exitcode_name) + "\n")
     file.write("\n")
-
     file.close()
     return filename
 
@@ -625,26 +584,21 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
                 for term in launch_command:
                     print(command_join(term))
 
-            c_name, o_name, e_name = job.get_output_filenames()
+            exitcode_name = job.exitcode_filename
+            stdout_name = job.stdout_filename
+            stderr_name = job.stderr_filename
 
-            file_ecode = open(os.path.join(output_path, c_name), 'w')
-            lc_count = len(launch_command)
-            for i in range(0, lc_count):
-                file_e = open(os.path.join(output_path, e_name[i]), 'w')
-                file_o = open(os.path.join(output_path, o_name[i]), 'w')
-                cwd_back = os.getcwd()
-                os.chdir(exec_path)
-                returncode = _subprocess_run(launch_command[i],
-                                             universal_newlines=True,
-                                             stdout=file_o,
-                                             stderr=file_e)
-                os.chdir(cwd_back)
-                file_o.close()
-                file_e.close()
-                file_ecode.write(str(returncode) + "\n")  # exit code
-                _set_blocking_io_stdout()
-            file_ecode.close()
-
+            with open(os.path.join(output_path, exitcode_name), 'w') as file_exitcode, \
+                 open(os.path.join(output_path, stderr_name), 'w') as file_stderr, \
+                 open(os.path.join(output_path, stdout_name), 'w') as file_stdout:
+                for command in launch_command:
+                    cwd_back = os.getcwd()
+                    os.chdir(exec_path)
+                    returncode = _subprocess_run(command, universal_newlines=True,
+                                                 stdout=file_stdout, stderr=file_stderr)
+                    os.chdir(cwd_back)
+                    file_exitcode.write(str(returncode) + "\n")  # exit code
+                    _set_blocking_io_stdout()
         else:
             walltime = job.total_wall_time()
 
@@ -674,19 +628,16 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
                 output_path = value
 
         if not output_path:
-            raise ValueError(
-                '[SciATH] cannot clean without an explicit output_path')
+            raise ValueError('[SciATH] cannot clean without an explicit output_path')
         if not os.path.isabs(output_path):
-            raise ValueError(
-                '[SciATH] cannot clean without an absolute output_path')
+            raise ValueError('[SciATH] cannot clean without an absolute output_path')
 
-        c_name, o_name, e_name = job.get_output_filenames()
-        _remove_file_if_it_exists(os.path.join(output_path, c_name))
-        for filename in o_name:
-            _remove_file_if_it_exists(os.path.join(output_path, filename))
-        for filename in e_name:
+        for filename in [job.exitcode_filename, job.stdout_filename, job.stderr_filename]:
             _remove_file_if_it_exists(os.path.join(output_path, filename))
 
         if self.queue_file_extension is not None:
-            filename = "sciath.job-" + job.name + "-launch." + self.queue_file_extension
+            filename = self._batch_filename(job)
             _remove_file_if_it_exists(os.path.join(output_path, filename))
+
+    def _batch_filename(self, job):
+        return job.name + "." + self.queue_file_extension
