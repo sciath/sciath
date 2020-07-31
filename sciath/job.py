@@ -45,18 +45,20 @@ class Job:
         """
         return [task.create_execute_command() for task in self.tasks]
 
-    def get_output_filenames(self):
-        """ Returns name lists for error-code file (one per job), stdout, stderr """
-        exit_code_name = "sciath.job-" + self.name + ".errorcode"
-        stdout_name = []
-        stderr_name = []
+    @property
+    def exitcode_filename(self):
+        """ Returns a filename to use for exit codes """
+        return self.name + '.exitcode'
 
-        for count in range(len(self.tasks)):
-            jprefix = "sciath.job-%d-%s" % (count, self.name)
-            stdout_name.append(jprefix + ".stdout")
-            stderr_name.append(jprefix + ".stderr")
+    @property
+    def stdout_filename(self):
+        """ Returns a filename to use for stdout """
+        return self.name + '.stdout'
 
-        return exit_code_name, stdout_name, stderr_name
+    @property
+    def stderr_filename(self):
+        """ Returns a filename to use for stderr """
+        return self.name + '.stderr'
 
     def get_max_resources(self):
         """ Returns a dict() defining the maximum required counts / values """

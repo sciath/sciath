@@ -16,7 +16,7 @@ printf 'a 34.3\nb43.3\n0.0\nx'
 [35m[ *** Verification Reports *** ][0m
 [36m[Report for bar][0m
 --- ../test_data/module_line_verifier/bar.expected
-+++ <<TEST DIR STRIPPED>>/module_input_sandbox/bar_output/sciath.job-0-bar.stdout
++++ <<TEST DIR STRIPPED>>/module_input_sandbox/bar_output/bar.stdout
 Report for lines matching: '^'
 Output line 3 did not match line 3 in expected output:
 Wrong number of values found: 1 instead of 0

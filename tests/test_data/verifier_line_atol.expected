@@ -31,7 +31,7 @@ cat <<TEST DIR STRIPPED>>/test_data/verifier_line_atol/cat_me
 [35m[ *** Verification Reports *** ][0m
 [36m[Report for rtol_only_default_fail][0m
 --- ../test_data/verifier_line_atol/expected
-+++ <<TEST DIR STRIPPED>>/verifier_line_atol_sandbox/rtol_only_default_fail_output/sciath.job-0-rtol_only_default_fail.stdout
++++ <<TEST DIR STRIPPED>>/verifier_line_atol_sandbox/rtol_only_default_fail_output/rtol_only_default_fail.stdout
 Report for lines matching: '^\s*key'
 Output line 5 did not match line 5 in expected output:
 1.0001 != 1.0002 to rel. tol. 1e-06 (rel. err. 9.998e-05)
@@ -44,7 +44,7 @@ Output line 11 did not match line 11 in expected output:
 1.00001 != 1 to rel. tol. 1e-06 (rel. err. 1e-05)
 [36m[Report for rtol_only_fail][0m
 --- ../test_data/verifier_line_atol/expected
-+++ <<TEST DIR STRIPPED>>/verifier_line_atol_sandbox/rtol_only_fail_output/sciath.job-0-rtol_only_fail.stdout
++++ <<TEST DIR STRIPPED>>/verifier_line_atol_sandbox/rtol_only_fail_output/rtol_only_fail.stdout
 Report for lines matching: '^\s*key'
 Output line 9 did not match line 9 in expected output:
 1e-100 != 0 to rel. tol. 0.001 (rel. err. inf)
@@ -54,7 +54,7 @@ Output line 11 did not match line 11 in expected output:
 1e-14 != 1e-16 to rel. tol. 0.001 (rel. err. 99)
 [36m[Report for atol_only_fail][0m
 --- ../test_data/verifier_line_atol/expected
-+++ <<TEST DIR STRIPPED>>/verifier_line_atol_sandbox/atol_only_fail_output/sciath.job-0-atol_only_fail.stdout
++++ <<TEST DIR STRIPPED>>/verifier_line_atol_sandbox/atol_only_fail_output/atol_only_fail.stdout
 Report for lines matching: '^\s*key'
 Output line 2 did not match line 2 in expected output:
 2 != 2 to abs. tol. 1e-12 (abs. err 2e-06)
@@ -66,7 +66,7 @@ Output line 11 did not match line 11 in expected output:
 1.00001 != 1 to abs. tol. 1e-12 (abs. err 1e-05)
 [36m[Report for both_tols_fail][0m
 --- ../test_data/verifier_line_atol/expected
-+++ <<TEST DIR STRIPPED>>/verifier_line_atol_sandbox/both_tols_fail_output/sciath.job-0-both_tols_fail.stdout
++++ <<TEST DIR STRIPPED>>/verifier_line_atol_sandbox/both_tols_fail_output/both_tols_fail.stdout
 Report for lines matching: '^\s*key'
 Output line 2 did not match line 2 in expected output:
 2 != 2 to abs. tol. 1e-99 (abs. err 2e-06) or rel. tol 1e-10 (rel. err 9.99999e-07)
@@ -79,7 +79,7 @@ Output line 11 did not match line 11 in expected output:
 1.00001 != 1 to abs. tol. 1e-99 (abs. err 1e-05) or rel. tol 1e-10 (rel. err 1e-05)
 [36m[Report for atol_zero_fail][0m
 --- ../test_data/verifier_line_atol/expected
-+++ <<TEST DIR STRIPPED>>/verifier_line_atol_sandbox/atol_zero_fail_output/sciath.job-0-atol_zero_fail.stdout
++++ <<TEST DIR STRIPPED>>/verifier_line_atol_sandbox/atol_zero_fail_output/atol_zero_fail.stdout
 Report for lines matching: '^\s*key'
 Output line 2 did not match line 2 in expected output:
 2 != 2 to abs. tol. 0 (abs. err 2e-06)
@@ -96,7 +96,7 @@ Output line 11 did not match line 11 in expected output:
 1.00001 != 1 to abs. tol. 0 (abs. err 1e-05)
 [36m[Report for rtol_zero_fail][0m
 --- ../test_data/verifier_line_atol/expected
-+++ <<TEST DIR STRIPPED>>/verifier_line_atol_sandbox/rtol_zero_fail_output/sciath.job-0-rtol_zero_fail.stdout
++++ <<TEST DIR STRIPPED>>/verifier_line_atol_sandbox/rtol_zero_fail_output/rtol_zero_fail.stdout
 Report for lines matching: '^\s*key'
 Output line 2 did not match line 2 in expected output:
 2 != 2 to rel. tol. 0 (rel. err. 9.99999e-07)
@@ -113,7 +113,7 @@ Output line 11 did not match line 11 in expected output:
 1.00001 != 1 to rel. tol. 0 (rel. err. 1e-05)
 [36m[Report for both_tols_zero_fail][0m
 --- ../test_data/verifier_line_atol/expected
-+++ <<TEST DIR STRIPPED>>/verifier_line_atol_sandbox/both_tols_zero_fail_output/sciath.job-0-both_tols_zero_fail.stdout
++++ <<TEST DIR STRIPPED>>/verifier_line_atol_sandbox/both_tols_zero_fail_output/both_tols_zero_fail.stdout
 Report for lines matching: '^\s*key'
 Output line 2 did not match line 2 in expected output:
 2 != 2 to abs. tol. 0 (abs. err 2e-06) or rel. tol 0 (rel. err 9.99999e-07)
