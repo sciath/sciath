@@ -48,187 +48,6 @@ def _format_mpi_launch_command(mpi_launch, ranks):
     return launch.split()
 
 
-def _generate_launch_pbs(launcher, walltime, output_path, job):  #pylint: disable=too-many-locals
-
-    if walltime is None:
-        message = "[SciATH] _generate_launch_pbs requires walltime be specified"
-        raise RuntimeError(message)
-
-    accountname = launcher.account_name
-    queuename = launcher.queue_name
-    mpi_launch = launcher.mpi_launch
-
-    exitcode_name = job.exitcode_filename
-    stdout_name = job.stdout_filename
-    stderr_name = job.stderr_filename
-
-    filename = os.path.join(output_path, launcher._batch_filename(job))
-    file = open(filename, "w")
-
-    # PBS specifics
-    file.write("#!/bin/bash\n")
-    file.write("# SciATH: auto-generated pbs file\n")
-
-    if accountname:
-        file.write("#PBS -A " + accountname + "\n")
-
-    file.write("#PBS -N \"" + "sciath.job-" + job.name + "\"" + "\n")
-    file.write("#PBS -o " + os.path.join(output_path, stdout_name) + "\n")
-    file.write("#PBS -e " + os.path.join(output_path, stderr_name) + "\n")
-
-    if queuename:
-        file.write("#PBS -q " + queuename + "\n")
-
-    walltime_string = _formatted_hour_min_sec(float(walltime) * 60.0)
-    file.write("#PBS -l mppwidth=1024,walltime=" + walltime_string + "\n")
-
-    _remove_file_if_it_exists(os.path.join(output_path, exitcode_name))
-
-    command_resource = job.create_execute_command()
-    n_tasks = len(command_resource)
-    for i in range(0, n_tasks):
-        j = command_resource[i]
-        j_ranks = j[1]["mpiranks"]
-        launch = []
-        launch += _format_mpi_launch_command(mpi_launch, j_ranks)
-        if isinstance(j[0], list):
-            launch.extend(j[0])
-        else:
-            launch.append(j[0])
-
-        file.write(" ".join(launch) + " \n")
-        file.write("echo $? >> " + os.path.join(output_path, exitcode_name) + "\n")
-    file.write("\n")
-    file.close()
-    return filename
-
-
-def _generate_launch_lsf(launcher, rusage, walltime, output_path, job):  #pylint: disable=too-many-locals
-
-    if walltime is None:
-        message = "[SciATH] _generate_launch_lsf requires walltime be specified"
-        raise RuntimeError(message)
-
-    accountname = launcher.account_name
-    queuename = launcher.queue_name
-    mpi_launch = launcher.mpi_launch
-
-    resources = job.get_max_resources()
-    ranks = resources["mpiranks"]
-
-    exitcode_name = job.exitcode_filename
-    stdout_name = job.stdout_filename
-    stderr_name = job.stderr_filename
-
-    filename = os.path.join(output_path, launcher._batch_filename(job))
-    file = open(filename, "w")
-
-    # LSF specifics
-    file.write("#!/bin/sh\n")
-    file.write("# SciATH: auto-generated lsf file\n")
-
-    if accountname:
-        file.write("#BSUB -G " + accountname + "\n")
-
-    file.write("#BSUB -J " + "sciath.job-" + job.name + "\n")
-    file.write("#BSUB -o " + os.path.join(output_path, stdout_name) + "\n")
-    file.write("#BSUB -e " + os.path.join(output_path, stderr_name) + "\n")
-
-    if queuename:
-        file.write("#BSUB -q " + queuename + "\n")
-
-    file.write("#BSUB -n " + str(ranks) + "\n")
-
-    if rusage:
-        file.write("#BSUB -R \'" + rusage + "\'" + "\n")
-
-    walltime_string = _formatted_hour_min(float(walltime) * 60.0)
-    file.write("#BSUB -W " + walltime_string + "\n")
-
-    _remove_file_if_it_exists(os.path.join(output_path, exitcode_name))
-
-    command_resource = job.create_execute_command()
-    n_tasks = len(command_resource)
-    for i in range(0, n_tasks):
-        j = command_resource[i]
-        j_ranks = j[1]["mpiranks"]
-        launch = []
-        launch += _format_mpi_launch_command(mpi_launch, j_ranks)
-        if isinstance(j[0], list):
-            launch.extend(j[0])
-        else:
-            launch.append(j[0])
-
-        file.write(" ".join(launch) + "\n")
-        file.write("echo $? >> " + os.path.join(output_path, exitcode_name) + "\n")
-    file.write("\n")
-    file.close()
-    return filename
-
-
-def _generate_launch_slurm(launcher, walltime, output_path, job):  #pylint: disable=too-many-locals
-
-    if walltime is None:
-        message = "[SciATH] _generate_launch_slurm requires walltime be specified"
-        raise RuntimeError(message)
-
-    accountname = launcher.account_name
-    queuename = launcher.queue_name
-    constraint = launcher.batch_constraint
-    mpi_launch = launcher.mpi_launch
-
-    resources = job.get_max_resources()
-    ranks = resources["mpiranks"]
-
-    exitcode_name = job.exitcode_filename
-    stdout_name = job.stdout_filename
-    stderr_name = job.stderr_filename
-
-    filename = os.path.join(output_path, launcher._batch_filename(job))
-    file = open(filename, "w")
-
-    # SLURM specifics
-    file.write("#!/bin/bash -l\n")
-    file.write("# SciATH: auto-generated slurm file\n")
-
-    if accountname:
-        file.write("#SBATCH --account=" + accountname +
-                   "\n")  # account to charge
-
-    file.write("#SBATCH --job-name=\"" + "sciath.job-" + job.name + "\"" + "\n")
-    file.write("#SBATCH --output=" + os.path.join(output_path, stdout_name) + "\n")
-    file.write("#SBATCH --error=" + os.path.join(output_path, stderr_name) + "\n")
-
-    if queuename:
-        file.write("#SBATCH --partition=" + queuename + "\n")
-
-    file.write("#SBATCH --ntasks=" + str(ranks) + "\n")
-
-    if constraint:
-        file.write("#SBATCH --constraint=" + constraint + "\n")
-
-    walltime_string = _formatted_hour_min_sec(float(walltime) * 60.0)
-    file.write("#SBATCH --time=" + walltime_string + "\n")
-
-    _remove_file_if_it_exists(os.path.join(output_path, exitcode_name))
-
-    command_resource = job.create_execute_command()
-    n_tasks = len(command_resource)
-    for i in range(0, n_tasks):
-        j = command_resource[i]
-        j_ranks = j[1]["mpiranks"]
-        launch = []
-        launch += _format_mpi_launch_command(mpi_launch, j_ranks)
-        if isinstance(j[0], list):
-            launch.extend(j[0])
-        else:
-            launch.append(j[0])
-
-        file.write(" ".join(launch) + "\n")
-        file.write("echo $? >> " + os.path.join(output_path, exitcode_name) + "\n")
-    file.write("\n")
-    file.close()
-    return filename
 
 
 def _subprocess_run(command, **kwargs):
@@ -515,11 +334,11 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
             raise RuntimeError(message)
 
         if self.queuing_system_type == 'pbs':
-            filename = _generate_launch_pbs(self, walltime, output_path, job)
+            filename = self._generate_launch_pbs(walltime, output_path, job)
         elif self.queuing_system_type == 'lsf':
-            filename = _generate_launch_lsf(self, None, walltime, output_path, job)
+            filename = self._generate_launch_lsf(None, walltime, output_path, job)
         elif self.queuing_system_type == 'slurm':
-            filename = _generate_launch_slurm(self, walltime, output_path, job)
+            filename = self._generate_launch_slurm(walltime, output_path, job)
 
         print('Created submission file:', filename)
         return filename
@@ -641,3 +460,185 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
 
     def _batch_filename(self, job):
         return job.name + "." + self.queue_file_extension
+
+    def _generate_launch_pbs(self, walltime, output_path, job):  #pylint: disable=too-many-locals
+
+        if walltime is None:
+            message = "[SciATH] _generate_launch_pbs requires walltime be specified"
+            raise RuntimeError(message)
+
+        accountname = self.account_name
+        queuename = self.queue_name
+        mpi_launch = self.mpi_launch
+
+        exitcode_name = job.exitcode_filename
+        stdout_name = job.stdout_filename
+        stderr_name = job.stderr_filename
+
+        filename = os.path.join(output_path, self._batch_filename(job))
+        file = open(filename, "w")
+
+        # PBS specifics
+        file.write("#!/bin/bash\n")
+        file.write("# SciATH: auto-generated pbs file\n")
+
+        if accountname:
+            file.write("#PBS -A " + accountname + "\n")
+
+        file.write("#PBS -N \"" + "sciath.job-" + job.name + "\"" + "\n")
+        file.write("#PBS -o " + os.path.join(output_path, stdout_name) + "\n")
+        file.write("#PBS -e " + os.path.join(output_path, stderr_name) + "\n")
+
+        if queuename:
+            file.write("#PBS -q " + queuename + "\n")
+
+        walltime_string = _formatted_hour_min_sec(float(walltime) * 60.0)
+        file.write("#PBS -l mppwidth=1024,walltime=" + walltime_string + "\n")
+
+        _remove_file_if_it_exists(os.path.join(output_path, exitcode_name))
+
+        command_resource = job.create_execute_command()
+        n_tasks = len(command_resource)
+        for i in range(0, n_tasks):
+            j = command_resource[i]
+            j_ranks = j[1]["mpiranks"]
+            launch = []
+            launch += _format_mpi_launch_command(mpi_launch, j_ranks)
+            if isinstance(j[0], list):
+                launch.extend(j[0])
+            else:
+                launch.append(j[0])
+
+            file.write(" ".join(launch) + " \n")
+            file.write("echo $? >> " + os.path.join(output_path, exitcode_name) + "\n")
+        file.write("\n")
+        file.close()
+        return filename
+
+
+    def _generate_launch_lsf(self, rusage, walltime, output_path, job):  #pylint: disable=too-many-locals
+
+        if walltime is None:
+            message = "[SciATH] _generate_launch_lsf requires walltime be specified"
+            raise RuntimeError(message)
+
+        accountname = self.account_name
+        queuename = self.queue_name
+        mpi_launch = self.mpi_launch
+
+        resources = job.get_max_resources()
+        ranks = resources["mpiranks"]
+
+        exitcode_name = job.exitcode_filename
+        stdout_name = job.stdout_filename
+        stderr_name = job.stderr_filename
+
+        filename = os.path.join(output_path, self._batch_filename(job))
+        file = open(filename, "w")
+
+        # LSF specifics
+        file.write("#!/bin/sh\n")
+        file.write("# SciATH: auto-generated lsf file\n")
+
+        if accountname:
+            file.write("#BSUB -G " + accountname + "\n")
+
+        file.write("#BSUB -J " + "sciath.job-" + job.name + "\n")
+        file.write("#BSUB -o " + os.path.join(output_path, stdout_name) + "\n")
+        file.write("#BSUB -e " + os.path.join(output_path, stderr_name) + "\n")
+
+        if queuename:
+            file.write("#BSUB -q " + queuename + "\n")
+
+        file.write("#BSUB -n " + str(ranks) + "\n")
+
+        if rusage:
+            file.write("#BSUB -R \'" + rusage + "\'" + "\n")
+
+        walltime_string = _formatted_hour_min(float(walltime) * 60.0)
+        file.write("#BSUB -W " + walltime_string + "\n")
+
+        _remove_file_if_it_exists(os.path.join(output_path, exitcode_name))
+
+        command_resource = job.create_execute_command()
+        n_tasks = len(command_resource)
+        for i in range(0, n_tasks):
+            j = command_resource[i]
+            j_ranks = j[1]["mpiranks"]
+            launch = []
+            launch += _format_mpi_launch_command(mpi_launch, j_ranks)
+            if isinstance(j[0], list):
+                launch.extend(j[0])
+            else:
+                launch.append(j[0])
+
+            file.write(" ".join(launch) + "\n")
+            file.write("echo $? >> " + os.path.join(output_path, exitcode_name) + "\n")
+        file.write("\n")
+        file.close()
+        return filename
+
+
+    def _generate_launch_slurm(self, walltime, output_path, job):  #pylint: disable=too-many-locals
+
+        if walltime is None:
+            message = "[SciATH] _generate_launch_slurm requires walltime be specified"
+            raise RuntimeError(message)
+
+        accountname = self.account_name
+        queuename = self.queue_name
+        constraint = self.batch_constraint
+        mpi_launch = self.mpi_launch
+
+        resources = job.get_max_resources()
+        ranks = resources["mpiranks"]
+
+        exitcode_name = job.exitcode_filename
+        stdout_name = job.stdout_filename
+        stderr_name = job.stderr_filename
+
+        filename = os.path.join(output_path, self._batch_filename(job))
+        file = open(filename, "w")
+
+        # SLURM specifics
+        file.write("#!/bin/bash -l\n")
+        file.write("# SciATH: auto-generated slurm file\n")
+
+        if accountname:
+            file.write("#SBATCH --account=" + accountname +
+                       "\n")  # account to charge
+
+        file.write("#SBATCH --job-name=\"" + "sciath.job-" + job.name + "\"" + "\n")
+        file.write("#SBATCH --output=" + os.path.join(output_path, stdout_name) + "\n")
+        file.write("#SBATCH --error=" + os.path.join(output_path, stderr_name) + "\n")
+
+        if queuename:
+            file.write("#SBATCH --partition=" + queuename + "\n")
+
+        file.write("#SBATCH --ntasks=" + str(ranks) + "\n")
+
+        if constraint:
+            file.write("#SBATCH --constraint=" + constraint + "\n")
+
+        walltime_string = _formatted_hour_min_sec(float(walltime) * 60.0)
+        file.write("#SBATCH --time=" + walltime_string + "\n")
+
+        _remove_file_if_it_exists(os.path.join(output_path, exitcode_name))
+
+        command_resource = job.create_execute_command()
+        n_tasks = len(command_resource)
+        for i in range(0, n_tasks):
+            j = command_resource[i]
+            j_ranks = j[1]["mpiranks"]
+            launch = []
+            launch += _format_mpi_launch_command(mpi_launch, j_ranks)
+            if isinstance(j[0], list):
+                launch.extend(j[0])
+            else:
+                launch.append(j[0])
+
+            file.write(" ".join(launch) + "\n")
+            file.write("echo $? >> " + os.path.join(output_path, exitcode_name) + "\n")
+        file.write("\n")
+        file.close()
+        return filename
