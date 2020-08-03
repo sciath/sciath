@@ -1,4 +1,5 @@
 """ SciATH LineVerifier class """
+import os
 import re
 import collections
 
@@ -33,8 +34,8 @@ class LineVerifier(ComparisonVerifier):
             rule_passing, rule_report = rule['function'](match_from, match_to)
             if passing and not rule_passing:
                 passing = False
-                report.append('--- %s' % from_file)
-                report.append('+++ %s' % to_file)
+                report.append('--- %s' % os.path.abspath(from_file))
+                report.append('+++ %s' % os.path.abspath(to_file))
             if rule_report:
                 report.append("Report for lines matching: '" + rule['re'] + "'")
                 report.extend(rule_report)
