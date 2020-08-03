@@ -36,7 +36,8 @@ class LineVerifier(ComparisonVerifier):
                 report.append('--- %s' % from_file)
                 report.append('+++ %s' % to_file)
             if rule_report:
-                report.append("Report for lines matching: '" + rule['re'] + "'")
+                report.append("Report for %d expected line(s) matching: '%s'"
+                              % (len(match_from), rule['re']))
                 report.extend(rule_report)
         return passing, report
 

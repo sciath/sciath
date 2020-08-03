@@ -11,7 +11,7 @@ echo 'The first number is 1.1\nThe second number is 1.01'
 [36m[Report for test][0m
 --- <<TEST DIR STRIPPED>>/test_data/harness5/test.expected
 +++ <<TEST DIR STRIPPED>>/harness5_sandbox/test_output/job.stdout
-Report for lines matching: '^\s*The\ first\ number\ is'
+Report for 1 expected line(s) matching: '^\s*The\ first\ number\ is'
 Output line 1 did not match line 1 in expected output:
 1.1 != 7 to rel. tol. 1e-06 (rel. err. 0.842857)
 [35m[ *** Summary *** ][0m
