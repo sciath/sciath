@@ -623,6 +623,8 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
         walltime_string = _formatted_hour_min_sec(float(walltime) * 60.0)
         file.write("#SBATCH --time=" + walltime_string + "\n")
 
+        file.write("export CRAY_CUDA_MPS=1\n")
+
         _remove_file_if_it_exists(os.path.join(output_path, exitcode_name))
 
         command_resource = job.create_execute_command()
