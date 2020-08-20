@@ -16,13 +16,10 @@ from sciath._sciath_io import py23input
 
 class _TestRunStatus:  #pylint: disable=too-few-public-methods
     DEACTIVATED = 'deactivated'  # Test skipped intentionally
-    UNKNOWN = 'unknown'  # Neither checked for completion nor verified
-    NOT_LAUNCHED = 'not launched'  # Launcher reports test has not been launched
+    UNKNOWN = 'unknown'
+    NOT_LAUNCHED = 'not launched'  # Launcher reports test run not launched
     INCOMPLETE = 'incomplete'  # Launcher reports test run incomplete
-    COMPLETE_AND_UNVERIFIED = 'unverified'  # Launcher reports complete, but not verified
     SKIPPED = 'skipped'  # Test skipped: Launcher reports of lack of resources
-    JOB_INVALID = 'invalid job'  # Launcher reports test's Job is incorrectly specified
-    TEST_INVALID = 'invalid test'  # Verifier reports test/verification is badly specified
     PASS = 'pass'  # Verifier confirms pass
     FAIL = 'fail'  # Verifier confirms fail
 
@@ -61,7 +58,7 @@ class Harness:
     It is the exclusive location within SciATH for
 
     * Printing to stdout
-    * Information about where to launch :class:`Job`s from, passed to included `Launcher`s
+    * Information about where to launch :class:`Job`s from, passed to included `Launcher`
 
     A :class:`Harness` object's state is confined to the state of a list of internal
     :class:`_TestRun` objects.
@@ -114,9 +111,7 @@ class Harness:
     def determine_overall_success(self):
         """ Returns a boolean value to denote overall success of the test suite """
         for testrun in self.testruns:
-            if testrun.status not in [
-                    _TestRunStatus.DEACTIVATED, _TestRunStatus.PASS
-            ]:
+            if testrun.status not in [_TestRunStatus.DEACTIVATED, _TestRunStatus.PASS]:
                 return False
         return True
 
@@ -180,7 +175,7 @@ class Harness:
             report.append(SCIATH_COLORS.header + '[ *** Summary *** ]' +
                           SCIATH_COLORS.endc)
             for testrun in self.testruns:
-                if testrun.status == 'fail':
+                if testrun.status == _TestRunStatus.FAIL:
                     failed_names.append(testrun.test.name)
                 line = [sciath.SCIATH_TEST_STATUS.status_color_type[testrun.status]]
                 line.append('[%s]  %s' % (testrun.test.name, testrun.status))
@@ -234,8 +229,7 @@ class Harness:
             print("[SciATH] This will attempt to OVERWRITE your expected files!")
             user_input = None
             while not user_input:
-                user_input = py23input(
-                    "[SciATH] Are you sure? Type 'y' to continue: ")
+                user_input = py23input("[SciATH] Are you sure? Type 'y' to continue: ")
             if user_input[0] not in ['y', 'Y']:
                 print("[SciATH] Aborting.")
                 return
@@ -299,27 +293,33 @@ class Harness:
                           testrun.test.name, '-- ]')
 
     def verify(self):
-        """ Update the status of all test runs """
+        """ Updates the status of all test runs """
         for testrun in self.testruns:
-            if testrun.active:
-                status, testrun.report = testrun.test.verify(
-                    testrun.output_path, testrun.exec_path)
-                verifier_status = status[0]
-                verifier_info = status[1]
-                if verifier_status == 'pass':
-                    testrun.status = _TestRunStatus.PASS
-                    testrun.status_info = verifier_info
-                elif verifier_status == 'fail':
-                    testrun.status = _TestRunStatus.FAIL
-                    testrun.status_info = verifier_info
-                elif verifier_status == 'skip':
-                    testrun.status = _TestRunStatus.SKIPPED
-                    testrun.status_info = verifier_info
-                else:
-                    testrun.status = _TestRunStatus.FAIL
-                    testrun.status_info = 'Unrecognized: %s, %s' % (verifier_status, verifier_info)
-            else:
+            if not testrun.active:
                 testrun.status = _TestRunStatus.DEACTIVATED
+                continue
+            if not sciath.launcher.job_launched(testrun.test.job, testrun.output_path):
+                testrun.status = _TestRunStatus.NOT_LAUNCHED
+                continue
+            if not sciath.launcher.job_complete(testrun.test.job, testrun.output_path):
+                testrun.status = _TestRunStatus.INCOMPLETE
+                continue
+
+            status, testrun.report = testrun.test.verify(testrun.output_path, testrun.exec_path)
+            verifier_status = status[0]
+            verifier_info = status[1]
+            if verifier_status == 'pass':
+                testrun.status = _TestRunStatus.PASS
+                testrun.status_info = verifier_info
+            elif verifier_status == 'fail':
+                testrun.status = _TestRunStatus.FAIL
+                testrun.status_info = verifier_info
+            elif verifier_status == 'skip':
+                testrun.status = _TestRunStatus.SKIPPED
+                testrun.status_info = verifier_info
+            else:
+                testrun.status = _TestRunStatus.FAIL
+                testrun.status_info = 'Unrecognized: %s, %s' % (verifier_status, verifier_info)
 
     def _activate_tests_from_list(self, test_subset_string):
         """ Deactivate test runs not named in a comma-separated string """

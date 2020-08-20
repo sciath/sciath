@@ -45,7 +45,7 @@ class ExitCodeVerifier(Verifier):
         exit_code_file = os.path.join(output_path, self.test.job.exitcode_filename)
         if not os.path.isfile(exit_code_file):
             report.append("[ReturnCodeDiff] File (" + exit_code_file + ") not found")
-            status = SCIATH_TEST_STATUS.job_not_run
+            status = SCIATH_TEST_STATUS.expected_file_not_found
             return status, report
 
         with open(exit_code_file, 'r') as handle:

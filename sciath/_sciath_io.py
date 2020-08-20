@@ -44,5 +44,6 @@ class NamedColors:  #pylint: disable=too-few-public-methods
         self.subheader = '\033[36m' if use_bash else ''
         self.okay = '\033[32m' if use_bash else ''
         self.warning = '\033[93m' if use_bash else ''
+        self.incomplete = '\033[e3m' if use_bash else ''
         self.fail = '\033[91m' if use_bash else ''
         self.endc = '\033[0m' if use_bash else ''
