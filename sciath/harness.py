@@ -158,9 +158,13 @@ class Harness:
                                         sentinel_file)
                     with open(sentinel_file, 'w'):
                         pass
-                self.launcher.submit_job(testrun.test.job,
-                                         output_path=testrun.output_path,
-                                         exec_path=testrun.exec_path)
+                success, info, report = self.launcher.submit_job(testrun.test.job,
+                                                                 output_path=testrun.output_path,
+                                                                 exec_path=testrun.exec_path)
+                if not success:
+                    testrun.status = _TestRunStatus.SKIPPED
+                    testrun.status_info = info
+                    testrun.report = report
 
 
     def print_all_tests(self):
@@ -316,6 +320,8 @@ class Harness:
         for testrun in self.testruns:
             if not testrun.active:
                 testrun.status = _TestRunStatus.DEACTIVATED
+                continue
+            if testrun.status == _TestRunStatus.SKIPPED:
                 continue
             if not sciath.launcher.job_launched(testrun.test.job, testrun.output_path):
                 testrun.status = _TestRunStatus.NOT_LAUNCHED

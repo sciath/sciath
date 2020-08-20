@@ -5,9 +5,11 @@
   Version:           0.6.0
   Queue system:      none
   MPI launcher:      none
-[Failed to launch test "two_ranks" as test uses > 1 MPI ranks and no MPI launcher was provided]
+[35m[ *** Verification Reports *** ][0m
+[36m[Report for two_ranks][0m
+Not launched: requires MPI
 [35m[ *** Summary *** ][0m
-[33m[two_ranks]  not launched[0m
+[33m[two_ranks]  skipped[0m (MPI required)
 
 [91mFAILURE[0m
 

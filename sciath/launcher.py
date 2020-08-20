@@ -352,13 +352,16 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
         return filename
 
     def submit_job(self, job, **kwargs):  #pylint: disable=too-many-locals,too-many-branches,too-many-statements
-        """ Run a job
+        """ Attempt to run a job
 
         Supply output_path to change the location where SciATH's output
         files will be saved.
 
         Supply exec_path to change the directory from which the command
         will be executed.
+
+        Returns a triple (success, info, report) describing if the launch
+        succeeded, and a summary string and full report, if appropriate.
         """
 
         output_path = os.getcwd()
@@ -393,11 +396,7 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
                 )
 
             if self.mpi_launch == 'none' and ranks != 1:
-                print(
-                    '[Failed to launch test \"' + job.name +
-                    '\" as test uses > 1 MPI ranks and no MPI launcher was provided]'
-                )
-                return
+                return False, 'MPI required', ['Not launched: requires MPI']
 
             command_resource = job.create_execute_command()
             launch_command = []
@@ -448,6 +447,8 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
             _set_blocking_io_stdout()
             with open(os.path.join(output_path, job.launched_filename), 'w'):
                 pass
+
+        return True, None, None
 
     def clean(self, job, **kwargs):
         """ Remove all files created by the Launcher itself
