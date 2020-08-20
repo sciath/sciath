@@ -1,0 +1,7 @@
+[35m[ *** Summary *** ][0m
+[93m[foo]  not launched[0m
+
+[91mFAILURE[0m
+
+Report written to file:
+  <<TEST DIR STRIPPED>>/verify_unlaunched_sandbox/sciath_test_report.txt
