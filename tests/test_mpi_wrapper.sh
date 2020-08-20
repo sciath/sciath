@@ -18,7 +18,7 @@ if [ -z "$prereq_test_name" ]; then
   rm -rf $sandbox
   mkdir $sandbox
 else
-  cp -R $prereq_sandbox $sandbox
+  cp -R $prereq_sandbox/. $sandbox
 fi
 cp $configuration_file $sandbox
 cd $sandbox

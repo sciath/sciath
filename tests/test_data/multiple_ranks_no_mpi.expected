@@ -6,15 +6,10 @@
   Queue system:      none
   MPI launcher:      none
 [Failed to launch test "two_ranks" as test uses > 1 MPI ranks and no MPI launcher was provided]
-[35m[ *** Verification Reports *** ][0m
-[36m[Report for two_ranks][0m
-[Comparison] Output file missing: <<TEST DIR STRIPPED>>/multiple_ranks_no_mpi_sandbox/two_ranks_output/two_ranks.stdout
 [35m[ *** Summary *** ][0m
-[91m[two_ranks]  fail[0m (output file not found)
+[33m[two_ranks]  not launched[0m
 
 [91mFAILURE[0m
-To re-run failed tests, use e.g.
-  -t two_ranks
 
 Report written to file:
   <<TEST DIR STRIPPED>>/multiple_ranks_no_mpi_sandbox/sciath_test_report.txt

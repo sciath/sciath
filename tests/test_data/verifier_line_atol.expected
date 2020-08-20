@@ -129,14 +129,14 @@ Output line 11 did not match line 11 in expected output:
 1e-14 != 1e-16 to abs. tol. 0 (abs. err 9.9e-15) or rel. tol 0 (rel. err 99)
 1.00001 != 1 to abs. tol. 0 (abs. err 1e-05) or rel. tol 0 (rel. err 1e-05)
 [35m[ *** Summary *** ][0m
-[91m[rtol_only_default_fail]  fail[0m (verification failed)
-[91m[rtol_only_fail]  fail[0m (verification failed)
-[91m[atol_only_fail]  fail[0m (verification failed)
-[91m[both_tols_fail]  fail[0m (verification failed)
-[91m[atol_zero_fail]  fail[0m (verification failed)
-[91m[rtol_zero_fail]  fail[0m (verification failed)
-[91m[both_tols_zero_fail]  fail[0m (verification failed)
-[32m[both_tols_pass]  pass[0m (verification was successful)
+[91m[rtol_only_default_fail]  fail[0m
+[91m[rtol_only_fail]  fail[0m
+[91m[atol_only_fail]  fail[0m
+[91m[both_tols_fail]  fail[0m
+[91m[atol_zero_fail]  fail[0m
+[91m[rtol_zero_fail]  fail[0m
+[91m[both_tols_zero_fail]  fail[0m
+[32m[both_tols_pass]  pass[0m
 
 [91mFAILURE[0m
 To re-run failed tests, use e.g.

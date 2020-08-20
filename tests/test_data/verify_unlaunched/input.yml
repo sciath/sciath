@@ -1,0 +1,5 @@
+tests:
+  -
+    name: foo
+    command: echo foo
+    expected: expected

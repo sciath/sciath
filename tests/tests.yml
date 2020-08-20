@@ -118,3 +118,8 @@
   group: mpi_verify
   command: sh test_mpi_wrapper.sh mpi_smoke_two_ranks_verify "-v ../test_data/mpi_smoke_two_ranks/input.yml" mpi_smoke_two_ranks_execute
   expected: test_data/mpi_smoke_two_ranks_verify.expected
+-
+  name: verify_unlaunched
+  group: default_configuration
+  command: sh test_wrapper.sh verify_unlaunched "-v ../test_data/verify_unlaunched/input.yml"
+  expected: test_data/verify_unlaunched.expected

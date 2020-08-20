@@ -21,10 +21,10 @@ grep foo bar
 [ExitCodeDiff] Expected exit code(s): [0]
 [ExitCodeDiff] Output exit code(s)  : [2]
 [35m[ *** Summary *** ][0m
-[32m[test1]  pass[0m (verification was successful)
-[32m[test2]  pass[0m (verification was successful)
-[32m[test3]  pass[0m (verification was successful)
-[91m[test4]  fail[0m (verification failed)
+[32m[test1]  pass[0m
+[32m[test2]  pass[0m
+[32m[test3]  pass[0m
+[91m[test4]  fail[0m
 
 [91mFAILURE[0m
 To re-run failed tests, use e.g.

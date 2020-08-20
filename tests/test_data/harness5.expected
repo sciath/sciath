@@ -15,7 +15,7 @@ Report for 1 expected line(s) matching: '^\s*The\ first\ number\ is'
 Output line 1 did not match line 1 in expected output:
 1.1 != 7 to rel. tol. 1e-06 (rel. err. 0.842857)
 [35m[ *** Summary *** ][0m
-[91m[test]  fail[0m (verification failed)
+[91m[test]  fail[0m
 
 [91mFAILURE[0m
 To re-run failed tests, use e.g.

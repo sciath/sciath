@@ -8,7 +8,7 @@
 [36m[Executing relpath_test][0m from <<TEST DIR STRIPPED>>/module_relpath_sandbox/relpath_test_output/sandbox
 sh <<TEST DIR STRIPPED>>/test_data/module_relpath/script.sh <<TEST DIR STRIPPED>>/test_data/module_relpath/data.txt
 [35m[ *** Summary *** ][0m
-[32m[relpath_test]  pass[0m (verification was successful)
+[32m[relpath_test]  pass[0m
 
 [32mSUCCESS[0m
 

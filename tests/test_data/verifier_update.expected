@@ -15,7 +15,7 @@ echo foo
 -bar
 +foo
 [35m[ *** Summary *** ][0m
-[91m[foo]  fail[0m (verification failed)
+[91m[foo]  fail[0m
 
 [91mFAILURE[0m
 To re-run failed tests, use e.g.
@@ -37,7 +37,7 @@ echo foo
 [35m[ *** Updating Expected Output *** ][0m
 [ -- Updating output for Test: foo -- ]
 [35m[ *** Summary *** ][0m
-[32m[foo]  pass[0m (verification was successful)
+[32m[foo]  pass[0m
 
 [32mSUCCESS[0m
 
@@ -53,7 +53,7 @@ Report written to file:
 [36m[Executing foo][0m from <<TEST DIR STRIPPED>>/verifier_update_sandbox/foo_output/sandbox
 echo foo
 [35m[ *** Summary *** ][0m
-[32m[foo]  pass[0m (verification was successful)
+[32m[foo]  pass[0m
 
 [32mSUCCESS[0m
 

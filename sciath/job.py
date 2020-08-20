@@ -46,9 +46,19 @@ class Job:
         return [task.create_execute_command() for task in self.tasks]
 
     @property
+    def complete_filename(self):
+        """ Returns a filename for a sentinel signifying completion """
+        return '.%s.complete' % self.name
+
+    @property
     def exitcode_filename(self):
         """ Returns a filename to use for exit codes """
         return self.name + '.exitcode'
+
+    @property
+    def launched_filename(self):
+        """ Returns a filename for a sentinel signifying launching """
+        return '.%s.launched' % self.name
 
     @property
     def stdout_filename(self):

@@ -48,6 +48,14 @@ def _format_mpi_launch_command(mpi_launch, ranks):
     return launch.split()
 
 
+def job_complete(job, output_path):
+    """ Returns True if a Job has completed with the given output path """
+    return os.path.isfile(os.path.join(output_path, job.complete_filename))
+
+
+def job_launched(job, output_path):
+    """ Returns True if a Job has launched with the given output path """
+    return os.path.isfile(os.path.join(output_path, job.launched_filename))
 
 
 def _subprocess_run(command, **kwargs):
@@ -367,6 +375,11 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
                     raise ValueError(
                         '[SciATH] Unsupported: exec paths must be absolute')
 
+        if job_complete(job, output_path):
+            raise Exception('[SciATH] trying to launch an already-complete Job')
+        if job_launched(job, output_path):
+            raise Exception('[SciATH] trying to launch an already-launched Job')
+
         _set_blocking_io_stdout()
 
         if not self.use_batch:
@@ -403,21 +416,21 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
                 for term in launch_command:
                     print(command_join(term))
 
-            exitcode_name = job.exitcode_filename
-            stdout_name = job.stdout_filename
-            stderr_name = job.stderr_filename
-
-            with open(os.path.join(output_path, exitcode_name), 'w') as file_exitcode, \
-                 open(os.path.join(output_path, stderr_name), 'w') as file_stderr, \
-                 open(os.path.join(output_path, stdout_name), 'w') as file_stdout:
+            with open(os.path.join(output_path, job.exitcode_filename), 'w') as file_exitcode, \
+                 open(os.path.join(output_path, job.stderr_filename), 'w') as file_stderr, \
+                 open(os.path.join(output_path, job.stdout_filename), 'w') as file_stdout:
                 for command in launch_command:
                     cwd_back = os.getcwd()
                     os.chdir(exec_path)
                     returncode = _subprocess_run(command, universal_newlines=True,
                                                  stdout=file_stdout, stderr=file_stderr)
                     os.chdir(cwd_back)
-                    file_exitcode.write(str(returncode) + "\n")  # exit code
+                    file_exitcode.write(str(returncode) + "\n")
                     _set_blocking_io_stdout()
+            with open(os.path.join(output_path, job.launched_filename), 'w'):
+                pass
+            with open(os.path.join(output_path, job.complete_filename), 'w'):
+                pass
         else:
             walltime = job.total_wall_time()
 
@@ -433,6 +446,8 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
             _subprocess_run(launch_command, universal_newlines=True)
             os.chdir(cwd_back)
             _set_blocking_io_stdout()
+            with open(os.path.join(output_path, job.launched_filename), 'w'):
+                pass
 
     def clean(self, job, **kwargs):
         """ Remove all files created by the Launcher itself
@@ -457,6 +472,9 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
         if self.queue_file_extension is not None:
             filename = self._batch_filename(job)
             _remove_file_if_it_exists(os.path.join(output_path, filename))
+
+        _remove_file_if_it_exists(os.path.join(output_path, job.launched_filename))
+        _remove_file_if_it_exists(os.path.join(output_path, job.complete_filename))
 
     def _batch_filename(self, job):
         return job.name + "." + self.queue_file_extension
@@ -512,6 +530,7 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
             file.write(" ".join(launch) + " \n")
             file.write("echo $? >> " + os.path.join(output_path, exitcode_name) + "\n")
         file.write("\n")
+        file.write("touch %s\n" % os.path.join(output_path, job.complete_filename))
         file.close()
         return filename
 
@@ -575,6 +594,7 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
             file.write(" ".join(launch) + "\n")
             file.write("echo $? >> " + os.path.join(output_path, exitcode_name) + "\n")
         file.write("\n")
+        file.write("touch %s\n" % os.path.join(output_path, job.complete_filename))
         file.close()
         return filename
 
@@ -642,5 +662,6 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
             file.write(" ".join(launch) + "\n")
             file.write("echo $? >> " + os.path.join(output_path, exitcode_name) + "\n")
         file.write("\n")
+        file.write("touch %s\n" % os.path.join(output_path, job.complete_filename))
         file.close()
         return filename
