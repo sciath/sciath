@@ -41,13 +41,13 @@ sh -c 'echo qux > compare_me.txt'
 -foo
 +qux
 [35m[ *** Summary *** ][0m
-[32m[foo]  pass[0m (verification was successful)
-[32m[foo2]  pass[0m (verification was successful)
-[91m[foo_fail]  fail[0m (verification failed)
-[91m[missing]  fail[0m (expected/comparison file not found)
-[32m[many_words]  pass[0m (verification was successful)
-[32m[comp_file]  pass[0m (verification was successful)
-[91m[comp_file_fail]  fail[0m (verification failed)
+[32m[foo]  pass[0m
+[32m[foo2]  pass[0m
+[91m[foo_fail]  fail[0m
+[91m[missing]  fail[0m (expected file not found)
+[32m[many_words]  pass[0m
+[32m[comp_file]  pass[0m
+[91m[comp_file_fail]  fail[0m
 
 [91mFAILURE[0m
 To re-run failed tests, use e.g.

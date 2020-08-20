@@ -8,7 +8,7 @@
 [36m[Executing run][0m from <<TEST DIR STRIPPED>>/verifier_line_order_sandbox/run_output/sandbox
 sh <<TEST DIR STRIPPED>>/test_data/verifier_line_order/run.sh
 [35m[ *** Summary *** ][0m
-[32m[run]  pass[0m (verification was successful)
+[32m[run]  pass[0m
 
 [32mSUCCESS[0m
 

@@ -35,6 +35,6 @@ class Test:
         self.groups.add(group)
 
     def verify(self, output_path=None, exec_path=None):
-        """ Return a status and a report, relative to an output and execution path """
-        status, report = self.verifier.execute(output_path, exec_path)
-        return status, report
+        """ Return (passing, info, report) relative to an output and execution path """
+        passing, info, report = self.verifier.execute(output_path, exec_path)
+        return passing, info, report

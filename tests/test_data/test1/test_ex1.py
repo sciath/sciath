@@ -13,11 +13,11 @@ job_launcher = Launcher()
 job_launcher.verbosity_level = VERBOSITY
 
 def test_print(test, output_path):
-    status,report = test.verifier.execute(output_path = output_path)
-    rep = [test.name] + status
-    print(rep)
-    for l in report:
-        print(l)
+    passing, info, report = test.verifier.execute(output_path = output_path)
+    print('[%s] %r %s' % (test.name, passing, info))
+    for line in report:
+        print(line)
+
 
 # Default verifier (check error code)
 def test1(): # result: pass

@@ -7,7 +7,7 @@
   MPI launcher:      none
 [Failed to launch test "two_ranks" as test uses > 1 MPI ranks and no MPI launcher was provided]
 [35m[ *** Summary *** ][0m
-[93m[two_ranks]  not launched[0m
+[33m[two_ranks]  not launched[0m
 
 [91mFAILURE[0m
 

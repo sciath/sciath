@@ -7,8 +7,6 @@ import difflib
 import shutil
 import errno
 
-from sciath import SCIATH_TEST_STATUS
-
 
 class Verifier(object):  # pylint: disable=bad-option-value,too-few-public-methods,useless-object-inheritance
     """Base class for verification of a Test"""
@@ -17,7 +15,15 @@ class Verifier(object):  # pylint: disable=bad-option-value,too-few-public-metho
         self.test = test
 
     def execute(self, output_path, exec_path=None):
-        """ Relative to a given output path, fetch file(s) and produce status,report
+        """ Relative to a given output path, fetch file(s) and determine success.
+
+            Returns (passing, info, report), where passing is a boolean value,
+            info is a short string describing the reason for a pass/fail,
+            and report is a longer list of strings giving further details
+            on failure.
+
+            Note that there a Verifier must always be able to determine
+            success or failure.
 
             Accepts an output path (where the Launcher puts the files it generates)
             and an execution path (where the Job was run from). Either might be
@@ -39,14 +45,15 @@ class ExitCodeVerifier(Verifier):
     def execute(self, output_path, exec_path=None):
         """ Relative to a given output path, fetch file(s) and produce status,report """
 
-        status = None
+        info = None
         report = []
 
         exit_code_file = os.path.join(output_path, self.test.job.exitcode_filename)
         if not os.path.isfile(exit_code_file):
             report.append("[ReturnCodeDiff] File (" + exit_code_file + ") not found")
-            status = SCIATH_TEST_STATUS.expected_file_not_found
-            return status, report
+            passing = False
+            info = 'file not found'
+            return passing, info, report
 
         with open(exit_code_file, 'r') as handle:
             exit_codes = [int(line) for line in handle.readlines()]
@@ -54,10 +61,10 @@ class ExitCodeVerifier(Verifier):
         if exit_codes != self.exit_codes_success:
             report.append("[ExitCodeDiff] Expected exit code(s): " + str(self.exit_codes_success))
             report.append("[ExitCodeDiff] Output exit code(s)  : " + str(exit_codes))
-            status = SCIATH_TEST_STATUS.not_okay
+            passing = False
         else:
-            status = SCIATH_TEST_STATUS.okay
-        return status, report
+            passing = True
+        return passing, info, report
 
     def set_exit_codes_success(self, exit_codes_success):
         """ Sets a single exit code per Task to interpret as success """
@@ -86,23 +93,24 @@ class ComparisonVerifier(Verifier):
             self.output_file = stdout_name
 
     def execute(self, output_path=None, exec_path=None):
+        info = None
         report = []
-        status = None
 
         if not os.path.isfile(self.expected_file):
-            status = SCIATH_TEST_STATUS.expected_file_not_found
+            passing = False
+            info = 'expected file not found'
             report.append('[Comparison] Expected file missing: %s' % self.expected_file)
-            return status, report
+            return passing, info, report
 
         from_file = self._from_file(output_path, exec_path)
         if not os.path.isfile(from_file):
-            status = SCIATH_TEST_STATUS.output_file_not_found
+            passing = False
+            info = 'output file not found'
             report.append('[Comparison] Output file missing: %s' % from_file)
-            return status, report
+            return passing, info, report
 
         passing, report = self._compare_files(self.expected_file, from_file)
-        status = SCIATH_TEST_STATUS.okay if passing else SCIATH_TEST_STATUS.not_okay
-        return status, report
+        return passing, info, report
 
     def update_expected(self, output_path=None, exec_path=None):
         """ Update reference files from output

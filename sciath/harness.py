@@ -24,6 +24,25 @@ class _TestRunStatus:  #pylint: disable=too-few-public-methods
     FAIL = 'fail'  # Verifier confirms fail
 
 
+def _status_color(status):
+    color = SCIATH_COLORS.endc
+    if status == _TestRunStatus.DEACTIVATED:
+        color = SCIATH_COLORS.endc
+    if status == _TestRunStatus.PASS:
+        color = SCIATH_COLORS.okay
+    if status == _TestRunStatus.FAIL:
+        color = SCIATH_COLORS.fail
+    if status == _TestRunStatus.INCOMPLETE:
+        color = SCIATH_COLORS.warning
+    if status == _TestRunStatus.NOT_LAUNCHED:
+        color = SCIATH_COLORS.warning
+    if status == _TestRunStatus.UNKNOWN:
+        color = SCIATH_COLORS.warning
+    if status == _TestRunStatus.SKIPPED:
+        color = SCIATH_COLORS.warning
+    return color
+
+
 class _TestRun:  #pylint: disable=too-few-public-methods, too-many-instance-attributes
     """ A private class which adds state about a specific "run" of a Test.
 
@@ -177,7 +196,7 @@ class Harness:
             for testrun in self.testruns:
                 if testrun.status == _TestRunStatus.FAIL:
                     failed_names.append(testrun.test.name)
-                line = [sciath.SCIATH_TEST_STATUS.status_color_type[testrun.status]]
+                line = [_status_color(testrun.status)]
                 line.append('[%s]  %s' % (testrun.test.name, testrun.status))
                 line.append(SCIATH_COLORS.endc)
                 if testrun.status_info:
@@ -305,21 +324,9 @@ class Harness:
                 testrun.status = _TestRunStatus.INCOMPLETE
                 continue
 
-            status, testrun.report = testrun.test.verify(testrun.output_path, testrun.exec_path)
-            verifier_status = status[0]
-            verifier_info = status[1]
-            if verifier_status == 'pass':
-                testrun.status = _TestRunStatus.PASS
-                testrun.status_info = verifier_info
-            elif verifier_status == 'fail':
-                testrun.status = _TestRunStatus.FAIL
-                testrun.status_info = verifier_info
-            elif verifier_status == 'skip':
-                testrun.status = _TestRunStatus.SKIPPED
-                testrun.status_info = verifier_info
-            else:
-                testrun.status = _TestRunStatus.FAIL
-                testrun.status_info = 'Unrecognized: %s, %s' % (verifier_status, verifier_info)
+            passing, testrun.status_info, testrun.report = testrun.test.verify(
+                testrun.output_path, testrun.exec_path)
+            testrun.status = _TestRunStatus.PASS if passing else _TestRunStatus.FAIL
 
     def _activate_tests_from_list(self, test_subset_string):
         """ Deactivate test runs not named in a comma-separated string """
