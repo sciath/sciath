@@ -85,6 +85,12 @@ def _populate_groups_from_entry(test, entry):
             test.add_group(group)
 
 def _populate_verifier_from_entry(test, entry, filename):
+    verifier_type = entry['type'] if 'type' in entry else 'text_diff'
+
+    if verifier_type == 'exit_code':
+        test.verifier = sciath.verifier.ExitCodeVerifier(test)
+        return
+
     expected = entry['expected']
     expected = _replace_here_marker(expected, filename)
     if not os.path.isabs(expected):
@@ -92,7 +98,6 @@ def _populate_verifier_from_entry(test, entry, filename):
 
     comparison_file = entry['comparison'] if 'comparison' in entry else None
 
-    verifier_type = entry['type'] if 'type' in entry else 'text_diff'
     if verifier_type == 'text_diff':
         if 'expected' not in entry or not entry['expected']:
             raise Exception('Each test entry must defined an expected file')
