@@ -123,3 +123,8 @@
   group: default_configuration
   command: sh test_wrapper.sh verify_unlaunched "-v ../test_data/verify_unlaunched/input.yml"
   expected: test_data/verify_unlaunched.expected
+-
+  name: verify_exitcode
+  group: default_configuration
+  command: sh test_wrapper.sh verify_exitcode "../test_data/verify_exitcode/input.yml"
+  expected: test_data/verify_exitcode.expected
