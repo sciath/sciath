@@ -1,0 +1,33 @@
+tests:
+  -
+    name: should_pass
+    command: true
+    type: exit_code
+  - 
+    name: should_fail
+    command: false
+    type: exit_code
+  -
+    name: should_pass_multi
+    commands:
+      - true
+      - true
+    type: exit_code
+  -
+    name: should_fail_multi
+    commands:
+      - true
+      - false
+    type: exit_code
+  -
+    name: should_fail_multi2
+    commands:
+      - false
+      - false
+    type: exit_code
+  -
+    name: should_fail_multi3
+    commands:
+      - false
+      - true
+    type: exit_code
