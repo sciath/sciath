@@ -38,6 +38,7 @@ class Task:
                 try:
                     self.wall_time = float(value)
                 except ValueError:
+                    #pylint: disable=bad-option-value,raise-missing-from
                     message = '[SciATH error]: Cannot convert wall_time \"' + str(
                         value) + '\" to float.'
                     raise RuntimeError(message)

@@ -39,6 +39,7 @@ class ExitCodeVerifier(Verifier):
     """ Verifier implementation which checks exit codes """
 
     def __init__(self, test):
+        # pylint: disable=bad-option-value,super-with-arguments
         super(ExitCodeVerifier, self).__init__(test)
         self.exit_codes_success = [0] * test.job.number_tasks()
 
@@ -80,6 +81,7 @@ class ComparisonVerifier(Verifier):
     """ A :class:`Verifier` which compares an output file against a reference file """
 
     def __init__(self, test, expected_file, output_file=None, comparison_file=None):
+        # pylint: disable=bad-option-value,super-with-arguments
         super(ComparisonVerifier, self).__init__(test)
 
         self.expected_file = expected_file
