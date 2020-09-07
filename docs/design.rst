@@ -24,7 +24,6 @@ Further, we wanted something
 * language-agnostic
 * easily usable on many different systems, including clusters with batch systems
 * portable, easy to run on any system without heavy dependencies
-    - SciATH works with Python 2.7 or later, with no non-standard modules required
 * usable with CI
 * that "shows you what's happening", giving you copy-pasteable commands being run and leaving meaningful artifacts to interpret and re-run test cases
 
