@@ -9,6 +9,25 @@ sciath
   :members:
   :undoc-members:
 
+
+Task
+====
+.. automodule:: sciath.task
+  :members:
+  :undoc-members:
+
+Job
+===
+.. automodule:: sciath.job
+  :members:
+  :undoc-members:
+
+Launcher
+========
+.. automodule:: sciath.launcher
+  :members:
+  :undoc-members:
+
 Test
 ====
 
@@ -16,25 +35,9 @@ Test
   :members:
   :undoc-members:
 
-
 Harness
 ========
 
 .. automodule:: sciath.harness
-  :members:
-  :undoc-members:
-
-Additional modules and classes
-==============================
-
-.. automodule:: sciath.job
-  :members:
-  :undoc-members:
-
-.. automodule:: sciath.launcher
-  :members:
-  :undoc-members:
-
-.. automodule:: sciath._io
   :members:
   :undoc-members:

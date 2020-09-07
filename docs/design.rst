@@ -6,8 +6,8 @@ Why another test harness?
 
 We wrote SciATH because we couldn't find a test harness that did what we
 wanted. We wanted to  replace and generalize an existing simple test suite for
-`pTatin3D`_ , an MPI-based code for regional geodynamic simulation. We wanted
-something tailored to test scientific applications, which tend to be
+`pTatin3D`_ , an MPI-based code for regional geodynamic simulation. SciATH is
+tailored to test scientific applications, which tend to be
 
 * hard to unit test, being monolithic applications controlled by large parameter files and generating large output
 * susceptible to numerical "noise"
@@ -26,9 +26,9 @@ Further, we wanted something
 * portable, easy to run on any system without heavy dependencies
     - SciATH works with Python 2.7 or later, with no non-standard modules required
 * usable with CI
-* that "shows you what's happening", giving you copy-pasteable commands being run, not running invisible processes, and leaving meaningful artifacts to interpret and re-run test cases
+* that "shows you what's happening", giving you copy-pasteable commands being run and leaving meaningful artifacts to interpret and re-run test cases
 
-We found that most existing solutions were optimized for a rather different purpose,
-unit testing of software libraries in serial environments.
+We found that most existing solutions were optimized for a rather different purpose:
+unit testing of software libraries, written in a particular language, in serial environments.
 
 .. _pTatin3D: https://bitbucket.org/ptatin/ptatin3d
