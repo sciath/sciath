@@ -108,8 +108,12 @@ def _parse_line(line, filename, line_number):
         if content[indent] == '-':
             entry_type = 's'
             key = None
-            value = content[indent+1:].strip()
-            content = None
+            if ':' in content:
+                value = ''
+                content = content[:indent] + ' ' + content[indent+1:]
+            else:
+                value = content[indent+1:].strip()
+                content = None
             entries.append(DotDict(indent=indent, entry_type=entry_type, key=key, value=value))
         elif ':' in content:
             entry_type = 'm'
@@ -119,7 +123,6 @@ def _parse_line(line, filename, line_number):
             content = None
             entries.append(DotDict(indent=indent, entry_type=entry_type, key=key, value=value))
         elif content.strip():
-            print('debug', content)
             _parse_error(filename, line_number, 'Non-empty, non-comment lines must start with - or contain :')
 
     return entries
