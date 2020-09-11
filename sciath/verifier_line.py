@@ -47,7 +47,7 @@ class LineVerifier(ComparisonVerifier):
 def string_get_floats(line):
     """ Extracts floating point numbers from a string """
     result = []
-    re_float = re.compile(r'[+-]?\d+.?\d*[eE]?[+-]?\d*')
+    re_float = re.compile(r'\b[+-]?\d+.?\d*[eE]?[+-]?\d*\b')
     for word in line.split():
         match = re.search(re_float, word)
         if match:
