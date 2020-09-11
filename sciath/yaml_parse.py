@@ -7,6 +7,7 @@
 
 from sciath.utility import DotDict
 
+
 def parse_yaml_subset_from_file(filename):  #pylint: disable=too-many-branches,too-many-locals
     """ Parse a subset of YAML files into a nested structure of list and dict objects
 
@@ -65,8 +66,7 @@ def parse_yaml_subset_from_file(filename):  #pylint: disable=too-many-branches,t
                         while True:
                             stack.pop()
                             if not stack:
-                                _parse_error(filename, line_number,
-                                             "Invalid indentation")
+                                _parse_error(filename, line_number, "Invalid indentation")
                             curr = stack[-1]
                             if indent == curr.indent:
                                 break
@@ -79,8 +79,7 @@ def parse_yaml_subset_from_file(filename):  #pylint: disable=too-many-branches,t
                     prev_key = None
                 else:
                     if key in curr.data:
-                        _parse_error(filename, line_number,
-                                     "Duplicate key: %s" % key)
+                        _parse_error(filename, line_number, "Duplicate key: %s" % key)
                     curr.data[key] = value
                     prev_key = key
 
@@ -93,7 +92,7 @@ def _parse_error(filename, line_number, message):
 
 def _compute_indent(string, filename, line_number):
     len_string_spaces_stripped = len(string.lstrip(' '))
-    if  len(string.lstrip()) != len_string_spaces_stripped:
+    if len(string.lstrip()) != len_string_spaces_stripped:
         _parse_error(filename, line_number, "Indent with spaces only")
     return len(string) - len_string_spaces_stripped
 
@@ -123,6 +122,7 @@ def _parse_line(line, filename, line_number):
             content = None
             entries.append(DotDict(indent=indent, entry_type=entry_type, key=key, value=value))
         elif content.strip():
-            _parse_error(filename, line_number, 'Non-empty, non-comment lines must start with - or contain :')
+            _parse_error(filename, line_number,
+                         'Non-empty, non-comment lines must start with - or contain :')
 
     return entries
