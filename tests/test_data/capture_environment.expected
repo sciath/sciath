@@ -1,0 +1,21 @@
+[35m[ *** Cleanup *** ][0m
+[ -- Removing output for Test: a_test -- ]
+[35m[ *** Executing Tests *** ][0m
+[SciATH] Batch queueing system configuration [SciATHBatchQueuingSystem.conf]
+  Version:           0.6.0
+  Queue system:      none
+  MPI launcher:      none
+[36m[Executing a_test][0m from <<TEST DIR STRIPPED>>/capture_environment_sandbox/a_test_output/sandbox
+printf 'defined var\n'
+echo defined var
+echo defined var longer
+echo
+echo <<TEST DIR STRIPPED>>/capture_environment_sandbox
+echo <<TEST DIR STRIPPED>>/test_data/capture_environment
+[35m[ *** Summary *** ][0m
+[32m[a_test]  pass[0m
+
+[32mSUCCESS[0m
+
+Report written to file:
+  <<TEST DIR STRIPPED>>/capture_environment_sandbox/sciath_test_report.txt

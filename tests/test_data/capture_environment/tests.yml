@@ -1,0 +1,17 @@
+environment:
+  - DEFINED_VAR
+  - DEFINED_VAR_LONGER
+  - EMPTY_VAR
+  - PWD
+  # - UNDEFINED_VARIABLE
+tests:
+  - name: a_test
+    type: exit_code
+    commands:
+        - printf "$DEFINED_VAR\n"
+        - echo $DEFINED_VAR
+        - echo $DEFINED_VAR_LONGER
+        - echo $EMPTY_VAR
+        - echo $PWD
+        - echo HERE
+    expected: a_test.expected
