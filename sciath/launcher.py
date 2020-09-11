@@ -319,7 +319,7 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
                     self.queue_name = data['queueName']
                 if 'accountName' in data:
                     self.account_name = data['accountName']
-        except OSError:  # Should be FileNotFoundError for Python >3.5
+        except (IOError, OSError):  # Would be FileNotFoundError for Python >3.5
             # pylint: disable=bad-option-value,raise-missing-from
             raise SciATHLoadException(('[SciATH] Configuration file missing. '
                                        'You must execute configure(), and/or '
