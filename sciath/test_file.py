@@ -1,6 +1,8 @@
 """ Logic to create SciATH Tests from a specification file """
 import os
 import shlex
+import re
+import collections
 
 import sciath.test
 import sciath.job
@@ -20,18 +22,50 @@ def create_tests_from_file(filename):
     if not isinstance(data, dict) or 'tests' not in data or not isinstance(data['tests'], list):
         raise Exception("[SciATH] file needs 'tests:' containing a sequence of test entries")
 
+    replacement_map = _build_replacement_map(data, filename)
+
     tests = []
     for entry in data['tests']:
         if not isinstance(entry, dict):
             raise Exception('Incorrectly formatted test entry (must be a mapping)')
-        job = _create_job_from_entry(entry, filename)
-        test = _create_test_from_entry(job, entry, filename)
+        job = _create_job_from_entry(entry, replacement_map)
+        test = _create_test_from_entry(job, entry, filename, replacement_map)
         tests.append(test)
 
     return tests
 
+def _apply_replacement_map(string, replacement_map):
+    output_string = string
+    for key, value in replacement_map.items():
+        output_string = output_string.replace(key, value)
+    return output_string
 
-def _create_job_from_entry(entry, filename):
+def _build_environment_map(data):
+    environment_map = dict()
+    if 'environment' in data:
+        variable_list = data['environment']
+        if not isinstance(variable_list, list):
+            raise Exception('Environment variables must be a sequence')
+        for variable in variable_list:
+            if not variable:
+                raise Exception('Empty environment variables not allowed')
+            if variable[0] == '$':
+                variable = variable[1:]
+            if not re.match(r'^\w+$', variable):
+                raise Exception('Environment variable name not well-formed: %s' % variable)
+            value = os.getenv(variable)
+            if value is None:
+                raise Exception('Expected environment variable %s not defined.' % variable)
+            environment_map['$' + variable] = value
+    environment_map = collections.OrderedDict(sorted(environment_map.items(), reverse=True))
+    return environment_map
+
+def _build_replacement_map(data, filename, here_marker='HERE'):
+    replacement_map = _build_environment_map(data)
+    replacement_map[here_marker] = os.path.abspath(os.path.dirname(filename))
+    return replacement_map
+
+def _create_job_from_entry(entry, replacement_map):
     if 'name' not in entry:
         raise Exception('Each test entry must specify a name')
     if not entry['name']:
@@ -49,8 +83,7 @@ def _create_job_from_entry(entry, filename):
     else:
         raise Exception('command: or commands: fields must be a string or a sequence')
 
-    commands = [_replace_here_marker(command, filename) for command in commands]
-
+    commands = [_apply_replacement_map(command, replacement_map) for command in commands]
     commands = [shlex.split(command) for command in commands]  # split, respecting quotes
     for command in commands:
         if not command:
@@ -63,9 +96,9 @@ def _create_job_from_entry(entry, filename):
     return job
 
 
-def _create_test_from_entry(job, entry, filename):
+def _create_test_from_entry(job, entry, filename, replacement_map):
     test = sciath.test.Test(job)
-    _populate_verifier_from_entry(test, entry, filename)
+    _populate_verifier_from_entry(test, entry, filename, replacement_map)
     _populate_groups_from_entry(test, entry)
     return test
 
@@ -84,7 +117,7 @@ def _populate_groups_from_entry(test, entry):
         for group in groups_list:
             test.add_group(group)
 
-def _populate_verifier_from_entry(test, entry, filename):
+def _populate_verifier_from_entry(test, entry, filename, replacement_map):
     verifier_type = entry['type'] if 'type' in entry else 'text_diff'
 
     if verifier_type == 'exit_code':
@@ -92,7 +125,7 @@ def _populate_verifier_from_entry(test, entry, filename):
         return
 
     expected = entry['expected']
-    expected = _replace_here_marker(expected, filename)
+    expected = _apply_replacement_map(expected, replacement_map)
     if not os.path.isabs(expected):
         expected = os.path.join(os.path.dirname(filename), expected)
 
@@ -128,6 +161,3 @@ def _populate_verifier_from_entry(test, entry, filename):
             test.verifier.rules.append(rule_func)
     else:
         raise Exception('[SciATH] unrecognized type %s' % verifier_type)
-
-def _replace_here_marker(string, filename, marker='HERE'):
-    return string.replace(marker, os.path.abspath(os.path.dirname(filename)))

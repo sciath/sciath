@@ -128,3 +128,8 @@
   group: default_configuration
   command: sh test_wrapper.sh verify_exitcode "../test_data/verify_exitcode/input.yml"
   expected: test_data/verify_exitcode.expected
+-
+  name: capture_environment
+  group: default_configuration
+  command: sh test_wrapper_with_vars.sh capture_environment "../test_data/capture_environment/tests.yml"
+  expected: test_data/capture_environment.expected
