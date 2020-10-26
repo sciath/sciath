@@ -124,21 +124,20 @@ def _populate_verifier_from_entry(test, entry, filename, replacement_map):
         test.verifier = sciath.verifier.ExitCodeVerifier(test)
         return
 
+    comparison_file = entry['comparison'] if 'comparison' in entry else None
+
+    # All subsequent verifiers use an expected file
+    if 'expected' not in entry or not entry['expected']:
+        raise Exception('Each test entry must defined an expected file')
     expected = entry['expected']
     expected = _apply_replacement_map(expected, replacement_map)
     if not os.path.isabs(expected):
         expected = os.path.join(os.path.dirname(filename), expected)
 
-    comparison_file = entry['comparison'] if 'comparison' in entry else None
-
     if verifier_type == 'text_diff':
-        if 'expected' not in entry or not entry['expected']:
-            raise Exception('Each test entry must defined an expected file')
         test.verifier = sciath.verifier.ComparisonVerifier(
             test, expected, comparison_file=comparison_file)
     elif verifier_type == 'float_lines':
-        if 'expected' not in entry or not entry['expected']:
-            raise Exception('Each test entry must defined an expected file')
         test.verifier = sciath.verifier_line.LineVerifier(
             test, expected, comparison_file=comparison_file)
         if 'rules' not in entry:
