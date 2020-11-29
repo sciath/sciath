@@ -1,0 +1,13 @@
+tests:
+  - name: first
+    command: printf "Hello, World!\n"
+    type: exit_code
+  - name: second
+    command: printf "Hello Again, World!\n"
+    type: exit_code
+  - name: failing
+    command: false
+    type: exit_code
+  - name: text_diff
+    command: printf "a line of text\n"
+    expected: text_diff.expected

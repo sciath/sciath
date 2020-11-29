@@ -12,13 +12,15 @@
 #
 import os
 import sys
+import datetime
 sys.path.insert(0, os.path.abspath(os.path.join('..')))
 
 
 # -- Project information -----------------------------------------------------
 
 project = 'SciATH'
-copyright = '2019, Dave A. May and Patrick Sanan'
+copyright = '2019-%d, Dave A. May and Patrick Sanan' % datetime.date.today().year
+
 author = 'Dave A. May and Patrick Sanan'
 
 # The full version, including alpha/beta/rc tags
