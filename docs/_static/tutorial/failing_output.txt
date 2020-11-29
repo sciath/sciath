@@ -1,0 +1,25 @@
+[ *** Cleanup *** ]
+[ -- Removing output for Test: failing -- ]
+[ *** Executing Tests *** ]
+[SciATH] Batch queueing system configuration [SciATHBatchQueuingSystem.conf]
+  Version:           0.6.0
+  Queue system:      none
+  MPI launcher:      none
+[Executing failing] from /Users/patrick/scratch/failing_output/sandbox
+false
+[ *** Verification Reports *** ]
+[Report for failing]
+[ExitCodeDiff] Expected exit code(s): [0]
+[ExitCodeDiff] Output exit code(s)  : [1]
+[ *** Summary *** ]
+[first]  deactivated
+[second]  deactivated
+[failing]  fail
+[text_diff]  deactivated
+
+FAILURE
+To re-run failed tests, use e.g.
+  -t failing
+
+Report written to file:
+  /Users/patrick/scratch/sciath_test_report.txt

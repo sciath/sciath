@@ -133,3 +133,28 @@
   group: default_configuration
   command: sh test_wrapper_with_vars.sh capture_environment "../test_data/capture_environment/tests.yml"
   expected: test_data/capture_environment.expected
+-
+  name: tutorial1
+  group: default_configuration
+  command: sh test_wrapper_tutorial.sh tutorial1 "--no-colors ../../docs/_static/tutorial/tutorial1.yml"
+  expected: ../docs/_static/tutorial/tutorial1_output.txt
+-
+  name: tutorial_first
+  group: default_configuration
+  command: sh test_wrapper_tutorial.sh tutorial_first "--no-colors -t first ../../docs/_static/tutorial/tutorial.yml"
+  expected: ../docs/_static/tutorial/first_output.txt
+-
+  name: tutorial_first_and_second
+  group: default_configuration
+  command: sh test_wrapper_tutorial.sh tutorial_first_and_second "--no-colors -t first,second ../../docs/_static/tutorial/tutorial.yml"
+  expected: ../docs/_static/tutorial/first_and_second_output.txt
+-
+  name: tutorial_failing
+  group: default_configuration
+  command: sh test_wrapper_tutorial.sh tutorial_failing "--no-colors -t failing ../../docs/_static/tutorial/tutorial.yml"
+  expected: ../docs/_static/tutorial/failing_output.txt
+-
+  name: tutorial_text_diff_fail
+  group: default_configuration
+  command: sh test_wrapper_tutorial.sh tutorial_text_diff_fail "--no-colors -t text_diff ../../docs/_static/tutorial/tutorial.yml"
+  expected: ../docs/_static/tutorial/text_diff_fail_output.txt

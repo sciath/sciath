@@ -1,5 +1,6 @@
 #!/usr/bin/env sh
 
-test_dir=$1
+original=$1
+replacement=${2:-<<TEST DIR STRIPPED>>}
 
-sed "s%$test_dir%<<TEST DIR STRIPPED>>%g"
+sed "s%$original%$replacement%g"

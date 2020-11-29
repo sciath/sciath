@@ -1,0 +1,4 @@
+tests:
+  - name: first
+    command: printf "Hello, World!\n"
+    type: exit_code

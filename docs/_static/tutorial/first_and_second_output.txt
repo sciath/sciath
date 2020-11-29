@@ -1,0 +1,22 @@
+[ *** Cleanup *** ]
+[ -- Removing output for Test: first -- ]
+[ -- Removing output for Test: second -- ]
+[ *** Executing Tests *** ]
+[SciATH] Batch queueing system configuration [SciATHBatchQueuingSystem.conf]
+  Version:           0.6.0
+  Queue system:      none
+  MPI launcher:      none
+[Executing first] from /Users/patrick/scratch/first_output/sandbox
+printf 'Hello, World!\n'
+[Executing second] from /Users/patrick/scratch/second_output/sandbox
+printf 'Hello Again, World!\n'
+[ *** Summary *** ]
+[first]  pass
+[second]  pass
+[failing]  deactivated
+[text_diff]  deactivated
+
+SUCCESS
+
+Report written to file:
+  /Users/patrick/scratch/sciath_test_report.txt
