@@ -15,6 +15,7 @@ printf 'Hello Again, World!\n'
 [second]  pass
 [failing]  deactivated
 [text_diff]  deactivated
+[text_diff_failing]  deactivated
 
 SUCCESS
 

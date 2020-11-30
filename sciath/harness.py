@@ -190,11 +190,25 @@ class Harness:
                                       '[ *** Verification Reports *** ]' +
                                       SCIATH_COLORS.endc)
                         report_header_printed = True
-                    report.append('%s[Report for %s]%s' %
-                                  (SCIATH_COLORS.subheader, testrun.test.name,
-                                   SCIATH_COLORS.endc))
+                    report.append(SCIATH_COLORS.subheader +
+                                  '[Report for %s]' % testrun.test.name +
+                                  SCIATH_COLORS.endc)
                     for line in testrun.report:
                         report.append(line)
+                    stdout_filename = os.path.join(testrun.output_path,
+                                                   testrun.test.job.stdout_filename)
+                    if os.path.isfile(stdout_filename) and os.stat(stdout_filename).st_size != 0:
+                        report.append(SCIATH_COLORS.subheader +
+                                      'print stdout file:' +
+                                      SCIATH_COLORS.endc)
+                        report.append('    cat %s' % stdout_filename)
+                    stderr_filename = os.path.join(testrun.output_path,
+                                                   testrun.test.job.stderr_filename)
+                    if os.path.isfile(stderr_filename) and os.stat(stderr_filename).st_size != 0:
+                        report.append(SCIATH_COLORS.warning +
+                                      'print non-empty stderr file:' +
+                                      SCIATH_COLORS.endc)
+                        report.append('    cat %s' % stderr_filename)
             report.append(SCIATH_COLORS.header + '[ *** Summary *** ]' +
                           SCIATH_COLORS.endc)
             for testrun in self.testruns:

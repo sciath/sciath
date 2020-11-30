@@ -20,6 +20,8 @@ grep foo bar
 [36m[Report for test4][0m
 [ExitCodeDiff] Expected exit code(s): [0]
 [ExitCodeDiff] Output exit code(s)  : [2]
+[33mprint non-empty stderr file:[0m
+    cat <<TEST DIR STRIPPED>>/harness1_sandbox/test4_output/job.stderr
 [35m[ *** Summary *** ][0m
 [32m[test1]  pass[0m
 [32m[test2]  pass[0m

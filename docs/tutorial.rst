@@ -8,7 +8,7 @@ SciATH Tutorial
 
 SciATH is designed to test programs
 written in any language, by working at the level of executables and expected
-output. 
+output.
 
 This tutorial uses simple executables
 which should work from all POSIX-compatible shells.
@@ -87,10 +87,10 @@ To (re-)verify your test results, without re-running the tests, use ``-v``:
 
    python -m sciath tutorial1.yml -v
 
-Take a look in the directory that was created, called ``first_output``. 
+Take a look in the directory that was created, called ``first_output``.
 You will see several files and directories, including
 
-  * ``first.exitcode`` which contains the exitcode (``0``) 
+  * ``first.exitcode`` which contains the exitcode (``0``)
   * ``first.stdout`` which contains ``Hello, World!``
   * ``first.stderr``, which should be an empty file
   * ``sandbox``, which should be an empty directory
@@ -122,7 +122,7 @@ to generate output
 .. literalinclude:: _static/tutorial/first_output.txt
   :language: none
 
-or 
+or
 
 .. code-block:: bash
 
@@ -135,7 +135,9 @@ to generate output
 A Failing Test
 ==============
 
-The test ``failing`` runs the command ``false``, which simply returns a non-zero (failing) exit code. 
+The test ``failing`` attempts run ``grep`` on a non-existent file,
+which prints an error message to stderr and returns a non-zero exit code
+(``2`` on BSD and GNU systems).
 It is defined in the YAML file with
 
 .. literalinclude:: _static/tutorial/tutorial.yml
@@ -153,6 +155,13 @@ To produce output
 
 .. literalinclude:: _static/tutorial/failing_output.txt
 
+Note that you are given information about the location of the output
+files at the end of the report for the failing test.
+You can copy-paste this line to see the error message:
+
+.. literalinclude:: _static/tutorial/failing_output.txt
+  :start-at: print non-empty stderr file
+  :lines: 1-2
 
 A Comparison-Based Test
 =======================

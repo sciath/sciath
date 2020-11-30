@@ -14,6 +14,8 @@ echo 'The first number is 1.1\nThe second number is 1.01'
 Report for 1 expected line(s) matching: '^\s*The\ first\ number\ is'
 Output line 1 did not match line 1 in expected output:
 1.1 != 7 to rel. tol. 1e-06 (rel. err. 0.842857)
+[36mprint stdout file:[0m
+    cat <<TEST DIR STRIPPED>>/harness5_sandbox/test_output/job.stdout
 [35m[ *** Summary *** ][0m
 [91m[test]  fail[0m
 
