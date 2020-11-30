@@ -32,8 +32,12 @@ sh -c 'echo qux > compare_me.txt'
 @@ -1 +1 @@
 -foo
 +foox
+[36mprint stdout file:[0m
+    cat <<TEST DIR STRIPPED>>/module_input_sandbox/foo_fail_output/foo_fail.stdout
 [36m[Report for missing][0m
 [Comparison] Expected file missing: ../test_data/module_input/missing.expected
+[36mprint stdout file:[0m
+    cat <<TEST DIR STRIPPED>>/module_input_sandbox/missing_output/missing.stdout
 [36m[Report for comp_file_fail][0m
 --- ../test_data/module_input/comp_file_fail.expected
 +++ <<TEST DIR STRIPPED>>/module_input_sandbox/comp_file_fail_output/sandbox/compare_me.txt

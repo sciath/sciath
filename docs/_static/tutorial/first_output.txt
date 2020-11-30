@@ -12,6 +12,7 @@ printf 'Hello, World!\n'
 [second]  deactivated
 [failing]  deactivated
 [text_diff]  deactivated
+[text_diff_failing]  deactivated
 
 SUCCESS
 

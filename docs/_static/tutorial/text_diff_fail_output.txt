@@ -10,11 +10,14 @@ printf 'a line of text\n'
 [ *** Verification Reports *** ]
 [Report for text_diff]
 [Comparison] Expected file missing: text_diff.expected
+print stdout file:
+    cat /Users/patrick/scratch/text_diff_output/text_diff.stdout
 [ *** Summary *** ]
 [first]  deactivated
 [second]  deactivated
 [failing]  deactivated
 [text_diff]  fail (expected file not found)
+[text_diff_failing]  deactivated
 
 FAILURE
 To re-run failed tests, use e.g.

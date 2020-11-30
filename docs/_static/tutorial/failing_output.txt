@@ -6,16 +6,19 @@
   Queue system:      none
   MPI launcher:      none
 [Executing failing] from /Users/patrick/scratch/failing_output/sandbox
-false
+grep foo bar
 [ *** Verification Reports *** ]
 [Report for failing]
 [ExitCodeDiff] Expected exit code(s): [0]
-[ExitCodeDiff] Output exit code(s)  : [1]
+[ExitCodeDiff] Output exit code(s)  : [2]
+print non-empty stderr file:
+    cat /Users/patrick/scratch/failing_output/failing.stderr
 [ *** Summary *** ]
 [first]  deactivated
 [second]  deactivated
 [failing]  fail
 [text_diff]  deactivated
+[text_diff_failing]  deactivated
 
 FAILURE
 To re-run failed tests, use e.g.

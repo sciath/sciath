@@ -21,6 +21,8 @@ Report for 3 expected line(s) matching: '^'
 Output line 3 did not match line 3 in expected output:
 Wrong number of values found: 1 instead of 0
 Wrong number of matched lines: 4 instead of 3
+[36mprint stdout file:[0m
+    cat <<TEST DIR STRIPPED>>/module_input_sandbox/bar_output/bar.stdout
 [35m[ *** Summary *** ][0m
 [32m[foo]  pass[0m
 [32m[foo_again]  pass[0m

@@ -14,6 +14,8 @@ echo foo
 @@ -1 +1 @@
 -bar
 +foo
+[36mprint stdout file:[0m
+    cat <<TEST DIR STRIPPED>>/verifier_update_sandbox/foo_output/foo.stdout
 [35m[ *** Summary *** ][0m
 [91m[foo]  fail[0m
 
