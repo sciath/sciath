@@ -1,5 +1,6 @@
 [ *** Cleanup *** ]
 [ -- Removing output for Test: text_diff -- ]
+
 [ *** Executing Tests *** ]
 [SciATH] Batch queueing system configuration [SciATHBatchQueuingSystem.conf]
   Version:           0.6.0
@@ -7,11 +8,13 @@
   MPI launcher:      none
 [Executing text_diff] from /Users/patrick/scratch/text_diff_output/sandbox
 printf 'a line of text\n'
+
 [ *** Verification Reports *** ]
 [Report for text_diff]
 [Comparison] Expected file missing: text_diff.expected
-print stdout file:
-    cat /Users/patrick/scratch/text_diff_output/text_diff.stdout
+check stdout file:
+    less /Users/patrick/scratch/text_diff_output/text_diff.stdout
+
 [ *** Summary *** ]
 [first]  deactivated
 [second]  deactivated

@@ -1,5 +1,6 @@
 [35m[ *** Cleanup *** ][0m
 [ -- Removing output for Test: test -- ]
+
 [35m[ *** Executing Tests *** ][0m
 [SciATH] Batch queueing system configuration [SciATHBatchQueuingSystem.conf]
   Version:           0.6.0
@@ -7,6 +8,7 @@
   MPI launcher:      none
 [36m[Executing job][0m from <<TEST DIR STRIPPED>>/harness5_sandbox/test_output/sandbox
 echo 'The first number is 1.1\nThe second number is 1.01'
+
 [35m[ *** Verification Reports *** ][0m
 [36m[Report for test][0m
 --- <<TEST DIR STRIPPED>>/test_data/harness5/test.expected
@@ -14,8 +16,9 @@ echo 'The first number is 1.1\nThe second number is 1.01'
 Report for 1 expected line(s) matching: '^\s*The\ first\ number\ is'
 Output line 1 did not match line 1 in expected output:
 1.1 != 7 to rel. tol. 1e-06 (rel. err. 0.842857)
-[36mprint stdout file:[0m
-    cat <<TEST DIR STRIPPED>>/harness5_sandbox/test_output/job.stdout
+check stdout file:
+    less <<TEST DIR STRIPPED>>/harness5_sandbox/test_output/job.stdout
+
 [35m[ *** Summary *** ][0m
 [91m[test]  fail[0m
 

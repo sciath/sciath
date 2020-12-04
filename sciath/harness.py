@@ -80,11 +80,12 @@ class Harness:
     * Information about where to launch :class:`Job`s from, passed to included `Launcher`
 
     A :class:`Harness` object's state is confined to the state of a list of internal
-    :class:`_TestRun` objects.
+    :class:`_TestRun` objects, and the state of the included :class:`Launcher`.
     """
 
-    _sandbox_sentinel_filename = '.sciath_sandbox'
+    _pager = 'less'
     _report_filename = 'sciath_test_report.txt'
+    _sandbox_sentinel_filename = '.sciath_sandbox'
 
     def __init__(self, tests=None):
         self.launcher = None  # Created when needed
@@ -142,6 +143,7 @@ class Harness:
             self.launcher = sciath.launcher.Launcher()
 
         if self.testruns:
+            print()
             print(SCIATH_COLORS.header + '[ *** Executing Tests *** ]' + SCIATH_COLORS.endc)
             self.launcher.view()
         for testrun in self.testruns:
@@ -186,6 +188,7 @@ class Harness:
             for testrun in self.testruns:
                 if testrun.report:
                     if not report_header_printed:
+                        report.append('')
                         report.append(SCIATH_COLORS.header +
                                       '[ *** Verification Reports *** ]' +
                                       SCIATH_COLORS.endc)
@@ -198,17 +201,16 @@ class Harness:
                     stdout_filename = os.path.join(testrun.output_path,
                                                    testrun.test.job.stdout_filename)
                     if os.path.isfile(stdout_filename) and os.stat(stdout_filename).st_size != 0:
-                        report.append(SCIATH_COLORS.subheader +
-                                      'print stdout file:' +
-                                      SCIATH_COLORS.endc)
-                        report.append('    cat %s' % stdout_filename)
+                        report.append('check stdout file:')
+                        report.append('    %s %s' % (self._pager, stdout_filename))
                     stderr_filename = os.path.join(testrun.output_path,
                                                    testrun.test.job.stderr_filename)
                     if os.path.isfile(stderr_filename) and os.stat(stderr_filename).st_size != 0:
                         report.append(SCIATH_COLORS.warning +
-                                      'print non-empty stderr file:' +
+                                      'check non-empty stderr file:' +
                                       SCIATH_COLORS.endc)
-                        report.append('    cat %s' % stderr_filename)
+                        report.append('    %s %s' % (self._pager, stderr_filename))
+            report.append('')
             report.append(SCIATH_COLORS.header + '[ *** Summary *** ]' +
                           SCIATH_COLORS.endc)
             for testrun in self.testruns:

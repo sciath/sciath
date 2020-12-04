@@ -1,5 +1,6 @@
 [ *** Cleanup *** ]
 [ -- Removing output for Test: failing -- ]
+
 [ *** Executing Tests *** ]
 [SciATH] Batch queueing system configuration [SciATHBatchQueuingSystem.conf]
   Version:           0.6.0
@@ -7,12 +8,14 @@
   MPI launcher:      none
 [Executing failing] from /Users/patrick/scratch/failing_output/sandbox
 grep foo bar
+
 [ *** Verification Reports *** ]
 [Report for failing]
 [ExitCodeDiff] Expected exit code(s): [0]
 [ExitCodeDiff] Output exit code(s)  : [2]
-print non-empty stderr file:
-    cat /Users/patrick/scratch/failing_output/failing.stderr
+check non-empty stderr file:
+    less /Users/patrick/scratch/failing_output/failing.stderr
+
 [ *** Summary *** ]
 [first]  deactivated
 [second]  deactivated
