@@ -1,5 +1,6 @@
 [ *** Cleanup *** ]
 [ -- Removing output for Test: first -- ]
+
 [ *** Executing Tests *** ]
 [SciATH] Batch queueing system configuration [SciATHBatchQueuingSystem.conf]
   Version:           0.6.0
@@ -7,6 +8,7 @@
   MPI launcher:      none
 [Executing first] from /Users/patrick/scratch/first_output/sandbox
 printf 'Hello, World!\n'
+
 [ *** Summary *** ]
 [first]  pass
 

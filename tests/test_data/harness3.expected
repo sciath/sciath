@@ -1,6 +1,7 @@
 [35m[ *** Cleanup *** ][0m
 [ -- Removing output for Test: test1 -- ]
 [ -- Removing output for Test: test2 -- ]
+
 [35m[ *** Executing Tests *** ][0m
 [SciATH] Batch queueing system configuration [SciATHBatchQueuingSystem.conf]
   Version:           0.6.0
@@ -10,6 +11,7 @@
 echo 'Hello, I am Test #1'
 [36m[Executing job][0m from <<TEST DIR STRIPPED>>/harness3_sandbox/test2_output/sandbox
 printf 'Hello, I am Test #2\n'
+
 [35m[ *** Summary *** ][0m
 [32m[test1]  pass[0m
 [32m[test2]  pass[0m

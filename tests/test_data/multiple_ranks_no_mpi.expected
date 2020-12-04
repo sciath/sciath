@@ -1,13 +1,16 @@
 [35m[ *** Cleanup *** ][0m
 [ -- Removing output for Test: two_ranks -- ]
+
 [35m[ *** Executing Tests *** ][0m
 [SciATH] Batch queueing system configuration [SciATHBatchQueuingSystem.conf]
   Version:           0.6.0
   Queue system:      none
   MPI launcher:      none
+
 [35m[ *** Verification Reports *** ][0m
 [36m[Report for two_ranks][0m
 Not launched: requires MPI
+
 [35m[ *** Summary *** ][0m
 [33m[two_ranks]  skipped[0m (MPI required)
 

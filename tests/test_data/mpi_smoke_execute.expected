@@ -1,5 +1,6 @@
 [35m[ *** Cleanup *** ][0m
 [ -- Removing output for Test: two_ranks -- ]
+
 [35m[ *** Executing Tests *** ][0m
 [SciATH] Batch queueing system configuration [SciATHBatchQueuingSystem.conf]
   Version:           0.6.0
