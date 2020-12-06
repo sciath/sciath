@@ -71,7 +71,7 @@ Once you've defined this information, you'll see output like the following
 
 .. literalinclude:: _static/tutorial/tutorial1_output.txt
 
-Note that you are given the full path from which your command is run, here ``/Users/patrick/scratch/first_output/sandbox``.
+Note that you are given the full path for the "sandbox" from which your command is run.
 
 Your output will contain colors, by default. If you don't want the colors (or see strange codes like ``^[[35m``), use the ``--no-colors`` option.
 
