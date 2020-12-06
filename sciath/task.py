@@ -5,11 +5,12 @@ class Task:
     """ A class which encapsulates a command and a set of required resources
 
        A "command", here, is a list of strings, the first of which names an executable
-       and the rest of which provide arguments. For example `['printf','Hello, World!']`
-       corresponds to a local command like `printf 'Hello, World!'`
+       and the rest of which provide arguments. For example ``['printf','Hello, World!']``
+       corresponds to a local command like ``printf 'Hello, World!'``. This
+       corresponds to the recommended way to pass commands to Python's ``subprocess.run()``.
 
        Note that relative paths (not recommended) in the command will be interpreted
-       relative to where the Task is actually executed from, which is determined
+       relative to wherever it is actually executed from, which is determined
        when a :class:`Launcher` is requested to execute a :class:`Job`.
 
        A "resource" here is a specification of a computational resource required,

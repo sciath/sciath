@@ -5,17 +5,17 @@ import sciath.task
 
 
 class Job:
-    """:class:`Job` describes a set of commands to be run with a given set of resources.
+    """:class:`Job` describes a set of :class:`Task`s.
 
-    It describes the commands themselves, not information about any
+    It describes the Tasks themselves, not information about any
     particular "run" (handled within :class:`Harness`) or how one might
     interpret the results of such a run (handled by :class:`Test`).  A
-    :class:`Launcher` object executes tasks described by a :class:`Job`.
+    :class:`Launcher` object executes the :class:`Task`s described by a :class:`Job`.
 
     Data include
 
     * A name
-    * An ordered list of :class:`Task`s describing commands to be run and required resources
+    * An ordered list of :class:`Task`s
 
     """
 
