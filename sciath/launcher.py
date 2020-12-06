@@ -104,7 +104,7 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
     @staticmethod
     def write_default_definition(conf_filename_in=None):
         """ Writes a default configuration file """
-        major, minor, patch = sciath.version()
+        major, minor, patch = sciath.__version__
         conf_filename = conf_filename_in if conf_filename_in else Launcher._default_conf_filename
         with open(conf_filename, 'w') as conf_file:
             conf_file.write('majorVersion: %s\n' % major)
@@ -199,7 +199,7 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
     def __str__(self):
         lines = []
         lines.append('[SciATH] Batch queueing system configuration [%s]' % self.conf_filename)
-        lines.append('  Version:           %d.%d.%d' % sciath.version())
+        lines.append('  Version:           %d.%d.%d' % sciath.__version__)
         lines.append('  Queue system:      %s' % self.queuing_system_type)
         lines.append('  MPI launcher:      %s' % self.mpi_launch)
         if self.use_batch:
@@ -284,7 +284,7 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
             self._write_definition()
 
     def _write_definition(self):
-        major, minor, patch = sciath.version()
+        major, minor, patch = sciath.__version__
         with open(self.conf_filename, 'w') as conf_file:
             conf_file.write('majorVersion: %s\n' % major)
             conf_file.write('minorVersion: %s\n' % minor)
@@ -325,7 +325,7 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
                                        'You must execute configure(), and/or '
                                        '_write_definition() first'))
 
-        major, minor = sciath.version()[:2]
+        major, minor = sciath.__version__[:2]
         if major_file is None or minor_file is None or patch_file is None:
             raise RuntimeError('[SciATH] configuration file %s missing version information. '
                                'Please delete it and re-run to reconfigure.' %
