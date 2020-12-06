@@ -8,9 +8,7 @@ from sciath.job import Job
 from sciath.task import Task
 
 OUTPUT_PATH = os.path.join(os.getcwd(),'output')
-VERBOSITY = 0
 job_launcher = Launcher()
-job_launcher.verbosity_level = VERBOSITY
 
 def test_print(test, output_path):
     passing, info, report = test.verifier.execute(output_path = output_path)

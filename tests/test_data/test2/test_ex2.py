@@ -11,9 +11,7 @@ from sciath.verifier import ComparisonVerifier
 this_dir = os.path.dirname(os.path.realpath(__file__))
 
 OUTPUT_PATH = os.path.join(os.getcwd(),'output')
-VERBOSITY = 0
 job_launcher = Launcher()
-job_launcher.verbosity_level = VERBOSITY
 
 def test_print(test, output_path):
     passing, info, report = test.verifier.execute(output_path = output_path)
