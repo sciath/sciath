@@ -2,7 +2,7 @@
 SciATH
 ======
 
-This is documentation for `SciATH`_.
+This is documentation for `SciATH`_, the Scientific Application Test Harness.
 
 ..  _SciATH: https://www.github.com/sciath/sciath
 

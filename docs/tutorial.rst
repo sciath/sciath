@@ -175,7 +175,7 @@ It is defined in the YAML file with
   :start-at: - name: text_diff
   :end-at: expected:
 
-Note that ``type:`` is not specified, so the default is used. THis is a text-based comparison.
+Note that ``type:`` is not specified, so the default is used. This is a text-based comparison.
 
 Run the test with
 
