@@ -121,7 +121,6 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
         self.batch_constraint = []
         self.job_submission_command = []
         self.use_batch = False
-        self.verbosity_level = 1
         if conf_filename:
             self.conf_filename = conf_filename
         else:
@@ -190,11 +189,6 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
             raise RuntimeError(
                 '[SciATH] Unknown or unsupported batch queuing system "' +
                 system_type + '" specified')
-
-    def view(self):
-        """ Print information about the Launcher """
-        if self.verbosity_level > 0:
-            print(self)
 
     def __str__(self):
         lines = []
@@ -409,12 +403,11 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
                 launch.extend(command)
                 launch_command.append(launch)
 
-            if self.verbosity_level > 0:
-                print('%s[Executing %s]%s from %s' %
-                      (SCIATH_COLORS.subheader, job.name, SCIATH_COLORS.endc,
-                       exec_path))
-                for term in launch_command:
-                    print(command_join(term))
+            print('%s[Executing %s]%s from %s' %
+                  (SCIATH_COLORS.subheader, job.name, SCIATH_COLORS.endc,
+                   exec_path))
+            for term in launch_command:
+                print(command_join(term))
 
             with open(os.path.join(output_path, job.exitcode_filename), 'w') as file_exitcode, \
                  open(os.path.join(output_path, job.stderr_filename), 'w') as file_stderr, \
@@ -438,11 +431,10 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
             launch_command = self.job_submission_command + [launchfile]
             cwd_back = os.getcwd()
             os.chdir(exec_path)
-            if self.verbosity_level > 0:
-                print('%s[Executing %s]%s from %s' %
-                      (SCIATH_COLORS.subheader, job.name, SCIATH_COLORS.endc,
-                       exec_path))
-                print(command_join(launch_command))
+            print('%s[Executing %s]%s from %s' %
+                  (SCIATH_COLORS.subheader, job.name, SCIATH_COLORS.endc,
+                   exec_path))
+            print(command_join(launch_command))
             _subprocess_run(launch_command, universal_newlines=True)
             os.chdir(cwd_back)
             _set_blocking_io_stdout()

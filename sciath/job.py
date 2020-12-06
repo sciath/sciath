@@ -17,6 +17,8 @@ class Job:
     * A name
     * An ordered list of :class:`Task`s
 
+    It also defines how the name may be converted to various standard filenames.
+
     """
 
     _default_job_name = 'job'
