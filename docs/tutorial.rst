@@ -135,7 +135,7 @@ to generate output
 A Failing Test
 ==============
 
-The test ``failing`` attempts run ``grep`` on a non-existent file,
+The test ``failing`` attempts to run ``grep`` on a non-existent file,
 which prints an error message to stderr and returns a non-zero exit code
 (``2`` on BSD and GNU systems).
 It is defined in the YAML file with
