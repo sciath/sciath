@@ -26,7 +26,7 @@ and make sure it is on your Python path, e.g.
     cd $HOME
     git clone https://github.com/sciath/sciath
     cd sciath
-    export PYTHON_PATH=$PYTHON_PATH:$HOME/sciath
+    export PYTHONPATH=$PYTHONPATH:$HOME/sciath
 
 You need a working installation of Python. Test that the above worked by running ``python`` and then ``import sciath`` - if this command succeeds without error, the the ``sciath`` module can be used as expected.
 
