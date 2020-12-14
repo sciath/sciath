@@ -7,7 +7,8 @@ class Task:
        A "command", here, is a list of strings, the first of which names an executable
        and the rest of which provide arguments. For example ``['printf','Hello, World!']``
        corresponds to a local command like ``printf 'Hello, World!'``. This
-       corresponds to the recommended way to pass commands to Python's ``subprocess.run()``.
+       corresponds to the recommended way to pass commands to Python's
+       :any:`python:subprocess.run` (click link for information).
 
        Note that relative paths (not recommended) in the command will be interpreted
        relative to wherever it is actually executed from, which is determined
