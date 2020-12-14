@@ -2,14 +2,6 @@
 API Reference
 =============
 
-sciath
-======
-
-.. automodule:: sciath
-  :members:
-  :undoc-members:
-
-
 Task
 ====
 .. automodule:: sciath.task
