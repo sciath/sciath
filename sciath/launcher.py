@@ -5,6 +5,7 @@ import os
 import sys
 import fcntl
 import subprocess
+import re
 
 import sciath
 from sciath import yaml_parse
@@ -31,6 +32,11 @@ def _formatted_hour_min(seconds):
     minutes = divmod(int(seconds), 60)[0]
     hours, minutes = divmod(minutes, 60)
     return "%02d:%02d" % (hours, minutes)
+
+def _formatted_split_time(seconds):
+    minutes, seconds = divmod(seconds, 60)
+    hours, minutes = divmod(minutes, 60)
+    return [('%02d' % unit) for unit in (hours, minutes, seconds)]
 
 
 def _formatted_hour_min_sec(seconds):
@@ -99,6 +105,7 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
     A :class:`Launcher`'s state corresponds only to its configuration,
     not the status of any particular "run" of a :class:`Job`.
     """
+
     _default_conf_filename = 'SciATHBatchQueuingSystem.conf'
 
     @staticmethod
@@ -113,7 +120,7 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
             conf_file.write('queuingSystemType: none\n')
             conf_file.write('mpiLaunch: none\n')
 
-    def __init__(self, conf_filename=None):
+    def __init__(self, conf_filename=None, template_filename=None):
         self.account_name = []
         self.queue_name = []
         self.mpi_launch = []
@@ -127,12 +134,116 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
             self.conf_filename = Launcher._default_conf_filename
         self.queue_file_extension = None
 
+        # Incremental step: use a template to construct the submission
+        # script (but not for configuration)
+        self.use_template = template_filename is not None
+        if self.use_template:
+            self.template_filename = os.path.expanduser(template_filename)
+            self.launch_script_filename = 'launch' + os.path.splitext(template_filename)[1]
+        self.template = None
+
         self._setup()
 
         if self.use_batch:
             if self.mpi_launch == 'none':
                 raise RuntimeError(('[SciATH] If using a queuing system, a valid mpi '
                                     'launch command must be provided'))
+
+
+
+    def _create_launch_script(self, job, **kwargs): # pylint: disable=too-many-locals, too-many-branches, too-many-statements
+        output_path = os.getcwd()
+        for key, value in kwargs.items():
+            if key == 'output_path':
+                output_path = value
+                if not os.path.isabs(output_path):
+                    raise ValueError(
+                        '[SciATH] Unsupported: output paths must be absolute')
+
+        # Lazily populate the template information from file
+        self._populate_template()
+
+        # Apply replacement map at the Job level
+        hours_str, minutes_str, seconds_str = _formatted_split_time(60.0 * job.total_wall_time())
+        rule_job = {
+            '$SCIATH_JOB_NAME': job.name,
+            '$SCIATH_JOB_MAX_RANKS': str(job.resource_max('ranks')),
+            '$SCIATH_JOB_STDOUT': os.path.join(output_path, job.stdout_filename),
+            '$SCIATH_JOB_STDERR': os.path.join(output_path, job.stderr_filename),
+            '$SCIATH_JOB_EXITCODE': os.path.join(output_path, job.exitcode_filename),
+            '$SCIATH_JOB_WALLTIME_H': hours_str,
+            '$SCIATH_JOB_WALLTIME_M': minutes_str,
+            '$SCIATH_JOB_WALLTIME_S': seconds_str,
+            '$SCIATH_JOB_COMPLETE': os.path.join(output_path, job.complete_filename),
+        }
+        pattern = _get_multiple_replace_pattern(rule_job)
+        script = [
+            pattern.sub(lambda match, rule=rule_job: rule[match.group(0)], line)
+            for line in self.template
+        ]
+
+        # Split the script into preamble, per-task, and postamble
+        # This logic is quite brittle.
+        task_lines = []
+        threads_line_found = False
+        ranks_line_found = False
+        command_line_found = False
+        preamble = []
+        preamble_finished = False
+        postamble = []
+        for line in script:
+            if  '$SCIATH_TASK_THREADS' in line:
+                preamble_finished = True
+                if threads_line_found:
+                    raise Exception("[SciATH] Multiple threads lines found in template")
+                threads_line_found = True
+                task_lines.append(line)
+            elif '$SCIATH_TASK_RANKS' in line:
+                preamble_finished = True
+                if ranks_line_found:
+                    raise Exception("[SciATH] Multiple ranks lines found in template")
+                ranks_line_found = True
+                task_lines.append(line)
+            elif '$SCIATH_TASK_COMMAND' in line:
+                preamble_finished = True
+                if command_line_found:
+                    raise Exception("[SciATH] Multiple command lines found in template")
+                command_line_found = line
+                task_lines.append(line)
+            elif not preamble_finished:
+                preamble.append(line)
+            else:
+                postamble.append(line)
+
+        # Assemble the script, applying task-level replacements
+        script_filename = os.path.join(output_path, self.launch_script_filename)
+        with open(script_filename, 'w') as script_file:
+            script_file.writelines(preamble)
+            first = True
+            for task in job.tasks:
+                if first:
+                    first = False
+                else:
+                    script_file.write('\n')
+                rule_task = {
+                    '$SCIATH_TASK_COMMAND': command_join(task.command),
+                    '$SCIATH_TASK_RANKS': str(task.get_resource('ranks')),
+                }
+                pattern = _get_multiple_replace_pattern(rule_task)
+                task_lines_specific = []
+                for line in task_lines:
+                    task_lines_specific.append(
+                        pattern.sub(lambda match, rule=rule_task: rule[match.group(0)], line)
+                    )
+                script_file.writelines(task_lines_specific)
+            script_file.writelines(postamble)
+
+        return script_filename
+
+    def _populate_template(self):
+        if self.template is None:
+            with open(self.template_filename, 'r') as template_file:
+                self.template = template_file.readlines()
 
     def set_mpi_launch(self, name):
         """ Set the MPI launch command and check its form """
@@ -370,19 +481,37 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
         if job_launched(job, output_path):
             raise Exception('[SciATH] trying to launch an already-launched Job')
 
+        if self.use_template:
+            script_filename = self._create_launch_script(job, output_path=output_path)
+            launch_command = self.job_submission_command + [script_filename]
+
+            print('%s[Executing %s]%s from %s' %
+                  (SCIATH_COLORS.subheader, job.name, SCIATH_COLORS.endc,
+                   exec_path))
+            print(command_join(launch_command))
+
+            cwd_back = os.getcwd()
+            os.chdir(exec_path)
+            _subprocess_run(launch_command, universal_newlines=True)
+            os.chdir(cwd_back)
+            _set_blocking_io_stdout()
+            with open(os.path.join(output_path, job.launched_filename), 'w'):
+                pass
+            return True, None, None
+
+        # "Old" way of creating a job script, to be superceded with template approach
         _set_blocking_io_stdout()
 
         if not self.use_batch:
             mpi_launch = self.mpi_launch
-            resources = job.get_max_resources()
-            ranks = resources["mpiranks"]
-            threads = resources["threads"]
-            if threads != 1:
+            ranks = job.resource_max('mpiranks')
+            threads = job.resource_max('threads')
+            if threads is not None and threads != 1:
                 raise ValueError(
                     '[SciATH] Unsupported: Job cannot be submitted multi-threaded'
                 )
 
-            if self.mpi_launch == 'none' and ranks != 1:
+            if self.mpi_launch == 'none' and ranks is not None and ranks != 1:
                 return False, 'MPI required', ['Not launched: requires MPI']
 
             command_resource = job.create_execute_command()
@@ -470,7 +599,15 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
         mpi_launch = self.mpi_launch
         filename = os.path.join(output_path, self._batch_filename(job))
         exitcode_name = job.exitcode_filename
-        redirect_string = "1>%s 2>%s" % (job.stdout_filename, job.stderr_filename)
+
+        # This is awkward and suboptimal. It would be better to have
+        # the ability to modify the command used to launch the script,
+        # based on the job. Then, output could be redirected there,
+        # making the local launch behave more like cluster launch.
+        redirect_string = "1>%s 2>%s" % (
+                os.path.join(output_path, job.stdout_filename),
+                os.path.join(output_path, job.stderr_filename),
+                )
 
         with open(filename, "w") as file:
             file.write("#!/usr/bin/env sh\n")
@@ -622,3 +759,15 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
             file.write("touch %s\n" % os.path.join(output_path, job.complete_filename))
         file.close()
         return filename
+
+
+def _get_multiple_replace_pattern(source_dict):
+    """ Generate a regex to match any of the keys in source_dict
+
+        Important: this match is not done on full words, so behavior
+        when one key is a substring of another is undefined.
+    """
+    def process_word(word):
+        """ add escape characters """
+        return re.escape(word)
+    return re.compile(r'|'.join(map(process_word, source_dict)))

@@ -26,7 +26,8 @@ Further, we wanted something
 * easily usable on many different systems, including clusters with batch systems
 * portable, easy to run on any system without heavy dependencies
 * usable with CI
-* that "shows you what's happening", giving you copy-pasteable commands being run and leaving meaningful artifacts to interpret and re-run test cases
+* that "shows you what's happening", giving you copy-pasteable commands being run
+* that leaves easily-understandable artifacts, to interpret, debug, and re-run test cases independently from SciATH
 
 We found that most existing solutions were optimized for a rather different purpose:
 unit testing of software libraries, written in a particular language, in serial environments.

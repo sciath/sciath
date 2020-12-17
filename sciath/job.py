@@ -72,6 +72,7 @@ class Job:
         """ Returns a filename to use for stderr """
         return self.name + '.stderr'
 
+    # This can be removed once the transition to using templates is complete
     def get_max_resources(self):
         """ Returns a dict() defining the maximum required counts / values """
 
@@ -85,6 +86,21 @@ class Job:
                 if value > max_resources[key]:
                     max_resources[key] = value
         return max_resources
+
+    def resource_max(self, key):
+        """ Returns the maximum value of a resource over all Tasks
+
+            Returns None if no Tasks define that resource.
+        """
+        maximum = None
+        for task in self.tasks:
+            if key in task.resources:
+                current = task.resources[key]
+                if maximum is None:
+                    maximum = current
+                else:
+                    maximum = max(maximum, current)
+        return maximum
 
     def number_tasks(self):
         """ Returns the number of tasks within the Job """

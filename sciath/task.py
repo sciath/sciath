@@ -51,6 +51,15 @@ class Task:
         """
         return self.command, self.resources
 
+    def get_resource(self, key):
+        """ Returns the value for a given resource, specified by a string
+
+            Returns None if resource not defined.
+        """
+        if key in self.resources:
+            return self.resources[key]
+        return None
+
     def set_resources(self, **kwargs):
         """
         Define task resources (e.g. number of mpi ranks)
