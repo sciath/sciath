@@ -5,6 +5,7 @@ import os
 import sys
 import fcntl
 import subprocess
+import re
 
 import sciath
 from sciath import yaml_parse
@@ -99,7 +100,6 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
     A :class:`Launcher`'s state corresponds only to its configuration,
     not the status of any particular "run" of a :class:`Job`.
     """
-    _default_conf_filename = 'SciATHBatchQueuingSystem.conf'
 
     @staticmethod
     def write_default_definition(conf_filename_in=None):
@@ -124,7 +124,7 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
         if conf_filename:
             self.conf_filename = conf_filename
         else:
-            self.conf_filename = Launcher._default_conf_filename
+            self.conf_filename = 'SciATHBatchQueuingSystem.conf'
         self.queue_file_extension = None
 
         self._setup()
@@ -133,6 +133,44 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
             if self.mpi_launch == 'none':
                 raise RuntimeError(('[SciATH] If using a queuing system, a valid mpi '
                                     'launch command must be provided'))
+
+        # TODO working
+        self.template_filename = 'sciath_launch.sh'
+
+    # TODO working
+    def _create_launch_script(self, job, **kwargs):
+        output_path = os.getcwd()
+        for key, value in kwargs.items():
+            if key == 'output_path':
+                output_path = value
+                if not os.path.isabs(output_path):
+                    raise ValueError(
+                        '[SciATH] Unsupported: output paths must be absolute')
+
+        # TODO Working: part 1/3: template at the Launcher level (three sets of lines)
+        # FIXME this should be cached, perhaps in three parts (preamble, per-task, epilog)
+        with open(self.template_filename, 'r') as template_file:
+            template = template_file.readlines()
+
+
+        # TODO Working: part 2/3: Apply Replacement map at the job level
+        replacements_job = {
+                '$SCIATH_JOB_NAME': job.name,
+                #'$SCIATH_JOB_MAX_RANKS': job.max_ranks,  # TODO
+                #'$SCIATH_JOB_MAX_THREADS': job.max_threads,  # TODO
+                # '$SCIATH_JOB_TIME_HMS': job.time_hms, # TODO
+                }
+
+        pattern = _get_multiple_replace_pattern(replacements_job)
+        script = [
+            pattern.sub(lambda match: replacements_job[match.group(0)], line)
+            for line in template
+        ]
+
+        # TODO Working part 3/3: dump preamble, then repeatedly find-replace and append task part, then dump postamble
+        script_filename = os.path.join(output_path, 'launch') # TODO this name isn't good yet
+        with open(script_filename, 'w') as script_file:
+            script_file.writelines(script)
 
     def set_mpi_launch(self, name):
         """ Set the MPI launch command and check its form """
@@ -377,6 +415,9 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
             raise Exception('[SciATH] trying to launch an already-complete Job')
         if job_launched(job, output_path):
             raise Exception('[SciATH] trying to launch an already-launched Job')
+
+        # TODO working
+        self._create_launch_script(job, output_path=output_path)
 
         _set_blocking_io_stdout()
 
@@ -659,3 +700,17 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
         file.write("touch %s\n" % os.path.join(output_path, job.complete_filename))
         file.close()
         return filename
+        replacement_prefixes = ['$SCIATH_', 'SCIATH_']
+
+# TODO put somewhere in utils
+# FIXME remove full-word thing if we actually don't want it (if not, need to have some sort of sorting thing to make sure non-intuitive things don't happen
+def _get_multiple_replace_pattern(source_dict):
+    """ Generate a regex to match any of the keys in source_dict""" #, as full words """
+    #def process_word(word):
+    #    """ add escape characters and word boundaries """
+    #    return r'\b' + re.escape(word) + r'\b'
+    def process_word(word):
+        """ add escape characters """
+        return re.escape(word)
+    return re.compile(r'|'.join(map(process_word, source_dict)))
+
