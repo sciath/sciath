@@ -6,6 +6,7 @@ import sys
 import fcntl
 import subprocess
 import re
+import shlex
 
 import sciath
 from sciath import yaml_parse
@@ -101,6 +102,8 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
     not the status of any particular "run" of a :class:`Job`.
     """
 
+    _default_conf_filename = 'SciATHBatchQueuingSystem.conf'
+
     @staticmethod
     def write_default_definition(conf_filename_in=None):
         """ Writes a default configuration file """
@@ -124,7 +127,7 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
         if conf_filename:
             self.conf_filename = conf_filename
         else:
-            self.conf_filename = 'SciATHBatchQueuingSystem.conf'
+            self.conf_filename = Launcher._default_conf_filename
         self.queue_file_extension = None
 
         self._setup()
@@ -135,7 +138,9 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
                                     'launch command must be provided'))
 
         # TODO working
+        self.template = None
         self.template_filename = 'sciath_launch.sh'
+        self.launch_script_filename =  'launch' # FIXME this name isn't good yet
 
     # TODO working
     def _create_launch_script(self, job, **kwargs):
@@ -147,30 +152,80 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
                     raise ValueError(
                         '[SciATH] Unsupported: output paths must be absolute')
 
-        # TODO Working: part 1/3: template at the Launcher level (three sets of lines)
-        # FIXME this should be cached, perhaps in three parts (preamble, per-task, epilog)
-        with open(self.template_filename, 'r') as template_file:
-            template = template_file.readlines()
+        # FIXME: this should be its own function (can have Job-indep. processing)
+        if self.template is None:
+            with open(self.template_filename, 'r') as template_file:
+                self.template = template_file.readlines()
 
-
-        # TODO Working: part 2/3: Apply Replacement map at the job level
+        # Apply replacement map at the Job level
         replacements_job = {
-                '$SCIATH_JOB_NAME': job.name,
-                #'$SCIATH_JOB_MAX_RANKS': job.max_ranks,  # TODO
-                #'$SCIATH_JOB_MAX_THREADS': job.max_threads,  # TODO
-                # '$SCIATH_JOB_TIME_HMS': job.time_hms, # TODO
-                }
+            '$SCIATH_JOB_NAME': job.name,
+            '$SCIATH_JOB_MAX_RANKS': str(job.resource_max('ranks')),
+            '$SCIATH_JOB_STDOUT': os.path.join(output_path, job.stdout_filename),
+            '$SCIATH_JOB_STDERR': os.path.join(output_path, job.stderr_filename),
+            '$SCIATH_JOB_EXITCODE': os.path.join(output_path, job.exitcode_filename),
+        }
 
+        # FIXME this is unreadable, wrap it up better!
         pattern = _get_multiple_replace_pattern(replacements_job)
         script = [
             pattern.sub(lambda match: replacements_job[match.group(0)], line)
-            for line in template
+            for line in self.template
         ]
 
-        # TODO Working part 3/3: dump preamble, then repeatedly find-replace and append task part, then dump postamble
-        script_filename = os.path.join(output_path, 'launch') # TODO this name isn't good yet
+        # Split the script into preamble, per-task, and postamble
+        # FIXME this has no checks for any of the many things we need to check! (task lines after postamble started, duplicates, malformed lines of other kinds)
+        task_lines = []
+        threads_line_found = False
+        ranks_line_found = False
+        command_line_found = False
+        preamble = []
+        preamble_finished = False
+        postamble = []
+        postamble_started = False
+        for line in script:
+            if  '$SCIATH_TASK_THREADS' in line:
+                preamble_finished = True
+                threads_line_found = True
+                task_lines.append(line)
+            elif '$SCIATH_TASK_RANKS' in line:
+                preamble_finished = True
+                ranks_line_found = True
+                task_lines.append(line)
+            elif '$SCIATH_TASK_COMMAND' in line:
+                preamble_finished = True
+                command_line_found = line
+                task_lines.append(line)
+            elif not preamble_finished:
+                preamble.append(line)
+            else:
+                postamble_started = True
+                postamble.append(line)
+
+        script_filename = os.path.join(output_path, self.launch_script_filename)
         with open(script_filename, 'w') as script_file:
-            script_file.writelines(script)
+            script_file.writelines(preamble)
+            first = True
+            for task in job.tasks:
+                if first:
+                    first = False
+                else:
+                    script_file.write('\n')
+                replacements_task = {
+                    '$SCIATH_TASK_COMMAND': shlex.join(task.command), # FIXME we want this but it only exists for new Pythons
+                    '$SCIATH_TASK_RANKS': str(task.get_resource('ranks')),
+                }
+                pattern = _get_multiple_replace_pattern(replacements_task)
+                task_lines_specific = []
+                for line in task_lines:
+                    for key in replacements_task:
+                        if key in line and replacements_task[key] is None:
+                            raise Exception("[SciATH] error - template is missing required %s" % key)
+                    task_lines_specific.append(
+                        pattern.sub(lambda match: replacements_task[match.group(0)], line)
+                    )
+                script_file.writelines(task_lines_specific)
+            script_file.writelines(postamble)
 
     def set_mpi_launch(self, name):
         """ Set the MPI launch command and check its form """
@@ -418,20 +473,39 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
 
         # TODO working
         self._create_launch_script(job, output_path=output_path)
+        with open(os.path.join(output_path, job.exitcode_filename), 'w') as file_exitcode, \
+             open(os.path.join(output_path, job.stderr_filename), 'w') as file_stderr, \
+             open(os.path.join(output_path, job.stdout_filename), 'w') as file_stdout:
+            cwd_back = os.getcwd()
+            os.chdir(exec_path)
+            returncode = _subprocess_run(
+                ['sh', os.path.join(output_path, self.launch_script_filename)],
+                universal_newlines=True,
+                stdout=file_stdout,
+                stderr=file_stderr
+            )
+            os.chdir(cwd_back)
+            _set_blocking_io_stdout()
+            file_exitcode.write(str(returncode) + "\n")
+        with open(os.path.join(output_path, job.launched_filename), 'w'):
+            pass
+        with open(os.path.join(output_path, job.complete_filename), 'w'):
+            pass
+        return True, None, None
+        # TODO end working (eventually have an option to use the above, keeping the old way ata first but eventually getting rid of it once things work with all systems)
 
         _set_blocking_io_stdout()
 
         if not self.use_batch:
             mpi_launch = self.mpi_launch
-            resources = job.get_max_resources()
-            ranks = resources["mpiranks"]
-            threads = resources["threads"]
-            if threads != 1:
+            ranks = job.resource_max('mpiranks')
+            threads = job.resource_max('threads')
+            if threads is not None and threads != 1:
                 raise ValueError(
                     '[SciATH] Unsupported: Job cannot be submitted multi-threaded'
                 )
 
-            if self.mpi_launch == 'none' and ranks != 1:
+            if self.mpi_launch == 'none' and ranks is not None and ranks != 1:
                 return False, 'MPI required', ['Not launched: requires MPI']
 
             command_resource = job.create_execute_command()
@@ -702,7 +776,7 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
         return filename
         replacement_prefixes = ['$SCIATH_', 'SCIATH_']
 
-# TODO put somewhere in utils
+
 # FIXME remove full-word thing if we actually don't want it (if not, need to have some sort of sorting thing to make sure non-intuitive things don't happen
 def _get_multiple_replace_pattern(source_dict):
     """ Generate a regex to match any of the keys in source_dict""" #, as full words """

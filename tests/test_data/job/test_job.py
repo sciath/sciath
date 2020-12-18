@@ -28,4 +28,4 @@ for i in er:
 
 print('Max. resources required for job')
 for r in resources_to_print:
-    print(r, ':', job.get_max_resources()[r])
+    print(r, ':', job.resource_max(r))

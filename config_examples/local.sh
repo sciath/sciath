@@ -1,16 +1,11 @@
-#!/usr/bin/env sh
+printf "Max ranks $SCIATH_JOB_MAX_RANKS\n"
 
-# this doesn't have a timeout (seems risky, as you might have zombie processes)
+echo "this is stdout" 1>>$SCIATH_JOB_STDOUT
+echo "this is stderr" 2>&1 1>>$SCIATH_JOB_STDERR
 
-rm -f stderr stdout
-
-echo "this is stdout" 1>>stdout
-echo "this is stderr" 2>&1 1>>stderr
-
-printf "This is for a job named $SCIATH_JOB_NAME" 1>>stdout
-
-SCIATH_TASK_COMMAND="grep foo bar"
-SCIATH_TASK_RANKS=2
+printf "This is for a job named $SCIATH_JOB_NAME\n" 1>>$SCIATH_JOB_STDOUT 2>>$SCIATH_JOB_STDERR
 
 $CLEAN_MPICH -n $SCIATH_TASK_RANKS \
-$SCIATH_TASK_COMMAND 1>>stdout 2>>stderr # &
+$SCIATH_TASK_COMMAND 1>>$SCIATH_JOB_STDOUT 2>>$SCIATH_JOB_STDERR && printf "$?\n" >> $SCIATH_JOB_EXITCODE
+
+echo "Done"
