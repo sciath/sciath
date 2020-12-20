@@ -58,6 +58,7 @@ Topics
 
 .. toctree ::
   tutorial
+  concepts
   design
   api
   developer

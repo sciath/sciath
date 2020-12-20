@@ -15,6 +15,8 @@ which should work from all POSIX-compatible shells.
 
 In typical usage, one would of course run scientific application executables (or scripts), to test them.
 
+It may also help to read :any:`concepts`.
+
 Installing SciATH
 =================
 
