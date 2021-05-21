@@ -3,6 +3,7 @@ Design and Motivation
 =====================
 
 Why another test harness?
+-------------------------
 
 We wrote SciATH because we couldn't find a test harness that did what we
 wanted. We wanted to  replace and generalize an existing simple test suite for
@@ -29,5 +30,17 @@ Further, we wanted something
 
 We found that most existing solutions were optimized for a rather different purpose:
 unit testing of software libraries, written in a particular language, in serial environments.
+
+Who is SciATH for?
+------------------
+
+SciATH is designed for people like scientists, who
+
+* can quickly learn, if presented with logical explanations and examples;
+* prefer simple, understandable, debuggable systems;
+* are constantly modifying and extending their code; and
+* are often having to move to new computing systems.
+
+Thus, we strive to show what‘s happening, which is fundamentally speeding up how one would test without SciATH.
 
 .. _pTatin3D: https://bitbucket.org/ptatin/ptatin3d
