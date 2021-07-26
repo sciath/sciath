@@ -488,44 +488,43 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
         stderr_name = job.stderr_filename
 
         filename = os.path.join(output_path, self._batch_filename(job))
-        file = open(filename, "w")
 
-        # PBS specifics
-        file.write("#!/bin/bash\n")
-        file.write("# SciATH: auto-generated pbs file\n")
+        with open(filename, "w") as file:
+            # PBS specifics
+            file.write("#!/bin/bash\n")
+            file.write("# SciATH: auto-generated pbs file\n")
 
-        if accountname:
-            file.write("#PBS -A " + accountname + "\n")
+            if accountname:
+                file.write("#PBS -A " + accountname + "\n")
 
-        file.write("#PBS -N \"" + "sciath.job-" + job.name + "\"" + "\n")
-        file.write("#PBS -o " + os.path.join(output_path, stdout_name) + "\n")
-        file.write("#PBS -e " + os.path.join(output_path, stderr_name) + "\n")
+            file.write("#PBS -N \"" + "sciath.job-" + job.name + "\"" + "\n")
+            file.write("#PBS -o " + os.path.join(output_path, stdout_name) + "\n")
+            file.write("#PBS -e " + os.path.join(output_path, stderr_name) + "\n")
 
-        if queuename:
-            file.write("#PBS -q " + queuename + "\n")
+            if queuename:
+                file.write("#PBS -q " + queuename + "\n")
 
-        walltime_string = _formatted_hour_min_sec(float(walltime) * 60.0)
-        file.write("#PBS -l mppwidth=1024,walltime=" + walltime_string + "\n")
+            walltime_string = _formatted_hour_min_sec(float(walltime) * 60.0)
+            file.write("#PBS -l mppwidth=1024,walltime=" + walltime_string + "\n")
 
-        _remove_file_if_it_exists(os.path.join(output_path, exitcode_name))
+            _remove_file_if_it_exists(os.path.join(output_path, exitcode_name))
 
-        command_resource = job.create_execute_command()
-        n_tasks = len(command_resource)
-        for i in range(0, n_tasks):
-            j = command_resource[i]
-            j_ranks = j[1]["mpiranks"]
-            launch = []
-            launch += _format_mpi_launch_command(mpi_launch, j_ranks)
-            if isinstance(j[0], list):
-                launch.extend(j[0])
-            else:
-                launch.append(j[0])
+            command_resource = job.create_execute_command()
+            n_tasks = len(command_resource)
+            for i in range(0, n_tasks):
+                j = command_resource[i]
+                j_ranks = j[1]["mpiranks"]
+                launch = []
+                launch += _format_mpi_launch_command(mpi_launch, j_ranks)
+                if isinstance(j[0], list):
+                    launch.extend(j[0])
+                else:
+                    launch.append(j[0])
 
-            file.write(" ".join(launch) + " \n")
-            file.write("echo $? >> " + os.path.join(output_path, exitcode_name) + "\n")
-        file.write("\n")
-        file.write("touch %s\n" % os.path.join(output_path, job.complete_filename))
-        file.close()
+                file.write(" ".join(launch) + " \n")
+                file.write("echo $? >> " + os.path.join(output_path, exitcode_name) + "\n")
+            file.write("\n")
+            file.write("touch %s\n" % os.path.join(output_path, job.complete_filename))
         return filename
 
 
@@ -547,49 +546,47 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
         stderr_name = job.stderr_filename
 
         filename = os.path.join(output_path, self._batch_filename(job))
-        file = open(filename, "w")
+        with open(filename, "w") as file:
+            # LSF specifics
+            file.write("#!/bin/sh\n")
+            file.write("# SciATH: auto-generated lsf file\n")
 
-        # LSF specifics
-        file.write("#!/bin/sh\n")
-        file.write("# SciATH: auto-generated lsf file\n")
+            if accountname:
+                file.write("#BSUB -G " + accountname + "\n")
 
-        if accountname:
-            file.write("#BSUB -G " + accountname + "\n")
+            file.write("#BSUB -J " + "sciath.job-" + job.name + "\n")
+            file.write("#BSUB -o " + os.path.join(output_path, stdout_name) + "\n")
+            file.write("#BSUB -e " + os.path.join(output_path, stderr_name) + "\n")
 
-        file.write("#BSUB -J " + "sciath.job-" + job.name + "\n")
-        file.write("#BSUB -o " + os.path.join(output_path, stdout_name) + "\n")
-        file.write("#BSUB -e " + os.path.join(output_path, stderr_name) + "\n")
+            if queuename:
+                file.write("#BSUB -q " + queuename + "\n")
 
-        if queuename:
-            file.write("#BSUB -q " + queuename + "\n")
+            file.write("#BSUB -n " + str(ranks) + "\n")
 
-        file.write("#BSUB -n " + str(ranks) + "\n")
+            if rusage:
+                file.write("#BSUB -R \'" + rusage + "\'" + "\n")
 
-        if rusage:
-            file.write("#BSUB -R \'" + rusage + "\'" + "\n")
+            walltime_string = _formatted_hour_min(float(walltime) * 60.0)
+            file.write("#BSUB -W " + walltime_string + "\n")
 
-        walltime_string = _formatted_hour_min(float(walltime) * 60.0)
-        file.write("#BSUB -W " + walltime_string + "\n")
+            _remove_file_if_it_exists(os.path.join(output_path, exitcode_name))
 
-        _remove_file_if_it_exists(os.path.join(output_path, exitcode_name))
+            command_resource = job.create_execute_command()
+            n_tasks = len(command_resource)
+            for i in range(0, n_tasks):
+                j = command_resource[i]
+                j_ranks = j[1]["mpiranks"]
+                launch = []
+                launch += _format_mpi_launch_command(mpi_launch, j_ranks)
+                if isinstance(j[0], list):
+                    launch.extend(j[0])
+                else:
+                    launch.append(j[0])
 
-        command_resource = job.create_execute_command()
-        n_tasks = len(command_resource)
-        for i in range(0, n_tasks):
-            j = command_resource[i]
-            j_ranks = j[1]["mpiranks"]
-            launch = []
-            launch += _format_mpi_launch_command(mpi_launch, j_ranks)
-            if isinstance(j[0], list):
-                launch.extend(j[0])
-            else:
-                launch.append(j[0])
-
-            file.write(" ".join(launch) + "\n")
-            file.write("echo $? >> " + os.path.join(output_path, exitcode_name) + "\n")
-        file.write("\n")
-        file.write("touch %s\n" % os.path.join(output_path, job.complete_filename))
-        file.close()
+                file.write(" ".join(launch) + "\n")
+                file.write("echo $? >> " + os.path.join(output_path, exitcode_name) + "\n")
+            file.write("\n")
+            file.write("touch %s\n" % os.path.join(output_path, job.complete_filename))
         return filename
 
 
@@ -612,50 +609,49 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
         stderr_name = job.stderr_filename
 
         filename = os.path.join(output_path, self._batch_filename(job))
-        file = open(filename, "w")
+        with open(filename, "w") as file:
+            # SLURM specifics
+            file.write("#!/bin/bash -l\n")
+            file.write("# SciATH: auto-generated slurm file\n")
 
-        # SLURM specifics
-        file.write("#!/bin/bash -l\n")
-        file.write("# SciATH: auto-generated slurm file\n")
+            if accountname:
+                file.write("#SBATCH --account=" + accountname +
+                           "\n")  # account to charge
 
-        if accountname:
-            file.write("#SBATCH --account=" + accountname +
-                       "\n")  # account to charge
+            file.write("#SBATCH --job-name=\"" + "sciath.job-" + job.name + "\"" + "\n")
+            file.write("#SBATCH --output=" + os.path.join(output_path, stdout_name) + "\n")
+            file.write("#SBATCH --error=" + os.path.join(output_path, stderr_name) + "\n")
 
-        file.write("#SBATCH --job-name=\"" + "sciath.job-" + job.name + "\"" + "\n")
-        file.write("#SBATCH --output=" + os.path.join(output_path, stdout_name) + "\n")
-        file.write("#SBATCH --error=" + os.path.join(output_path, stderr_name) + "\n")
+            if queuename:
+                file.write("#SBATCH --partition=" + queuename + "\n")
 
-        if queuename:
-            file.write("#SBATCH --partition=" + queuename + "\n")
+            file.write("#SBATCH --ntasks=" + str(ranks) + "\n")
 
-        file.write("#SBATCH --ntasks=" + str(ranks) + "\n")
+            if constraint:
+                file.write("#SBATCH --constraint=" + constraint + "\n")
 
-        if constraint:
-            file.write("#SBATCH --constraint=" + constraint + "\n")
+            walltime_string = _formatted_hour_min_sec(float(walltime) * 60.0)
+            file.write("#SBATCH --time=" + walltime_string + "\n")
 
-        walltime_string = _formatted_hour_min_sec(float(walltime) * 60.0)
-        file.write("#SBATCH --time=" + walltime_string + "\n")
+            file.write("export CRAY_CUDA_MPS=1\n")
 
-        file.write("export CRAY_CUDA_MPS=1\n")
+            _remove_file_if_it_exists(os.path.join(output_path, exitcode_name))
 
-        _remove_file_if_it_exists(os.path.join(output_path, exitcode_name))
+            command_resource = job.create_execute_command()
+            n_tasks = len(command_resource)
+            for i in range(0, n_tasks):
+                j = command_resource[i]
+                j_ranks = j[1]["mpiranks"]
+                launch = []
+                launch += _format_mpi_launch_command(mpi_launch, j_ranks)
+                if isinstance(j[0], list):
+                    launch.extend(j[0])
+                else:
+                    launch.append(j[0])
 
-        command_resource = job.create_execute_command()
-        n_tasks = len(command_resource)
-        for i in range(0, n_tasks):
-            j = command_resource[i]
-            j_ranks = j[1]["mpiranks"]
-            launch = []
-            launch += _format_mpi_launch_command(mpi_launch, j_ranks)
-            if isinstance(j[0], list):
-                launch.extend(j[0])
-            else:
-                launch.append(j[0])
-
-            file.write(" ".join(launch) + "\n")
-            file.write("echo $? >> " + os.path.join(output_path, exitcode_name) + "\n")
-        file.write("\n")
-        file.write("touch %s\n" % os.path.join(output_path, job.complete_filename))
+                file.write(" ".join(launch) + "\n")
+                file.write("echo $? >> " + os.path.join(output_path, exitcode_name) + "\n")
+            file.write("\n")
+            file.write("touch %s\n" % os.path.join(output_path, job.complete_filename))
         file.close()
         return filename
