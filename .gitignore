@@ -1,9 +1,7 @@
 SciATHBatchQueuingSystem.conf
 
-*.pbs
 *.lsf
 *.slurm
-*.llq
 
 *.bak
 

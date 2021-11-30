@@ -12,8 +12,8 @@ What is it?
 Testing code should be easy. The functionality required to launch, parse and
 perform verification should be light-weight and simple to migrate into existing
 projects. SciATH supports testing of sequential and MPI-parallel applications.
-Tests can be performed locally, or submitted via a batch queuing system (e.g.
-PBS, LSF, Slurm or LoadLeveler).
+Tests can be performed locally, or submitted via a batch queuing system (e.g
+LSF or SLURM).
 
 SciATH is a set of lightweight Python tools designed to quickly and easily test
 scientific application codes. As such, it focuses on full-application testing
