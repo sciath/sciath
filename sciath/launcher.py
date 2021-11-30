@@ -160,12 +160,6 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
             self.use_batch = True
             self.queue_file_extension = 'sh'
 
-        elif system_type in ['PBS', 'pbs']:
-            self.queuing_system_type = 'pbs'
-            self.job_submission_command = ['qsub']
-            self.use_batch = True
-            self.queue_file_extension = 'pbs'
-
         elif system_type in ['LSF', 'lsf']:
             self.queuing_system_type = 'lsf'
             self.job_submission_command = ['sh', '-c', 'bsub < $0']  # This allows "<".
@@ -178,13 +172,6 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
             self.use_batch = True
             self.queue_file_extension = 'slurm'
 
-        elif system_type in ['LoadLeveler', 'load_leveler', 'loadleveler', 'llq']:
-            self.queuing_system_type = 'load_leveler'
-            self.job_submission_command = ['llsubmit']
-            self.use_batch = True
-            self.queue_file_extension = 'llq'
-            raise ValueError(
-                '[SciATH] Unsupported: LoadLeveler needs to be updated')
         elif system_type in ['none', 'None']:
             self.queuing_system_type = 'none'
             self.job_submission_command = ''
@@ -217,7 +204,7 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
         print('Creating new configuration file ', self.conf_filename)
         user_input = None
         while not user_input:
-            prompt = '[1] Batch queuing system type <local,pbs,lsf,slurm,llq,none>: '
+            prompt = '[1] Batch queuing system type <local,lsf,slurm,none>: '
             user_input = py23input(prompt)
             if not user_input:
                 print('Required.')
@@ -343,8 +330,6 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
 
         if self.queuing_system_type == 'local':
             filename = self._generate_launch_sh(output_path, job)
-        if self.queuing_system_type == 'pbs':
-            filename = self._generate_launch_pbs(walltime, output_path, job)
         elif self.queuing_system_type == 'lsf':
             filename = self._generate_launch_lsf(None, walltime, output_path, job)
         elif self.queuing_system_type == 'slurm':
@@ -507,61 +492,6 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
             file.write("\n")
             file.write("touch %s\n" % os.path.join(output_path, job.complete_filename))
 
-        return filename
-
-
-    def _generate_launch_pbs(self, walltime, output_path, job):  #pylint: disable=too-many-locals
-
-        if walltime is None:
-            message = "[SciATH] _generate_launch_pbs requires walltime be specified"
-            raise RuntimeError(message)
-
-        accountname = self.account_name
-        queuename = self.queue_name
-        mpi_launch = self.mpi_launch
-
-        exitcode_name = job.exitcode_filename
-        stdout_name = job.stdout_filename
-        stderr_name = job.stderr_filename
-
-        filename = os.path.join(output_path, self._batch_filename(job))
-
-        with open(filename, "w") as file:
-            # PBS specifics
-            file.write("#!/bin/bash\n")
-            file.write("# SciATH: auto-generated pbs file\n")
-
-            if accountname:
-                file.write("#PBS -A " + accountname + "\n")
-
-            file.write("#PBS -N \"" + "sciath.job-" + job.name + "\"" + "\n")
-            file.write("#PBS -o " + os.path.join(output_path, stdout_name) + "\n")
-            file.write("#PBS -e " + os.path.join(output_path, stderr_name) + "\n")
-
-            if queuename:
-                file.write("#PBS -q " + queuename + "\n")
-
-            walltime_string = _formatted_hour_min_sec(float(walltime) * 60.0)
-            file.write("#PBS -l mppwidth=1024,walltime=" + walltime_string + "\n")
-
-            _remove_file_if_it_exists(os.path.join(output_path, exitcode_name))
-
-            command_resource = job.create_execute_command()
-            n_tasks = len(command_resource)
-            for i in range(0, n_tasks):
-                j = command_resource[i]
-                j_ranks = j[1]["mpiranks"]
-                launch = []
-                launch += _format_mpi_launch_command(mpi_launch, j_ranks)
-                if isinstance(j[0], list):
-                    launch.append(command_join(j[0]))
-                else:
-                    launch.append(j[0])
-
-                file.write(" ".join(launch) + " \n")
-                file.write("echo $? >> " + os.path.join(output_path, exitcode_name) + "\n")
-            file.write("\n")
-            file.write("touch %s\n" % os.path.join(output_path, job.complete_filename))
         return filename
 
 
