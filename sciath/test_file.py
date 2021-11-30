@@ -41,7 +41,7 @@ def _apply_replacement_map(string, replacement_map):
     return output_string
 
 def _build_environment_map(data):
-    environment_map = dict()
+    environment_map = {}
     if 'environment' in data:
         variable_list = data['environment']
         if not isinstance(variable_list, list):

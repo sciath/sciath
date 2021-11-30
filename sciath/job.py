@@ -76,7 +76,7 @@ class Job:
         """ Returns a dict() defining the maximum required counts / values """
 
         # Use the first Task to determine which resources to consider
-        max_resources = dict()
+        max_resources = {}
         for key, value in self.tasks[0].resources.items():
             max_resources[key] = value
 
