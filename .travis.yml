@@ -51,4 +51,7 @@ jobs:
       install:
         - pip install pylint
       script:
-        - sh -c "pylint sciath/*.py"
+        # We include some warning suppression here, as these are too numerous
+        # to include individually in the source, and don't even exist for older
+        # versions of pylint.
+        - sh -c "pylint --disable=consider-using-f-string,unspecified-encoding sciath/*.py"

@@ -20,7 +20,7 @@ class Task:
 
     def __init__(self, command, **kwargs):
         self.command = command
-        self.resources = dict()
+        self.resources = {}
         for key, value in kwargs.items():
             self.resources[key] = value
 

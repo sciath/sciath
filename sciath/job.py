@@ -43,7 +43,7 @@ class Job:
 
     def create_execute_command(self):
         """
-        Returns a list containing the command, resource tuple for a job.
+        Returns a list containing (command, resource) tuples for the Job.
         """
         return [task.create_execute_command() for task in self.tasks]
 
@@ -76,7 +76,7 @@ class Job:
         """ Returns a dict() defining the maximum required counts / values """
 
         # Use the first Task to determine which resources to consider
-        max_resources = dict()
+        max_resources = {}
         for key, value in self.tasks[0].resources.items():
             max_resources[key] = value
 
