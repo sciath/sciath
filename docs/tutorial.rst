@@ -162,7 +162,7 @@ files at the end of the report for the failing test.
 You can copy-paste this line to see the error message:
 
 .. literalinclude:: _static/tutorial/failing_output.txt
-  :start-at: print non-empty stderr file
+  :start-at: check non-empty stderr file
   :lines: 1-2
 
 A Comparison-Based Test
