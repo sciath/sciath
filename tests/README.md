@@ -1,6 +1,6 @@
 # SciATH Self-Tests
 
-These tests test SciATH, using MiniSciATH.
+These tests test SciATH, using [MiniSciATH](https://github.com/sciath/minisciath).
 
 To run the tests:
 
