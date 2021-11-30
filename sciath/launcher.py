@@ -517,7 +517,7 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
                 launch = []
                 launch += _format_mpi_launch_command(mpi_launch, j_ranks)
                 if isinstance(j[0], list):
-                    launch.extend(j[0])
+                    launch.append(command_join(j[0]))
                 else:
                     launch.append(j[0])
 
@@ -579,7 +579,7 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
                 launch = []
                 launch += _format_mpi_launch_command(mpi_launch, j_ranks)
                 if isinstance(j[0], list):
-                    launch.extend(j[0])
+                    launch.append(command_join(j[0]))
                 else:
                     launch.append(j[0])
 
@@ -645,7 +645,7 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
                 launch = []
                 launch += _format_mpi_launch_command(mpi_launch, j_ranks)
                 if isinstance(j[0], list):
-                    launch.extend(j[0])
+                    launch.append(command_join(j[0]))
                 else:
                     launch.append(j[0])
 
