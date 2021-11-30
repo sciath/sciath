@@ -36,18 +36,30 @@ jobs:
       script:
         - export PYTHONPATH=$PWD:$PYTHONPATH
         - sh -c "cd tests && ./minisciath/minisciath.py tests.yml --only-group default_configuration"
+    - stage: test
+      python: 3.9
+      install:
+        - pip install pyyaml
+      script:
+        - export PYTHONPATH=$PWD:$PYTHONPATH
+        - sh -c "cd tests && ./minisciath/minisciath.py tests.yml --only-group default_configuration"
     - stage: lint errors
       python: 2.7
       install:
         - pip install pylint
       script: sh -c "pylint --errors-only sciath/*.py tests/test_data/*/*.py"
     - stage: lint errors
-      python: 3.7
+      python: 3.6
+      install:
+        - pip install pylint
+      script: sh -c "pylint --errors-only sciath/*.py tests/test_data/*/*.py"
+    - stage: lint errors
+      python: 3.9
       install:
         - pip install pylint
       script: sh -c "pylint --errors-only sciath/*.py tests/test_data/*/*.py"
     - stage: lint all
-      python: 3.7
+      python: 3.9
       install:
         - pip install pylint
       script:
