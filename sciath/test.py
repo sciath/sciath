@@ -11,8 +11,7 @@ class Test:
 
     * A :class:`Job`, describing how to execute the required operations
     * A name
-    * An implementation of the abstract base class :class:`Verifier`, defining
-    how to determine success
+    * An implementation of :class:`Verifier`, defining how to determine success
     * A set of group tags
 
     """

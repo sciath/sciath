@@ -140,7 +140,7 @@ A Failing Test
 The test ``failing`` attempts to run ``grep`` on a non-existent file,
 which prints an error message to stderr and returns a non-zero exit code
 (``2`` on BSD and GNU systems).
-It is defined in the YAML file with
+It is defined in the input file with
 
 .. literalinclude:: _static/tutorial/tutorial.yml
   :language: YAML
@@ -162,7 +162,7 @@ files at the end of the report for the failing test.
 You can copy-paste this line to see the error message:
 
 .. literalinclude:: _static/tutorial/failing_output.txt
-  :start-at: print non-empty stderr file
+  :start-at: check non-empty stderr file
   :lines: 1-2
 
 A Comparison-Based Test
@@ -170,7 +170,7 @@ A Comparison-Based Test
 
 The test ``text_diff`` compares output to stdout against a reference file.
 
-It is defined in the YAML file with
+It is defined in the input file with
 
 .. literalinclude:: _static/tutorial/tutorial.yml
   :language: YAML
@@ -217,4 +217,4 @@ Additional features not (yet) included in this tutorial include
 * Numerical tests
 * MPI-parallel tests
 * Tests with multiple commands
-* Using replacements in the YAML file (``HERE`` and environment variables)
+* Using replacements in the input file (``HERE`` and environment variables)

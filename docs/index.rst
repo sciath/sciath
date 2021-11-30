@@ -9,49 +9,61 @@ This is documentation for `SciATH`_, the Scientific Application Test Harness.
 What is it?
 ===========
 
-Testing code should be easy. The functionality required to launch, parse and
+Testing scientific code should be easier. The functionality required to launch, parse and
 perform verification should be light-weight and simple to migrate into existing
-projects. SciATH supports testing of sequential and MPI-parallel applications.
-Tests can be performed locally, or submitted via a batch queuing system (e.g
-LSF or SLURM).
+projects. It should be easy to test on the local machines where code is developed
+as well as the clusters where it is run, in sequentially or in parallel with MPI, usually through
+a batch queing system like SLURM or LSF.
 
 SciATH is a set of lightweight Python tools designed to quickly and easily test
-scientific application codes. As such, it focuses on full-application testing
-and prioritizes being able to run on clusters with batch systems.  This is in
-contrast to most testing frameworks, which are designed with libraries in mind,
-and are often closely associated with specific programming languages.
+scientific application codes wherever they are run. As such, it focuses on
+full-application reference testing and prioritizes being able to run on
+clusters with batch systems.  This contrasts with most testing frameworks,
+which are designed with libraries in mind, are often closely associated
+with specific programming languages, and do not explicitly consider the
+use of parallel batch systems.
 
 Key Concepts
 ============
 
-SciATH provides:
+SciATH provides a convenient command-line interface to read a set of tests from a simple input file and run them.
 
--  An object to define a test. A ``Test`` consists of:
+This is accomplished by using its Python API, including
+
+- A ``Test`` consisting of:
 
    -  a unique name;
-   -  one or more executables;
-   -  a number of MPI ranks (1 for serial execution)
-   -  a method to determine success (for instance checking an error code or an output file)
+   -  a ``Job``, containing one or more ``Task``\s described by
+
+     - a "command" (an executable and arguments)
+     - a specification of required resources, typically a number of MPI ranks
+
+   -  a method to determine success (e.g., checking an error code or an output file)
 
 -  A set of tools to parse / filter and query text files for test
    verification purposes
+-  A ``Launcher`` object to manage launching a serial or MPI
+   ``Job`` locally or via a batch/queuing system
 -  A ``Harness`` object to quickly define and process a set of ``Test`` objects.
--  Internally, a ``Launcher`` object to manage launching a serial or MPI
-   ``Job`` locally or via a batch queuing system
 
 How do I use this ?
 ===================
 
+We recommend starting with the :doc:`tutorial`.
+
+
+Requirements and suggestions
+============================
+
 1. SciATH depends on Python. It is tested with Python 2.7 and later, and requires
    no modules outside of the standard library. Almost all systems already support this.
-   It is of course recommended to use Python 3, when possible, as Python 2 is
-   no longer being maintained.
+   (It is of course recommended to use Python 3, since Python 2 is deprecated.)
 
 2. It is highly recommended you set the environment
    variable ``PYTHONUNBUFFERED``, e.g. ``export PYTHONUNBUFFERED``
 
 3. Make sure you modify your ``PYTHONPATH`` environment variable to include
-   this root `sciath` directory (containing the `sciath` package directory)
+   this root ``sciath`` directory (containing the ``sciath`` package directory)
 
 Topics
 ======
