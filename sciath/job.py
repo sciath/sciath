@@ -43,7 +43,7 @@ class Job:
 
     def create_execute_command(self):
         """
-        Returns a list containing the command, resource tuple for a job.
+        Returns a list containing (command, resource) tuples for the Job.
         """
         return [task.create_execute_command() for task in self.tasks]
 
