@@ -154,7 +154,13 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
 
     def set_queue_system_type(self, system_type):
         """ Set queueing system type and derived properties """
-        if system_type in ['PBS', 'pbs']:
+        if system_type in ['sh', 'local', 'Local']:
+            self.queuing_system_type = 'local'
+            self.job_submission_command = ['sh']
+            self.use_batch = True
+            self.queue_file_extension = 'sh'
+
+        elif system_type in ['PBS', 'pbs']:
             self.queuing_system_type = 'pbs'
             self.job_submission_command = ['qsub']
             self.use_batch = True
@@ -179,8 +185,7 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
             self.queue_file_extension = 'llq'
             raise ValueError(
                 '[SciATH] Unsupported: LoadLeveler needs to be updated')
-
-        elif system_type in ['none', 'None', 'local']:
+        elif system_type in ['none', 'None']:
             self.queuing_system_type = 'none'
             self.job_submission_command = ''
             self.queue_file_extension = None
@@ -212,7 +217,7 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
         print('Creating new configuration file ', self.conf_filename)
         user_input = None
         while not user_input:
-            prompt = '[1] Batch queuing system type <pbs,lsf,slurm,llq,none>: '
+            prompt = '[1] Batch queuing system type <local,pbs,lsf,slurm,llq,none>: '
             user_input = py23input(prompt)
             if not user_input:
                 print('Required.')
@@ -336,6 +341,8 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
             message = '[SciATH] Constraints are only currently supported with SLURM'
             raise RuntimeError(message)
 
+        if self.queuing_system_type == 'local':
+            filename = self._generate_launch_sh(output_path, job)
         if self.queuing_system_type == 'pbs':
             filename = self._generate_launch_pbs(walltime, output_path, job)
         elif self.queuing_system_type == 'lsf':
@@ -472,6 +479,36 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
 
     def _batch_filename(self, job):
         return job.name + "." + self.queue_file_extension
+
+    def _generate_launch_sh(self, output_path, job):
+
+        mpi_launch = self.mpi_launch
+        filename = os.path.join(output_path, self._batch_filename(job))
+        exitcode_name = job.exitcode_filename
+        redirect_string = "1>%s 2>%s" % (job.stdout_filename, job.stderr_filename)
+
+        with open(filename, "w") as file:
+            file.write("#!/usr/bin/env sh\n")
+            file.write("# SciATH: auto-generated POSIX shell script\n\n")
+
+            _remove_file_if_it_exists(os.path.join(output_path, exitcode_name))
+
+            for command, resources in job.create_execute_command():
+                ranks = resources["mpiranks"]
+                launch = [redirect_string]
+                launch += _format_mpi_launch_command(mpi_launch, ranks)
+                if isinstance(command, list):
+                    launch.append(command_join(command))
+                else:
+                    launch.append(command)
+
+                file.write(" ".join(launch) + " \n")
+                file.write("echo $? >> " + os.path.join(output_path, exitcode_name) + "\n")
+            file.write("\n")
+            file.write("touch %s\n" % os.path.join(output_path, job.complete_filename))
+
+        return filename
+
 
     def _generate_launch_pbs(self, walltime, output_path, job):  #pylint: disable=too-many-locals
 
