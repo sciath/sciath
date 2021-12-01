@@ -12,8 +12,8 @@ What is it?
 Testing scientific code should be easier. The functionality required to launch, parse and
 perform verification should be light-weight and simple to migrate into existing
 projects. It should be easy to test on the local machines where code is developed
-as well as the clusters where it is run, in sequentially or in parallel with MPI, usually through
-a batch queing system like SLURM or LSF.
+as well as the clusters where it is run, sequentially or in parallel with MPI, usually through
+a batch queueing system like SLURM or LSF.
 
 SciATH is a set of lightweight Python tools designed to quickly and easily test
 scientific application codes wherever they are run. As such, it focuses on

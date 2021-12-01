@@ -189,7 +189,7 @@ It will fail because the expected file is not found:
 
 .. literalinclude:: _static/tutorial/text_diff_fail_output.txt
 
-Note that the full path that SciATH expected the file is printed. It looked for it in the same location as ``tutorial.yml``.
+Note that the full path where SciATH expected the file is printed. It looked for it in the same location as ``tutorial.yml``.
 
 You can generate the expected file with the ``-u`` flag. Note that this will **overwrite** this file, if it already exists!
 
