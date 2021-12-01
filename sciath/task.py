@@ -7,7 +7,8 @@ class Task:
        A "command", here, is a list of strings, the first of which names an executable
        and the rest of which provide arguments. For example ``['printf','Hello, World!']``
        corresponds to a local command like ``printf 'Hello, World!'``. This
-       corresponds to the recommended way to pass commands to Python's ``subprocess.run()``.
+       corresponds to the recommended way to pass commands to Python's
+       :any:`python:subprocess.run` (click link for information).
 
        Note that relative paths (not recommended) in the command will be interpreted
        relative to wherever it is actually executed from, which is determined
@@ -49,6 +50,15 @@ class Task:
         Returns a  command, resource tuple.
         """
         return self.command, self.resources
+
+    def get_resource(self, key):
+        """ Returns the value for a given resource, specified by a string
+
+            Returns None if resource not defined.
+        """
+        if key in self.resources:
+            return self.resources[key]
+        return None
 
     def set_resources(self, **kwargs):
         """

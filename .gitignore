@@ -1,8 +1,5 @@
 SciATHBatchQueuingSystem.conf
 
-*.lsf
-*.slurm
-
 *.bak
 
 # Python

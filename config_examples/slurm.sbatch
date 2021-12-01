@@ -1,0 +1,19 @@
+#!/bin/bash -l
+
+#SBATCH --job-name=$SCIATH_JOB_NAME
+#SBATCH --output=$SCIATH_JOB_STDOUT
+#SBATCH --error=$SCIATH_JOB_STDERR
+#SBATCH --ntasks=$SCIATH_JOB_MAX_RANKS
+#SBATCH --time=$SCIATH_JOB_WALLTIME_H:$SCIATH_JOB_WALLTIME_M:$SCIATH_JOB_WALLTIME_S
+#SBATCH --account=c23
+#SBATCH --partition=debug
+#SBATCH --constraint=gpu
+#SBATCH --hint=nomultithread
+
+export CRAY_CUDA_MPS=1
+
+export OMP_NUM_THREADS=$SCIATH_TASK_THREADS
+srun -n $SCIATH_TASK_RANKS \
+$SCIATH_TASK_COMMAND; printf "$?\n" >> $SCIATH_JOB_EXITCODE
+
+touch $SCIATH_JOB_COMPLETE
