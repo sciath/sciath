@@ -117,8 +117,9 @@ class Task:
             raise RuntimeError(message)
 
         if threads_set > 1:
-            message = ('[SciATH error]: More than one instance of a valid threads'
-                       'keyword was provided to set_resources().\n')
+            message = (
+                '[SciATH error]: More than one instance of a valid threads'
+                'keyword was provided to set_resources().\n')
             message += '                To set the #threads, choose one of: ' + " ".join(
                 threads_k)
             raise RuntimeError(message)

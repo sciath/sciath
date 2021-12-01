@@ -7,50 +7,54 @@ from sciath.test import Test
 from sciath.job import Job
 from sciath.task import Task
 
-OUTPUT_PATH = os.path.join(os.getcwd(),'output')
+OUTPUT_PATH = os.path.join(os.getcwd(), 'output')
 job_launcher = Launcher()
 
+
 def test_print(test, output_path):
-    passing, info, report = test.verifier.execute(output_path = output_path)
+    passing, info, report = test.verifier.execute(output_path=output_path)
     print('[%s] %r %s' % (test.name, passing, info))
     for line in report:
         print(line)
 
 
 # Default verifier (check error code)
-def test1(): # result: pass
-    cmd = ['echo' , '"aBc";' , 'echo' '"kspits=30"' , 'echo ""' ]
+def test1():  # result: pass
+    cmd = ['echo', '"aBc";', 'echo' '"kspits=30"', 'echo ""']
 
     t = Test(Job(Task(cmd), 'Test_1'))
-    job_launcher.submit_job( t.job, output_path = OUTPUT_PATH )
-    t.verify(output_path = OUTPUT_PATH)
-    test_print(t, output_path = OUTPUT_PATH)
+    job_launcher.submit_job(t.job, output_path=OUTPUT_PATH)
+    t.verify(output_path=OUTPUT_PATH)
+    test_print(t, output_path=OUTPUT_PATH)
     return t
 
-def test2(): # result: pass
-    cmd = ['echo' , '"aBc";' , 'echo' '"kspits=30"' ]
 
-    t = Test( Job(Task(cmd), 'Test_2'))
-    job_launcher.submit_job( t.job, output_path = OUTPUT_PATH )
-    t.verify(output_path = OUTPUT_PATH)
-    test_print(t, output_path = OUTPUT_PATH)
+def test2():  # result: pass
+    cmd = ['echo', '"aBc";', 'echo' '"kspits=30"']
+
+    t = Test(Job(Task(cmd), 'Test_2'))
+    job_launcher.submit_job(t.job, output_path=OUTPUT_PATH)
+    t.verify(output_path=OUTPUT_PATH)
+    test_print(t, output_path=OUTPUT_PATH)
     return t
 
-def test3(): # result: fail
-    cmd = ['echo' , '"aBc";' , 'echo' '"kspits=30"' ]
+
+def test3():  # result: fail
+    cmd = ['echo', '"aBc";', 'echo' '"kspits=30"']
 
     t = Test(Job(Task(cmd), 'Test_3'))
     t.verifier.set_exit_codes_success([1])
-    job_launcher.submit_job( t.job, output_path = OUTPUT_PATH )
-    t.verify(output_path = OUTPUT_PATH)
-    test_print(t, output_path = OUTPUT_PATH)
+    job_launcher.submit_job(t.job, output_path=OUTPUT_PATH)
+    t.verify(output_path=OUTPUT_PATH)
+    test_print(t, output_path=OUTPUT_PATH)
     return t
 
-def test4(): # result: pass
-    cmd = ['echo' , '"aBc";' , 'echo' '"kspits=30"' ]
+
+def test4():  # result: pass
+    cmd = ['echo', '"aBc";', 'echo' '"kspits=30"']
 
     t = Test(Job(Task(cmd), 'Test_4'))
-    job_launcher.submit_job( t.job, output_path = OUTPUT_PATH )
+    job_launcher.submit_job(t.job, output_path=OUTPUT_PATH)
     return t
 
 
@@ -60,7 +64,8 @@ def mkdir_p(path):
     except OSError as exc:
         if exc.errno == errno.EEXIST:
             pass
-        else: raise
+        else:
+            raise
 
 
 def main():
@@ -73,13 +78,13 @@ def main():
 
     # test with staged submit/verify
     t4 = test4()
-    t4.verify(output_path = OUTPUT_PATH)
-    test_print(t4, output_path = OUTPUT_PATH)
-    job_launcher.clean(t4.job, output_path = OUTPUT_PATH)
+    t4.verify(output_path=OUTPUT_PATH)
+    test_print(t4, output_path=OUTPUT_PATH)
+    job_launcher.clean(t4.job, output_path=OUTPUT_PATH)
 
-    tests = [t1,t2,t3,t4]
+    tests = [t1, t2, t3, t4]
     for t in tests:
-        job_launcher.clean(t.job, output_path = OUTPUT_PATH)
+        job_launcher.clean(t.job, output_path=OUTPUT_PATH)
 
 
 main()

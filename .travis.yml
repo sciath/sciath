@@ -12,6 +12,7 @@ stages:
     - lint errors
     - test
     - lint all
+    - format
 
 jobs:
   include:
@@ -67,3 +68,9 @@ jobs:
         # to include individually in the source, and don't even exist for older
         # versions of pylint.
         - sh -c "pylint --disable=consider-using-f-string,unspecified-encoding sciath/*.py"
+    - stage: format
+      python: 3.9
+      install:
+        - pip install yapf
+      script:
+        - yapf --style=google -d -r .

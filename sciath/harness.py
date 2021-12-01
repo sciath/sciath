@@ -93,7 +93,8 @@ class Harness:
         if tests:
             for test in tests:
                 self.add_test(test)
-        self.report_filename_full = os.path.join(os.getcwd(), self._report_filename)
+        self.report_filename_full = os.path.join(os.getcwd(),
+                                                 self._report_filename)
 
     def add_test(self, test):
         """ Add a Test to be run with the harness """
@@ -116,7 +117,8 @@ class Harness:
                   SCIATH_COLORS.endc)
         for testrun in self.testruns:
             if testrun.active:
-                print('[ -- Removing output for Test:', testrun.test.name, '-- ]')
+                print('[ -- Removing output for Test:', testrun.test.name,
+                      '-- ]')
                 self.launcher.clean(testrun.test.job,
                                     output_path=testrun.output_path)
                 if testrun.sandbox and os.path.exists(testrun.exec_path):
@@ -131,7 +133,9 @@ class Harness:
     def determine_overall_success(self):
         """ Returns a boolean value to denote overall success of the test suite """
         for testrun in self.testruns:
-            if testrun.status not in [_TestRunStatus.DEACTIVATED, _TestRunStatus.PASS]:
+            if testrun.status not in [
+                    _TestRunStatus.DEACTIVATED, _TestRunStatus.PASS
+            ]:
                 return False
         return True
 
@@ -144,7 +148,8 @@ class Harness:
 
         if self.testruns:
             print()
-            print(SCIATH_COLORS.header + '[ *** Executing Tests *** ]' + SCIATH_COLORS.endc)
+            print(SCIATH_COLORS.header + '[ *** Executing Tests *** ]' +
+                  SCIATH_COLORS.endc)
             print(self.launcher)
         for testrun in self.testruns:
             if testrun.active:
@@ -160,14 +165,14 @@ class Harness:
                                         sentinel_file)
                     with open(sentinel_file, 'w'):
                         pass
-                success, info, report = self.launcher.submit_job(testrun.test.job,
-                                                                 output_path=testrun.output_path,
-                                                                 exec_path=testrun.exec_path)
+                success, info, report = self.launcher.submit_job(
+                    testrun.test.job,
+                    output_path=testrun.output_path,
+                    exec_path=testrun.exec_path)
                 if not success:
                     testrun.status = _TestRunStatus.SKIPPED
                     testrun.status_info = info
                     testrun.report = report
-
 
     def print_all_tests(self):
         """ Display information about all tests """
@@ -198,18 +203,22 @@ class Harness:
                                   SCIATH_COLORS.endc)
                     for line in testrun.report:
                         report.append(line)
-                    stdout_filename = os.path.join(testrun.output_path,
-                                                   testrun.test.job.stdout_filename)
-                    if os.path.isfile(stdout_filename) and os.stat(stdout_filename).st_size != 0:
+                    stdout_filename = os.path.join(
+                        testrun.output_path, testrun.test.job.stdout_filename)
+                    if os.path.isfile(stdout_filename) and os.stat(
+                            stdout_filename).st_size != 0:
                         report.append('check stdout file:')
-                        report.append('    %s %s' % (self._pager, stdout_filename))
-                    stderr_filename = os.path.join(testrun.output_path,
-                                                   testrun.test.job.stderr_filename)
-                    if os.path.isfile(stderr_filename) and os.stat(stderr_filename).st_size != 0:
+                        report.append('    %s %s' %
+                                      (self._pager, stdout_filename))
+                    stderr_filename = os.path.join(
+                        testrun.output_path, testrun.test.job.stderr_filename)
+                    if os.path.isfile(stderr_filename) and os.stat(
+                            stderr_filename).st_size != 0:
                         report.append(SCIATH_COLORS.warning +
                                       'check non-empty stderr file:' +
                                       SCIATH_COLORS.endc)
-                        report.append('    %s %s' % (self._pager, stderr_filename))
+                        report.append('    %s %s' %
+                                      (self._pager, stderr_filename))
             report.append('')
             report.append(SCIATH_COLORS.header + '[ *** Summary *** ]' +
                           SCIATH_COLORS.endc)
@@ -225,9 +234,11 @@ class Harness:
             report.append('')
             if any((testrun.active for testrun in self.testruns)):
                 if self.determine_overall_success():
-                    report.append(SCIATH_COLORS.okay + "SUCCESS" + SCIATH_COLORS.endc)
+                    report.append(SCIATH_COLORS.okay + "SUCCESS" +
+                                  SCIATH_COLORS.endc)
                 else:
-                    report.append(SCIATH_COLORS.fail + "FAILURE" + SCIATH_COLORS.endc)
+                    report.append(SCIATH_COLORS.fail + "FAILURE" +
+                                  SCIATH_COLORS.endc)
                     if failed_names:
                         report.append('To re-run failed tests, use e.g.')
                         report.append('  -t ' + ','.join(failed_names))
@@ -239,7 +250,7 @@ class Harness:
             print(line)
 
         self._report_to_file(report)
-        print('\nReport written to file:\n  %s' %(self.report_filename_full))
+        print('\nReport written to file:\n  %s' % (self.report_filename_full))
 
     def _report_to_file(self, report):
         """ Dumps a report, as a list of lines (no new-lines) to file
@@ -248,7 +259,8 @@ class Harness:
             sent elsewhere or referred to later
         """
         with open(self.report_filename_full, 'w') as handle:
-            handle.write(datetime.datetime.now().strftime('%m/%d/%Y, %H:%M:%S') + '\n')
+            handle.write(
+                datetime.datetime.now().strftime('%m/%d/%Y, %H:%M:%S') + '\n')
             handle.write(str(self.launcher) + '\n')
             handle.write('\n'.join(report) + '\n')
 
@@ -264,11 +276,15 @@ class Harness:
             sciath.SCIATH_COLORS.set_colors(use_bash=False)
 
         if args.update_expected:
-            print("[SciATH] You have provided an argument to updated expected files.")
-            print("[SciATH] This will attempt to OVERWRITE your expected files!")
+            print(
+                "[SciATH] You have provided an argument to updated expected files."
+            )
+            print(
+                "[SciATH] This will attempt to OVERWRITE your expected files!")
             user_input = None
             while not user_input:
-                user_input = py23input("[SciATH] Are you sure? Type 'y' to continue: ")
+                user_input = py23input(
+                    "[SciATH] Are you sure? Type 'y' to continue: ")
             if user_input[0] not in ['y', 'Y']:
                 print("[SciATH] Aborting.")
                 return
@@ -324,7 +340,8 @@ class Harness:
         for testrun in self.testruns:
             if testrun.active:
                 if hasattr(testrun.test.verifier, 'update_expected'):
-                    print('[ -- Updating output for Test:', testrun.test.name, '-- ]')
+                    print('[ -- Updating output for Test:', testrun.test.name,
+                          '-- ]')
                     testrun.test.verifier.update_expected(
                         testrun.output_path, testrun.exec_path)
                 else:
@@ -339,10 +356,12 @@ class Harness:
                 continue
             if testrun.status == _TestRunStatus.SKIPPED:
                 continue
-            if not sciath.launcher.job_launched(testrun.test.job, testrun.output_path):
+            if not sciath.launcher.job_launched(testrun.test.job,
+                                                testrun.output_path):
                 testrun.status = _TestRunStatus.NOT_LAUNCHED
                 continue
-            if not sciath.launcher.job_complete(testrun.test.job, testrun.output_path):
+            if not sciath.launcher.job_complete(testrun.test.job,
+                                                testrun.output_path):
                 testrun.status = _TestRunStatus.INCOMPLETE
                 continue
 
@@ -381,64 +400,54 @@ class Harness:
             if testrun.test.groups.intersection(exclude_groups):
                 testrun.active = False
 
+
 def _parse_args():
     parser = argparse.ArgumentParser(description='SciATH')
-    parser.add_argument(
-        'input_file',
-        help='YAML file to add tests to the harness',
-        nargs='?',
-        default=None)
-    parser.add_argument(
-        '-c',
-        '--configure',
-        help='Configure queuing system information',
-        required=False,
-        action='store_true')
-    parser.add_argument(
-        '-t',
-        '--test-subset',
-        help='Comma-separated list of test names',
-        required=False)
-    parser.add_argument(
-        '-p',
-        '--purge-output',
-        help='Delete generated output',
-        required=False,
-        action='store_true')
-    parser.add_argument(
-        '-f',
-        '--error-on-test-failure',
-        help='Return exit code of 1 if any test failed',
-        required=False,
-        action='store_true')
-    parser.add_argument(
-        '-d',
-        '--configure-default',
-        help=
-        'Write default queuing system config file',
-        required=False,
-        action='store_true')
-    parser.add_argument(
-        '-l',
-        '--list',
-        help='List all registered tests and exit',
-        required=False,
-        action='store_true')
-    parser.add_argument(
-        '-w',
-        '--conf-file',
-        help='Use provided configuration file',
-        required=False)
-    parser.add_argument(
-        '--no-colors',
-        help='Deactivate colored output',
-        required=False,
-        action='store_true')
+    parser.add_argument('input_file',
+                        help='YAML file to add tests to the harness',
+                        nargs='?',
+                        default=None)
+    parser.add_argument('-c',
+                        '--configure',
+                        help='Configure queuing system information',
+                        required=False,
+                        action='store_true')
+    parser.add_argument('-t',
+                        '--test-subset',
+                        help='Comma-separated list of test names',
+                        required=False)
+    parser.add_argument('-p',
+                        '--purge-output',
+                        help='Delete generated output',
+                        required=False,
+                        action='store_true')
+    parser.add_argument('-f',
+                        '--error-on-test-failure',
+                        help='Return exit code of 1 if any test failed',
+                        required=False,
+                        action='store_true')
+    parser.add_argument('-d',
+                        '--configure-default',
+                        help='Write default queuing system config file',
+                        required=False,
+                        action='store_true')
+    parser.add_argument('-l',
+                        '--list',
+                        help='List all registered tests and exit',
+                        required=False,
+                        action='store_true')
+    parser.add_argument('-w',
+                        '--conf-file',
+                        help='Use provided configuration file',
+                        required=False)
+    parser.add_argument('--no-colors',
+                        help='Deactivate colored output',
+                        required=False,
+                        action='store_true')
     parser.add_argument(
         '-u',
         '--update-expected',
-        help=
-        'When well-defined, update reference files with current output',
+        help='When well-defined, update reference files with current output',
         required=False,
         action='store_true')
     stage_skip_group = parser.add_mutually_exclusive_group()
@@ -468,10 +477,8 @@ def _parse_args():
         required=False)
 
     # This is a temporary argument, as ultimately we'll replace config with templates
-    parser.add_argument(
-        '--template',
-        help=
-        'Template file used to generate launch scripts',
-        required=False)
+    parser.add_argument('--template',
+                        help='Template file used to generate launch scripts',
+                        required=False)
 
     return parser.parse_args()

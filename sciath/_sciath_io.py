@@ -35,6 +35,7 @@ def command_join(command):
 
 class NamedColors:  #pylint: disable=too-few-public-methods
     """ Color codes to use for SciATH output """
+
     def __init__(self):
         self.set_colors()
 

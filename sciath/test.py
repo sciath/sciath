@@ -15,14 +15,16 @@ class Test:
     * A set of group tags
 
     """
+
     def __init__(self, job, name=None):
         self.job = job
         if name is not None:
             self.name = name
         else:
             if job.named_by_default:
-                raise Exception("[SciATH error] to create a Test, you must either "
-                                "name the Test or the Job explicitly")
+                raise Exception(
+                    "[SciATH error] to create a Test, you must either "
+                    "name the Test or the Job explicitly")
             self.name = job.name
         self.verifier = sciath.verifier.ExitCodeVerifier(self)
         self.groups = set()
