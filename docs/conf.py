@@ -13,19 +13,22 @@
 import os
 import sys
 import datetime
+
 sys.path.insert(0, os.path.abspath(os.path.join('..')))
 
+import sciath
 
 # -- Project information -----------------------------------------------------
 
 project = 'SciATH'
-copyright = '2019-%d, Dave A. May and Patrick Sanan' % datetime.date.today().year
+
+year = datetime.date.today().year
+copyright = '2019-%d, Dave A. May and Patrick Sanan' % year
 
 author = 'Dave A. May and Patrick Sanan'
 
 # The full version, including alpha/beta/rc tags
-release = '0.4.4'
-
+release = '%d.%d.%d' % sciath.__version__
 
 # -- General configuration ---------------------------------------------------
 
@@ -49,7 +52,6 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
 # -- InterSphinx -------------------------------------------------------------
 intersphinx_mapping = {'python': ('https://docs.python.org/3', None)}
-
 
 # -- Options for HTML output -------------------------------------------------
 

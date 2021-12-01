@@ -22,7 +22,9 @@ Write Python 2.7.0+-compatible code. Do not assume a recent patch version of Pyt
 Prioritize Python 3, only using version-dependent logic when required for correctness,
 not performance (e.g. one shouldn't bother using ``xrange`` instead of ``range`` in Python 2).
 
-Use the `Google Python style guide <http://google.github.io/styleguide/pyguide.html>`__.
-One can check conformance with `YAPF <https://github.com/google/yapf>`__, e.g. ``yapf --style=google -d``.
+Conform to the `Google Python style guide <http://google.github.io/styleguide/pyguide.html>`__.
+One can check and enforce conformance with `YAPF <https://github.com/google/yapf>`__, e.g. 
+``yapf --style=google -d -r .`` from the root directory will show all violations, and adding
+the ``-i`` flag will repair these in place.
 
-All Python code should be clean with a recent (stock) ``pylint``.
+Python code must also be clean with a recent (stock) `Pylint <https://pypi.org/project/pylint/>`__

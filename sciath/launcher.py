@@ -33,6 +33,7 @@ def _formatted_hour_min(seconds):
     hours, minutes = divmod(minutes, 60)
     return "%02d:%02d" % (hours, minutes)
 
+
 def _formatted_split_time(seconds):
     minutes, seconds = divmod(seconds, 60)
     hours, minutes = divmod(minutes, 60)
@@ -77,8 +78,9 @@ def _subprocess_run(command, **kwargs):
     else:
         for key in ['stdout', 'stderr']:
             if key in kwargs and kwargs[key] == 'PIPE':
-                raise Exception(('The current implementation cannot handle pipes. '
-                                 'See the subprocess documentation for an alternative.'))
+                raise Exception(
+                    ('The current implementation cannot handle pipes. '
+                     'See the subprocess documentation for an alternative.'))
         returncode = subprocess.call(command, **kwargs)
     return returncode
 
@@ -139,19 +141,19 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
         self.use_template = template_filename is not None
         if self.use_template:
             self.template_filename = os.path.expanduser(template_filename)
-            self.launch_script_filename = 'launch' + os.path.splitext(template_filename)[1]
+            self.launch_script_filename = 'launch' + os.path.splitext(
+                template_filename)[1]
         self.template = None
 
         self._setup()
 
         if self.use_batch:
             if self.mpi_launch == 'none':
-                raise RuntimeError(('[SciATH] If using a queuing system, a valid mpi '
-                                    'launch command must be provided'))
+                raise RuntimeError(
+                    ('[SciATH] If using a queuing system, a valid mpi '
+                     'launch command must be provided'))
 
-
-
-    def _create_launch_script(self, job, **kwargs): # pylint: disable=too-many-locals, too-many-branches, too-many-statements
+    def _create_launch_script(self, job, **kwargs):  # pylint: disable=too-many-locals, too-many-branches, too-many-statements
         output_path = os.getcwd()
         for key, value in kwargs.items():
             if key == 'output_path':
@@ -164,17 +166,27 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
         self._populate_template()
 
         # Apply replacement map at the Job level
-        hours_str, minutes_str, seconds_str = _formatted_split_time(60.0 * job.total_wall_time())
+        hours_str, minutes_str, seconds_str = _formatted_split_time(
+            60.0 * job.total_wall_time())
         rule_job = {
-            '$SCIATH_JOB_NAME': job.name,
-            '$SCIATH_JOB_MAX_RANKS': str(job.resource_max('ranks')),
-            '$SCIATH_JOB_STDOUT': os.path.join(output_path, job.stdout_filename),
-            '$SCIATH_JOB_STDERR': os.path.join(output_path, job.stderr_filename),
-            '$SCIATH_JOB_EXITCODE': os.path.join(output_path, job.exitcode_filename),
-            '$SCIATH_JOB_WALLTIME_H': hours_str,
-            '$SCIATH_JOB_WALLTIME_M': minutes_str,
-            '$SCIATH_JOB_WALLTIME_S': seconds_str,
-            '$SCIATH_JOB_COMPLETE': os.path.join(output_path, job.complete_filename),
+            '$SCIATH_JOB_NAME':
+                job.name,
+            '$SCIATH_JOB_MAX_RANKS':
+                str(job.resource_max('ranks')),
+            '$SCIATH_JOB_STDOUT':
+                os.path.join(output_path, job.stdout_filename),
+            '$SCIATH_JOB_STDERR':
+                os.path.join(output_path, job.stderr_filename),
+            '$SCIATH_JOB_EXITCODE':
+                os.path.join(output_path, job.exitcode_filename),
+            '$SCIATH_JOB_WALLTIME_H':
+                hours_str,
+            '$SCIATH_JOB_WALLTIME_M':
+                minutes_str,
+            '$SCIATH_JOB_WALLTIME_S':
+                seconds_str,
+            '$SCIATH_JOB_COMPLETE':
+                os.path.join(output_path, job.complete_filename),
         }
         pattern = _get_multiple_replace_pattern(rule_job)
         script = [
@@ -192,22 +204,25 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
         preamble_finished = False
         postamble = []
         for line in script:
-            if  '$SCIATH_TASK_THREADS' in line:
+            if '$SCIATH_TASK_THREADS' in line:
                 preamble_finished = True
                 if threads_line_found:
-                    raise Exception("[SciATH] Multiple threads lines found in template")
+                    raise Exception(
+                        "[SciATH] Multiple threads lines found in template")
                 threads_line_found = True
                 task_lines.append(line)
             elif '$SCIATH_TASK_RANKS' in line:
                 preamble_finished = True
                 if ranks_line_found:
-                    raise Exception("[SciATH] Multiple ranks lines found in template")
+                    raise Exception(
+                        "[SciATH] Multiple ranks lines found in template")
                 ranks_line_found = True
                 task_lines.append(line)
             elif '$SCIATH_TASK_COMMAND' in line:
                 preamble_finished = True
                 if command_line_found:
-                    raise Exception("[SciATH] Multiple command lines found in template")
+                    raise Exception(
+                        "[SciATH] Multiple command lines found in template")
                 command_line_found = line
                 task_lines.append(line)
             elif not preamble_finished:
@@ -233,8 +248,9 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
                 task_lines_specific = []
                 for line in task_lines:
                     task_lines_specific.append(
-                        pattern.sub(lambda match, rule=rule_task: rule[match.group(0)], line)
-                    )
+                        pattern.sub(
+                            lambda match, rule=rule_task: rule[match.group(0)],
+                            line))
                 script_file.writelines(task_lines_specific)
             script_file.writelines(postamble)
 
@@ -249,7 +265,8 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
         """ Set the MPI launch command and check its form """
         self.mpi_launch = name
         # check for existence of "rank" keyword in the string "name"
-        if self.queuing_system_type in ['none', 'None', 'local'] and name != 'none':
+        if self.queuing_system_type in ['none', 'None', 'local'
+                                       ] and name != 'none':
             keywordlist = ['<ranks>', '<cores>', '<tasks>', '<RANKS>']
             # check of any of keywordlist[i] appears in name
             valid_launcher = False
@@ -273,7 +290,8 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
 
         elif system_type in ['LSF', 'lsf']:
             self.queuing_system_type = 'lsf'
-            self.job_submission_command = ['sh', '-c', 'bsub < $0']  # This allows "<".
+            self.job_submission_command = ['sh', '-c',
+                                           'bsub < $0']  # This allows "<".
             self.use_batch = True
             self.queue_file_extension = 'lsf'
 
@@ -295,12 +313,14 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
 
     def __str__(self):
         lines = []
-        lines.append('[SciATH] Batch queueing system configuration [%s]' % self.conf_filename)
+        lines.append('[SciATH] Batch queueing system configuration [%s]' %
+                     self.conf_filename)
         lines.append('  Version:           %d.%d.%d' % sciath.__version__)
         lines.append('  Queue system:      %s' % self.queuing_system_type)
         lines.append('  MPI launcher:      %s' % self.mpi_launch)
         if self.use_batch:
-            lines.append('  Submit command:    %s' % command_join(self.job_submission_command))
+            lines.append('  Submit command:    %s' %
+                         command_join(self.job_submission_command))
             if self.account_name:
                 lines.append('  Account:           %s' % self.account_name)
             if self.queue_name:
@@ -309,9 +329,10 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
                 lines.append('  Constraint:        %s' % self.batch_constraint)
         return '\n'.join(lines)
 
-    def configure(self): #pylint: disable=too-many-branches,too-many-statements
+    def configure(self):  #pylint: disable=too-many-branches,too-many-statements
         """ Create a new configuration file from user input """
-        print('----------------------------------------------------------------')
+        print(
+            '----------------------------------------------------------------')
         print('Creating new configuration file ', self.conf_filename)
         user_input = None
         while not user_input:
@@ -346,12 +367,15 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
                           os.path.join(petsc_dir, petsc_arch, 'bin', 'mpiexec'),
                           '-n <ranks>')
                 else:
-                    print(('  Example PETSc MPI wrapper : '
-                           '/users/myname/petsc/arch-xxx/bin/mpiexec -n <ranks>'))
+                    print(
+                        ('  Example PETSc MPI wrapper : '
+                         '/users/myname/petsc/arch-xxx/bin/mpiexec -n <ranks>'))
                 print((' Note that the string \"<ranks>\" must be included if '
                        'the number of ranks is required at launch.'))
-                print((' The keyword <ranks> will be replaced by the actual number '
-                       'of MPI ranks (defined by a given test) when the test is launched.'))
+                print((
+                    ' The keyword <ranks> will be replaced by the actual number '
+                    'of MPI ranks (defined by a given test) when the test is launched.'
+                ))
         self.set_mpi_launch(user_input)
 
         if self.use_batch:
@@ -368,10 +392,12 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
 
         self._write_definition()
         print('\n')
-        print('** If you wish to change the config for your batch system, either')
+        print(
+            '** If you wish to change the config for your batch system, either')
         print('**  (i) delete the file', self.conf_filename, ' or')
         print('** (ii) re-run with the command line arg --configure')
-        print('----------------------------------------------------------------')
+        print(
+            '----------------------------------------------------------------')
 
     def _setup(self):
         try:
@@ -386,14 +412,15 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
             conf_file.write('majorVersion: %s\n' % major)
             conf_file.write('minorVersion: %s\n' % minor)
             conf_file.write('patchVersion: %s\n' % patch)
-            conf_file.write('queuingSystemType: %s\n' % self.queuing_system_type)
+            conf_file.write('queuingSystemType: %s\n' %
+                            self.queuing_system_type)
             conf_file.write('mpiLaunch: %s\n' % self.mpi_launch)
             if self.use_batch:
                 conf_file.write('accountName: %s\n' % self.account_name)
                 conf_file.write('batchConstraint: %s\n' % self.batch_constraint)
                 conf_file.write('queueName: %s\n' % self.queue_name)
 
-    def _load_definition(self): #pylint: disable=too-many-branches
+    def _load_definition(self):  #pylint: disable=too-many-branches
         major_file = None
         minor_file = None
         patch_file = None
@@ -424,13 +451,15 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
 
         major, minor = sciath.__version__[:2]
         if major_file is None or minor_file is None or patch_file is None:
-            raise RuntimeError('[SciATH] configuration file %s missing version information. '
-                               'Please delete it and re-run to reconfigure.' %
-                               self.conf_filename)
+            raise RuntimeError(
+                '[SciATH] configuration file %s missing version information. '
+                'Please delete it and re-run to reconfigure.' %
+                self.conf_filename)
         if major_file < major or (minor_file < minor and major_file == major):
-            raise RuntimeError('[SciATH] Incompatible, outdated configuration file %s '
-                               'detected. Please delete it and re-run to reconfigure.' %
-                               self.conf_filename)
+            raise RuntimeError(
+                '[SciATH] Incompatible, outdated configuration file %s '
+                'detected. Please delete it and re-run to reconfigure.' %
+                self.conf_filename)
 
     def _create_job_submission_file(self, job, walltime, output_path):
 
@@ -442,7 +471,8 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
         if self.queuing_system_type == 'local':
             filename = self._generate_launch_sh(output_path, job)
         elif self.queuing_system_type == 'lsf':
-            filename = self._generate_launch_lsf(None, walltime, output_path, job)
+            filename = self._generate_launch_lsf(None, walltime, output_path,
+                                                 job)
         elif self.queuing_system_type == 'slurm':
             filename = self._generate_launch_slurm(walltime, output_path, job)
 
@@ -482,7 +512,8 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
             raise Exception('[SciATH] trying to launch an already-launched Job')
 
         if self.use_template:
-            script_filename = self._create_launch_script(job, output_path=output_path)
+            script_filename = self._create_launch_script(
+                job, output_path=output_path)
             launch_command = self.job_submission_command + [script_filename]
 
             print('%s[Executing %s]%s from %s' %
@@ -536,8 +567,10 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
                 for command in launch_command:
                     cwd_back = os.getcwd()
                     os.chdir(exec_path)
-                    returncode = _subprocess_run(command, universal_newlines=True,
-                                                 stdout=file_stdout, stderr=file_stderr)
+                    returncode = _subprocess_run(command,
+                                                 universal_newlines=True,
+                                                 stdout=file_stdout,
+                                                 stderr=file_stderr)
                     os.chdir(cwd_back)
                     file_exitcode.write(str(returncode) + "\n")
                     _set_blocking_io_stdout()
@@ -548,7 +581,8 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
         else:
             walltime = job.total_wall_time()
 
-            launchfile = self._create_job_submission_file(job, walltime, output_path)
+            launchfile = self._create_job_submission_file(
+                job, walltime, output_path)
             launch_command = self.job_submission_command + [launchfile]
             cwd_back = os.getcwd()
             os.chdir(exec_path)
@@ -577,19 +611,25 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
                 output_path = value
 
         if not output_path:
-            raise ValueError('[SciATH] cannot clean without an explicit output_path')
+            raise ValueError(
+                '[SciATH] cannot clean without an explicit output_path')
         if not os.path.isabs(output_path):
-            raise ValueError('[SciATH] cannot clean without an absolute output_path')
+            raise ValueError(
+                '[SciATH] cannot clean without an absolute output_path')
 
-        for filename in [job.exitcode_filename, job.stdout_filename, job.stderr_filename]:
+        for filename in [
+                job.exitcode_filename, job.stdout_filename, job.stderr_filename
+        ]:
             _remove_file_if_it_exists(os.path.join(output_path, filename))
 
         if self.queue_file_extension is not None:
             filename = self._batch_filename(job)
             _remove_file_if_it_exists(os.path.join(output_path, filename))
 
-        _remove_file_if_it_exists(os.path.join(output_path, job.launched_filename))
-        _remove_file_if_it_exists(os.path.join(output_path, job.complete_filename))
+        _remove_file_if_it_exists(
+            os.path.join(output_path, job.launched_filename))
+        _remove_file_if_it_exists(
+            os.path.join(output_path, job.complete_filename))
 
     def _batch_filename(self, job):
         return job.name + "." + self.queue_file_extension
@@ -605,9 +645,9 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
         # based on the job. Then, output could be redirected there,
         # making the local launch behave more like cluster launch.
         redirect_string = "1>%s 2>%s" % (
-                os.path.join(output_path, job.stdout_filename),
-                os.path.join(output_path, job.stderr_filename),
-                )
+            os.path.join(output_path, job.stdout_filename),
+            os.path.join(output_path, job.stderr_filename),
+        )
 
         with open(filename, "w") as file:
             file.write("#!/usr/bin/env sh\n")
@@ -625,12 +665,13 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
                     launch.append(command)
 
                 file.write(" ".join(launch) + " \n")
-                file.write("echo $? >> " + os.path.join(output_path, exitcode_name) + "\n")
+                file.write("echo $? >> " +
+                           os.path.join(output_path, exitcode_name) + "\n")
             file.write("\n")
-            file.write("touch %s\n" % os.path.join(output_path, job.complete_filename))
+            file.write("touch %s\n" %
+                       os.path.join(output_path, job.complete_filename))
 
         return filename
-
 
     def _generate_launch_lsf(self, rusage, walltime, output_path, job):  #pylint: disable=too-many-locals
 
@@ -659,8 +700,10 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
                 file.write("#BSUB -G " + accountname + "\n")
 
             file.write("#BSUB -J " + "sciath.job-" + job.name + "\n")
-            file.write("#BSUB -o " + os.path.join(output_path, stdout_name) + "\n")
-            file.write("#BSUB -e " + os.path.join(output_path, stderr_name) + "\n")
+            file.write("#BSUB -o " + os.path.join(output_path, stdout_name) +
+                       "\n")
+            file.write("#BSUB -e " + os.path.join(output_path, stderr_name) +
+                       "\n")
 
             if queuename:
                 file.write("#BSUB -q " + queuename + "\n")
@@ -688,11 +731,12 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
                     launch.append(j[0])
 
                 file.write(" ".join(launch) + "\n")
-                file.write("echo $? >> " + os.path.join(output_path, exitcode_name) + "\n")
+                file.write("echo $? >> " +
+                           os.path.join(output_path, exitcode_name) + "\n")
             file.write("\n")
-            file.write("touch %s\n" % os.path.join(output_path, job.complete_filename))
+            file.write("touch %s\n" %
+                       os.path.join(output_path, job.complete_filename))
         return filename
-
 
     def _generate_launch_slurm(self, walltime, output_path, job):  #pylint: disable=too-many-locals
 
@@ -722,9 +766,12 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
                 file.write("#SBATCH --account=" + accountname +
                            "\n")  # account to charge
 
-            file.write("#SBATCH --job-name=\"" + "sciath.job-" + job.name + "\"" + "\n")
-            file.write("#SBATCH --output=" + os.path.join(output_path, stdout_name) + "\n")
-            file.write("#SBATCH --error=" + os.path.join(output_path, stderr_name) + "\n")
+            file.write("#SBATCH --job-name=\"" + "sciath.job-" + job.name +
+                       "\"" + "\n")
+            file.write("#SBATCH --output=" +
+                       os.path.join(output_path, stdout_name) + "\n")
+            file.write("#SBATCH --error=" +
+                       os.path.join(output_path, stderr_name) + "\n")
 
             if queuename:
                 file.write("#SBATCH --partition=" + queuename + "\n")
@@ -754,9 +801,11 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
                     launch.append(j[0])
 
                 file.write(" ".join(launch) + "\n")
-                file.write("echo $? >> " + os.path.join(output_path, exitcode_name) + "\n")
+                file.write("echo $? >> " +
+                           os.path.join(output_path, exitcode_name) + "\n")
             file.write("\n")
-            file.write("touch %s\n" % os.path.join(output_path, job.complete_filename))
+            file.write("touch %s\n" %
+                       os.path.join(output_path, job.complete_filename))
         file.close()
         return filename
 
@@ -767,7 +816,9 @@ def _get_multiple_replace_pattern(source_dict):
         Important: this match is not done on full words, so behavior
         when one key is a substring of another is undefined.
     """
+
     def process_word(word):
         """ add escape characters """
         return re.escape(word)
+
     return re.compile(r'|'.join(map(process_word, source_dict)))

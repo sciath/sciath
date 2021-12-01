@@ -15,7 +15,11 @@ class LineVerifier(ComparisonVerifier):
         from the two files.
     """
 
-    def __init__(self, test, expected_file, output_file=None, comparison_file=None):
+    def __init__(self,
+                 test,
+                 expected_file,
+                 output_file=None,
+                 comparison_file=None):
         # pylint: disable=bad-option-value,super-with-arguments
         super(LineVerifier, self).__init__(test, expected_file, output_file,
                                            comparison_file)
@@ -27,7 +31,8 @@ class LineVerifier(ComparisonVerifier):
         for rule in self.rules:
             match_from = collections.OrderedDict()
             match_to = collections.OrderedDict()
-            for match, source_file in [(match_from, from_file), (match_to, to_file)]:
+            for match, source_file in [(match_from, from_file),
+                                       (match_to, to_file)]:
                 with open(source_file, 'r') as handle:
                     for line_number, line in enumerate(handle.readlines(), 1):
                         if re.match(rule['re'], line):
@@ -38,8 +43,8 @@ class LineVerifier(ComparisonVerifier):
                 report.append('--- %s' % os.path.abspath(from_file))
                 report.append('+++ %s' % os.path.abspath(to_file))
             if rule_report:
-                report.append("Report for %d expected line(s) matching: '%s'"
-                              % (len(match_from), rule['re']))
+                report.append("Report for %d expected line(s) matching: '%s'" %
+                              (len(match_from), rule['re']))
                 report.extend(rule_report)
         return passing, report
 
@@ -78,20 +83,20 @@ def compare_float_values_line(line_expected, line_out, abs_tol, rel_tol):
                 else:
                     rel_err = abs((float_out - float_expected) / float_expected)
                     passing_rel = rel_err <= rel_tol
-            if (abs_tol is None or not passing_abs) and (rel_tol is None or not passing_rel):
+            if (abs_tol is None or not passing_abs) and (rel_tol is None or
+                                                         not passing_rel):
                 passing = False
                 if abs_tol is not None and rel_tol is not None:
                     report.append(
                         '%g != %g to abs. tol. %g (abs. err %g) or rel. tol %g (rel. err %g)'
-                        % (float_out, float_expected, abs_tol, abs_err, rel_tol, rel_err))
+                        % (float_out, float_expected, abs_tol, abs_err, rel_tol,
+                           rel_err))
                 elif abs_tol is not None:
-                    report.append(
-                        '%g != %g to abs. tol. %g (abs. err %g)'
-                        % (float_out, float_expected, abs_tol, abs_err))
+                    report.append('%g != %g to abs. tol. %g (abs. err %g)' %
+                                  (float_out, float_expected, abs_tol, abs_err))
                 else:
-                    report.append(
-                        '%g != %g to rel. tol. %g (rel. err. %g)'
-                        % (float_out, float_expected, rel_tol, rel_err))
+                    report.append('%g != %g to rel. tol. %g (rel. err. %g)' %
+                                  (float_out, float_expected, rel_tol, rel_err))
     return passing, report
 
 
@@ -109,7 +114,8 @@ def float_pairs_function(match_expected,
         passing = False
         return passing, report
     for ((lineno_expected, line_expected),
-         (lineno_out, line_out)) in zip(match_expected.items(), match_out.items()):
+         (lineno_out, line_out)) in zip(match_expected.items(),
+                                        match_out.items()):
         line_passing, line_report = compare_float_values_line(
             line_expected, line_out, abs_tol, rel_tol)
         if not line_passing:
