@@ -23,37 +23,19 @@ which are designed with libraries in mind, are often closely associated
 with specific programming languages, and do not explicitly consider the
 use of parallel batch systems.
 
-Key Concepts
-============
 
-SciATH provides a convenient command-line interface to read a set of tests from a simple input file and run them.
-
-This is accomplished by using its Python API, including
-
-- A ``Test`` consisting of:
-
-   -  a unique name;
-   -  a ``Job``, containing one or more ``Task``\s described by
-
-     - a "command" (an executable and arguments)
-     - a specification of required resources, typically a number of MPI ranks
-
-   -  a method to determine success (e.g., checking an error code or an output file)
-
--  A set of tools to parse / filter and query text files for test
-   verification purposes
--  A ``Launcher`` object to manage launching a serial or MPI
-   ``Job`` locally or via a batch/queuing system
--  A ``Harness`` object to quickly define and process a set of ``Test`` objects.
-
-How do I use this ?
-===================
+How do I use it ?
+=================
 
 We recommend starting with the :doc:`tutorial`.
 
+SciATH can be run as a Python module, providing a convenient command-line interface to read a set of tests from a simple input file and run them.
+
+This logic is implemented with the :doc:`api`, which advanced users may be interested in.
+
 
 Requirements and suggestions
-============================
+----------------------------
 
 1. SciATH depends on Python. It is tested with Python 2.7 and later, and requires
    no modules outside of the standard library. Almost all systems already support this.
