@@ -128,7 +128,6 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
             self.conf_filename = conf_filename
         else:
             self.conf_filename = Launcher._default_conf_filename
-        self.queue_file_extension = None
         self.template_filename = None
         self.template = None
 
@@ -239,8 +238,8 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
                 postamble.append(line)
 
         # Assemble the script, applying task-level replacements
-        script_filename = os.path.join(
-            output_path, 'launch' + os.path.splitext(self.template_filename)[1])
+        script_filename = os.path.join(output_path, self._batch_filename(job))
+
         with open(script_filename, 'w') as script_file:
             script_file.writelines(preamble)
             first = True
@@ -308,25 +307,21 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
             self.queuing_system_type = 'local'
             self.job_submission_command = ['sh']
             self.use_batch = True
-            self.queue_file_extension = 'sh'
 
         elif system_type in ['LSF', 'lsf']:
             self.queuing_system_type = 'lsf'
             self.job_submission_command = ['sh', '-c',
                                            'bsub < $0']  # This allows "<".
             self.use_batch = True
-            self.queue_file_extension = 'lsf'
 
         elif system_type in ['SLURM', 'slurm']:
             self.queuing_system_type = 'slurm'
             self.job_submission_command = ['sbatch']
             self.use_batch = True
-            self.queue_file_extension = 'slurm'
 
         elif system_type in ['none', 'None']:
             self.queuing_system_type = 'none'
             self.job_submission_command = ''
-            self.queue_file_extension = None
 
         else:
             raise RuntimeError(
@@ -612,7 +607,7 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
         ]:
             _remove_file_if_it_exists(os.path.join(output_path, filename))
 
-        if self.queue_file_extension is not None:
+        if self.use_batch:
             filename = self._batch_filename(job)
             _remove_file_if_it_exists(os.path.join(output_path, filename))
 
@@ -622,7 +617,7 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
             os.path.join(output_path, job.complete_filename))
 
     def _batch_filename(self, job):
-        return job.name + "." + self.queue_file_extension
+        return job.name + os.path.splitext(self.template_filename)[1]
 
 
 def _get_multiple_match_pattern(source):
