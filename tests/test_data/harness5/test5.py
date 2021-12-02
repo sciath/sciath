@@ -10,7 +10,7 @@ import sciath.verifier_line
 
 this_dir = os.path.dirname(os.path.realpath(__file__))
 
-command = ['echo', 'The first number is 1.1\nThe second number is 1.01']
+command = ['printf', 'The first number is 1.1\nThe second number is 1.01\n']
 task = sciath.task.Task(command)
 job = sciath.job.Job(task)
 test = sciath.test.Test(job, 'test')
