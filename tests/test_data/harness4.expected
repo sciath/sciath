@@ -9,23 +9,24 @@
 
 [35m[ *** Executing Tests *** ][0m
 [SciATH] Batch queueing system configuration [SciATHBatchQueuingSystem.conf]
-  Version:           0.8.0
-  Queue system:      none
+  Version:           0.9.0
+  Queue system:      local
   MPI launcher:      none
+  Submit command:    sh
 [36m[Executing foo][0m from <<TEST DIR STRIPPED>>/harness4_sandbox/foo_output/sandbox
-echo foo
+sh <<TEST DIR STRIPPED>>/harness4_sandbox/foo_output/foo.sh
 [36m[Executing foo2][0m from <<TEST DIR STRIPPED>>/harness4_sandbox/foo2_output/sandbox
-echo foo
+sh <<TEST DIR STRIPPED>>/harness4_sandbox/foo2_output/foo2.sh
 [36m[Executing foo_fail][0m from <<TEST DIR STRIPPED>>/harness4_sandbox/foo_fail_output/sandbox
-echo foox
+sh <<TEST DIR STRIPPED>>/harness4_sandbox/foo_fail_output/foo_fail.sh
 [36m[Executing missing][0m from <<TEST DIR STRIPPED>>/harness4_sandbox/missing_output/sandbox
-echo missing
+sh <<TEST DIR STRIPPED>>/harness4_sandbox/missing_output/missing.sh
 [36m[Executing many_words][0m from <<TEST DIR STRIPPED>>/harness4_sandbox/many_words_output/sandbox
-echo 'many words'
+sh <<TEST DIR STRIPPED>>/harness4_sandbox/many_words_output/many_words.sh
 [36m[Executing comp_file][0m from <<TEST DIR STRIPPED>>/harness4_sandbox/comp_file_output/sandbox
-sh -c 'echo qux > compare_me.txt'
+sh <<TEST DIR STRIPPED>>/harness4_sandbox/comp_file_output/comp_file.sh
 [36m[Executing comp_file_fail][0m from <<TEST DIR STRIPPED>>/harness4_sandbox/comp_file_fail_output/sandbox
-sh -c 'echo qux > compare_me.txt'
+sh <<TEST DIR STRIPPED>>/harness4_sandbox/comp_file_fail_output/comp_file_fail.sh
 
 [35m[ *** Verification Reports *** ][0m
 [36m[Report for foo_fail][0m

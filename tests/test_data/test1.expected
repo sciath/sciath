@@ -1,14 +1,14 @@
 [36m[Executing Test_1][0m from <<TEST DIR STRIPPED>>/test1_sandbox
-echo "aBc"; echo"kspits=30" 'echo ""'
+sh <<TEST DIR STRIPPED>>/test1_sandbox/output/Test_1.sh
 [Test_1] True None
 [36m[Executing Test_2][0m from <<TEST DIR STRIPPED>>/test1_sandbox
-echo "aBc"; echo"kspits=30"
+sh <<TEST DIR STRIPPED>>/test1_sandbox/output/Test_2.sh
 [Test_2] True None
 [36m[Executing Test_3][0m from <<TEST DIR STRIPPED>>/test1_sandbox
-echo "aBc"; echo"kspits=30"
+sh <<TEST DIR STRIPPED>>/test1_sandbox/output/Test_3.sh
 [Test_3] False None
 [ExitCodeDiff] Expected exit code(s): [1]
 [ExitCodeDiff] Output exit code(s)  : [0]
 [36m[Executing Test_4][0m from <<TEST DIR STRIPPED>>/test1_sandbox
-echo "aBc"; echo"kspits=30"
+sh <<TEST DIR STRIPPED>>/test1_sandbox/output/Test_4.sh
 [Test_4] True None

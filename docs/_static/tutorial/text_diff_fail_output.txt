@@ -3,11 +3,12 @@
 
 [ *** Executing Tests *** ]
 [SciATH] Batch queueing system configuration [SciATHBatchQueuingSystem.conf]
-  Version:           0.8.0
-  Queue system:      none
+  Version:           0.9.0
+  Queue system:      local
   MPI launcher:      none
+  Submit command:    sh
 [Executing text_diff] from /Users/patrick/scratch/text_diff_output/sandbox
-printf 'a line of text\n'
+sh /Users/patrick/scratch/text_diff_output/text_diff.sh
 
 [ *** Verification Reports *** ]
 [Report for text_diff]
