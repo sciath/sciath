@@ -6,7 +6,7 @@ sandbox="$test_name""_sandbox/"
 prereq_test_name=${3:-}
 prereq_sandbox="$prereq_test_name""_sandbox/"
 args=$2
-configuration_file=SciATHBatchQueuingSystem.conf
+configuration_file=SciATH_launcher.conf
 python=python
 
 if [ ! -f "$configuration_file" ]; then

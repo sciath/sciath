@@ -9,7 +9,7 @@ if [ ! -f "$minisciath" ]; then
   exit 1
 fi
 
-if [ ! -f "SciATHBatchQueuingSystem.conf" ]; then
+if [ ! -f "SciATH_launcher.conf" ]; then
   python -m sciath  # prompt to generate configuration file
 fi
 
