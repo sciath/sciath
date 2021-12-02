@@ -467,8 +467,8 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
                 'detected. Please delete it and re-run to reconfigure.' %
                 self.conf_filename)
 
-    def submit_job(self, job, **kwargs):  #pylint: disable=too-many-locals,too-many-branches,too-many-statements
-        """ Attempt to run a job
+    def submit_job(self, job, output_path=None, exec_path=None):
+        """ Attempt to run a Job
 
         Supply output_path to change the location where SciATH's output
         files will be saved.
@@ -480,19 +480,16 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
         succeeded, and a summary string and full report, if appropriate.
         """
 
-        output_path = os.getcwd()
-        exec_path = os.getcwd()
-        for key, value in kwargs.items():
-            if key == 'output_path':
-                output_path = value
-                if not os.path.isabs(output_path):
-                    raise ValueError(
-                        '[SciATH] Unsupported: output paths must be absolute')
-            if key == 'exec_path':
-                exec_path = value
-                if not os.path.isabs(exec_path):
-                    raise ValueError(
-                        '[SciATH] Unsupported: exec paths must be absolute')
+        if output_path is None:
+            output_path = os.getcwd()
+        else:
+            if not os.path.isabs(output_path):
+                raise ValueError('[SciATH] output paths must be absolute')
+        if exec_path is None:
+            exec_path = os.getcwd()
+        else:
+            if not os.path.isabs(exec_path):
+                raise ValueError('[SciATH] exec paths must be absolute')
 
         if job_complete(job, output_path):
             raise Exception('[SciATH] trying to launch an already-complete Job')
