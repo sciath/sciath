@@ -127,7 +127,6 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
         self.queue_name = []
         self.mpi_launch = []
         self.queuing_system_type = []
-        self.batch_constraint = []
         self.job_submission_command = []
         self.use_batch = False
         if conf_filename:
@@ -165,10 +164,13 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
         # Lazily populate the template information from file
         self._populate_template()
 
-        # Apply replacement map at the Job level
+        # Initialize the lines of the job script as a copy of the template
+        script = self.template[:]
+
+        # Apply replacement map at the Launcher and Job level
         hours_str, minutes_str, seconds_str = _formatted_split_time(
             60.0 * job.total_wall_time())
-        rule_job = {
+        replace_rules = {
             '$SCIATH_JOB_NAME':
                 job.name,
             '$SCIATH_JOB_MAX_RANKS':
@@ -188,11 +190,29 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
             '$SCIATH_JOB_COMPLETE':
                 os.path.join(output_path, job.complete_filename),
         }
-        pattern = _get_multiple_replace_pattern(rule_job)
-        script = [
-            pattern.sub(lambda match, rule=rule_job: rule[match.group(0)], line)
-            for line in self.template
-        ]
+        delete_rules = set()
+        for (term, setting) in (
+            ('$SCIATH_QUEUE_OR_REMOVE_LINE', self.queue_name),
+            ('$SCIATH_ACCOUNT_OR_REMOVE_LINE', self.account_name),
+        ):
+            if not setting:
+                delete_rules.add(term)
+            else:
+                replace_rules[term] = setting
+
+        replace_pattern = _get_multiple_match_pattern(replace_rules)
+
+        if delete_rules:
+            delete_pattern = _get_multiple_match_pattern(delete_rules)
+
+        script_processed = []
+        for line in script:
+            if not delete_rules or re.search(delete_pattern, line) is None:
+                script_processed.append(
+                    replace_pattern.sub(
+                        lambda match, rule=replace_rules: rule[match.group(0)],
+                        line))
+        script = script_processed
 
         # Split the script into preamble, per-task, and postamble
         # This logic is quite brittle.
@@ -244,7 +264,7 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
                     '$SCIATH_TASK_COMMAND': command_join(task.command),
                     '$SCIATH_TASK_RANKS': str(task.get_resource('ranks')),
                 }
-                pattern = _get_multiple_replace_pattern(rule_task)
+                pattern = _get_multiple_match_pattern(rule_task)
                 task_lines_specific = []
                 for line in task_lines:
                     task_lines_specific.append(
@@ -325,8 +345,6 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
                 lines.append('  Account:           %s' % self.account_name)
             if self.queue_name:
                 lines.append('  Queue:             %s' % self.queue_name)
-            if self.batch_constraint:
-                lines.append('  Constraint:        %s' % self.batch_constraint)
         return '\n'.join(lines)
 
     def configure(self):  #pylint: disable=too-many-branches,too-many-statements
@@ -379,14 +397,10 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
         self.set_mpi_launch(user_input)
 
         if self.use_batch:
-            prompt = ('[3] specify a constraint (e.g. "gpu" on Piz Daint) '
-                      '(optional - hit enter if not applicable):')
-            self.batch_constraint = py23input(prompt)
-
-            prompt = '[4] Account to charge (optional - hit enter if not applicable): '
+            prompt = '[3] Account to charge (optional - hit enter if not applicable): '
             self.account_name = py23input(prompt)
 
-            prompt = ('[5] Name of queue to submit tests to '
+            prompt = ('[4] Name of queue to submit tests to '
                       '(optional - hit enter if not applicable): ')
             self.queue_name = py23input(prompt)
 
@@ -417,7 +431,6 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
             conf_file.write('mpiLaunch: %s\n' % self.mpi_launch)
             if self.use_batch:
                 conf_file.write('accountName: %s\n' % self.account_name)
-                conf_file.write('batchConstraint: %s\n' % self.batch_constraint)
                 conf_file.write('queueName: %s\n' % self.queue_name)
 
     def _load_definition(self):  #pylint: disable=too-many-branches
@@ -437,8 +450,6 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
             if 'mpiLaunch' in data:
                 self.set_mpi_launch(data['mpiLaunch'])
             if self.use_batch:
-                if 'batchConstraint' in data:
-                    self.batch_constraint = data['batchConstraint']
                 if 'queueName' in data:
                     self.queue_name = data['queueName']
                 if 'accountName' in data:
@@ -462,11 +473,6 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
                 self.conf_filename)
 
     def _create_job_submission_file(self, job, walltime, output_path):
-
-        # Verify input, check for generic errors
-        if self.batch_constraint and self.queuing_system_type != 'slurm':
-            message = '[SciATH] Constraints are only currently supported with SLURM'
-            raise RuntimeError(message)
 
         if self.queuing_system_type == 'local':
             filename = self._generate_launch_sh(output_path, job)
@@ -746,7 +752,6 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
 
         accountname = self.account_name
         queuename = self.queue_name
-        constraint = self.batch_constraint
         mpi_launch = self.mpi_launch
 
         resources = job.get_max_resources()
@@ -778,11 +783,10 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
 
             file.write("#SBATCH --ntasks=" + str(ranks) + "\n")
 
-            if constraint:
-                file.write("#SBATCH --constraint=" + constraint + "\n")
-
             walltime_string = _formatted_hour_min_sec(float(walltime) * 60.0)
             file.write("#SBATCH --time=" + walltime_string + "\n")
+
+            file.write("#SBATCH --constraint=gpu\n")
 
             file.write("export CRAY_CUDA_MPS=1\n")
 
@@ -810,15 +814,14 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
         return filename
 
 
-def _get_multiple_replace_pattern(source_dict):
-    """ Generate a regex to match any of the keys in source_dict
+def _get_multiple_match_pattern(source):
+    """ Generate a regex to match any of the keys in a source dict or set
 
-        Important: this match is not done on full words, so behavior
+        Important: the match is not done on full words, so behavior
         when one key is a substring of another is undefined.
     """
 
-    def process_word(word):
-        """ add escape characters """
+    def _process_word(word):
         return re.escape(word)
 
-    return re.compile(r'|'.join(map(process_word, source_dict)))
+    return re.compile(r'|'.join(map(_process_word, source)))
