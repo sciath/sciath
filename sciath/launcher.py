@@ -97,7 +97,7 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
     not the status of any particular "run" of a :class:`Job`.
     """
 
-    _default_conf_filename = 'SciATHBatchQueuingSystem.conf'
+    _default_conf_filename = 'SciATH_launcher.conf'
 
     @staticmethod
     def write_default_definition(conf_filename_in=None):

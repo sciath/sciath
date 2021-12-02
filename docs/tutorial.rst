@@ -67,7 +67,7 @@ You will be prompted to describe information about how to run jobs on your syste
 This tutorial can be used on a local machine or a cluster.
 To begin with, enter ``local`` and ``none`` for the first two questions.
 
-This information is stored in a file called ``SciATHBatchQueuingSystem.conf``.
+This information is stored in a file called ``SciATH_launcher.conf``.
 
 Once you've defined this information, you'll see output like the following
 

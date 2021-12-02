@@ -5,7 +5,7 @@
 [ -- Removing output for Test: test4 -- ]
 
 [35m[ *** Executing Tests *** ][0m
-[SciATH] Batch queueing system configuration [SciATHBatchQueuingSystem.conf]
+[SciATH] Batch queueing system configuration [SciATH_launcher.conf]
   Version:           0.9.0
   Queue system:      local
   MPI launcher:      none
