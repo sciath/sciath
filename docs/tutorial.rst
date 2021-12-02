@@ -65,7 +65,7 @@ Execute the SciATH module to run the test
 
 You will be prompted to describe information about how to run jobs on your system.
 This tutorial can be used on a local machine or a cluster.
-To begin with, you may enter ``none`` for the first two questions.
+To begin with, enter ``local`` and ``none`` for the first two questions.
 
 This information is stored in a file called ``SciATHBatchQueuingSystem.conf``.
 
@@ -92,6 +92,7 @@ To (re-)verify your test results, without re-running the tests, use ``-v``:
 Take a look in the directory that was created, called ``first_output``.
 You will see several files and directories, including
 
+  * ``first.sh``, a shell script that was used to run your test
   * ``first.exitcode`` which contains the exitcode (``0``)
   * ``first.stdout`` which contains ``Hello, World!``
   * ``first.stderr``, which should be an empty file
