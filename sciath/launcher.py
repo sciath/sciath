@@ -134,12 +134,6 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
 
         self._setup()
 
-        if self.use_batch:
-            if self.mpi_launch == 'none':
-                raise RuntimeError(
-                    ('[SciATH] If using a queuing system, a valid mpi '
-                     'launch command must be provided'))
-
     def _create_launch_script(self, job, **kwargs):  # pylint: disable=too-many-locals, too-many-branches, too-many-statements
         output_path = os.getcwd()
         for key, value in kwargs.items():
@@ -225,7 +219,8 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
                     raise Exception(
                         "[SciATH] Multiple ranks lines found in template")
                 ranks_line_found = True
-                task_lines.append(line)
+                if self.mpi_launch != 'none':
+                    task_lines.append(line)
             elif '$SCIATH_TASK_COMMAND' in line:
                 preamble_finished = True
                 if command_line_found:
@@ -251,15 +246,12 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
                     script_file.write('\n')
                 task_ranks = task.get_resource('ranks')
                 rule_task = {
-                    '$SCIATH_TASK_COMMAND':
-                        command_join(task.command),
-                    '$SCIATH_TASK_RANKS':
-                        str(task_ranks),
-                    '$SCIATH_TASK_MPI_RUN':
-                        command_join(
-                            _format_mpi_launch_command(self.mpi_launch,
-                                                       task_ranks)),
+                    '$SCIATH_TASK_COMMAND': command_join(task.command),
+                    '$SCIATH_TASK_RANKS': str(task_ranks),
                 }
+                if self.mpi_launch != 'none':
+                    rule_task['$SCIATH_TASK_MPI_RUN'] = command_join(
+                        _format_mpi_launch_command(self.mpi_launch, task_ranks))
                 pattern = _get_multiple_match_pattern(rule_task)
                 task_lines_specific = []
                 for line in task_lines:
@@ -285,10 +277,11 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
 
     def set_mpi_launch(self, name):
         """ Set the MPI launch command and check its form """
+        if name in ['none', 'None', '']:
+            name = 'none'
         self.mpi_launch = name
         # check for existence of "rank" keyword in the string "name"
-        if self.queuing_system_type in ['none', 'None', 'local'
-                                       ] and name != 'none':
+        if self.queuing_system_type in ['none', 'local'] and name != 'none':
             keywordlist = ['<ranks>', '<cores>', '<tasks>', '<RANKS>']
             # check of any of keywordlist[i] appears in name
             valid_launcher = False
@@ -524,6 +517,10 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
         _set_blocking_io_stdout()
 
         if self.use_batch:
+            ranks = job.resource_max('ranks')
+            if self.mpi_launch == 'none' and ranks is not None and ranks != 1:
+                return False, 'MPI required', ['Not launched: requires MPI']
+
             script_filename = self._create_launch_script(
                 job, output_path=output_path)
             launch_command = self.job_submission_command + [script_filename]
@@ -542,7 +539,7 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
                 pass
         else:
             mpi_launch = self.mpi_launch
-            ranks = job.resource_max('mpiranks')
+            ranks = job.resource_max('ranks')
             threads = job.resource_max('threads')
             if threads is not None and threads != 1:
                 raise ValueError(
