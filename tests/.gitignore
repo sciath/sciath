@@ -1,4 +1,5 @@
-*.output
-*_sandbox
-SciATH_template*
-*.conf
+/*.output
+/*_sandbox
+/SciATH_template*
+/*.conf
+/sciath_test_report.txt

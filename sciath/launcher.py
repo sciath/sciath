@@ -134,20 +134,13 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
 
         self._setup()
 
-    def _create_launch_script(self, job, **kwargs):  # pylint: disable=too-many-locals, too-many-branches, too-many-statements
-        output_path = os.getcwd()
-        for key, value in kwargs.items():
-            if key == 'output_path':
-                output_path = value
-                if not os.path.isabs(output_path):
-                    raise ValueError(
-                        '[SciATH] Unsupported: output paths must be absolute')
+    def _create_launch_script(self, job, output_path):  # pylint: disable=too-many-locals, too-many-branches, too-many-statements
+        if not os.path.isabs(output_path):
+            raise ValueError(
+                '[SciATH] Unsupported: output paths must be absolute')
 
         # Lazily populate the template information from file
         self._populate_template()
-
-        # Initialize the lines of the job script as a copy of the template
-        script = self.template[:]
 
         # Apply replacement map at the Launcher and Job level
         hours_str, minutes_str, seconds_str = _formatted_split_time(
@@ -182,19 +175,9 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
             else:
                 replace_rules[term] = setting
 
-        replace_pattern = _get_multiple_match_pattern(replace_rules)
-
-        if delete_rules:
-            delete_pattern = _get_multiple_match_pattern(delete_rules)
-
-        script_processed = []
-        for line in script:
-            if not delete_rules or re.search(delete_pattern, line) is None:
-                script_processed.append(
-                    replace_pattern.sub(
-                        lambda match, rule=replace_rules: rule[match.group(0)],
-                        line))
-        script = script_processed
+        script = _process_lines(self.template[:],
+                                replace=replace_rules,
+                                delete=delete_rules)
 
         # Split the script into preamble, per-task, and postamble
         # This logic is quite brittle.
@@ -252,13 +235,10 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
                 if self.mpi_launch != 'none':
                     rule_task['$SCIATH_TASK_MPI_RUN'] = command_join(
                         _format_mpi_launch_command(self.mpi_launch, task_ranks))
-                pattern = _get_multiple_match_pattern(rule_task)
-                task_lines_specific = []
-                for line in task_lines:
-                    task_lines_specific.append(
-                        pattern.sub(
-                            lambda match, rule=rule_task: rule[match.group(0)],
-                            line))
+
+                task_lines_specific = _process_lines(task_lines,
+                                                     replace=rule_task)
+
                 script_file.writelines(task_lines_specific)
             script_file.writelines(postamble)
 
@@ -467,8 +447,8 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
                 'detected. Please delete it and re-run to reconfigure.' %
                 self.conf_filename)
 
-    def submit_job(self, job, **kwargs):  #pylint: disable=too-many-locals,too-many-branches,too-many-statements
-        """ Attempt to run a job
+    def submit_job(self, job, output_path=None, exec_path=None):
+        """ Attempt to run a Job
 
         Supply output_path to change the location where SciATH's output
         files will be saved.
@@ -480,19 +460,16 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
         succeeded, and a summary string and full report, if appropriate.
         """
 
-        output_path = os.getcwd()
-        exec_path = os.getcwd()
-        for key, value in kwargs.items():
-            if key == 'output_path':
-                output_path = value
-                if not os.path.isabs(output_path):
-                    raise ValueError(
-                        '[SciATH] Unsupported: output paths must be absolute')
-            if key == 'exec_path':
-                exec_path = value
-                if not os.path.isabs(exec_path):
-                    raise ValueError(
-                        '[SciATH] Unsupported: exec paths must be absolute')
+        if output_path is None:
+            output_path = os.getcwd()
+        else:
+            if not os.path.isabs(output_path):
+                raise ValueError('[SciATH] output paths must be absolute')
+        if exec_path is None:
+            exec_path = os.getcwd()
+        else:
+            if not os.path.isabs(exec_path):
+                raise ValueError('[SciATH] exec paths must be absolute')
 
         if job_complete(job, output_path):
             raise Exception('[SciATH] trying to launch an already-complete Job')
@@ -524,19 +501,14 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
 
         return True, None, None
 
-    def clean(self, job, **kwargs):
+    def clean(self, job, output_path=None):
         """ Remove all files created by the Launcher itself
 
             Note that this does not remove any files created by
             the Job (via its Tasks).
         """
 
-        output_path = None
-        for key, value in kwargs.items():
-            if key == 'output_path':
-                output_path = value
-
-        if not output_path:
+        if output_path is None:
             raise ValueError(
                 '[SciATH] cannot clean without an explicit output_path')
         if not os.path.isabs(output_path):
@@ -558,6 +530,32 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
 
     def _batch_filename(self, job):
         return job.name + os.path.splitext(self.template_filename)[1]
+
+
+def _process_lines(lines_in, replace=None, delete=None):
+    """ Process a list of lines based on sets of keys to replace and delete """
+    if delete is None:
+        delete = set()
+        if replace is None:
+            return lines_in[:]
+    else:
+        delete_pattern = _get_multiple_match_pattern(delete)
+        if replace is None:
+            return [
+                line for line in lines_in
+                if re.search(delete_pattern, line) is not None
+            ]
+
+    lines = []
+    replace_pattern = _get_multiple_match_pattern(replace)
+    for line in lines_in:
+        if not delete or re.search(delete_pattern, line) is None:
+            if replace:
+                lines.append(
+                    replace_pattern.sub(
+                        lambda match, rule=replace: rule[match.group(0)], line))
+
+    return lines
 
 
 def _get_multiple_match_pattern(source):
