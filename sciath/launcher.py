@@ -164,10 +164,13 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
         # Lazily populate the template information from file
         self._populate_template()
 
-        # Apply replacement map at the Job level
+        # Initialize the lines of the job script as a copy of the template
+        script = self.template[:]
+
+        # Apply replacement map at the Launcher and Job level
         hours_str, minutes_str, seconds_str = _formatted_split_time(
             60.0 * job.total_wall_time())
-        rule_job = {
+        replace_rules = {
             '$SCIATH_JOB_NAME':
                 job.name,
             '$SCIATH_JOB_MAX_RANKS':
@@ -187,11 +190,29 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
             '$SCIATH_JOB_COMPLETE':
                 os.path.join(output_path, job.complete_filename),
         }
-        pattern = _get_multiple_replace_pattern(rule_job)
-        script = [
-            pattern.sub(lambda match, rule=rule_job: rule[match.group(0)], line)
-            for line in self.template
-        ]
+        delete_rules = set()
+        for (term, setting) in (
+            ('$SCIATH_QUEUE_OR_REMOVE_LINE', self.queue_name),
+            ('$SCIATH_ACCOUNT_OR_REMOVE_LINE', self.account_name),
+        ):
+            if not setting:
+                delete_rules.add(term)
+            else:
+                replace_rules[term] = setting
+
+        replace_pattern = _get_multiple_match_pattern(replace_rules)
+
+        if delete_rules:
+            delete_pattern = _get_multiple_match_pattern(delete_rules)
+
+        script_processed = []
+        for line in script:
+            if not delete_rules or re.search(delete_pattern, line) is None:
+                script_processed.append(
+                    replace_pattern.sub(
+                        lambda match, rule=replace_rules: rule[match.group(0)],
+                        line))
+        script = script_processed
 
         # Split the script into preamble, per-task, and postamble
         # This logic is quite brittle.
@@ -243,7 +264,7 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
                     '$SCIATH_TASK_COMMAND': command_join(task.command),
                     '$SCIATH_TASK_RANKS': str(task.get_resource('ranks')),
                 }
-                pattern = _get_multiple_replace_pattern(rule_task)
+                pattern = _get_multiple_match_pattern(rule_task)
                 task_lines_specific = []
                 for line in task_lines:
                     task_lines_specific.append(
@@ -793,15 +814,14 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
         return filename
 
 
-def _get_multiple_replace_pattern(source_dict):
-    """ Generate a regex to match any of the keys in source_dict
+def _get_multiple_match_pattern(source):
+    """ Generate a regex to match any of the keys in a source dict or set
 
-        Important: this match is not done on full words, so behavior
+        Important: the match is not done on full words, so behavior
         when one key is a substring of another is undefined.
     """
 
-    def process_word(word):
-        """ add escape characters """
+    def _process_word(word):
         return re.escape(word)
 
-    return re.compile(r'|'.join(map(process_word, source_dict)))
+    return re.compile(r'|'.join(map(_process_word, source)))
