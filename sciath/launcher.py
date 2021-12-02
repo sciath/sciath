@@ -119,11 +119,11 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
         return _generate_default_template(system_type)
 
     def __init__(self, conf_filename=None):
-        self.account_name = []
-        self.queue_name = []
-        self.mpi_launch = []
-        self.queuing_system_type = []
-        self.job_submission_command = []
+        self.account_name = None
+        self.queue_name = None
+        self.mpi_launch = None
+        self.queuing_system_type = None
+        self.job_submission_command = None
         self.blocking = None
         if conf_filename:
             self.conf_filename = conf_filename
