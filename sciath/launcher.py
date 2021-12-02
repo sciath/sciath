@@ -11,6 +11,7 @@ import sciath
 from sciath import yaml_parse
 from sciath import SCIATH_COLORS
 from sciath._sciath_io import py23input, _remove_file_if_it_exists, command_join
+from sciath._default_templates import _generate_default_template
 
 
 # mpiexec has been observed to set non-blocking I/O, which
@@ -28,22 +29,10 @@ class SciATHLoadException(Exception):
     """ Exception for a failed load of configuration file """
 
 
-def _formatted_hour_min(seconds):
-    minutes = divmod(int(seconds), 60)[0]
-    hours, minutes = divmod(minutes, 60)
-    return "%02d:%02d" % (hours, minutes)
-
-
 def _formatted_split_time(seconds):
     minutes, seconds = divmod(seconds, 60)
     hours, minutes = divmod(minutes, 60)
     return [('%02d' % unit) for unit in (hours, minutes, seconds)]
-
-
-def _formatted_hour_min_sec(seconds):
-    minutes, seconds = divmod(seconds, 60)
-    hours, minutes = divmod(minutes, 60)
-    return "%02d:%02d:%02d" % (hours, minutes, seconds)
 
 
 def _format_mpi_launch_command(mpi_launch, ranks):
@@ -121,8 +110,14 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
             conf_file.write('patchVersion: %s\n' % patch)
             conf_file.write('queuingSystemType: none\n')
             conf_file.write('mpiLaunch: none\n')
+            conf_file.write('template: none\n')
 
-    def __init__(self, conf_filename=None, template_filename=None):
+    @staticmethod
+    def write_default_template(system_type):
+        """ Writes a default batch/queue system template for a limited set of system types """
+        return _generate_default_template(system_type)
+
+    def __init__(self, conf_filename=None):
         self.account_name = []
         self.queue_name = []
         self.mpi_launch = []
@@ -134,14 +129,7 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
         else:
             self.conf_filename = Launcher._default_conf_filename
         self.queue_file_extension = None
-
-        # Incremental step: use a template to construct the submission
-        # script (but not for configuration)
-        self.use_template = template_filename is not None
-        if self.use_template:
-            self.template_filename = os.path.expanduser(template_filename)
-            self.launch_script_filename = 'launch' + os.path.splitext(
-                template_filename)[1]
+        self.template_filename = None
         self.template = None
 
         self._setup()
@@ -231,7 +219,7 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
                         "[SciATH] Multiple threads lines found in template")
                 threads_line_found = True
                 task_lines.append(line)
-            elif '$SCIATH_TASK_RANKS' in line:
+            elif '$SCIATH_TASK_RANKS' in line or '$SCIATH_TASK_MPI_RUN' in line:
                 preamble_finished = True
                 if ranks_line_found:
                     raise Exception(
@@ -251,7 +239,8 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
                 postamble.append(line)
 
         # Assemble the script, applying task-level replacements
-        script_filename = os.path.join(output_path, self.launch_script_filename)
+        script_filename = os.path.join(
+            output_path, 'launch' + os.path.splitext(self.template_filename)[1])
         with open(script_filename, 'w') as script_file:
             script_file.writelines(preamble)
             first = True
@@ -260,9 +249,16 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
                     first = False
                 else:
                     script_file.write('\n')
+                task_ranks = task.get_resource('ranks')
                 rule_task = {
-                    '$SCIATH_TASK_COMMAND': command_join(task.command),
-                    '$SCIATH_TASK_RANKS': str(task.get_resource('ranks')),
+                    '$SCIATH_TASK_COMMAND':
+                        command_join(task.command),
+                    '$SCIATH_TASK_RANKS':
+                        str(task_ranks),
+                    '$SCIATH_TASK_MPI_RUN':
+                        command_join(
+                            _format_mpi_launch_command(self.mpi_launch,
+                                                       task_ranks)),
                 }
                 pattern = _get_multiple_match_pattern(rule_task)
                 task_lines_specific = []
@@ -277,9 +273,15 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
         return script_filename
 
     def _populate_template(self):
+        """ Open the template file, interpreting a relative path
+        with respect to the location of the configuration file """
         if self.template is None:
-            with open(self.template_filename, 'r') as template_file:
-                self.template = template_file.readlines()
+            filename = self.template_filename
+            if not os.path.isabs(filename):
+                filename = os.path.join(os.path.dirname(self.conf_filename),
+                                        filename)
+            with open(filename, 'r') as file:
+                self.template = file.readlines()
 
     def set_mpi_launch(self, name):
         """ Set the MPI launch command and check its form """
@@ -345,6 +347,8 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
                 lines.append('  Account:           %s' % self.account_name)
             if self.queue_name:
                 lines.append('  Queue:             %s' % self.queue_name)
+            if self.queue_name:
+                lines.append('  Template:          %s' % self.template_filename)
         return '\n'.join(lines)
 
     def configure(self):  #pylint: disable=too-many-branches,too-many-statements
@@ -404,6 +408,16 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
                       '(optional - hit enter if not applicable): ')
             self.queue_name = py23input(prompt)
 
+            # Here, add questions about whether you want to override the default template
+
+        # Always generate since there is not yet a way to override the default template
+        if self.queuing_system_type != 'none':
+            self.template_filename = self.write_default_template(
+                self.queuing_system_type)
+            print('** The template for generating batch submission files is\n')
+            print('**  ', self.template_filename)
+            print('**  You may modify it if desired\n')
+
         self._write_definition()
         print('\n')
         print(
@@ -432,6 +446,7 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
             if self.use_batch:
                 conf_file.write('accountName: %s\n' % self.account_name)
                 conf_file.write('queueName: %s\n' % self.queue_name)
+                conf_file.write('template: %s\n' % self.template_filename)
 
     def _load_definition(self):  #pylint: disable=too-many-branches
         major_file = None
@@ -454,6 +469,8 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
                     self.queue_name = data['queueName']
                 if 'accountName' in data:
                     self.account_name = data['accountName']
+                if 'template' in data:
+                    self.template_filename = data['template']
         except (IOError, OSError):  # Would be FileNotFoundError for Python >3.5
             # pylint: disable=bad-option-value,raise-missing-from
             raise SciATHLoadException(('[SciATH] Configuration file missing. '
@@ -471,19 +488,6 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
                 '[SciATH] Incompatible, outdated configuration file %s '
                 'detected. Please delete it and re-run to reconfigure.' %
                 self.conf_filename)
-
-    def _create_job_submission_file(self, job, walltime, output_path):
-
-        if self.queuing_system_type == 'local':
-            filename = self._generate_launch_sh(output_path, job)
-        elif self.queuing_system_type == 'lsf':
-            filename = self._generate_launch_lsf(None, walltime, output_path,
-                                                 job)
-        elif self.queuing_system_type == 'slurm':
-            filename = self._generate_launch_slurm(walltime, output_path, job)
-
-        print('Created submission file:', filename)
-        return filename
 
     def submit_job(self, job, **kwargs):  #pylint: disable=too-many-locals,too-many-branches,too-many-statements
         """ Attempt to run a job
@@ -517,7 +521,9 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
         if job_launched(job, output_path):
             raise Exception('[SciATH] trying to launch an already-launched Job')
 
-        if self.use_template:
+        _set_blocking_io_stdout()
+
+        if self.use_batch:
             script_filename = self._create_launch_script(
                 job, output_path=output_path)
             launch_command = self.job_submission_command + [script_filename]
@@ -534,12 +540,7 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
             _set_blocking_io_stdout()
             with open(os.path.join(output_path, job.launched_filename), 'w'):
                 pass
-            return True, None, None
-
-        # "Old" way of creating a job script, to be superceded with template approach
-        _set_blocking_io_stdout()
-
-        if not self.use_batch:
+        else:
             mpi_launch = self.mpi_launch
             ranks = job.resource_max('mpiranks')
             threads = job.resource_max('threads')
@@ -584,23 +585,6 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
                 pass
             with open(os.path.join(output_path, job.complete_filename), 'w'):
                 pass
-        else:
-            walltime = job.total_wall_time()
-
-            launchfile = self._create_job_submission_file(
-                job, walltime, output_path)
-            launch_command = self.job_submission_command + [launchfile]
-            cwd_back = os.getcwd()
-            os.chdir(exec_path)
-            print('%s[Executing %s]%s from %s' %
-                  (SCIATH_COLORS.subheader, job.name, SCIATH_COLORS.endc,
-                   exec_path))
-            print(command_join(launch_command))
-            _subprocess_run(launch_command, universal_newlines=True)
-            os.chdir(cwd_back)
-            _set_blocking_io_stdout()
-            with open(os.path.join(output_path, job.launched_filename), 'w'):
-                pass
 
         return True, None, None
 
@@ -639,179 +623,6 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
 
     def _batch_filename(self, job):
         return job.name + "." + self.queue_file_extension
-
-    def _generate_launch_sh(self, output_path, job):
-
-        mpi_launch = self.mpi_launch
-        filename = os.path.join(output_path, self._batch_filename(job))
-        exitcode_name = job.exitcode_filename
-
-        # This is awkward and suboptimal. It would be better to have
-        # the ability to modify the command used to launch the script,
-        # based on the job. Then, output could be redirected there,
-        # making the local launch behave more like cluster launch.
-        redirect_string = "1>%s 2>%s" % (
-            os.path.join(output_path, job.stdout_filename),
-            os.path.join(output_path, job.stderr_filename),
-        )
-
-        with open(filename, "w") as file:
-            file.write("#!/usr/bin/env sh\n")
-            file.write("# SciATH: auto-generated POSIX shell script\n\n")
-
-            _remove_file_if_it_exists(os.path.join(output_path, exitcode_name))
-
-            for command, resources in job.create_execute_command():
-                ranks = resources["mpiranks"]
-                launch = [redirect_string]
-                launch += _format_mpi_launch_command(mpi_launch, ranks)
-                if isinstance(command, list):
-                    launch.append(command_join(command))
-                else:
-                    launch.append(command)
-
-                file.write(" ".join(launch) + " \n")
-                file.write("echo $? >> " +
-                           os.path.join(output_path, exitcode_name) + "\n")
-            file.write("\n")
-            file.write("touch %s\n" %
-                       os.path.join(output_path, job.complete_filename))
-
-        return filename
-
-    def _generate_launch_lsf(self, rusage, walltime, output_path, job):  #pylint: disable=too-many-locals
-
-        if walltime is None:
-            message = "[SciATH] _generate_launch_lsf requires walltime be specified"
-            raise RuntimeError(message)
-
-        accountname = self.account_name
-        queuename = self.queue_name
-        mpi_launch = self.mpi_launch
-
-        resources = job.get_max_resources()
-        ranks = resources["mpiranks"]
-
-        exitcode_name = job.exitcode_filename
-        stdout_name = job.stdout_filename
-        stderr_name = job.stderr_filename
-
-        filename = os.path.join(output_path, self._batch_filename(job))
-        with open(filename, "w") as file:
-            # LSF specifics
-            file.write("#!/bin/sh\n")
-            file.write("# SciATH: auto-generated lsf file\n")
-
-            if accountname:
-                file.write("#BSUB -G " + accountname + "\n")
-
-            file.write("#BSUB -J " + "sciath.job-" + job.name + "\n")
-            file.write("#BSUB -o " + os.path.join(output_path, stdout_name) +
-                       "\n")
-            file.write("#BSUB -e " + os.path.join(output_path, stderr_name) +
-                       "\n")
-
-            if queuename:
-                file.write("#BSUB -q " + queuename + "\n")
-
-            file.write("#BSUB -n " + str(ranks) + "\n")
-
-            if rusage:
-                file.write("#BSUB -R \'" + rusage + "\'" + "\n")
-
-            walltime_string = _formatted_hour_min(float(walltime) * 60.0)
-            file.write("#BSUB -W " + walltime_string + "\n")
-
-            _remove_file_if_it_exists(os.path.join(output_path, exitcode_name))
-
-            command_resource = job.create_execute_command()
-            n_tasks = len(command_resource)
-            for i in range(0, n_tasks):
-                j = command_resource[i]
-                j_ranks = j[1]["mpiranks"]
-                launch = []
-                launch += _format_mpi_launch_command(mpi_launch, j_ranks)
-                if isinstance(j[0], list):
-                    launch.append(command_join(j[0]))
-                else:
-                    launch.append(j[0])
-
-                file.write(" ".join(launch) + "\n")
-                file.write("echo $? >> " +
-                           os.path.join(output_path, exitcode_name) + "\n")
-            file.write("\n")
-            file.write("touch %s\n" %
-                       os.path.join(output_path, job.complete_filename))
-        return filename
-
-    def _generate_launch_slurm(self, walltime, output_path, job):  #pylint: disable=too-many-locals
-
-        if walltime is None:
-            message = "[SciATH] _generate_launch_slurm requires walltime be specified"
-            raise RuntimeError(message)
-
-        accountname = self.account_name
-        queuename = self.queue_name
-        mpi_launch = self.mpi_launch
-
-        resources = job.get_max_resources()
-        ranks = resources["mpiranks"]
-
-        exitcode_name = job.exitcode_filename
-        stdout_name = job.stdout_filename
-        stderr_name = job.stderr_filename
-
-        filename = os.path.join(output_path, self._batch_filename(job))
-        with open(filename, "w") as file:
-            # SLURM specifics
-            file.write("#!/bin/bash -l\n")
-            file.write("# SciATH: auto-generated slurm file\n")
-
-            if accountname:
-                file.write("#SBATCH --account=" + accountname +
-                           "\n")  # account to charge
-
-            file.write("#SBATCH --job-name=\"" + "sciath.job-" + job.name +
-                       "\"" + "\n")
-            file.write("#SBATCH --output=" +
-                       os.path.join(output_path, stdout_name) + "\n")
-            file.write("#SBATCH --error=" +
-                       os.path.join(output_path, stderr_name) + "\n")
-
-            if queuename:
-                file.write("#SBATCH --partition=" + queuename + "\n")
-
-            file.write("#SBATCH --ntasks=" + str(ranks) + "\n")
-
-            walltime_string = _formatted_hour_min_sec(float(walltime) * 60.0)
-            file.write("#SBATCH --time=" + walltime_string + "\n")
-
-            file.write("#SBATCH --constraint=gpu\n")
-
-            file.write("export CRAY_CUDA_MPS=1\n")
-
-            _remove_file_if_it_exists(os.path.join(output_path, exitcode_name))
-
-            command_resource = job.create_execute_command()
-            n_tasks = len(command_resource)
-            for i in range(0, n_tasks):
-                j = command_resource[i]
-                j_ranks = j[1]["mpiranks"]
-                launch = []
-                launch += _format_mpi_launch_command(mpi_launch, j_ranks)
-                if isinstance(j[0], list):
-                    launch.append(command_join(j[0]))
-                else:
-                    launch.append(j[0])
-
-                file.write(" ".join(launch) + "\n")
-                file.write("echo $? >> " +
-                           os.path.join(output_path, exitcode_name) + "\n")
-            file.write("\n")
-            file.write("touch %s\n" %
-                       os.path.join(output_path, job.complete_filename))
-        file.close()
-        return filename
 
 
 def _get_multiple_match_pattern(source):
