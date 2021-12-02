@@ -104,16 +104,17 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
         """ Writes a default configuration file """
         major, minor, patch = sciath.__version__
         conf_filename = conf_filename_in if conf_filename_in else Launcher._default_conf_filename
+        template_filename = Launcher.write_default_template()
         with open(conf_filename, 'w') as conf_file:
             conf_file.write('majorVersion: %s\n' % major)
             conf_file.write('minorVersion: %s\n' % minor)
             conf_file.write('patchVersion: %s\n' % patch)
-            conf_file.write('queuingSystemType: none\n')
+            conf_file.write('queuingSystemType: local\n')
             conf_file.write('mpiLaunch: none\n')
-            conf_file.write('template: none\n')
+            conf_file.write('template: %s\n' %template_filename)
 
     @staticmethod
-    def write_default_template(system_type):
+    def write_default_template(system_type="local"):
         """ Writes a default batch/queue system template for a limited set of system types """
         return _generate_default_template(system_type)
 
