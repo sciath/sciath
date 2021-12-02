@@ -1,8 +1,3 @@
-SciATHBatchQueuingSystem.conf
-SciATH_template*
-
-*.bak
-
 # Python
 *.pyc
 __pycache__
