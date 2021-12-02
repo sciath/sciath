@@ -501,19 +501,14 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
 
         return True, None, None
 
-    def clean(self, job, **kwargs):
+    def clean(self, job, output_path=None):
         """ Remove all files created by the Launcher itself
 
             Note that this does not remove any files created by
             the Job (via its Tasks).
         """
 
-        output_path = None
-        for key, value in kwargs.items():
-            if key == 'output_path':
-                output_path = value
-
-        if not output_path:
+        if output_path is None:
             raise ValueError(
                 '[SciATH] cannot clean without an explicit output_path')
         if not os.path.isabs(output_path):
