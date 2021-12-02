@@ -20,7 +20,7 @@ def test_print(test, output_path):
 
 # Default verifier (check error code)
 def test1():  # result: pass
-    cmd = ['echo', '"aBc";', 'echo' '"kspits=30"', 'echo ""']
+    cmd = ['printf', '"aBc\nkspits=30\n"']
 
     t = Test(Job(Task(cmd), 'Test_1'))
     job_launcher.submit_job(t.job, output_path=OUTPUT_PATH)
@@ -30,7 +30,7 @@ def test1():  # result: pass
 
 
 def test2():  # result: pass
-    cmd = ['echo', '"aBc";', 'echo' '"kspits=30"']
+    cmd = ['printf', 'aBc\nkspits=30\n']
 
     t = Test(Job(Task(cmd), 'Test_2'))
     job_launcher.submit_job(t.job, output_path=OUTPUT_PATH)
@@ -40,7 +40,7 @@ def test2():  # result: pass
 
 
 def test3():  # result: fail
-    cmd = ['echo', '"aBc";', 'echo' '"kspits=30"']
+    cmd = ['printf', 'aBc\nkspits=30\n']
 
     t = Test(Job(Task(cmd), 'Test_3'))
     t.verifier.set_exit_codes_success([1])
@@ -51,7 +51,7 @@ def test3():  # result: fail
 
 
 def test4():  # result: pass
-    cmd = ['echo', '"aBc";', 'echo' '"kspits=30"']
+    cmd = ['printf', 'aBc\nkspits=30\n']
 
     t = Test(Job(Task(cmd), 'Test_4'))
     job_launcher.submit_job(t.job, output_path=OUTPUT_PATH)
@@ -80,11 +80,9 @@ def main():
     t4 = test4()
     t4.verify(output_path=OUTPUT_PATH)
     test_print(t4, output_path=OUTPUT_PATH)
-    job_launcher.clean(t4.job, output_path=OUTPUT_PATH)
 
-    tests = [t1, t2, t3, t4]
-    for t in tests:
-        job_launcher.clean(t.job, output_path=OUTPUT_PATH)
+    # test cleaning up after one job
+    job_launcher.clean(t1.job, output_path=OUTPUT_PATH)
 
 
 main()

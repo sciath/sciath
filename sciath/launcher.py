@@ -104,16 +104,17 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
         """ Writes a default configuration file """
         major, minor, patch = sciath.__version__
         conf_filename = conf_filename_in if conf_filename_in else Launcher._default_conf_filename
+        template_filename = Launcher.write_default_template()
         with open(conf_filename, 'w') as conf_file:
             conf_file.write('majorVersion: %s\n' % major)
             conf_file.write('minorVersion: %s\n' % minor)
             conf_file.write('patchVersion: %s\n' % patch)
-            conf_file.write('queuingSystemType: none\n')
+            conf_file.write('queuingSystemType: local\n')
             conf_file.write('mpiLaunch: none\n')
-            conf_file.write('template: none\n')
+            conf_file.write('template: %s\n' % template_filename)
 
     @staticmethod
-    def write_default_template(system_type):
+    def write_default_template(system_type="local"):
         """ Writes a default batch/queue system template for a limited set of system types """
         return _generate_default_template(system_type)
 
@@ -123,7 +124,6 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
         self.mpi_launch = []
         self.queuing_system_type = []
         self.job_submission_command = []
-        self.use_batch = False
         self.blocking = None
         if conf_filename:
             self.conf_filename = conf_filename
@@ -297,29 +297,21 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
 
     def set_queue_system_type(self, system_type):
         """ Set queueing system type and derived properties """
-        if system_type in ['sh', 'local', 'Local']:
+        if system_type in ['none', 'None', 'sh', 'local', 'Local']:
             self.queuing_system_type = 'local'
             self.job_submission_command = ['sh']
-            self.use_batch = True
             self.blocking = True
 
         elif system_type in ['LSF', 'lsf']:
             self.queuing_system_type = 'lsf'
             self.job_submission_command = ['sh', '-c',
                                            'bsub < $0']  # This allows "<".
-            self.use_batch = True
             self.blocking = False
 
         elif system_type in ['SLURM', 'slurm']:
             self.queuing_system_type = 'slurm'
             self.job_submission_command = ['sbatch']
-            self.use_batch = True
             self.blocking = False
-
-        elif system_type in ['none', 'None']:
-            self.queuing_system_type = 'none'
-            self.job_submission_command = ''
-            self.blocking = True
 
         else:
             raise RuntimeError(
@@ -333,15 +325,14 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
         lines.append('  Version:           %d.%d.%d' % sciath.__version__)
         lines.append('  Queue system:      %s' % self.queuing_system_type)
         lines.append('  MPI launcher:      %s' % self.mpi_launch)
-        if self.use_batch:
-            lines.append('  Submit command:    %s' %
-                         command_join(self.job_submission_command))
-            if self.account_name:
-                lines.append('  Account:           %s' % self.account_name)
-            if self.queue_name:
-                lines.append('  Queue:             %s' % self.queue_name)
-            if self.queue_name:
-                lines.append('  Template:          %s' % self.template_filename)
+        lines.append('  Submit command:    %s' %
+                     command_join(self.job_submission_command))
+        if self.account_name:
+            lines.append('  Account:           %s' % self.account_name)
+        if self.queue_name:
+            lines.append('  Queue:             %s' % self.queue_name)
+        if self.queue_name:
+            lines.append('  Template:          %s' % self.template_filename)
         return '\n'.join(lines)
 
     def configure(self):  #pylint: disable=too-many-branches,too-many-statements
@@ -351,7 +342,7 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
         print('Creating new configuration file ', self.conf_filename)
         user_input = None
         while not user_input:
-            prompt = '[1] Batch queuing system type <local,lsf,slurm,none>: '
+            prompt = '[1] Batch queuing system type <local,lsf,slurm>: '
             user_input = py23input(prompt)
             if not user_input:
                 print('Required.')
@@ -393,23 +384,19 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
                 ))
         self.set_mpi_launch(user_input)
 
-        if self.use_batch:
-            prompt = '[3] Account to charge (optional - hit enter if not applicable): '
-            self.account_name = py23input(prompt)
+        prompt = '[3] Account to charge (optional - hit enter if not applicable): '
+        self.account_name = py23input(prompt)
 
-            prompt = ('[4] Name of queue to submit tests to '
-                      '(optional - hit enter if not applicable): ')
-            self.queue_name = py23input(prompt)
+        prompt = ('[4] Name of queue to submit tests to '
+                  '(optional - hit enter if not applicable): ')
+        self.queue_name = py23input(prompt)
 
-            # Here, add questions about whether you want to override the default template
+        self.template_filename = self.write_default_template(
+            self.queuing_system_type)
 
-        # Always generate since there is not yet a way to override the default template
-        if self.queuing_system_type != 'none':
-            self.template_filename = self.write_default_template(
-                self.queuing_system_type)
-            print('** The template for generating batch submission files is\n')
-            print('**  ', self.template_filename)
-            print('**  You may modify it if desired\n')
+        print('** The template for generating batch submission files is\n')
+        print('**  ', self.template_filename)
+        print('**  You may modify it if desired\n')
 
         self._write_definition()
         print('\n')
@@ -436,10 +423,9 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
             conf_file.write('queuingSystemType: %s\n' %
                             self.queuing_system_type)
             conf_file.write('mpiLaunch: %s\n' % self.mpi_launch)
-            if self.use_batch:
-                conf_file.write('accountName: %s\n' % self.account_name)
-                conf_file.write('queueName: %s\n' % self.queue_name)
-                conf_file.write('template: %s\n' % self.template_filename)
+            conf_file.write('accountName: %s\n' % self.account_name)
+            conf_file.write('queueName: %s\n' % self.queue_name)
+            conf_file.write('template: %s\n' % self.template_filename)
 
     def _load_definition(self):  #pylint: disable=too-many-branches
         major_file = None
@@ -457,13 +443,12 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
                 self.set_queue_system_type(data['queuingSystemType'])
             if 'mpiLaunch' in data:
                 self.set_mpi_launch(data['mpiLaunch'])
-            if self.use_batch:
-                if 'queueName' in data:
-                    self.queue_name = data['queueName']
-                if 'accountName' in data:
-                    self.account_name = data['accountName']
-                if 'template' in data:
-                    self.template_filename = data['template']
+            if 'queueName' in data:
+                self.queue_name = data['queueName']
+            if 'accountName' in data:
+                self.account_name = data['accountName']
+            if 'template' in data:
+                self.template_filename = data['template']
         except (IOError, OSError):  # Would be FileNotFoundError for Python >3.5
             # pylint: disable=bad-option-value,raise-missing-from
             raise SciATHLoadException(('[SciATH] Configuration file missing. '
@@ -516,72 +501,26 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
 
         _set_blocking_io_stdout()
 
-        if self.use_batch:
-            ranks = job.resource_max('ranks')
-            if self.mpi_launch == 'none' and ranks is not None and ranks != 1:
-                return False, 'MPI required', ['Not launched: requires MPI']
+        ranks = job.resource_max('ranks')
+        if self.mpi_launch == 'none' and ranks is not None and ranks != 1:
+            return False, 'MPI required', ['Not launched: requires MPI']
 
-            script_filename = self._create_launch_script(
-                job, output_path=output_path)
-            launch_command = self.job_submission_command + [script_filename]
+        script_filename = self._create_launch_script(job,
+                                                     output_path=output_path)
+        launch_command = self.job_submission_command + [script_filename]
 
-            print('%s[Executing %s]%s from %s' %
-                  (SCIATH_COLORS.subheader, job.name, SCIATH_COLORS.endc,
-                   exec_path))
-            print(command_join(launch_command))
+        print(
+            '%s[Executing %s]%s from %s' %
+            (SCIATH_COLORS.subheader, job.name, SCIATH_COLORS.endc, exec_path))
+        print(command_join(launch_command))
 
-            cwd_back = os.getcwd()
-            os.chdir(exec_path)
-            _subprocess_run(launch_command, universal_newlines=True)
-            os.chdir(cwd_back)
-            _set_blocking_io_stdout()
-            with open(os.path.join(output_path, job.launched_filename), 'w'):
-                pass
-        else:
-            mpi_launch = self.mpi_launch
-            ranks = job.resource_max('ranks')
-            threads = job.resource_max('threads')
-            if threads is not None and threads != 1:
-                raise ValueError(
-                    '[SciATH] Unsupported: Job cannot be submitted multi-threaded'
-                )
-
-            if self.mpi_launch == 'none' and ranks is not None and ranks != 1:
-                return False, 'MPI required', ['Not launched: requires MPI']
-
-            command_resource = job.create_execute_command()
-            launch_command = []
-            for command, resource in command_resource:
-                launch = []
-                if self.mpi_launch != 'none':
-                    j_ranks = resource["mpiranks"]
-                    launch += _format_mpi_launch_command(mpi_launch, j_ranks)
-                launch.extend(command)
-                launch_command.append(launch)
-
-            print('%s[Executing %s]%s from %s' %
-                  (SCIATH_COLORS.subheader, job.name, SCIATH_COLORS.endc,
-                   exec_path))
-            for term in launch_command:
-                print(command_join(term))
-
-            with open(os.path.join(output_path, job.exitcode_filename), 'w') as file_exitcode, \
-                 open(os.path.join(output_path, job.stderr_filename), 'w') as file_stderr, \
-                 open(os.path.join(output_path, job.stdout_filename), 'w') as file_stdout:
-                for command in launch_command:
-                    cwd_back = os.getcwd()
-                    os.chdir(exec_path)
-                    returncode = _subprocess_run(command,
-                                                 universal_newlines=True,
-                                                 stdout=file_stdout,
-                                                 stderr=file_stderr)
-                    os.chdir(cwd_back)
-                    file_exitcode.write(str(returncode) + "\n")
-                    _set_blocking_io_stdout()
-            with open(os.path.join(output_path, job.launched_filename), 'w'):
-                pass
-            with open(os.path.join(output_path, job.complete_filename), 'w'):
-                pass
+        cwd_back = os.getcwd()
+        os.chdir(exec_path)
+        _subprocess_run(launch_command, universal_newlines=True)
+        os.chdir(cwd_back)
+        _set_blocking_io_stdout()
+        with open(os.path.join(output_path, job.launched_filename), 'w'):
+            pass
 
         return True, None, None
 
@@ -609,9 +548,8 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
         ]:
             _remove_file_if_it_exists(os.path.join(output_path, filename))
 
-        if self.use_batch:
-            filename = self._batch_filename(job)
-            _remove_file_if_it_exists(os.path.join(output_path, filename))
+        _remove_file_if_it_exists(
+            os.path.join(output_path, self._batch_filename(job)))
 
         _remove_file_if_it_exists(
             os.path.join(output_path, job.launched_filename))

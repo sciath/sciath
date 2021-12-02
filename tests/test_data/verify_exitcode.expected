@@ -8,25 +8,22 @@
 
 [35m[ *** Executing Tests *** ][0m
 [SciATH] Batch queueing system configuration [SciATHBatchQueuingSystem.conf]
-  Version:           0.8.0
-  Queue system:      none
+  Version:           0.9.0
+  Queue system:      local
   MPI launcher:      none
+  Submit command:    sh
 [36m[Executing should_pass][0m from <<TEST DIR STRIPPED>>/verify_exitcode_sandbox/should_pass_output/sandbox
-true
+sh <<TEST DIR STRIPPED>>/verify_exitcode_sandbox/should_pass_output/should_pass.sh
 [36m[Executing should_fail][0m from <<TEST DIR STRIPPED>>/verify_exitcode_sandbox/should_fail_output/sandbox
-false
+sh <<TEST DIR STRIPPED>>/verify_exitcode_sandbox/should_fail_output/should_fail.sh
 [36m[Executing should_pass_multi][0m from <<TEST DIR STRIPPED>>/verify_exitcode_sandbox/should_pass_multi_output/sandbox
-true
-true
+sh <<TEST DIR STRIPPED>>/verify_exitcode_sandbox/should_pass_multi_output/should_pass_multi.sh
 [36m[Executing should_fail_multi][0m from <<TEST DIR STRIPPED>>/verify_exitcode_sandbox/should_fail_multi_output/sandbox
-true
-false
+sh <<TEST DIR STRIPPED>>/verify_exitcode_sandbox/should_fail_multi_output/should_fail_multi.sh
 [36m[Executing should_fail_multi2][0m from <<TEST DIR STRIPPED>>/verify_exitcode_sandbox/should_fail_multi2_output/sandbox
-false
-false
+sh <<TEST DIR STRIPPED>>/verify_exitcode_sandbox/should_fail_multi2_output/should_fail_multi2.sh
 [36m[Executing should_fail_multi3][0m from <<TEST DIR STRIPPED>>/verify_exitcode_sandbox/should_fail_multi3_output/sandbox
-false
-true
+sh <<TEST DIR STRIPPED>>/verify_exitcode_sandbox/should_fail_multi3_output/should_fail_multi3.sh
 
 [35m[ *** Verification Reports *** ][0m
 [36m[Report for should_fail][0m

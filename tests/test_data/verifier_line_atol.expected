@@ -10,25 +10,26 @@
 
 [35m[ *** Executing Tests *** ][0m
 [SciATH] Batch queueing system configuration [SciATHBatchQueuingSystem.conf]
-  Version:           0.8.0
-  Queue system:      none
+  Version:           0.9.0
+  Queue system:      local
   MPI launcher:      none
+  Submit command:    sh
 [36m[Executing rtol_only_default_fail][0m from <<TEST DIR STRIPPED>>/verifier_line_atol_sandbox/rtol_only_default_fail_output/sandbox
-cat <<TEST DIR STRIPPED>>/test_data/verifier_line_atol/cat_me
+sh <<TEST DIR STRIPPED>>/verifier_line_atol_sandbox/rtol_only_default_fail_output/rtol_only_default_fail.sh
 [36m[Executing rtol_only_fail][0m from <<TEST DIR STRIPPED>>/verifier_line_atol_sandbox/rtol_only_fail_output/sandbox
-cat <<TEST DIR STRIPPED>>/test_data/verifier_line_atol/cat_me
+sh <<TEST DIR STRIPPED>>/verifier_line_atol_sandbox/rtol_only_fail_output/rtol_only_fail.sh
 [36m[Executing atol_only_fail][0m from <<TEST DIR STRIPPED>>/verifier_line_atol_sandbox/atol_only_fail_output/sandbox
-cat <<TEST DIR STRIPPED>>/test_data/verifier_line_atol/cat_me
+sh <<TEST DIR STRIPPED>>/verifier_line_atol_sandbox/atol_only_fail_output/atol_only_fail.sh
 [36m[Executing both_tols_fail][0m from <<TEST DIR STRIPPED>>/verifier_line_atol_sandbox/both_tols_fail_output/sandbox
-cat <<TEST DIR STRIPPED>>/test_data/verifier_line_atol/cat_me
+sh <<TEST DIR STRIPPED>>/verifier_line_atol_sandbox/both_tols_fail_output/both_tols_fail.sh
 [36m[Executing atol_zero_fail][0m from <<TEST DIR STRIPPED>>/verifier_line_atol_sandbox/atol_zero_fail_output/sandbox
-cat <<TEST DIR STRIPPED>>/test_data/verifier_line_atol/cat_me
+sh <<TEST DIR STRIPPED>>/verifier_line_atol_sandbox/atol_zero_fail_output/atol_zero_fail.sh
 [36m[Executing rtol_zero_fail][0m from <<TEST DIR STRIPPED>>/verifier_line_atol_sandbox/rtol_zero_fail_output/sandbox
-cat <<TEST DIR STRIPPED>>/test_data/verifier_line_atol/cat_me
+sh <<TEST DIR STRIPPED>>/verifier_line_atol_sandbox/rtol_zero_fail_output/rtol_zero_fail.sh
 [36m[Executing both_tols_zero_fail][0m from <<TEST DIR STRIPPED>>/verifier_line_atol_sandbox/both_tols_zero_fail_output/sandbox
-cat <<TEST DIR STRIPPED>>/test_data/verifier_line_atol/cat_me
+sh <<TEST DIR STRIPPED>>/verifier_line_atol_sandbox/both_tols_zero_fail_output/both_tols_zero_fail.sh
 [36m[Executing both_tols_pass][0m from <<TEST DIR STRIPPED>>/verifier_line_atol_sandbox/both_tols_pass_output/sandbox
-cat <<TEST DIR STRIPPED>>/test_data/verifier_line_atol/cat_me
+sh <<TEST DIR STRIPPED>>/verifier_line_atol_sandbox/both_tols_pass_output/both_tols_pass.sh
 
 [35m[ *** Verification Reports *** ][0m
 [36m[Report for rtol_only_default_fail][0m
