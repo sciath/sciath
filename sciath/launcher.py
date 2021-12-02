@@ -124,6 +124,7 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
         self.queuing_system_type = []
         self.job_submission_command = []
         self.use_batch = False
+        self.blocking = None
         if conf_filename:
             self.conf_filename = conf_filename
         else:
@@ -307,21 +308,25 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
             self.queuing_system_type = 'local'
             self.job_submission_command = ['sh']
             self.use_batch = True
+            self.blocking = True
 
         elif system_type in ['LSF', 'lsf']:
             self.queuing_system_type = 'lsf'
             self.job_submission_command = ['sh', '-c',
                                            'bsub < $0']  # This allows "<".
             self.use_batch = True
+            self.blocking = False
 
         elif system_type in ['SLURM', 'slurm']:
             self.queuing_system_type = 'slurm'
             self.job_submission_command = ['sbatch']
             self.use_batch = True
+            self.blocking = False
 
         elif system_type in ['none', 'None']:
             self.queuing_system_type = 'none'
             self.job_submission_command = ''
+            self.blocking = True
 
         else:
             raise RuntimeError(
