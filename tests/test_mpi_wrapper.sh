@@ -21,6 +21,7 @@ else
   cp -R $prereq_sandbox/. $sandbox
 fi
 cp $configuration_file $sandbox
+cp SciATH_template* $sandbox
 cd $sandbox
 $python -m sciath $args \
   | $test_dir/filter.sh $test_dir

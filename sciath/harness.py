@@ -306,7 +306,7 @@ class Harness:
             sciath.launcher.Launcher.write_default_definition(args.conf_file)
             return
 
-        self.launcher = sciath.launcher.Launcher(args.conf_file, args.template)
+        self.launcher = sciath.launcher.Launcher(args.conf_file)
 
         if args.configure:
             self.launcher.configure()
@@ -475,10 +475,5 @@ def _parse_args():
         help=
         'Comma-separated list of test groups. Tests in these groups are excluded',
         required=False)
-
-    # This is a temporary argument, as ultimately we'll replace config with templates
-    parser.add_argument('--template',
-                        help='Template file used to generate launch scripts',
-                        required=False)
 
     return parser.parse_args()

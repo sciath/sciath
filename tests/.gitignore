@@ -1,2 +1,4 @@
 *.output
 *_sandbox
+SciATH_template*
+*.conf
