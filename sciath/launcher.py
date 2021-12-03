@@ -374,15 +374,16 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
         self.template_filename = self.write_default_template(
             self.queuing_system_type)
 
-        print('** The template for generating batch submission files is\n')
-        print('**  ', self.template_filename)
-        print('**  You may modify it if desired\n')
-
         self._write_definition()
-        print('\n')
-        print(
-            '** If you wish to change the config for your batch system, either')
-        print('**  (i) delete the file', self.conf_filename, ' or')
+
+        print('')
+        print('** The template for batch submission files is  %s' %
+              self.template_filename)
+        print('** You may modify it if desired, but it will be overwritten')
+        print('** if you re-configure.')
+        print('')
+        print('** To change the config for your batch system, either')
+        print('**  (i) delete the file %s  or' % self.conf_filename)
         print('** (ii) re-run with the command line arg --configure')
         print(
             '----------------------------------------------------------------')
