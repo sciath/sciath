@@ -8,10 +8,11 @@
 
 [35m[ *** Executing Tests *** ][0m
 [SciATH] Batch queueing system configuration [SciATH_launcher.conf]
-  Version:           0.9.0
-  Queue system:      local
+  Version:           0.10.0
   MPI launcher:      none
   Submit command:    sh
+  Blocking:          True
+  Job-level ranks:   False
 [36m[Executing should_pass][0m from <<TEST DIR STRIPPED>>/verify_exitcode_sandbox/should_pass_output/sandbox
 sh <<TEST DIR STRIPPED>>/verify_exitcode_sandbox/should_pass_output/should_pass.sh
 [36m[Executing should_fail][0m from <<TEST DIR STRIPPED>>/verify_exitcode_sandbox/should_fail_output/sandbox

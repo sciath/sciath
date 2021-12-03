@@ -3,10 +3,11 @@
 
 [35m[ *** Executing Tests *** ][0m
 [SciATH] Batch queueing system configuration [SciATH_launcher.conf]
-  Version:           0.9.0
-  Queue system:      local
+  Version:           0.10.0
   MPI launcher:      none
   Submit command:    sh
+  Blocking:          True
+  Job-level ranks:   False
 [36m[Executing job][0m from <<TEST DIR STRIPPED>>/harness5_sandbox/test_output/sandbox
 sh <<TEST DIR STRIPPED>>/harness5_sandbox/test_output/job.sh
 

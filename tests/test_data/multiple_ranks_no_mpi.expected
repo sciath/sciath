@@ -3,10 +3,11 @@
 
 [35m[ *** Executing Tests *** ][0m
 [SciATH] Batch queueing system configuration [SciATH_launcher.conf]
-  Version:           0.9.0
-  Queue system:      local
+  Version:           0.10.0
   MPI launcher:      none
   Submit command:    sh
+  Blocking:          True
+  Job-level ranks:   False
 
 [35m[ *** Verification Reports *** ][0m
 [36m[Report for two_ranks][0m
