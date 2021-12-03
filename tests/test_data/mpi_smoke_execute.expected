@@ -3,10 +3,11 @@
 
 [35m[ *** Executing Tests *** ][0m
 [SciATH] Batch queueing system configuration [SciATH_launcher.conf]
-  Version:           0.9.0
-  Queue system:      local
+  Version:           0.10.0
   MPI launcher:      /Users/patrick/code/petsc/arch-mpich-only/bin/mpiexec -n <ranks>
   Submit command:    sh
+  Blocking:          True
+  Job-level ranks:   False
 [36m[Executing two_ranks][0m from <<TEST DIR STRIPPED>>/mpi_smoke_execute_sandbox/two_ranks_output/sandbox
 sh <<TEST DIR STRIPPED>>/mpi_smoke_execute_sandbox/two_ranks_output/two_ranks.sh
 [SciATH] Not verifying or reporting

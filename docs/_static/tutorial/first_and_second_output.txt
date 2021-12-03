@@ -4,10 +4,11 @@
 
 [ *** Executing Tests *** ]
 [SciATH] Batch queueing system configuration [SciATH_launcher.conf]
-  Version:           0.9.0
-  Queue system:      local
+  Version:           0.10.0
   MPI launcher:      none
   Submit command:    sh
+  Blocking:          True
+  Job-level ranks:   False
 [Executing first] from /Users/patrick/scratch/first_output/sandbox
 sh /Users/patrick/scratch/first_output/first.sh
 [Executing second] from /Users/patrick/scratch/second_output/sandbox

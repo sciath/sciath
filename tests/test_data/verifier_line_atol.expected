@@ -10,10 +10,11 @@
 
 [35m[ *** Executing Tests *** ][0m
 [SciATH] Batch queueing system configuration [SciATH_launcher.conf]
-  Version:           0.9.0
-  Queue system:      local
+  Version:           0.10.0
   MPI launcher:      none
   Submit command:    sh
+  Blocking:          True
+  Job-level ranks:   False
 [36m[Executing rtol_only_default_fail][0m from <<TEST DIR STRIPPED>>/verifier_line_atol_sandbox/rtol_only_default_fail_output/sandbox
 sh <<TEST DIR STRIPPED>>/verifier_line_atol_sandbox/rtol_only_default_fail_output/rtol_only_default_fail.sh
 [36m[Executing rtol_only_fail][0m from <<TEST DIR STRIPPED>>/verifier_line_atol_sandbox/rtol_only_fail_output/sandbox

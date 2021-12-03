@@ -1,8 +1,39 @@
 """ Interactive tool for populating Launcher configuration information """
 
 import os
+import shlex
+import shutil
 
 from sciath._sciath_io import py23input
+from sciath._default_templates import _generate_default_template
+from sciath.utility import DotDict
+
+DEFAULTS_LOCAL = DotDict()
+DEFAULTS_LOCAL.job_submission_command = ("sh",)
+DEFAULTS_LOCAL.blocking = True
+DEFAULTS_LOCAL.has_job_level_ranks = False
+
+DEFAULTS_LSF = DotDict()
+DEFAULTS_LSF.job_submission_command = (
+    "sh",
+    "-c",
+    "bsub < $0",
+)  # This allows "<".
+DEFAULTS_LSF.blocking = False
+DEFAULTS_LSF.has_job_level_ranks = True
+DEFAULTS_LSF.mpi_launch = "mpirun"
+
+DEFAULTS_SLURM = DotDict()
+DEFAULTS_SLURM.job_submission_command = ("sbatch",)
+DEFAULTS_SLURM.blocking = False
+DEFAULTS_SLURM.has_job_level_ranks = True
+DEFAULTS_SLURM.mpi_launch = "srun -n <ranks>"
+
+DEFAULTS = {
+    "local": DEFAULTS_LOCAL,
+    "lsf": DEFAULTS_LSF,
+    "slurm": DEFAULTS_SLURM,
+}
 
 
 def _query_user(description="",
@@ -37,24 +68,43 @@ def _query_user(description="",
     return result
 
 
-def _launcher_interactive_configure(launcher):
+def _launcher_interactive_configure(launcher):  #pylint: disable=too-many-statements, too-many-branches
     """ Create a new configuration file from user input """
     print("--------------------------------------------------------------")
     print("Creating new configuration file %s" % launcher.conf_filename)
 
-    launcher.set_queue_system_type(
-        _query_user(
-            "\n[1] Batch queuing system type",
-            options=["local", "lsf", "slurm"],
-            default="local",
-        ))
+    system_type_options = list(DEFAULTS.keys()) + ["generic"]
+    system_type = _query_user("\n[?] Batch queuing system type",
+                              options=system_type_options,
+                              default="local")
+
+    if system_type in DEFAULTS:
+        launcher.job_submission_command = list(
+            DEFAULTS[system_type].job_submission_command)
+    else:
+        launcher.job_submission_command = shlex.split(
+            _query_user("\n[?] job submission command",
+                        validate=lambda command: command is not None))
+
+    if system_type in DEFAULTS:
+        launcher.blocking = DEFAULTS[system_type].blocking
+    else:
+        launcher.blocking = _query_user("\n[?] blocking",
+                                        options=["True", "False"]) == "True"
+
+    if system_type in DEFAULTS:
+        launcher.has_job_level_ranks = DEFAULTS[system_type].has_job_level_ranks
+    else:
+        launcher.has_job_level_ranks = _query_user(
+            "\n[?] supports job-level ranks specification",
+            options=["True", "False"]) == "True"
 
     mpi_launch_examples = [
         "  No MPI Required           : none",
         "  Local Machine (mpirun)    : mpirun -np <ranks>",
         "  Local Machine (mpiexec)   : mpiexec -np <ranks>",
         "  SLURM w/ aprun            : aprun -B",
-        "  Native SLURM              : srun -n $SLURM_NTASKS",
+        "  Native SLURM              : srun -n <ranks>",
         "  LSF (Euler)               : mpirun",
     ]
     petsc_dir = os.getenv("PETSC_DIR")
@@ -68,21 +118,37 @@ def _launcher_interactive_configure(launcher):
             "  Example PETSc MPI wrapper : /users/myname/petsc/arch-xxx/bin/mpiexec -n <ranks>"
         )
 
+    if system_type in DEFAULTS and "mpi_launch" in DEFAULTS[system_type]:
+        mpi_launch_default = DEFAULTS[system_type].mpi_launch
+    else:
+        mpi_launch_default = "none"
     mpi_launch = _query_user(
-        "\n[2] MPI launch command, including <ranks> for number of ranks",
+        "\n[?] MPI launch command, including <ranks> for number of ranks",
         examples=mpi_launch_examples,
-        default="none",
+        default=mpi_launch_default,
         validate=launcher.is_valid_mpi_launch)
 
     launcher.set_mpi_launch(mpi_launch)
 
-    launcher.account_name = _query_user("\n[3] Account to charge", default="")
+    launcher.account_name = _query_user("\n[?] Account to charge", default="")
 
-    launcher.queue_name = _query_user("\n[4] Name of queue to submit tests to",
+    launcher.queue_name = _query_user("\n[?] Name of queue to submit tests to",
                                       default="")
 
-    launcher.template_filename = launcher.write_default_template(
-        launcher.queuing_system_type)
+    # Assume, dubiously, that defaults defined here have a default template defined,
+    # that the user always wants to use.
+    query_template = system_type not in DEFAULTS
+    if query_template:
+        template_source_filename = _query_user(
+            "\n[?]Please select a file, to be copied here, to use as a Launcher template",
+            validate=os.path.isfile,
+        )
+        template_filename = os.path.split(template_source_filename)[1]
+        if not os.path.isfile(template_filename):
+            shutil.copyfile(template_source_filename, template_filename)
+        launcher.template_filename = template_filename
+    else:
+        launcher.template_filename = _generate_default_template(system_type)
 
     launcher.write_definition(launcher.conf_filename)
 

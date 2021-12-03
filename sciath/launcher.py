@@ -2,6 +2,7 @@
 from __future__ import print_function
 
 import os
+import shlex
 import sys
 import fcntl
 import subprocess
@@ -105,26 +106,23 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
         """ Writes a default configuration file """
         major, minor, patch = sciath.__version__
         conf_filename = conf_filename_in if conf_filename_in else Launcher._default_conf_filename
-        template_filename = Launcher.write_default_template()
+        template_filename = _generate_default_template("local")
         with open(conf_filename, 'w') as conf_file:
             conf_file.write('majorVersion: %s\n' % major)
             conf_file.write('minorVersion: %s\n' % minor)
             conf_file.write('patchVersion: %s\n' % patch)
-            conf_file.write('queuingSystemType: local\n')
+            conf_file.write('submitCommand: sh\n')
+            conf_file.write('blocking: True\n')
+            conf_file.write('jobLevelRanks: False\n')
             conf_file.write('mpiLaunch: none\n')
             conf_file.write('template: %s\n' % template_filename)
-
-    @staticmethod
-    def write_default_template(system_type="local"):
-        """ Writes a default batch/queue system template for a limited set of system types """
-        return _generate_default_template(system_type)
 
     def __init__(self, conf_filename=None):
         self.account_name = None
         self.queue_name = None
         self.mpi_launch = None
-        self.queuing_system_type = None
         self.job_submission_command = None
+        self.has_job_level_ranks = None
         self.blocking = None
         if conf_filename:
             self.conf_filename = conf_filename
@@ -270,45 +268,23 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
         """ Returns whether a given string is acceptable to launch MPI jobs """
         if mpi_launch == "none":
             return True
-        if self.queuing_system_type in ['none', 'local']:
+        if not self.has_job_level_ranks:
             for keyword in ['<ranks>', '<cores>', '<tasks>', '<RANKS>']:
                 if keyword in mpi_launch:
                     return True
             return False
         return True
 
-    def set_queue_system_type(self, system_type):
-        """ Set queueing system type and derived properties """
-        if system_type in ['none', 'None', 'sh', 'local', 'Local']:
-            self.queuing_system_type = 'local'
-            self.job_submission_command = ['sh']
-            self.blocking = True
-
-        elif system_type in ['LSF', 'lsf']:
-            self.queuing_system_type = 'lsf'
-            self.job_submission_command = ['sh', '-c',
-                                           'bsub < $0']  # This allows "<".
-            self.blocking = False
-
-        elif system_type in ['SLURM', 'slurm']:
-            self.queuing_system_type = 'slurm'
-            self.job_submission_command = ['sbatch']
-            self.blocking = False
-
-        else:
-            raise RuntimeError(
-                '[SciATH] Unknown or unsupported batch queuing system "' +
-                system_type + '" specified')
-
     def __str__(self):
         lines = []
         lines.append('[SciATH] Batch queueing system configuration [%s]' %
                      self.conf_filename)
         lines.append('  Version:           %d.%d.%d' % sciath.__version__)
-        lines.append('  Queue system:      %s' % self.queuing_system_type)
         lines.append('  MPI launcher:      %s' % self.mpi_launch)
         lines.append('  Submit command:    %s' %
                      command_join(self.job_submission_command))
+        lines.append('  Blocking:          %s' % self.blocking)
+        lines.append('  Job-level ranks:   %s' % self.has_job_level_ranks)
         if self.account_name:
             lines.append('  Account:           %s' % self.account_name)
         if self.queue_name:
@@ -335,8 +311,10 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
             conf_file.write('majorVersion: %s\n' % major)
             conf_file.write('minorVersion: %s\n' % minor)
             conf_file.write('patchVersion: %s\n' % patch)
-            conf_file.write('queuingSystemType: %s\n' %
-                            self.queuing_system_type)
+            conf_file.write('submitCommand: %s\n' %
+                            command_join(self.job_submission_command))
+            conf_file.write('blocking: %s\n' % self.blocking)
+            conf_file.write('jobLevelRanks: %s\n' % self.has_job_level_ranks)
             conf_file.write('mpiLaunch: %s\n' % self.mpi_launch)
             conf_file.write('accountName: %s\n' % self.account_name)
             conf_file.write('queueName: %s\n' % self.queue_name)
@@ -355,8 +333,12 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
                 minor_file = int(data['minorVersion'])
             if 'patchVersion' in data:
                 patch_file = int(data['patchVersion'])
-            if 'queuingSystemType' in data:
-                self.set_queue_system_type(data['queuingSystemType'])
+            if 'submitCommand' in data:
+                self.job_submission_command = shlex.split(data['submitCommand'])
+            if 'blocking' in data:
+                self.blocking = data['blocking'] == "True"
+            if 'jobLevelRanks' in data:
+                self.has_job_level_ranks = data['jobLevelRanks'] == "True"
             if 'mpiLaunch' in data:
                 self.set_mpi_launch(data['mpiLaunch'])
             if 'queueName' in data:
