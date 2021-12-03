@@ -11,8 +11,7 @@ branches:
 stages:
     - lint errors
     - test
-    - lint all
-    - format
+    - style
 
 jobs:
   include:
@@ -59,7 +58,7 @@ jobs:
       install:
         - pip install pylint
       script: sh -c "pylint --errors-only sciath/*.py tests/test_data/*/*.py"
-    - stage: lint all
+    - stage: style
       python: 3.9
       install:
         - pip install pylint
@@ -69,7 +68,7 @@ jobs:
         # versions of pylint, or can't be disable locally (duplicate-code,
         # see https://github.com/PyCQA/pylint/issues/214).
         - sh -c "pylint --disable=consider-using-f-string,unspecified-encoding,duplicate-code sciath/*.py"
-    - stage: format
+    - stage: style
       python: 3.9
       install:
         - pip install yapf
