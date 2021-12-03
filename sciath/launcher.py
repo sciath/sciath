@@ -256,25 +256,26 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
             with open(filename, 'r') as file:
                 self.template = file.readlines()
 
-    def set_mpi_launch(self, name):
-        """ Set the MPI launch command and check its form """
-        if name in ['none', 'None', '']:
-            name = 'none'
-        self.mpi_launch = name
-        # check for existence of "rank" keyword in the string "name"
-        if self.queuing_system_type in ['none', 'local'] and name != 'none':
-            keywordlist = ['<ranks>', '<cores>', '<tasks>', '<RANKS>']
-            # check of any of keywordlist[i] appears in name
-            valid_launcher = False
-            for kword in keywordlist:
-                if kword in name:
-                    valid_launcher = True
-                    break
+    def set_mpi_launch(self, mpi_launch):
+        """ Sets the MPI launch command and check its form """
+        if mpi_launch in [None, 'none', 'None', '']:
+            mpi_launch = 'none'
+        if not self.is_valid_mpi_launch(mpi_launch):
+            raise RuntimeError(
+                '[SciATH] MPI launch command must contain the keyword \"<ranks>\"'
+            )
+        self.mpi_launch = mpi_launch
 
-            if not valid_launcher:
-                raise RuntimeError(
-                    '[SciATH] Your MPI launch command must contain the keyword \"<ranks>\"'
-                )
+    def is_valid_mpi_launch(self, mpi_launch):
+        """ Returns whether a given string is acceptable to launch MPI jobs """
+        if mpi_launch == "none":
+            return True
+        if self.queuing_system_type in ['none', 'local']:
+            for keyword in ['<ranks>', '<cores>', '<tasks>', '<RANKS>']:
+                if keyword in mpi_launch:
+                    return True
+            return False
+        return True
 
     def set_queue_system_type(self, system_type):
         """ Set queueing system type and derived properties """
@@ -317,18 +318,20 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
         return '\n'.join(lines)
 
     def configure(self):
+        """ Interactively configure the Launcher """
         _launcher_interactive_configure(self)
 
     def _setup(self):
         try:
-            self._load_definition()
+            self.load_definition(self.conf_filename)
         except SciATHLoadException:
             self.configure()
-            self._write_definition()
+            self.write_definition(self.conf_filename)
 
-    def _write_definition(self):
+    def write_definition(self, filename):
+        """ Writes configuration to a file """
         major, minor, patch = sciath.__version__
-        with open(self.conf_filename, 'w') as conf_file:
+        with open(filename, 'w') as conf_file:
             conf_file.write('majorVersion: %s\n' % major)
             conf_file.write('minorVersion: %s\n' % minor)
             conf_file.write('patchVersion: %s\n' % patch)
@@ -339,12 +342,13 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
             conf_file.write('queueName: %s\n' % self.queue_name)
             conf_file.write('template: %s\n' % self.template_filename)
 
-    def _load_definition(self):  #pylint: disable=too-many-branches
+    def load_definition(self, filename):  #pylint: disable=too-many-branches
+        """ Loads configuration from a file """
         major_file = None
         minor_file = None
         patch_file = None
         try:
-            data = yaml_parse.parse_yaml_subset_from_file(self.conf_filename)
+            data = yaml_parse.parse_yaml_subset_from_file(filename)
             if 'majorVersion' in data:
                 major_file = int(data['majorVersion'])
             if 'minorVersion' in data:
@@ -365,7 +369,7 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
             # pylint: disable=bad-option-value,raise-missing-from
             raise SciATHLoadException(('[SciATH] Configuration file missing. '
                                        'You must execute configure(), and/or '
-                                       '_write_definition() first'))
+                                       'write_definition() first'))
 
         major, minor = sciath.__version__[:2]
         if major_file is None or minor_file is None or patch_file is None:
