@@ -10,8 +10,9 @@ import re
 import sciath
 from sciath import yaml_parse
 from sciath import SCIATH_COLORS
-from sciath._sciath_io import py23input, _remove_file_if_it_exists, command_join
+from sciath._sciath_io import _remove_file_if_it_exists, command_join
 from sciath._default_templates import _generate_default_template
+from sciath._conf_wizard import _launcher_interactive_configure
 
 
 # mpiexec has been observed to set non-blocking I/O, which
@@ -315,78 +316,8 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
             lines.append('  Template:          %s' % self.template_filename)
         return '\n'.join(lines)
 
-    def configure(self):  #pylint: disable=too-many-branches,too-many-statements
-        """ Create a new configuration file from user input """
-        print(
-            '----------------------------------------------------------------')
-        print('Creating new configuration file ', self.conf_filename)
-        user_input = None
-        while not user_input:
-            prompt = '[1] Batch queuing system type <local,lsf,slurm>: '
-            user_input = py23input(prompt)
-            if not user_input:
-                print('Required.')
-            else:
-                try:
-                    self.set_queue_system_type(user_input)
-                except RuntimeError as exception:
-                    print(exception)
-                    user_input = None
-
-        user_input = None
-        while not user_input:
-            prompt = ('[2] MPI launch command with num. procs. flag '
-                      '(required - hit enter for examples): ')
-            user_input = os.path.expandvars(py23input(prompt))
-            if not user_input:
-                print(' Required. Some example MPI launch commands:')
-                print('  No MPI Required           : none')
-                print('  Local Machine (mpirun)    : mpirun -np <ranks>')
-                print('  Local Machine (mpiexec)   : mpiexec -np <ranks>')
-                print('  SLURM w/ aprun            : aprun -B')
-                print('  Native SLURM              : srun -n $SLURM_NTASKS')
-                print('  LSF (Euler)               : mpirun')
-                petsc_dir = os.getenv('PETSC_DIR')
-                petsc_arch = os.getenv('PETSC_ARCH')
-                if petsc_dir and petsc_arch:
-                    print('  Current PETSc MPI wrapper :',
-                          os.path.join(petsc_dir, petsc_arch, 'bin', 'mpiexec'),
-                          '-n <ranks>')
-                else:
-                    print(
-                        ('  Example PETSc MPI wrapper : '
-                         '/users/myname/petsc/arch-xxx/bin/mpiexec -n <ranks>'))
-                print((' Note that the string \"<ranks>\" must be included if '
-                       'the number of ranks is required at launch.'))
-                print((
-                    ' The keyword <ranks> will be replaced by the actual number '
-                    'of MPI ranks (defined by a given test) when the test is launched.'
-                ))
-        self.set_mpi_launch(user_input)
-
-        prompt = '[3] Account to charge (optional - hit enter if not applicable): '
-        self.account_name = py23input(prompt)
-
-        prompt = ('[4] Name of queue to submit tests to '
-                  '(optional - hit enter if not applicable): ')
-        self.queue_name = py23input(prompt)
-
-        self.template_filename = self.write_default_template(
-            self.queuing_system_type)
-
-        self._write_definition()
-
-        print('')
-        print('** The template for batch submission files is  %s' %
-              self.template_filename)
-        print('** You may modify it if desired, but it will be overwritten')
-        print('** if you re-configure.')
-        print('')
-        print('** To change the config for your batch system, either')
-        print('**  (i) delete the file %s  or' % self.conf_filename)
-        print('** (ii) re-run with the command line arg --configure')
-        print(
-            '----------------------------------------------------------------')
+    def configure(self):
+        _launcher_interactive_configure(self)
 
     def _setup(self):
         try:
