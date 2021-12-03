@@ -38,11 +38,7 @@ def _formatted_split_time(seconds):
 
 
 def _format_mpi_launch_command(mpi_launch, ranks):
-    launch = mpi_launch
-    launch = launch.replace("<ranks>", str(ranks))
-    launch = launch.replace("<cores>", str(ranks))
-    launch = launch.replace("<tasks>", str(ranks))
-    launch = launch.replace("<RANKS>", str(ranks))
+    launch = mpi_launch.replace("<ranks>", str(ranks))
     return launch.split()
 
 
@@ -269,10 +265,7 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
         if mpi_launch == "none":
             return True
         if not self.has_job_level_ranks:
-            for keyword in ['<ranks>', '<cores>', '<tasks>', '<RANKS>']:
-                if keyword in mpi_launch:
-                    return True
-            return False
+            return '<ranks>' in mpi_launch
         return True
 
     def __str__(self):
