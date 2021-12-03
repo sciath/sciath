@@ -11,6 +11,7 @@ import re
 import sciath
 from sciath import yaml_parse
 from sciath import SCIATH_COLORS
+from sciath.utility import DotDict
 from sciath._sciath_io import _remove_file_if_it_exists, command_join
 from sciath._default_templates import _generate_default_template
 from sciath._conf_wizard import _launcher_interactive_configure
@@ -129,7 +130,7 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
 
         self._setup()
 
-    def _create_launch_script(self, job, output_path):  # pylint: disable=too-many-locals, too-many-branches, too-many-statements
+    def _create_launch_script(self, job, output_path):
         if not os.path.isabs(output_path):
             raise ValueError(
                 '[SciATH] Unsupported: output paths must be absolute')
@@ -160,62 +161,16 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
             '$SCIATH_JOB_COMPLETE':
                 os.path.join(output_path, job.complete_filename),
         }
-        delete_rules = set()
-        for (term, setting) in (
-            ('$SCIATH_QUEUE_OR_REMOVE_LINE', self.queue_name),
-            ('$SCIATH_ACCOUNT_OR_REMOVE_LINE', self.account_name),
-        ):
-            if not setting:
-                delete_rules.add(term)
-            else:
-                replace_rules[term] = setting
-
-        script = _process_lines(self.template[:],
-                                replace=replace_rules,
-                                delete=delete_rules)
-
-        # Split the script into preamble, per-task, and postamble
-        # This logic is quite brittle.
-        task_lines = []
-        threads_line_found = False
-        ranks_line_found = False
-        command_line_found = False
-        preamble = []
-        preamble_finished = False
-        postamble = []
-        for line in script:
-            if '$SCIATH_TASK_THREADS' in line:
-                preamble_finished = True
-                if threads_line_found:
-                    raise Exception(
-                        "[SciATH] Multiple threads lines found in template")
-                threads_line_found = True
-                task_lines.append(line)
-            elif '$SCIATH_TASK_RANKS' in line or '$SCIATH_TASK_MPI_RUN' in line:
-                preamble_finished = True
-                if ranks_line_found:
-                    raise Exception(
-                        "[SciATH] Multiple ranks lines found in template")
-                ranks_line_found = True
-                if self.mpi_launch != 'none':
-                    task_lines.append(line)
-            elif '$SCIATH_TASK_COMMAND' in line:
-                preamble_finished = True
-                if command_line_found:
-                    raise Exception(
-                        "[SciATH] Multiple command lines found in template")
-                command_line_found = line
-                task_lines.append(line)
-            elif not preamble_finished:
-                preamble.append(line)
-            else:
-                postamble.append(line)
 
         # Assemble the script, applying task-level replacements
         script_filename = os.path.join(output_path, self._batch_filename(job))
 
         with open(script_filename, 'w') as script_file:
-            script_file.writelines(preamble)
+            # Pre
+            script_file.writelines(
+                _process_lines(self.template.pre, replace=replace_rules))
+
+            # Task
             first = True
             for task in job.tasks:
                 if first:
@@ -231,24 +186,86 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
                     rule_task['$SCIATH_TASK_MPI_RUN'] = command_join(
                         _format_mpi_launch_command(self.mpi_launch, task_ranks))
 
-                task_lines_specific = _process_lines(task_lines,
+                task_lines_specific = _process_lines(self.template.task,
                                                      replace=rule_task)
 
-                script_file.writelines(task_lines_specific)
-            script_file.writelines(postamble)
+                script_file.writelines(
+                    _process_lines(task_lines_specific, replace=replace_rules))
+
+            # Post
+            script_file.writelines(
+                _process_lines(self.template.post, replace=replace_rules))
 
         return script_filename
 
-    def _populate_template(self):
-        """ Open the template file, interpreting a relative path
-        with respect to the location of the configuration file """
-        if self.template is None:
-            filename = self.template_filename
-            if not os.path.isabs(filename):
-                filename = os.path.join(os.path.dirname(self.conf_filename),
-                                        filename)
-            with open(filename, 'r') as file:
-                self.template = file.readlines()
+    def _populate_template(self):  #pylint: disable=too-many-branches
+        """ Process the template file, interpreting a relative path
+        with respect to the location of the configuration file
+
+        Populate a DotDict with the lines or lists of lines required
+        to build launch scripts.
+        """
+        if self.template is not None:
+            return
+        filename = self.template_filename
+        if not os.path.isabs(filename):
+            filename = os.path.join(os.path.dirname(self.conf_filename),
+                                    filename)
+        self.template = DotDict()
+        with open(filename, 'r') as file:
+            lines = file.readlines()
+
+        # Launcher-level replacements and deletions
+        replace_rules = {}
+        delete_rules = set()
+        for (term, setting) in (
+            ('$SCIATH_QUEUE_OR_REMOVE_LINE', self.queue_name),
+            ('$SCIATH_ACCOUNT_OR_REMOVE_LINE', self.account_name),
+        ):
+            if not setting:
+                delete_rules.add(term)
+            else:
+                replace_rules[term] = setting
+
+        lines = _process_lines(lines,
+                               replace=replace_rules,
+                               delete=delete_rules)
+
+        # Construct template components
+        self.template.pre = []
+        self.template.mpi = False
+        self.template.threads = False
+        self.template.command = False
+        self.template.task = []
+        self.template.post = []
+        preamble_finished = False
+        for line in lines:
+            if '$SCIATH_TASK_THREADS' in line:
+                preamble_finished = True
+                if self.template.threads:
+                    raise Exception(
+                        "[SciATH] Multiple threads lines found in template")
+                self.template.threads = True
+                self.template.task.append(line)
+            elif '$SCIATH_TASK_RANKS' in line or '$SCIATH_TASK_MPI_RUN' in line:
+                preamble_finished = True
+                if self.template.threads:
+                    raise Exception(
+                        "[SciATH] Multiple ranks lines found in template")
+                self.template.threads = True
+                if self.mpi_launch != 'none':
+                    self.template.task.append(line)
+            elif '$SCIATH_TASK_COMMAND' in line:
+                preamble_finished = True
+                if self.template.command:
+                    raise Exception(
+                        "[SciATH] Multiple command lines found in template")
+                self.template.command = True
+                self.template.task.append(line)
+            elif not preamble_finished:
+                self.template.pre.append(line)
+            else:
+                self.template.post.append(line)
 
     def set_mpi_launch(self, mpi_launch):
         """ Sets the MPI launch command and check its form """
@@ -445,16 +462,15 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
 
 def _process_lines(lines_in, replace=None, delete=None):
     """ Process a list of lines based on sets of keys to replace and delete """
-    if delete is None:
-        delete = set()
-        if replace is None:
+    if not delete:
+        if not replace:
             return lines_in[:]
     else:
         delete_pattern = _get_multiple_match_pattern(delete)
-        if replace is None:
+        if not replace:
             return [
                 line for line in lines_in
-                if re.search(delete_pattern, line) is not None
+                if re.search(delete_pattern, line) is None
             ]
 
     lines = []
