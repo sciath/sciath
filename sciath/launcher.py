@@ -166,7 +166,7 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
                     hours_str, minutes_str)
             replace_rules[
                 r'$SCIATH_JOB_WALLTIME_HMS_OR_REMOVE_LINE'] = '%s:%s:%s' % (
-                    hours_str, minutes_str, seconds_str),
+                    hours_str, minutes_str, seconds_str)
 
         # Assemble the script, applying task-level replacements
         script_filename = os.path.join(output_path, self._batch_filename(job))
