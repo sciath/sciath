@@ -2,7 +2,7 @@
 hello:
   -
     foo:
-      - a  # comment
+      - a
       - b
       -        c
   -
@@ -33,6 +33,9 @@ how_about:
     nested: x
     sequence:
 
+comments_in_entries:
+  - not # recommended
+  - may not behave "#as_expected"
 
 now:
   - then
