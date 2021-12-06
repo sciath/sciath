@@ -1,0 +1,4 @@
+tests:
+  - name: foo
+    command: echo foo
+    type: exit_code

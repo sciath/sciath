@@ -134,6 +134,11 @@
   command: sh test_wrapper_with_vars.sh capture_environment "../test_data/capture_environment/tests.yml"
   expected: test_data/capture_environment.expected
 -
+  name: multiple_input_files
+  group: default_configuration
+  command: sh test_wrapper.sh multiple_input_files "../test_data/multiple_input_files/input1.yml ../test_data/multiple_input_files/input2.yml"
+  expected: test_data/multiple_input_files.expected
+-
   name: tutorial1
   group: default_configuration
   command: sh test_wrapper_tutorial.sh tutorial1 "--no-colors ../../docs/_static/tutorial/tutorial1.yml"
