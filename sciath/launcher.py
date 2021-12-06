@@ -138,9 +138,7 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
         # Lazily populate the template information from file
         self._populate_template()
 
-        # Apply replacement map at the Launcher and Job level
-        hours_str, minutes_str, seconds_str = _formatted_split_time(
-            60.0 * job.total_wall_time())
+        # Apply replacements at the Job level
         replace_rules = {
             '$SCIATH_JOB_NAME':
                 job.name,
@@ -152,15 +150,19 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
                 os.path.join(output_path, job.stderr_filename),
             '$SCIATH_JOB_EXITCODE':
                 os.path.join(output_path, job.exitcode_filename),
-            '$SCIATH_JOB_WALLTIME_H':
-                hours_str,
-            '$SCIATH_JOB_WALLTIME_M':
-                minutes_str,
-            '$SCIATH_JOB_WALLTIME_S':
-                seconds_str,
             '$SCIATH_JOB_COMPLETE':
                 os.path.join(output_path, job.complete_filename),
         }
+        delete_rules = set()
+
+        job_wall_time = job.total_wall_time()
+        if job_wall_time is None:
+            delete_rules.add('$SCIATH_JOB_WALLTIME_HM_OR_REMOVE_LINE')
+            delete_rules.add('$SCIATH_JOB_WALLTIME_HMS_OR_REMOVE_LINE')
+        else:
+            hours_str, minutes_str, seconds_str = _formatted_split_time(60.0 * job.total_wall_time())
+            replace_rules[r'$SCIATH_JOB_WALLTIME_HM_OR_REMOVE_LINE'] = '%s:%s:%s' % (hours_str, minutes_str)
+            replace_rules[r'$SCIATH_JOB_WALLTIME_HMS_OR_REMOVE_LINE'] = '%s:%s:%s' % (hours_str, minutes_str, seconds_str),
 
         # Assemble the script, applying task-level replacements
         script_filename = os.path.join(output_path, self._batch_filename(job))
@@ -168,7 +170,7 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
         with open(script_filename, 'w') as script_file:
             # Pre
             script_file.writelines(
-                _process_lines(self.template.pre, replace=replace_rules))
+                _process_lines(self.template.pre, replace=replace_rules, delete=delete_rules))
 
             # Task
             first = True
@@ -190,11 +192,11 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
                                                      replace=rule_task)
 
                 script_file.writelines(
-                    _process_lines(task_lines_specific, replace=replace_rules))
+                    _process_lines(task_lines_specific, replace=replace_rules, delete=delete_rules))
 
             # Post
             script_file.writelines(
-                _process_lines(self.template.post, replace=replace_rules))
+                _process_lines(self.template.post, replace=replace_rules, delete=delete_rules))
 
         return script_filename
 
@@ -488,8 +490,9 @@ def _process_lines(lines_in, replace=None, delete=None):
 def _get_multiple_match_pattern(source):
     """ Generate a regex to match any of the keys in a source dict or set
 
-        Important: the match is not done on full words, so behavior
-        when one key is a substring of another is undefined.
+        Important: behavior is undefined with respect to the order of the substitutions,
+        so inputs should be invariant to this, e.g. one key should
+        not be a substring of another key.
     """
 
     def _process_word(word):

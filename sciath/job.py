@@ -107,8 +107,13 @@ class Job:
         return len(self.tasks)
 
     def total_wall_time(self):
-        """ Returns the total wall time required for all Tasks """
+        """ Returns the total wall time required for all Tasks
+
+            Returns None if any task does not have a defined wall time.
+        """
         total_wall_time = 0
         for task in self.tasks:
+            if task.wall_time is None:
+                return None
             total_wall_time += task.wall_time
         return total_wall_time
