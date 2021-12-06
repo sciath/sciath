@@ -55,7 +55,7 @@ Create a file, ``tutorial1.yml``, with the following content
     :language: YAML
 
 The file uses a subset of the `YAML <https://yaml.org>`__ format.
-Blank lines and anything after a ``#`` are ignored.
+Blank lines and lines beginning with ``#`` are ignored.
 
 Execute the SciATH module to run the test
 

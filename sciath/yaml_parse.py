@@ -11,7 +11,11 @@ from sciath.utility import DotDict
 def parse_yaml_subset_from_file(filename):  #pylint: disable=too-many-branches,too-many-locals
     """ Parse a subset of YAML files into a nested structure of list and dict objects
 
-        All data are interpreted as strings, ignoring "#" and any trailing characters.
+        All data are interpreted as strings, ignoring any trailing whitespace.
+
+        YAML comment lines are ignored, but "#" characters are not otherwise
+        treated specially and should not be used for trailing comments.
+
         Flow style is not supported, only block collections.
     """
     with open(filename, 'r') as input_file:
@@ -107,10 +111,16 @@ def _compute_indent(string, filename, line_number):
 
 def _parse_line(line, filename, line_number):
 
-    # Remove comments and strip trailing whitespace from content
-    content = line.split('#')[0].rstrip()
-
     entries = []
+
+    # Return immediately for whitespace-only or comment lines
+    line_lstrip = line.lstrip()
+    if line_lstrip == '' or line_lstrip.startswith('#'):
+        return entries
+
+    # Remove trailing whitespace
+    content = line.rstrip()
+
     while content:
         indent = _compute_indent(content, filename, line_number)
         if content[indent] == '-':
