@@ -16,14 +16,21 @@ class Job:
 
     * A name
     * An ordered list of :class:`Task`\s
+    * A minimum wall time required (can be None)
 
     It also defines how the name may be converted to various standard filenames.
+
+    If a minimum wall time is specified, the wall time allocated is the maximum
+    of this value and the sum of values of wall times for all included :class:`Task`\s that
+    defined them. If no minimum wall time is specified, the :class:`Job`'s wall time
+    is only defined if all included :class:`Task`\s specify a wall time, in which case the
+    sum is used.
 
     """
 
     _default_job_name = 'job'
 
-    def __init__(self, task_or_tasks, name=None):
+    def __init__(self, task_or_tasks, name=None, minimum_wall_time=None):
         if name is None:
             self.name = Job._default_job_name
             self.named_by_default = True
@@ -40,6 +47,8 @@ class Job:
                 self.tasks = task_or_tasks
         else:
             raise Exception('A Task or list of Tasks was expected')
+
+        self.wall_time = self._compute_wall_time(minimum_wall_time)
 
     def create_execute_command(self):
         """
@@ -106,14 +115,28 @@ class Job:
         """ Returns the number of tasks within the Job """
         return len(self.tasks)
 
-    def total_wall_time(self):
-        """ Returns the total wall time required for all Tasks
+    def _compute_wall_time(self, minimum_wall_time):
+        task_wall_time_total, task_wall_time_defined = self._tasks_wall_time()
+        if minimum_wall_time is None:
+            return task_wall_time_total
+        if task_wall_time_total is None:
+            return minimum_wall_time
+        return max(minimum_wall_time, task_wall_time_defined)
 
-            Returns None if any task does not have a defined wall time.
+    def _tasks_wall_time(self):
+        """ Returns (total walltime, total defined wall time) for a job's Tasks.
+
+            Returns None in the first slot if any Task doesn't have a defined
+            wall time. The second slot holds the sum of the defined task
+            wall times, or 0 if none are defined.
         """
-        total_wall_time = 0
+        defined = 0
+        total = 0
         for task in self.tasks:
             if task.wall_time is None:
-                return None
-            total_wall_time += task.wall_time
-        return total_wall_time
+                total = None
+            else:
+                defined += task.wall_time
+                if total is not None:
+                    total += task.wall_time
+        return total, defined

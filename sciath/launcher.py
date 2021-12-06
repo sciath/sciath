@@ -155,14 +155,18 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
         }
         delete_rules = set()
 
-        job_wall_time = job.total_wall_time()
-        if job_wall_time is None:
+        if job.wall_time is None:
             delete_rules.add('$SCIATH_JOB_WALLTIME_HM_OR_REMOVE_LINE')
             delete_rules.add('$SCIATH_JOB_WALLTIME_HMS_OR_REMOVE_LINE')
         else:
-            hours_str, minutes_str, seconds_str = _formatted_split_time(60.0 * job.total_wall_time())
-            replace_rules[r'$SCIATH_JOB_WALLTIME_HM_OR_REMOVE_LINE'] = '%s:%s:%s' % (hours_str, minutes_str)
-            replace_rules[r'$SCIATH_JOB_WALLTIME_HMS_OR_REMOVE_LINE'] = '%s:%s:%s' % (hours_str, minutes_str, seconds_str),
+            hours_str, minutes_str, seconds_str = _formatted_split_time(
+                60.0 * job.wall_time)
+            replace_rules[
+                r'$SCIATH_JOB_WALLTIME_HM_OR_REMOVE_LINE'] = '%s:%s' % (
+                    hours_str, minutes_str)
+            replace_rules[
+                r'$SCIATH_JOB_WALLTIME_HMS_OR_REMOVE_LINE'] = '%s:%s:%s' % (
+                    hours_str, minutes_str, seconds_str),
 
         # Assemble the script, applying task-level replacements
         script_filename = os.path.join(output_path, self._batch_filename(job))
@@ -170,7 +174,9 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
         with open(script_filename, 'w') as script_file:
             # Pre
             script_file.writelines(
-                _process_lines(self.template.pre, replace=replace_rules, delete=delete_rules))
+                _process_lines(self.template.pre,
+                               replace=replace_rules,
+                               delete=delete_rules))
 
             # Task
             first = True
@@ -192,11 +198,15 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
                                                      replace=rule_task)
 
                 script_file.writelines(
-                    _process_lines(task_lines_specific, replace=replace_rules, delete=delete_rules))
+                    _process_lines(task_lines_specific,
+                                   replace=replace_rules,
+                                   delete=delete_rules))
 
             # Post
             script_file.writelines(
-                _process_lines(self.template.post, replace=replace_rules, delete=delete_rules))
+                _process_lines(self.template.post,
+                               replace=replace_rules,
+                               delete=delete_rules))
 
         return script_filename
 
