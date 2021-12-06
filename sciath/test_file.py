@@ -106,8 +106,10 @@ def _create_job_from_entry(entry, replacement_map):
 
     ranks = int(entry['ranks']) if 'ranks' in entry else 1
 
+    time = _get_time_from_entry(entry)
+
     tasks = [sciath.task.Task(command, ranks=ranks) for command in commands]
-    job = sciath.job.Job(tasks, name=entry['name'])
+    job = sciath.job.Job(tasks, name=entry['name'], minimum_wall_time=time)
     return job
 
 
@@ -116,6 +118,20 @@ def _create_test_from_entry(job, entry, filename, replacement_map):
     _populate_verifier_from_entry(test, entry, filename, replacement_map)
     _populate_groups_from_entry(test, entry)
     return test
+
+
+def _get_time_from_entry(entry):
+    time = None
+    if 'time' in entry:
+        if 'walltime' in entry:
+            raise Exception(
+                '[Sciath] entry cannot specify both time and walltime')
+        time = float(entry['time'])
+    if 'walltime' in entry:
+        time = float(entry['walltime'])
+    if time is not None and time <= 0:
+        time = None
+    return time
 
 
 def _populate_groups_from_entry(test, entry):
