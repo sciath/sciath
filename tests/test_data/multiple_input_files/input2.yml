@@ -1,0 +1,7 @@
+tests:
+  - name: bar
+    command: echo bar
+    type: exit_code
+  - name: baz
+    command: echo baz
+    type: exit_code

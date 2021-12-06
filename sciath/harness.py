@@ -289,8 +289,9 @@ class Harness:
                 print("[SciATH] Aborting.")
                 return
 
-        if args.input_file:
-            self.add_tests_from_file(args.input_file)
+        if args.input_files:
+            for input_file in args.input_files:
+                self.add_tests_from_file(input_file)
 
         if args.list:
             self.print_all_tests()
@@ -403,9 +404,9 @@ class Harness:
 
 def _parse_args():
     parser = argparse.ArgumentParser(description='SciATH')
-    parser.add_argument('input_file',
-                        help='YAML file to add tests to the harness',
-                        nargs='?',
+    parser.add_argument('input_files',
+                        help='YAML file[s] to add tests to the harness',
+                        nargs='*',
                         default=None)
     parser.add_argument('-c',
                         '--configure',
