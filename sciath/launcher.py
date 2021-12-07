@@ -139,7 +139,7 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
         self._populate_template()
 
         # Apply replacements at the Job level
-        replace_rules = {
+        replace_job = {
             '$SCIATH_JOB_NAME':
                 job.name,
             '$SCIATH_JOB_MAX_RANKS':
@@ -153,18 +153,17 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
             '$SCIATH_JOB_COMPLETE':
                 os.path.join(output_path, job.complete_filename),
         }
-        delete_rules = set()
+        delete_launcher = set()
 
         if job.wall_time is None:
-            delete_rules.add('$SCIATH_JOB_WALLTIME_HM_OR_REMOVE_LINE')
-            delete_rules.add('$SCIATH_JOB_WALLTIME_HMS_OR_REMOVE_LINE')
+            delete_launcher.add('$SCIATH_JOB_WALLTIME_HM_OR_REMOVE_LINE')
+            delete_launcher.add('$SCIATH_JOB_WALLTIME_HMS_OR_REMOVE_LINE')
         else:
             hours_str, minutes_str, seconds_str = _formatted_split_time(
                 60.0 * job.wall_time)
-            replace_rules[
-                r'$SCIATH_JOB_WALLTIME_HM_OR_REMOVE_LINE'] = '%s:%s' % (
-                    hours_str, minutes_str)
-            replace_rules[
+            replace_job[r'$SCIATH_JOB_WALLTIME_HM_OR_REMOVE_LINE'] = '%s:%s' % (
+                hours_str, minutes_str)
+            replace_job[
                 r'$SCIATH_JOB_WALLTIME_HMS_OR_REMOVE_LINE'] = '%s:%s:%s' % (
                     hours_str, minutes_str, seconds_str)
 
@@ -175,8 +174,8 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
             # Pre
             script_file.writelines(
                 _process_lines(self.template.pre,
-                               replace=replace_rules,
-                               delete=delete_rules))
+                               replace=replace_job,
+                               delete=delete_launcher))
 
             # Task
             first = True
@@ -197,21 +196,22 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
                     replace_task['$SCIATH_TASK_MPI_RUN'] = command_join(
                         _format_mpi_launch_command(self.mpi_launch, task_ranks))
 
-                task_lines_specific = _process_lines(self.template.task,
-                                                     replace=replace_task,
-                                                     delete=delete_task,
-                                                     )
+                task_lines_specific = _process_lines(
+                    self.template.task,
+                    replace=replace_task,
+                    delete=delete_task,
+                )
 
                 script_file.writelines(
                     _process_lines(task_lines_specific,
-                                   replace=replace_rules,
-                                   delete=delete_rules))
+                                   replace=replace_job,
+                                   delete=delete_launcher))
 
             # Post
             script_file.writelines(
                 _process_lines(self.template.post,
-                               replace=replace_rules,
-                               delete=delete_rules))
+                               replace=replace_job,
+                               delete=delete_launcher))
 
         return script_filename
 
@@ -233,20 +233,20 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
             lines = file.readlines()
 
         # Launcher-level replacements and deletions
-        replace_rules = {}
-        delete_rules = set()
+        replace_launcher = {}
+        delete_launcher = set()
         for (term, setting) in (
             ('$SCIATH_QUEUE_OR_REMOVE_LINE', self.queue_name),
             ('$SCIATH_ACCOUNT_OR_REMOVE_LINE', self.account_name),
         ):
             if not setting:
-                delete_rules.add(term)
+                delete_launcher.add(term)
             else:
-                replace_rules[term] = setting
+                replace_launcher[term] = setting
 
         lines = _process_lines(lines,
-                               replace=replace_rules,
-                               delete=delete_rules)
+                               replace=replace_launcher,
+                               delete=delete_launcher)
 
         # Construct template components
         self.template.pre = []
