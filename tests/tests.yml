@@ -166,7 +166,7 @@
 -
   name: tutorial_first_and_second
   group: default_configuration
-  command: sh test_wrapper_tutorial.sh tutorial_first_and_second "--no-colors -t first,second ../../docs/_static/tutorial/tutorial.yml"
+  command: sh test_wrapper_tutorial.sh tutorial_first_and_second "--no-colors -t first -t second ../../docs/_static/tutorial/tutorial.yml"
   expected: ../docs/_static/tutorial/first_and_second_output.txt
 -
   name: tutorial_failing
