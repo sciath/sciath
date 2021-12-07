@@ -119,6 +119,16 @@
   command: sh test_mpi_wrapper.sh mpi_smoke_two_ranks_verify "-v ../test_data/mpi_smoke_two_ranks/input.yml" mpi_smoke_two_ranks_execute
   expected: test_data/mpi_smoke_two_ranks_verify.expected
 -
+  name: mpi_different_ranks_execute
+  group: mpi_different_ranks_execute
+  command: sh test_mpi_wrapper.sh mpi_different_ranks_execute "-e ../test_data/mpi_different_ranks/input.yml"
+  expected: test_data/mpi_different_ranks_execute.expected
+-
+  name: mpi_different_ranks_verify
+  group: mpi_verify
+  command: sh test_mpi_wrapper.sh mpi_different_ranks_verify "-v ../test_data/mpi_different_ranks/input.yml" mpi_different_ranks_execute
+  expected: test_data/mpi_different_ranks_verify.expected
+-
   name: verify_unlaunched
   group: default_configuration
   command: sh test_wrapper.sh verify_unlaunched "-v ../test_data/verify_unlaunched/input.yml"
@@ -138,6 +148,11 @@
   group: default_configuration
   command: sh test_wrapper.sh multiple_input_files "../test_data/multiple_input_files/input1.yml ../test_data/multiple_input_files/input2.yml"
   expected: test_data/multiple_input_files.expected
+-
+  name: per_task_rank_input
+  group: default_configuration
+  command: sh test_api_wrapper.sh per_task_rank_input test_data/per_task_rank_input/test.py
+  expected: test_data/per_task_rank_input.expected
 -
   name: tutorial1
   group: default_configuration

@@ -1,0 +1,13 @@
+tests:
+  -
+    name: varying_ranks
+    tasks:
+      - printf "no MPI required\n"
+      - command: printf "no MPI required\n"
+      - command: printf "no MPI required\n"
+        ranks: 0
+      - command: printf "one rank\n"
+        ranks: 1
+      - command: printf "two ranks\n"
+        ranks: 2
+    expected: expected
