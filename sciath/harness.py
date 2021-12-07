@@ -297,8 +297,8 @@ class Harness:
             self.print_all_tests()
             return
 
-        if args.test_subset:
-            self._activate_tests_from_list(args.test_subset)
+        if args.test:
+            self._activate_tests_from_list(args.test)
 
         if args.group or args.exclude_group:
             self._activate_test_groups(args.group, args.exclude_group)
@@ -370,10 +370,16 @@ class Harness:
                 testrun.output_path, testrun.exec_path)
             testrun.status = _TestRunStatus.PASS if passing else _TestRunStatus.FAIL
 
-    def _activate_tests_from_list(self, test_subset_string):
-        """ Deactivate test runs not named in a comma-separated string """
+    def _activate_tests_from_list(self, tests):
+        """ Deactivate test runs not named in a list
+
+        For backwards compatibility, each entry may be a comma-separated list.
+        """
+        tests_flat = []
+        for test in tests:
+            tests_flat.extend(test.split(","))
         for testrun in self.testruns:
-            if testrun.test.name not in test_subset_string.split(','):
+            if testrun.test.name not in tests_flat:
                 testrun.active = False
 
     def _activate_test_groups(self, only_groups, exclude_groups):
@@ -398,10 +404,12 @@ def _parse_args():
                         help='Configure queuing system information',
                         required=False,
                         action='store_true')
-    parser.add_argument('-t',
-                        '--test-subset',
-                        help='Comma-separated list of test names',
-                        required=False)
+    parser.add_argument(
+        '-t',
+        '--test',
+        help='Run only this test and those from other -t/--test arguments',
+        required=False,
+        action='append')
     parser.add_argument('-p',
                         '--purge-output',
                         help='Delete generated output',

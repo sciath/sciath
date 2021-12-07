@@ -129,7 +129,7 @@ or
 
 .. code-block:: bash
 
-    python -m sciath tutorial.yml -t first,second
+    python -m sciath tutorial.yml -t first -t second
 
 to generate output
 
