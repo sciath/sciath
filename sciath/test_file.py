@@ -77,40 +77,54 @@ def _build_replacement_map(data, filename, here_marker='HERE'):
 
 
 def _create_job_from_entry(entry, replacement_map):
-    if 'name' not in entry:
-        raise Exception('Each test entry must specify a name')
-    if not entry['name']:
-        raise Exception('Names cannot be empty')
+    if "name" not in entry:
+        raise Exception("Each test entry must specify a name")
+    if not entry["name"]:
+        raise Exception("Names cannot be empty")
 
-    if 'command' in entry and 'commands' in entry:
-        raise Exception('Cannot specify both command: and commands:')
-    if 'command' not in entry and 'commands' not in entry:
-        raise Exception('Must specify command: or commands: for each entry')
-    commands_raw = entry['command'] if 'command' in entry else entry['commands']
-    if isinstance(commands_raw, str):
-        commands = [commands_raw]
-    elif isinstance(commands_raw, list):
-        commands = commands_raw
-    else:
+    taskinfo_names = ("command", "commands", "task", "tasks")
+    taskinfo_found = False
+    for name in taskinfo_names:
+        if name in entry:
+            if taskinfo_found:
+                raise Exception("Each test can only specify one of %s" %
+                                taskinfo_names)
+            taskinfo = entry[name]
+            taskinfo_found = True
+    if not taskinfo_found:
+        raise Exception("tasks or commands must be defined for each test")
+
+    if isinstance(taskinfo, str):
+        taskinfo = [taskinfo]
+    elif not isinstance(taskinfo, list):
         raise Exception(
-            'command: or commands: fields must be a string or a sequence')
+            "task or command entries must be a string or a sequence")
 
-    commands = [
-        _apply_replacement_map(command, replacement_map) for command in commands
-    ]
-    commands = [shlex.split(command) for command in commands
-               ]  # split, respecting quotes
-    for command in commands:
-        if not command:
-            raise Exception('Commands cannot be empty')
+    time_job = _get_time_from_entry(entry)
+    ranks_job = int(entry["ranks"]) if "ranks" in entry else None
 
-    ranks = int(entry['ranks']) if 'ranks' in entry else 1
+    tasks = []
+    for info_entry in taskinfo:
+        if isinstance(info_entry, str):
+            info_entry = {"command": info_entry}
+        tasks.append(
+            _create_task_from_entry(info_entry,
+                                    ranks_default=ranks_job,
+                                    replacement_map=replacement_map))
 
-    time = _get_time_from_entry(entry)
-
-    tasks = [sciath.task.Task(command, ranks=ranks) for command in commands]
-    job = sciath.job.Job(tasks, name=entry['name'], minimum_wall_time=time)
+    job = sciath.job.Job(tasks, name=entry["name"], minimum_wall_time=time_job)
     return job
+
+
+def _create_task_from_entry(entry, ranks_default, replacement_map):
+    if "command" not in entry:
+        raise Exception("Tasks must specify a command")
+    command = shlex.split(
+        _apply_replacement_map(entry["command"], replacement_map))
+    ranks = int(entry["ranks"]) if "ranks" in entry else ranks_default
+    if ranks is None:
+        ranks = 0
+    return sciath.task.Task(command, ranks=ranks)
 
 
 def _create_test_from_entry(job, entry, filename, replacement_map):

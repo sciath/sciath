@@ -419,7 +419,7 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
         _set_blocking_io_stdout()
 
         ranks = job.resource_max('ranks')
-        if self.mpi_launch == 'none' and ranks is not None and ranks != 1:
+        if self.mpi_launch == 'none' and ranks is not None and ranks != 0:
             return False, 'MPI required', ['Not launched: requires MPI']
 
         script_filename = self._create_launch_script(job,
