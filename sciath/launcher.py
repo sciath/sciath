@@ -142,8 +142,6 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
         replace_job = {
             '$SCIATH_JOB_NAME':
                 job.name,
-            '$SCIATH_JOB_MAX_RANKS':
-                str(job.resource_max('ranks')),
             '$SCIATH_JOB_STDOUT':
                 os.path.join(output_path, job.stdout_filename),
             '$SCIATH_JOB_STDERR':
@@ -153,11 +151,17 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
             '$SCIATH_JOB_COMPLETE':
                 os.path.join(output_path, job.complete_filename),
         }
-        delete_launcher = set()
+        delete_job = set()
+
+        job_ranks = job.resource_max('ranks')
+        if job_ranks is None or job_ranks == 0:
+            delete_job.add('$SCIATH_JOB_MAX_RANKS_OR_REMOVE_LINE')
+        else:
+            replace_job['$SCIATH_JOB_MAX_RANKS_OR_REMOVE_LINE'] = str(job_ranks)
 
         if job.wall_time is None:
-            delete_launcher.add('$SCIATH_JOB_WALLTIME_HM_OR_REMOVE_LINE')
-            delete_launcher.add('$SCIATH_JOB_WALLTIME_HMS_OR_REMOVE_LINE')
+            delete_job.add('$SCIATH_JOB_WALLTIME_HM_OR_REMOVE_LINE')
+            delete_job.add('$SCIATH_JOB_WALLTIME_HMS_OR_REMOVE_LINE')
         else:
             hours_str, minutes_str, seconds_str = _formatted_split_time(
                 60.0 * job.wall_time)
@@ -175,7 +179,7 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
             script_file.writelines(
                 _process_lines(self.template.pre,
                                replace=replace_job,
-                               delete=delete_launcher))
+                               delete=delete_job))
 
             # Task
             first = True
@@ -205,13 +209,13 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
                 script_file.writelines(
                     _process_lines(task_lines_specific,
                                    replace=replace_job,
-                                   delete=delete_launcher))
+                                   delete=delete_job))
 
             # Post
             script_file.writelines(
                 _process_lines(self.template.post,
                                replace=replace_job,
-                               delete=delete_launcher))
+                               delete=delete_job))
 
         return script_filename
 
