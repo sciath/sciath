@@ -130,7 +130,7 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
 
         self._setup()
 
-    def _create_launch_script(self, job, output_path):
+    def _create_launch_script(self, job, output_path):  #pylint: disable=too-many-locals
         if not os.path.isabs(output_path):
             raise ValueError(
                 '[SciATH] Unsupported: output paths must be absolute')
@@ -186,16 +186,21 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
                 else:
                     script_file.write('\n')
                 task_ranks = task.get_resource('ranks')
-                rule_task = {
+                replace_task = {
                     '$SCIATH_TASK_COMMAND': command_join(task.command),
                     '$SCIATH_TASK_RANKS': str(task_ranks),
                 }
-                if self.mpi_launch != 'none':
-                    rule_task['$SCIATH_TASK_MPI_RUN'] = command_join(
+                delete_task = set()
+                if self.mpi_launch == 'none' or task_ranks is None or task_ranks <= 0:
+                    delete_task.add('$SCIATH_TASK_MPI_RUN')
+                else:
+                    replace_task['$SCIATH_TASK_MPI_RUN'] = command_join(
                         _format_mpi_launch_command(self.mpi_launch, task_ranks))
 
                 task_lines_specific = _process_lines(self.template.task,
-                                                     replace=rule_task)
+                                                     replace=replace_task,
+                                                     delete=delete_task,
+                                                     )
 
                 script_file.writelines(
                     _process_lines(task_lines_specific,
