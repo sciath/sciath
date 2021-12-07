@@ -96,7 +96,7 @@
 -
   name: groups
   group: default_configuration
-  command: sh test_wrapper.sh groups "../test_data/groups/input.yml -g group_one,group_four -x group_two"
+  command: sh test_wrapper.sh groups "../test_data/groups/input.yml -g group_one -g group_four -x group_two"
   expected: test_data/groups.expected
 -
   name: mpi_smoke_execute
