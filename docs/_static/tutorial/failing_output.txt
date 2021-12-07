@@ -3,7 +3,7 @@
 
 [ *** Executing Tests *** ]
 [SciATH] Batch queueing system configuration [SciATH_launcher.conf]
-  Version:           0.12.0
+  Version:           0.13.0
   MPI launcher:      none
   Submit command:    sh
   Blocking:          True
