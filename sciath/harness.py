@@ -300,8 +300,8 @@ class Harness:
         if args.test_subset:
             self._activate_tests_from_list(args.test_subset)
 
-        if args.groups or args.exclude_groups:
-            self._activate_test_groups(args.groups, args.exclude_groups)
+        if args.group or args.exclude_group:
+            self._activate_test_groups(args.group, args.exclude_group)
 
         if args.configure_default:
             sciath.launcher.Launcher.write_default_definition(args.conf_file)
@@ -376,24 +376,9 @@ class Harness:
             if testrun.test.name not in test_subset_string.split(','):
                 testrun.active = False
 
-    def _activate_test_groups(self, only_groups_string, exclude_groups_string):
-        """ Deactivate all tests which are not one set or which are in another
-
-            Accepts a comma-separated strings. Trailing and leading whitespace
-            is stripped
+    def _activate_test_groups(self, only_groups, exclude_groups):
+        """ Deactivate tests not in only_groups and all tests in exclude_groups
         """
-        if only_groups_string:
-            only_groups = [
-                group.strip() for group in only_groups_string.split(',')
-            ]
-        else:
-            only_groups = None
-        if exclude_groups_string:
-            exclude_groups = [
-                group.strip() for group in exclude_groups_string.split(',')
-            ]
-        else:
-            exclude_groups = []
         for testrun in self.testruns:
             if only_groups and not testrun.test.groups.intersection(
                     only_groups):
@@ -466,15 +451,14 @@ def _parse_args():
         action='store_true')
     parser.add_argument(
         '-g',
-        '--groups',
-        help=
-        'Comma-separated list of test groups. Tests not in these groups are excluded',
-        required=False)
-    parser.add_argument(
-        '-x',
-        '--exclude-groups',
-        help=
-        'Comma-separated list of test groups. Tests in these groups are excluded',
-        required=False)
+        '--group',
+        help='Exclude tests not in this or any other -g/--group argument',
+        required=False,
+        action='append')
+    parser.add_argument('-x',
+                        '--exclude-group',
+                        help='Exclude tests in this group',
+                        required=False,
+                        action='append')
 
     return parser.parse_args()
