@@ -1,21 +1,13 @@
-[36m[Executing Line1][0m from <<TEST DIR STRIPPED>>/verifier_line_sandbox
-sh <<TEST DIR STRIPPED>>/verifier_line_sandbox/output/Line1.sh
 True
 None
-[36m[Executing Line2][0m from <<TEST DIR STRIPPED>>/verifier_line_sandbox
-sh <<TEST DIR STRIPPED>>/verifier_line_sandbox/output/Line2.sh
 False
 None
 --- <<TEST DIR STRIPPED>>/test_data/verifier_line/expected
 +++ <<TEST DIR STRIPPED>>/verifier_line_sandbox/output/Line2.stdout
 Report for 4 expected line(s) matching: '  key'
 Failure: Different numbers of matching lines found: 3 instead of 4
-[36m[Executing Line3][0m from <<TEST DIR STRIPPED>>/verifier_line_sandbox
-sh <<TEST DIR STRIPPED>>/verifier_line_sandbox/output/Line3.sh
 True
 None
-[36m[Executing Line4][0m from <<TEST DIR STRIPPED>>/verifier_line_sandbox
-sh <<TEST DIR STRIPPED>>/verifier_line_sandbox/output/Line4.sh
 False
 None
 --- <<TEST DIR STRIPPED>>/test_data/verifier_line/expected
@@ -23,8 +15,6 @@ None
 Report for 4 expected line(s) matching: '^\s*\ \ key'
 Output line 1 did not match line 1 in expected output:
 7 != 2 to rel. tol. 1e-06 (rel. err. 2.5)
-[36m[Executing Line5][0m from <<TEST DIR STRIPPED>>/verifier_line_sandbox
-sh <<TEST DIR STRIPPED>>/verifier_line_sandbox/output/Line5.sh
 False
 None
 --- <<TEST DIR STRIPPED>>/test_data/verifier_line/expected

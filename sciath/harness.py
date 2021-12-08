@@ -11,7 +11,7 @@ import sciath
 import sciath.launcher
 import sciath.test_file
 from sciath import SCIATH_COLORS
-from sciath._sciath_io import py23input
+from sciath._sciath_io import py23input, command_join
 
 
 class _TestRunStatus:  #pylint: disable=too-few-public-methods
@@ -165,6 +165,13 @@ class Harness:
                                         sentinel_file)
                     with open(sentinel_file, 'w'):
                         pass
+                print('%s[Executing %s]%s from %s' %
+                      (SCIATH_COLORS.subheader, testrun.test.job.name,
+                       SCIATH_COLORS.endc, testrun.exec_path))
+                print(
+                    command_join(
+                        self.launcher.launch_command(testrun.test.job,
+                                                     testrun.output_path)))
                 success, info, report = self.launcher.submit_job(
                     testrun.test.job,
                     output_path=testrun.output_path,
