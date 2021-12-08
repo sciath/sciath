@@ -17,6 +17,10 @@ from sciath._sciath_io import (py23input, command_join, color_okay, color_fail,
 from sciath.verifier import SciATHVerifierMissingFileException
 
 
+class SciATHHarnessInconsistentStateException(Exception):
+    """ Exception for unexpected filesystem state """
+
+
 class _TestRunStatus:  #pylint: disable=too-few-public-methods
     DEACTIVATED = 'deactivated'  # Test skipped intentionally
     UNKNOWN = 'unknown'
@@ -125,7 +129,7 @@ class Harness:
                     sentinel_file = os.path.join(
                         testrun.exec_path, self._sandbox_sentinel_filename)
                     if not os.path.exists(sentinel_file):
-                        raise Exception(
+                        raise SciATHHarnessInconsistentStateException(
                             '[SciATH] did not find expected sentinel file ' +
                             sentinel_file)
                     shutil.rmtree(testrun.exec_path)
@@ -160,8 +164,9 @@ class Harness:
                     sentinel_file = os.path.join(
                         testrun.exec_path, self._sandbox_sentinel_filename)
                     if os.path.exists(sentinel_file):
-                        raise Exception("[SciATH] Unexpected sentinel file " +
-                                        sentinel_file)
+                        raise SciATHHarnessInconsistentStateException(
+                            "[SciATH] Unexpected sentinel file %s" %
+                            sentinel_file)
                     with open(sentinel_file, 'w'):
                         pass
                 print_subheader("Executing %s" % testrun.test.job.name, end="")
