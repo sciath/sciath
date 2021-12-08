@@ -73,6 +73,7 @@ class Harness:
                 self.add_test(test)
         self.report_filename_full = os.path.join(os.getcwd(),
                                                  self._report_filename)
+        self.quiet = False  # quiet means only print specifically-requested output
 
     def add_test(self, test):
         """ Add a Test to be run with the harness """
@@ -91,10 +92,13 @@ class Harness:
             self.launcher = sciath.launcher.Launcher()
 
         if self.testruns:
-            print_header("Cleanup")
+            if not self.quiet:
+                print_header("Cleanup")
         for testrun in self.testruns:
             if testrun.active:
-                print_info("Removing output for Test: %s" % testrun.test.name)
+                if not self.quiet:
+                    print_info("Removing output for Test: %s" %
+                               testrun.test.name)
                 self.launcher.clean(testrun.test.job,
                                     output_path=testrun.output_path)
                 if testrun.sandbox and os.path.exists(testrun.exec_path):
@@ -123,9 +127,10 @@ class Harness:
             self.launcher = sciath.launcher.Launcher()
 
         if self.testruns:
-            print()
-            print_header("Executing Tests")
-            print(self.launcher)
+            if not self.quiet:
+                print()
+                print_header("Executing Tests")
+                print(self.launcher)
         for testrun in self.testruns:
             if testrun.active:
                 if not os.path.exists(testrun.output_path):
@@ -141,12 +146,14 @@ class Harness:
                             sentinel_file)
                     with open(sentinel_file, 'w'):
                         pass
-                print_subheader("Executing %s" % testrun.test.job.name, end="")
-                print("from %s" % testrun.exec_path)
-                print(
-                    command_join(
-                        self.launcher.launch_command(testrun.test.job,
-                                                     testrun.output_path)))
+                if not self.quiet:
+                    print_subheader("Executing %s" % testrun.test.job.name,
+                                    end="")
+                    print("from %s" % testrun.exec_path)
+                    print(
+                        command_join(
+                            self.launcher.launch_command(
+                                testrun.test.job, testrun.output_path)))
                 success, info, report = self.launcher.submit_job(
                     testrun.test.job,
                     output_path=testrun.output_path,
@@ -223,11 +230,14 @@ class Harness:
                 report.append("No tests active")
         else:
             report.append("No tests")
-        for line in report:
-            print(line)
+        if not self.quiet:
+            for line in report:
+                print(line)
 
         self._report_to_file(report)
-        print('\nReport written to file:\n  %s' % (self.report_filename_full))
+        if not self.quiet:
+            print('\nReport written to file:\n  %s' %
+                  (self.report_filename_full))
 
     def _report_to_file(self, report):
         """ Dumps a report, as a list of lines (no new-lines) to file
@@ -252,6 +262,9 @@ class Harness:
         if args.no_colors:
             sciath.no_colors()
 
+        if args.quiet or args.tap:
+            self.quiet = True
+
         if args.update_expected:
             print_info(
                 "You have provided an argument to updated expected files.")
@@ -270,8 +283,9 @@ class Harness:
                     self.add_tests_from_file(input_file)
                 except sciath.test_file.SciATHTestFileException as exception:
                     print_error("There was a problem reading tests from %s:" %
-                                input_file)
-                    print(exception)
+                                input_file,
+                                file=sys.stderr)
+                    print(exception, file=sys.stderr)
                     return
 
         if args.list:
@@ -311,7 +325,8 @@ class Harness:
 
         if args.execute or (not args.verify and not self.launcher.blocking):
             if self.testruns:
-                print_info("Not verifying or reporting")
+                if not self.quiet:
+                    print_info("Not verifying or reporting")
         else:
             self.verify()
             self.report()
@@ -326,17 +341,20 @@ class Harness:
     def update_expected(self):
         """ Give each active test the chance to update its reference output """
         if self.testruns:
-            print_header("Updating Expected Output")
+            if not self.quiet:
+                print_header("Updating Expected Output")
         for testrun in self.testruns:
             if testrun.active:
                 if hasattr(testrun.test.verifier, 'update_expected'):
-                    print_info("Updating output for Test: %s" %
-                               testrun.test.name)
+                    if not self.quiet:
+                        print_info("Updating output for Test: %s" %
+                                   testrun.test.name)
                     testrun.test.verifier.update_expected(
                         testrun.output_path, testrun.exec_path)
                 else:
-                    print_info("Output updated not supported for Test: %s" %
-                               testrun.test.name)
+                    if not self.quiet:
+                        print_info("Output updated not supported for Test: %s" %
+                                   testrun.test.name)
 
     def verify(self):
         """ Updates the status of all test runs """
@@ -457,9 +475,15 @@ def _parse_args():
                         help='Exclude tests in this group',
                         required=False,
                         action='append')
-    parser.add_argument('--tap',
-                        help='Print TAP-compatible output',
-                        required=False,
-                        action='store_true')
-
+    parser.add_argument(
+        '--tap',
+        help='Print TAP-compatible output, and activate quiet mode.',
+        required=False,
+        action='store_true')
+    parser.add_argument(
+        '-q',
+        '--quiet',
+        help='Only print information requested by other options',
+        required=False,
+        action='store_true')
     return parser.parse_args()
