@@ -101,32 +101,32 @@
 -
   name: mpi_smoke_execute
   group: mpi_execute
-  command: sh test_mpi_wrapper.sh mpi_smoke_execute "-e ../test_data/mpi_smoke/input.yml"
+  command: sh test_mpi_wrapper.sh mpi_smoke_execute "--tap -e ../test_data/mpi_smoke/input.yml"
   expected: test_data/mpi_smoke_execute.expected
 -
   name: mpi_smoke_verify
   group: mpi_verify
-  command: sh test_mpi_wrapper.sh mpi_smoke_verify "-v ../test_data/mpi_smoke/input.yml" mpi_smoke_execute
+  command: sh test_mpi_wrapper.sh mpi_smoke_verify "--tap -v ../test_data/mpi_smoke/input.yml" mpi_smoke_execute
   expected: test_data/mpi_smoke_verify.expected
 -
   name: mpi_smoke_two_ranks_execute
   group: mpi_execute
-  command: sh test_mpi_wrapper.sh mpi_smoke_two_ranks_execute "-e ../test_data/mpi_smoke_two_ranks/input.yml"
+  command: sh test_mpi_wrapper.sh mpi_smoke_two_ranks_execute "--tap -e ../test_data/mpi_smoke_two_ranks/input.yml"
   expected: test_data/mpi_smoke_two_ranks_execute.expected
 -
   name: mpi_smoke_two_ranks_verify
   group: mpi_verify
-  command: sh test_mpi_wrapper.sh mpi_smoke_two_ranks_verify "-v ../test_data/mpi_smoke_two_ranks/input.yml" mpi_smoke_two_ranks_execute
+  command: sh test_mpi_wrapper.sh mpi_smoke_two_ranks_verify "--tap -v ../test_data/mpi_smoke_two_ranks/input.yml" mpi_smoke_two_ranks_execute
   expected: test_data/mpi_smoke_two_ranks_verify.expected
 -
   name: mpi_different_ranks_execute
   group: mpi_different_ranks_execute
-  command: sh test_mpi_wrapper.sh mpi_different_ranks_execute "-e ../test_data/mpi_different_ranks/input.yml"
+  command: sh test_mpi_wrapper.sh mpi_different_ranks_execute "--tap -e ../test_data/mpi_different_ranks/input.yml"
   expected: test_data/mpi_different_ranks_execute.expected
 -
   name: mpi_different_ranks_verify
   group: mpi_verify
-  command: sh test_mpi_wrapper.sh mpi_different_ranks_verify "-v ../test_data/mpi_different_ranks/input.yml" mpi_different_ranks_execute
+  command: sh test_mpi_wrapper.sh mpi_different_ranks_verify "--tap -v ../test_data/mpi_different_ranks/input.yml" mpi_different_ranks_execute
   expected: test_data/mpi_different_ranks_verify.expected
 -
   name: verify_unlaunched
