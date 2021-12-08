@@ -298,7 +298,14 @@ class Harness:
 
         if args.input_files:
             for input_file in args.input_files:
-                self.add_tests_from_file(input_file)
+                try:
+                    self.add_tests_from_file(input_file)
+                except sciath.test_file.SciATHTestFileException as exception:
+                    print(
+                        "%s[SciATH] Error:%s There was a problem reading tests from %s:"
+                        % (SCIATH_COLORS.fail, SCIATH_COLORS.endc, input_file))
+                    print(exception)
+                    return
 
         if args.list:
             self.print_all_tests()

@@ -12,25 +12,29 @@ import sciath.verifier_line
 from sciath import yaml_parse
 
 
+class SciATHTestFileException(Exception):
+    """ Exception for an invalid SciATH test definition file"""
+
+
 def create_tests_from_file(filename):
     """ Creates a list of SciATH tests from a YAML file """
-    data = yaml_parse.parse_yaml_subset_from_file(filename)
-
-    if not data:
-        raise Exception("[SciATH] did not successfully read from %s" % filename)
+    #pylint: disable=bad-option-value,raise-missing-from
+    try:
+        data = yaml_parse.parse_yaml_subset_from_file(filename)
+    except yaml_parse.SciATHYAMLParseException as exception:
+        raise SciATHTestFileException("Error parsing file: %s" % exception)
 
     if not isinstance(data, dict) or 'tests' not in data or not isinstance(
             data['tests'], list):
-        raise Exception(
-            "[SciATH] file needs 'tests:' containing a sequence of test entries"
-        )
+        raise SciATHTestFileException(
+            "File needs 'tests:' containing a sequence of test entries")
 
     replacement_map = _build_replacement_map(data, filename)
 
     tests = []
     for entry in data['tests']:
         if not isinstance(entry, dict):
-            raise Exception(
+            raise SciATHTestFileException(
                 'Incorrectly formatted test entry (must be a mapping)')
         job = _create_job_from_entry(entry, replacement_map)
         test = _create_test_from_entry(job, entry, filename, replacement_map)
@@ -51,18 +55,20 @@ def _build_environment_map(data):
     if 'environment' in data:
         variable_list = data['environment']
         if not isinstance(variable_list, list):
-            raise Exception('Environment variables must be a sequence')
+            raise SciATHTestFileException(
+                'Environment variables must be a sequence')
         for variable in variable_list:
             if not variable:
-                raise Exception('Empty environment variables not allowed')
+                raise SciATHTestFileException(
+                    'Empty environment variables not allowed')
             if variable[0] == '$':
                 variable = variable[1:]
             if not re.match(r'^\w+$', variable):
-                raise Exception(
+                raise SciATHTestFileException(
                     'Environment variable name not well-formed: %s' % variable)
             value = os.getenv(variable)
             if value is None:
-                raise Exception(
+                raise SciATHTestFileException(
                     'Expected environment variable %s not defined.' % variable)
             environment_map['$' + variable] = value
     environment_map = collections.OrderedDict(
@@ -78,27 +84,28 @@ def _build_replacement_map(data, filename, here_marker='HERE'):
 
 def _create_job_from_entry(entry, replacement_map):
     if "name" not in entry:
-        raise Exception("Each test entry must specify a name")
+        raise SciATHTestFileException("Each test entry must specify a name")
     if not entry["name"]:
-        raise Exception("Names cannot be empty")
+        raise SciATHTestFileException("Names cannot be empty")
 
     taskinfo_names = ("command", "commands", "task", "tasks")
     taskinfo_found = False
     for name in taskinfo_names:
         if name in entry:
             if taskinfo_found:
-                raise Exception("Each test can only specify one of %s" %
-                                taskinfo_names)
+                raise SciATHTestFileException(
+                    "Each test can only specify one of %s" % taskinfo_names)
             taskinfo = entry[name]
             taskinfo_found = True
     if not taskinfo_found:
-        raise Exception("tasks or commands must be defined for each test")
+        raise SciATHTestFileException(
+            "Tasks or commands must be defined for each test")
 
     if isinstance(taskinfo, str):
         taskinfo = [taskinfo]
     elif not isinstance(taskinfo, list):
-        raise Exception(
-            "task or command entries must be a string or a sequence")
+        raise SciATHTestFileException(
+            "Task or command entries must be a string or a sequence")
 
     time_job = _get_time_from_entry(entry)
     ranks_job = int(entry["ranks"]) if "ranks" in entry else None
@@ -118,7 +125,7 @@ def _create_job_from_entry(entry, replacement_map):
 
 def _create_task_from_entry(entry, ranks_default, replacement_map):
     if "command" not in entry:
-        raise Exception("Tasks must specify a command")
+        raise SciATHTestFileException("Tasks must specify a command")
     command = shlex.split(
         _apply_replacement_map(entry["command"], replacement_map))
     ranks = int(entry["ranks"]) if "ranks" in entry else ranks_default
@@ -138,8 +145,8 @@ def _get_time_from_entry(entry):
     time = None
     if 'time' in entry:
         if 'walltime' in entry:
-            raise Exception(
-                '[Sciath] entry cannot specify both time and walltime')
+            raise SciATHTestFileException(
+                'Entry cannot specify both time and walltime')
         time = float(entry['time'])
     if 'walltime' in entry:
         time = float(entry['walltime'])
@@ -150,7 +157,7 @@ def _get_time_from_entry(entry):
 
 def _populate_groups_from_entry(test, entry):
     if 'group' in entry and 'groups' in entry:
-        raise Exception('[SciATH] Cannot specify both group: and groups:')
+        raise SciATHTestFileException('Cannot specify both group: and groups:')
     if 'group' in entry or 'groups' in entry:
         groups_raw = entry['group'] if 'group' in entry else entry['groups']
         if isinstance(groups_raw, str):
@@ -158,8 +165,8 @@ def _populate_groups_from_entry(test, entry):
         elif isinstance(groups_raw, list):
             groups_list = groups_raw
         else:
-            raise Exception(
-                'group: or groups: fields must be a string or a sequence')
+            raise SciATHTestFileException(
+                'Group: or groups: fields must be a string or a sequence')
         for group in groups_list:
             test.add_group(group)
 
@@ -175,7 +182,8 @@ def _populate_verifier_from_entry(test, entry, filename, replacement_map):
 
     # All subsequent verifiers use an expected file
     if 'expected' not in entry or not entry['expected']:
-        raise Exception('Each test entry must defined an expected file')
+        raise SciATHTestFileException(
+            'Each test entry must defined an expected file')
     expected = entry['expected']
     expected = _apply_replacement_map(expected, replacement_map)
     if not os.path.isabs(expected):
@@ -188,15 +196,15 @@ def _populate_verifier_from_entry(test, entry, filename, replacement_map):
         test.verifier = sciath.verifier_line.LineVerifier(
             test, expected, comparison_file=comparison_file)
         if 'rules' not in entry:
-            raise Exception('rules: expected')
+            raise SciATHTestFileException('rules: expected')
         rules = entry['rules']
         if not isinstance(rules, list):
-            raise Exception('rules: should contain a sequence')
+            raise SciATHTestFileException('rules: should contain a sequence')
         for rule in rules:
             if not isinstance(rule, dict):
-                raise Exception('Each rule should be a mapping')
+                raise SciATHTestFileException('Each rule should be a mapping')
             if 'key' not in rule:
-                raise Exception('Each rule should have a key:')
+                raise SciATHTestFileException('Each rule should have a key:')
             key = rule['key']
             rtol_string = rule.get('rtol', None)
             atol_string = rule.get('atol', None)
@@ -207,4 +215,5 @@ def _populate_verifier_from_entry(test, entry, filename, replacement_map):
                                                                 abs_tol=atol)
             test.verifier.rules.append(rule_func)
     else:
-        raise Exception('[SciATH] unrecognized type %s' % verifier_type)
+        raise SciATHTestFileException('Unrecognized verifier type %s' %
+                                      verifier_type)

@@ -8,6 +8,10 @@
 from sciath.utility import DotDict
 
 
+class SciATHYAMLParseException(Exception):
+    """ Exception for a test file with invalid syntax """
+
+
 def parse_yaml_subset_from_file(filename):  #pylint: disable=too-many-branches,too-many-locals
     """ Parse a subset of YAML files into a nested structure of list and dict objects
 
@@ -98,8 +102,8 @@ def parse_yaml_subset_from_file(filename):  #pylint: disable=too-many-branches,t
 
 
 def _parse_error(filename, line_number, message):
-    raise Exception("[SciATH] %s:%d  File parse error: %s" %
-                    (filename, line_number, message))
+    raise SciATHYAMLParseException("%s:%d  File parse error: %s" %
+                                   (filename, line_number, message))
 
 
 def _compute_indent(string, filename, line_number):
