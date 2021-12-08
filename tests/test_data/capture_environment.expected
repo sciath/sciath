@@ -1,17 +1,17 @@
-[35m[ *** Cleanup *** ][0m
-[ -- Removing output for Test: a_test -- ]
+[35m[SciATH][ *** Cleanup *** ][0m
+[SciATH] Removing output for Test: a_test
 
-[35m[ *** Executing Tests *** ][0m
+[35m[SciATH][ *** Executing Tests *** ][0m
 [SciATH] Batch queueing system configuration [SciATH_launcher.conf]
   Version:           0.13.0
   MPI launcher:      none
   Submit command:    sh
   Blocking:          True
   Job-level ranks:   False
-[36m[Executing a_test][0m from <<TEST DIR STRIPPED>>/capture_environment_sandbox/a_test_output/sandbox
+[36m[SciATH][ Executing a_test ][0mfrom <<TEST DIR STRIPPED>>/capture_environment_sandbox/a_test_output/sandbox
 sh <<TEST DIR STRIPPED>>/capture_environment_sandbox/a_test_output/a_test.sh
 
-[35m[ *** Summary *** ][0m
+[35m[SciATH][ *** Summary *** ][0m
 [32m[a_test]  pass[0m
 
 [32mSUCCESS[0m

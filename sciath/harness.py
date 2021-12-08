@@ -10,8 +10,11 @@ import datetime
 import sciath
 import sciath.launcher
 import sciath.test_file
-from sciath import SCIATH_COLORS
-from sciath._sciath_io import py23input, command_join
+from sciath._sciath_io import (py23input, command_join, color_okay, color_fail,
+                               color_warning, format_header, format_info,
+                               format_subheader, print_info, print_header,
+                               print_subheader, print_warning, print_error)
+from sciath.verifier import SciATHVerifierMissingFileException
 
 
 class _TestRunStatus:  #pylint: disable=too-few-public-methods
@@ -24,23 +27,22 @@ class _TestRunStatus:  #pylint: disable=too-few-public-methods
     FAIL = 'fail'  # Verifier confirms fail
 
 
-def _status_color(status):
-    color = SCIATH_COLORS.endc
+def _color_from_status(status, string):  #pylint: disable=too-many-return-statements
     if status == _TestRunStatus.DEACTIVATED:
-        color = SCIATH_COLORS.endc
+        return string
     if status == _TestRunStatus.PASS:
-        color = SCIATH_COLORS.okay
+        return color_okay(string)
     if status == _TestRunStatus.FAIL:
-        color = SCIATH_COLORS.fail
+        return color_fail(string)
     if status == _TestRunStatus.INCOMPLETE:
-        color = SCIATH_COLORS.warning
+        return color_warning(string)
     if status == _TestRunStatus.NOT_LAUNCHED:
-        color = SCIATH_COLORS.warning
+        return color_warning(string)
     if status == _TestRunStatus.UNKNOWN:
-        color = SCIATH_COLORS.warning
+        return color_warning(string)
     if status == _TestRunStatus.SKIPPED:
-        color = SCIATH_COLORS.warning
-    return color
+        return color_warning(string)
+    raise Exception("Unhandled status %s" % status)
 
 
 class _TestRun:  #pylint: disable=too-few-public-methods, too-many-instance-attributes
@@ -113,12 +115,10 @@ class Harness:
             self.launcher = sciath.launcher.Launcher()
 
         if self.testruns:
-            print(SCIATH_COLORS.header + '[ *** Cleanup *** ]' +
-                  SCIATH_COLORS.endc)
+            print_header("Cleanup")
         for testrun in self.testruns:
             if testrun.active:
-                print('[ -- Removing output for Test:', testrun.test.name,
-                      '-- ]')
+                print_info("Removing output for Test: %s" % testrun.test.name)
                 self.launcher.clean(testrun.test.job,
                                     output_path=testrun.output_path)
                 if testrun.sandbox and os.path.exists(testrun.exec_path):
@@ -148,8 +148,7 @@ class Harness:
 
         if self.testruns:
             print()
-            print(SCIATH_COLORS.header + '[ *** Executing Tests *** ]' +
-                  SCIATH_COLORS.endc)
+            print_header("Executing Tests")
             print(self.launcher)
         for testrun in self.testruns:
             if testrun.active:
@@ -165,9 +164,8 @@ class Harness:
                                         sentinel_file)
                     with open(sentinel_file, 'w'):
                         pass
-                print('%s[Executing %s]%s from %s' %
-                      (SCIATH_COLORS.subheader, testrun.test.job.name,
-                       SCIATH_COLORS.endc, testrun.exec_path))
+                print_subheader("Executing %s" % testrun.test.job.name, end="")
+                print("from %s" % testrun.exec_path)
                 print(
                     command_join(
                         self.launcher.launch_command(testrun.test.job,
@@ -201,13 +199,10 @@ class Harness:
                 if testrun.report:
                     if not report_header_printed:
                         report.append('')
-                        report.append(SCIATH_COLORS.header +
-                                      '[ *** Verification Reports *** ]' +
-                                      SCIATH_COLORS.endc)
+                        report.append(format_header("Verification Reports"))
                         report_header_printed = True
-                    report.append(SCIATH_COLORS.subheader +
-                                  '[Report for %s]' % testrun.test.name +
-                                  SCIATH_COLORS.endc)
+                    report.append(
+                        format_subheader("Report for %s" % testrun.test.name))
                     for line in testrun.report:
                         report.append(line)
                     stdout_filename = os.path.join(
@@ -221,31 +216,29 @@ class Harness:
                         testrun.output_path, testrun.test.job.stderr_filename)
                     if os.path.isfile(stderr_filename) and os.stat(
                             stderr_filename).st_size != 0:
-                        report.append(SCIATH_COLORS.warning +
-                                      'check non-empty stderr file:' +
-                                      SCIATH_COLORS.endc)
+                        report.append(
+                            color_warning("check non-empty stderr file:"))
                         report.append('    %s %s' %
                                       (self._pager, stderr_filename))
             report.append('')
-            report.append(SCIATH_COLORS.header + '[ *** Summary *** ]' +
-                          SCIATH_COLORS.endc)
+            report.append(format_header("Summary"))
             for testrun in self.testruns:
                 if testrun.status == _TestRunStatus.FAIL:
                     failed_names.append(testrun.test.name)
-                line = [_status_color(testrun.status)]
-                line.append('[%s]  %s' % (testrun.test.name, testrun.status))
-                line.append(SCIATH_COLORS.endc)
+                line = [
+                    _color_from_status(
+                        testrun.status,
+                        "[%s]  %s" % (testrun.test.name, testrun.status))
+                ]
                 if testrun.status_info:
                     line.append(' (' + testrun.status_info + ')')
                 report.append(''.join(line))
             report.append('')
             if any((testrun.active for testrun in self.testruns)):
                 if self.determine_overall_success():
-                    report.append(SCIATH_COLORS.okay + "SUCCESS" +
-                                  SCIATH_COLORS.endc)
+                    report.append(color_okay("SUCCESS"))
                 else:
-                    report.append(SCIATH_COLORS.fail + "FAILURE" +
-                                  SCIATH_COLORS.endc)
+                    report.append(color_fail("FAILURE"))
                     if failed_names:
                         report.append('To re-run failed tests, use e.g.')
                         report.append('  -t ' + ','.join(failed_names))
@@ -280,20 +273,18 @@ class Harness:
         args = _parse_args()
 
         if args.no_colors:
-            sciath.SCIATH_COLORS.set_colors(use_bash=False)
+            sciath.no_colors()
 
         if args.update_expected:
-            print(
-                "[SciATH] You have provided an argument to updated expected files."
-            )
-            print(
-                "[SciATH] This will attempt to OVERWRITE your expected files!")
+            print_info(
+                "You have provided an argument to updated expected files.")
+            print_info("This will attempt to OVERWRITE your expected files!")
             user_input = None
             while not user_input:
                 user_input = py23input(
-                    "[SciATH] Are you sure? Type 'y' to continue: ")
+                    format_info("Are you sure? Type 'y' to continue: "))
             if user_input[0] not in ['y', 'Y']:
-                print("[SciATH] Aborting.")
+                print_info("Aborting.")
                 return
 
         if args.input_files:
@@ -301,9 +292,8 @@ class Harness:
                 try:
                     self.add_tests_from_file(input_file)
                 except sciath.test_file.SciATHTestFileException as exception:
-                    print(
-                        "%s[SciATH] Error:%s There was a problem reading tests from %s:"
-                        % (SCIATH_COLORS.fail, SCIATH_COLORS.endc, input_file))
+                    print_error("There was a problem reading tests from %s:" %
+                                input_file)
                     print(exception)
                     return
 
@@ -334,11 +324,17 @@ class Harness:
             self.execute()
 
         if args.update_expected:
-            self.update_expected()
+            try:
+                self.update_expected()
+            except SciATHVerifierMissingFileException as exception:
+                print_warning("Update of expected file failed:")
+                print_info(exception)
+                print_warning("Not updating")
+                return
 
         if args.execute or (not args.verify and not self.launcher.blocking):
             if self.testruns:
-                print('[SciATH] Not verifying or reporting')
+                print_info("Not verifying or reporting")
         else:
             self.verify()
             self.report()
@@ -350,18 +346,17 @@ class Harness:
     def update_expected(self):
         """ Give each active test the chance to update its reference output """
         if self.testruns:
-            print(SCIATH_COLORS.header +
-                  '[ *** Updating Expected Output *** ]' + SCIATH_COLORS.endc)
+            print_header("Updating Expected Output")
         for testrun in self.testruns:
             if testrun.active:
                 if hasattr(testrun.test.verifier, 'update_expected'):
-                    print('[ -- Updating output for Test:', testrun.test.name,
-                          '-- ]')
+                    print_info("Updating output for Test: %s" %
+                               testrun.test.name)
                     testrun.test.verifier.update_expected(
                         testrun.output_path, testrun.exec_path)
                 else:
-                    print('[ -- Output updated not supported for Test:',
-                          testrun.test.name, '-- ]')
+                    print_info("Output updated not supported for Test: %s" %
+                               testrun.test.name)
 
     def verify(self):
         """ Updates the status of all test runs """

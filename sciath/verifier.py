@@ -8,6 +8,10 @@ import shutil
 import errno
 
 
+class SciATHVerifierMissingFileException(Exception):
+    """ Exception for a missing file required for a :class:`Verifier` operation """
+
+
 class Verifier(object):  # pylint: disable=bad-option-value,too-few-public-methods,useless-object-inheritance
     """Base class for verification of a Test"""
 
@@ -96,8 +100,8 @@ class ComparisonVerifier(Verifier):
         self.expected_file = expected_file
 
         if comparison_file and output_file:
-            raise Exception(
-                'Cannot specify an output_file with a comparison_file')
+            raise SciATHVerifierMissingFileException(
+                "Cannot specify an output_file with a comparison_file")
         self.comparison_file = comparison_file
 
         stdout_name = self.test.job.stdout_filename
@@ -136,15 +140,15 @@ class ComparisonVerifier(Verifier):
             """
         from_file = self._from_file(output_path, exec_path)
         if not os.path.isfile(from_file):
-            print('[SciATH] Cannot update: source file missing: %s' % from_file)
-        else:
-            try:
-                shutil.copy(from_file, self.expected_file)
-            except IOError as io_err:
-                if io_err.errno != errno.ENOENT:
-                    raise
-                os.makedirs(os.path.dirname(self.expected_file))
-                shutil.copyfile(from_file, self.expected_file)
+            raise SciATHVerifierMissingFileException(
+                "Cannot update: source file missing: %s" % from_file)
+        try:
+            shutil.copy(from_file, self.expected_file)
+        except IOError as io_err:
+            if io_err.errno != errno.ENOENT:
+                raise
+            os.makedirs(os.path.dirname(self.expected_file))
+            shutil.copyfile(from_file, self.expected_file)
 
     def _compare_files(self, from_file, to_file):  # pylint: disable=no-self-use
         passing = True

@@ -1,46 +1,46 @@
-[35m[ *** Cleanup *** ][0m
-[ -- Removing output for Test: should_pass -- ]
-[ -- Removing output for Test: should_fail -- ]
-[ -- Removing output for Test: should_pass_multi -- ]
-[ -- Removing output for Test: should_fail_multi -- ]
-[ -- Removing output for Test: should_fail_multi2 -- ]
-[ -- Removing output for Test: should_fail_multi3 -- ]
+[35m[SciATH][ *** Cleanup *** ][0m
+[SciATH] Removing output for Test: should_pass
+[SciATH] Removing output for Test: should_fail
+[SciATH] Removing output for Test: should_pass_multi
+[SciATH] Removing output for Test: should_fail_multi
+[SciATH] Removing output for Test: should_fail_multi2
+[SciATH] Removing output for Test: should_fail_multi3
 
-[35m[ *** Executing Tests *** ][0m
+[35m[SciATH][ *** Executing Tests *** ][0m
 [SciATH] Batch queueing system configuration [SciATH_launcher.conf]
   Version:           0.13.0
   MPI launcher:      none
   Submit command:    sh
   Blocking:          True
   Job-level ranks:   False
-[36m[Executing should_pass][0m from <<TEST DIR STRIPPED>>/verify_exitcode_sandbox/should_pass_output/sandbox
+[36m[SciATH][ Executing should_pass ][0mfrom <<TEST DIR STRIPPED>>/verify_exitcode_sandbox/should_pass_output/sandbox
 sh <<TEST DIR STRIPPED>>/verify_exitcode_sandbox/should_pass_output/should_pass.sh
-[36m[Executing should_fail][0m from <<TEST DIR STRIPPED>>/verify_exitcode_sandbox/should_fail_output/sandbox
+[36m[SciATH][ Executing should_fail ][0mfrom <<TEST DIR STRIPPED>>/verify_exitcode_sandbox/should_fail_output/sandbox
 sh <<TEST DIR STRIPPED>>/verify_exitcode_sandbox/should_fail_output/should_fail.sh
-[36m[Executing should_pass_multi][0m from <<TEST DIR STRIPPED>>/verify_exitcode_sandbox/should_pass_multi_output/sandbox
+[36m[SciATH][ Executing should_pass_multi ][0mfrom <<TEST DIR STRIPPED>>/verify_exitcode_sandbox/should_pass_multi_output/sandbox
 sh <<TEST DIR STRIPPED>>/verify_exitcode_sandbox/should_pass_multi_output/should_pass_multi.sh
-[36m[Executing should_fail_multi][0m from <<TEST DIR STRIPPED>>/verify_exitcode_sandbox/should_fail_multi_output/sandbox
+[36m[SciATH][ Executing should_fail_multi ][0mfrom <<TEST DIR STRIPPED>>/verify_exitcode_sandbox/should_fail_multi_output/sandbox
 sh <<TEST DIR STRIPPED>>/verify_exitcode_sandbox/should_fail_multi_output/should_fail_multi.sh
-[36m[Executing should_fail_multi2][0m from <<TEST DIR STRIPPED>>/verify_exitcode_sandbox/should_fail_multi2_output/sandbox
+[36m[SciATH][ Executing should_fail_multi2 ][0mfrom <<TEST DIR STRIPPED>>/verify_exitcode_sandbox/should_fail_multi2_output/sandbox
 sh <<TEST DIR STRIPPED>>/verify_exitcode_sandbox/should_fail_multi2_output/should_fail_multi2.sh
-[36m[Executing should_fail_multi3][0m from <<TEST DIR STRIPPED>>/verify_exitcode_sandbox/should_fail_multi3_output/sandbox
+[36m[SciATH][ Executing should_fail_multi3 ][0mfrom <<TEST DIR STRIPPED>>/verify_exitcode_sandbox/should_fail_multi3_output/sandbox
 sh <<TEST DIR STRIPPED>>/verify_exitcode_sandbox/should_fail_multi3_output/should_fail_multi3.sh
 
-[35m[ *** Verification Reports *** ][0m
-[36m[Report for should_fail][0m
+[35m[SciATH][ *** Verification Reports *** ][0m
+[36m[SciATH][ Report for should_fail ][0m
 [ExitCodeDiff] Expected exit code(s): [0]
 [ExitCodeDiff] Output exit code(s)  : [1]
-[36m[Report for should_fail_multi][0m
+[36m[SciATH][ Report for should_fail_multi ][0m
 [ExitCodeDiff] Expected exit code(s): [0, 0]
 [ExitCodeDiff] Output exit code(s)  : [0, 1]
-[36m[Report for should_fail_multi2][0m
+[36m[SciATH][ Report for should_fail_multi2 ][0m
 [ExitCodeDiff] Expected exit code(s): [0, 0]
 [ExitCodeDiff] Output exit code(s)  : [1, 1]
-[36m[Report for should_fail_multi3][0m
+[36m[SciATH][ Report for should_fail_multi3 ][0m
 [ExitCodeDiff] Expected exit code(s): [0, 0]
 [ExitCodeDiff] Output exit code(s)  : [1, 0]
 
-[35m[ *** Summary *** ][0m
+[35m[SciATH][ *** Summary *** ][0m
 [32m[should_pass]  pass[0m
 [91m[should_fail]  fail[0m
 [32m[should_pass_multi]  pass[0m

@@ -1,21 +1,21 @@
-[35m[ *** Cleanup *** ][0m
-[ -- Removing output for Test: two_ranks -- ]
+[35m[SciATH][ *** Cleanup *** ][0m
+[SciATH] Removing output for Test: two_ranks
 
-[35m[ *** Executing Tests *** ][0m
+[35m[SciATH][ *** Executing Tests *** ][0m
 [SciATH] Batch queueing system configuration [SciATH_launcher.conf]
   Version:           0.13.0
   MPI launcher:      none
   Submit command:    sh
   Blocking:          True
   Job-level ranks:   False
-[36m[Executing two_ranks][0m from <<TEST DIR STRIPPED>>/multiple_ranks_no_mpi_sandbox/two_ranks_output/sandbox
+[36m[SciATH][ Executing two_ranks ][0mfrom <<TEST DIR STRIPPED>>/multiple_ranks_no_mpi_sandbox/two_ranks_output/sandbox
 sh <<TEST DIR STRIPPED>>/multiple_ranks_no_mpi_sandbox/two_ranks_output/two_ranks.sh
 
-[35m[ *** Verification Reports *** ][0m
-[36m[Report for two_ranks][0m
+[35m[SciATH][ *** Verification Reports *** ][0m
+[36m[SciATH][ Report for two_ranks ][0m
 Not launched: requires MPI
 
-[35m[ *** Summary *** ][0m
+[35m[SciATH][ *** Summary *** ][0m
 [33m[two_ranks]  skipped[0m (MPI required)
 
 [91mFAILURE[0m

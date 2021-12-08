@@ -1,23 +1,23 @@
-[35m[ *** Cleanup *** ][0m
-[ -- Removing output for Test: foo -- ]
-[ -- Removing output for Test: bar -- ]
-[ -- Removing output for Test: baz -- ]
+[35m[SciATH][ *** Cleanup *** ][0m
+[SciATH] Removing output for Test: foo
+[SciATH] Removing output for Test: bar
+[SciATH] Removing output for Test: baz
 
-[35m[ *** Executing Tests *** ][0m
+[35m[SciATH][ *** Executing Tests *** ][0m
 [SciATH] Batch queueing system configuration [SciATH_launcher.conf]
   Version:           0.13.0
   MPI launcher:      none
   Submit command:    sh
   Blocking:          True
   Job-level ranks:   False
-[36m[Executing foo][0m from <<TEST DIR STRIPPED>>/multiple_input_files_sandbox/foo_output/sandbox
+[36m[SciATH][ Executing foo ][0mfrom <<TEST DIR STRIPPED>>/multiple_input_files_sandbox/foo_output/sandbox
 sh <<TEST DIR STRIPPED>>/multiple_input_files_sandbox/foo_output/foo.sh
-[36m[Executing bar][0m from <<TEST DIR STRIPPED>>/multiple_input_files_sandbox/bar_output/sandbox
+[36m[SciATH][ Executing bar ][0mfrom <<TEST DIR STRIPPED>>/multiple_input_files_sandbox/bar_output/sandbox
 sh <<TEST DIR STRIPPED>>/multiple_input_files_sandbox/bar_output/bar.sh
-[36m[Executing baz][0m from <<TEST DIR STRIPPED>>/multiple_input_files_sandbox/baz_output/sandbox
+[36m[SciATH][ Executing baz ][0mfrom <<TEST DIR STRIPPED>>/multiple_input_files_sandbox/baz_output/sandbox
 sh <<TEST DIR STRIPPED>>/multiple_input_files_sandbox/baz_output/baz.sh
 
-[35m[ *** Summary *** ][0m
+[35m[SciATH][ *** Summary *** ][0m
 [32m[foo]  pass[0m
 [32m[bar]  pass[0m
 [32m[baz]  pass[0m

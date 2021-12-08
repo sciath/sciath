@@ -1,28 +1,28 @@
-[35m[ *** Cleanup *** ][0m
-[ -- Removing output for Test: testA -- ]
-[ -- Removing output for Test: testA_too -- ]
-[ -- Removing output for Test: testE -- ]
+[35m[SciATH][ *** Cleanup *** ][0m
+[SciATH] Removing output for Test: testA
+[SciATH] Removing output for Test: testA_too
+[SciATH] Removing output for Test: testE
 
-[35m[ *** Executing Tests *** ][0m
+[35m[SciATH][ *** Executing Tests *** ][0m
 [SciATH] Batch queueing system configuration [SciATH_launcher.conf]
   Version:           0.13.0
   MPI launcher:      none
   Submit command:    sh
   Blocking:          True
   Job-level ranks:   False
-[36m[Executing testA][0m from <<TEST DIR STRIPPED>>/groups_sandbox/testA_output/sandbox
+[36m[SciATH][ Executing testA ][0mfrom <<TEST DIR STRIPPED>>/groups_sandbox/testA_output/sandbox
 sh <<TEST DIR STRIPPED>>/groups_sandbox/testA_output/testA.sh
-[36m[Executing testA_too][0m from <<TEST DIR STRIPPED>>/groups_sandbox/testA_too_output/sandbox
+[36m[SciATH][ Executing testA_too ][0mfrom <<TEST DIR STRIPPED>>/groups_sandbox/testA_too_output/sandbox
 sh <<TEST DIR STRIPPED>>/groups_sandbox/testA_too_output/testA_too.sh
-[36m[Executing testE][0m from <<TEST DIR STRIPPED>>/groups_sandbox/testE_output/sandbox
+[36m[SciATH][ Executing testE ][0mfrom <<TEST DIR STRIPPED>>/groups_sandbox/testE_output/sandbox
 sh <<TEST DIR STRIPPED>>/groups_sandbox/testE_output/testE.sh
 
-[35m[ *** Summary *** ][0m
+[35m[SciATH][ *** Summary *** ][0m
 [32m[testA]  pass[0m
 [32m[testA_too]  pass[0m
-[0m[testB]  deactivated[0m
-[0m[testC]  deactivated[0m
-[0m[testD]  deactivated[0m
+[testB]  deactivated
+[testC]  deactivated
+[testD]  deactivated
 [32m[testE]  pass[0m
 
 [32mSUCCESS[0m

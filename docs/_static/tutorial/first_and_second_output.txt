@@ -1,20 +1,20 @@
-[ *** Cleanup *** ]
-[ -- Removing output for Test: first -- ]
-[ -- Removing output for Test: second -- ]
+[SciATH][ *** Cleanup *** ]
+[SciATH] Removing output for Test: first
+[SciATH] Removing output for Test: second
 
-[ *** Executing Tests *** ]
+[SciATH][ *** Executing Tests *** ]
 [SciATH] Batch queueing system configuration [SciATH_launcher.conf]
   Version:           0.13.0
   MPI launcher:      none
   Submit command:    sh
   Blocking:          True
   Job-level ranks:   False
-[Executing first] from /Users/patrick/scratch/first_output/sandbox
+[SciATH][ Executing first ]from /Users/patrick/scratch/first_output/sandbox
 sh /Users/patrick/scratch/first_output/first.sh
-[Executing second] from /Users/patrick/scratch/second_output/sandbox
+[SciATH][ Executing second ]from /Users/patrick/scratch/second_output/sandbox
 sh /Users/patrick/scratch/second_output/second.sh
 
-[ *** Summary *** ]
+[SciATH][ *** Summary *** ]
 [first]  pass
 [second]  pass
 [failing]  deactivated
