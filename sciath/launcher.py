@@ -1,5 +1,4 @@
 """ SciATH Launcher class """
-from __future__ import print_function
 
 import os
 import shlex
@@ -10,7 +9,6 @@ import re
 
 import sciath
 from sciath import yaml_parse
-from sciath import SCIATH_COLORS
 from sciath.utility import DotDict
 from sciath._sciath_io import _remove_file_if_it_exists, command_join
 from sciath._default_templates import _generate_default_template
@@ -216,8 +214,6 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
                 _process_lines(self.template.post,
                                replace=replace_job,
                                delete=delete_job))
-
-        return script_filename
 
     def _populate_template(self):  #pylint: disable=too-many-branches
         """ Process the template file, interpreting a relative path
@@ -431,14 +427,8 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
         if self.mpi_launch == 'none' and ranks is not None and ranks != 0:
             return False, 'MPI required', ['Not launched: requires MPI']
 
-        script_filename = self._create_launch_script(job,
-                                                     output_path=output_path)
-        launch_command = self.job_submission_command + [script_filename]
-
-        print(
-            '%s[Executing %s]%s from %s' %
-            (SCIATH_COLORS.subheader, job.name, SCIATH_COLORS.endc, exec_path))
-        print(command_join(launch_command))
+        self._create_launch_script(job, output_path=output_path)
+        launch_command = self.launch_command(job, output_path=output_path)
 
         cwd_back = os.getcwd()
         os.chdir(exec_path)
@@ -478,7 +468,13 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
             os.path.join(output_path, job.complete_filename))
 
     def _batch_filename(self, job):
+        """ Returns the filename of the submission script, with respect to the output path """
         return job.name + os.path.splitext(self.template_filename)[1]
+
+    def launch_command(self, job, output_path=""):
+        """ Returns the command used to launch job from output_path """
+        script_filename = os.path.join(output_path, self._batch_filename(job))
+        return self.job_submission_command + [script_filename]
 
 
 def _process_lines(lines_in, replace=None, delete=None):

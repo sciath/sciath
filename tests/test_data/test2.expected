@@ -1,7 +1,7 @@
-[36m[Executing Test_1_ud][0m from <<TEST DIR STRIPPED>>/test2_sandbox/output
+[Test_1_ud] Executing from <<TEST DIR STRIPPED>>/test2_sandbox
 sh <<TEST DIR STRIPPED>>/test2_sandbox/output/Test_1_ud.sh
 [Test_1_ud] True None
-[36m[Executing Test_2_ud][0m from <<TEST DIR STRIPPED>>/test2_sandbox/output
+[Test_2_ud] Executing from <<TEST DIR STRIPPED>>/test2_sandbox
 sh <<TEST DIR STRIPPED>>/test2_sandbox/output/Test_2_ud.sh
 [Test_2_ud] False None
 --- <<TEST DIR STRIPPED>>/test_data/test2/t1.expected

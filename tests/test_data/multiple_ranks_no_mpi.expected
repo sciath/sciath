@@ -8,6 +8,8 @@
   Submit command:    sh
   Blocking:          True
   Job-level ranks:   False
+[36m[Executing two_ranks][0m from <<TEST DIR STRIPPED>>/multiple_ranks_no_mpi_sandbox/two_ranks_output/sandbox
+sh <<TEST DIR STRIPPED>>/multiple_ranks_no_mpi_sandbox/two_ranks_output/two_ranks.sh
 
 [35m[ *** Verification Reports *** ][0m
 [36m[Report for two_ranks][0m
