@@ -78,7 +78,7 @@ def format_error(string):
 
 def format_header(string):
     """ Formats a string as a SciATH header """
-    return color_header("[SciATH][ *** %s *** ]" % string)
+    return color_header("[*** %s ***]" % string)
 
 
 def format_info(string):
@@ -88,7 +88,7 @@ def format_info(string):
 
 def format_subheader(string):
     """ Formats a string as a SciATH subheader """
-    return color_subheader("[SciATH][ %s ]" % string)
+    return color_subheader("[%s]" % string)
 
 
 def format_warning(string):

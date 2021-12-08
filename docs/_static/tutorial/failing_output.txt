@@ -1,24 +1,24 @@
-[SciATH][ *** Cleanup *** ]
+[*** Cleanup ***]
 [SciATH] Removing output for Test: failing
 
-[SciATH][ *** Executing Tests *** ]
+[*** Executing Tests ***]
 [SciATH] Batch queueing system configuration [SciATH_launcher.conf]
   Version:           0.13.0
   MPI launcher:      none
   Submit command:    sh
   Blocking:          True
   Job-level ranks:   False
-[SciATH][ Executing failing ]from /Users/patrick/scratch/failing_output/sandbox
+[Executing failing]from /Users/patrick/scratch/failing_output/sandbox
 sh /Users/patrick/scratch/failing_output/failing.sh
 
-[SciATH][ *** Verification Reports *** ]
-[SciATH][ Report for failing ]
+[*** Verification Reports ***]
+[Report for failing]
 [ExitCodeDiff] Expected exit code(s): [0]
 [ExitCodeDiff] Output exit code(s)  : [2]
 check non-empty stderr file:
     less /Users/patrick/scratch/failing_output/failing.stderr
 
-[SciATH][ *** Summary *** ]
+[*** Summary ***]
 [first]  deactivated
 [second]  deactivated
 [failing]  fail

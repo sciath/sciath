@@ -1,33 +1,33 @@
-[35m[SciATH][ *** Cleanup *** ][0m
+[35m[*** Cleanup ***][0m
 [SciATH] Removing output for Test: test1
 [SciATH] Removing output for Test: test2
 [SciATH] Removing output for Test: test3
 [SciATH] Removing output for Test: test4
 
-[35m[SciATH][ *** Executing Tests *** ][0m
+[35m[*** Executing Tests ***][0m
 [SciATH] Batch queueing system configuration [SciATH_launcher.conf]
   Version:           0.13.0
   MPI launcher:      none
   Submit command:    sh
   Blocking:          True
   Job-level ranks:   False
-[36m[SciATH][ Executing job ][0mfrom <<TEST DIR STRIPPED>>/harness1_sandbox/test1_output/sandbox
+[36m[Executing job][0mfrom <<TEST DIR STRIPPED>>/harness1_sandbox/test1_output/sandbox
 sh <<TEST DIR STRIPPED>>/harness1_sandbox/test1_output/job.sh
-[36m[SciATH][ Executing job ][0mfrom <<TEST DIR STRIPPED>>/harness1_sandbox/test2_output/sandbox
+[36m[Executing job][0mfrom <<TEST DIR STRIPPED>>/harness1_sandbox/test2_output/sandbox
 sh <<TEST DIR STRIPPED>>/harness1_sandbox/test2_output/job.sh
-[36m[SciATH][ Executing job ][0mfrom <<TEST DIR STRIPPED>>/harness1_sandbox/test3_output/sandbox
+[36m[Executing job][0mfrom <<TEST DIR STRIPPED>>/harness1_sandbox/test3_output/sandbox
 sh <<TEST DIR STRIPPED>>/harness1_sandbox/test3_output/job.sh
-[36m[SciATH][ Executing job ][0mfrom <<TEST DIR STRIPPED>>/harness1_sandbox/test4_output/sandbox
+[36m[Executing job][0mfrom <<TEST DIR STRIPPED>>/harness1_sandbox/test4_output/sandbox
 sh <<TEST DIR STRIPPED>>/harness1_sandbox/test4_output/job.sh
 
-[35m[SciATH][ *** Verification Reports *** ][0m
-[36m[SciATH][ Report for test4 ][0m
+[35m[*** Verification Reports ***][0m
+[36m[Report for test4][0m
 [ExitCodeDiff] Expected exit code(s): [0]
 [ExitCodeDiff] Output exit code(s)  : [2]
 [33mcheck non-empty stderr file:[0m
     less <<TEST DIR STRIPPED>>/harness1_sandbox/test4_output/job.stderr
 
-[35m[SciATH][ *** Summary *** ][0m
+[35m[*** Summary ***][0m
 [32m[test1]  pass[0m
 [32m[test2]  pass[0m
 [32m[test3]  pass[0m

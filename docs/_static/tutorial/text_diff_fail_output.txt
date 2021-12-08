@@ -1,23 +1,23 @@
-[SciATH][ *** Cleanup *** ]
+[*** Cleanup ***]
 [SciATH] Removing output for Test: text_diff
 
-[SciATH][ *** Executing Tests *** ]
+[*** Executing Tests ***]
 [SciATH] Batch queueing system configuration [SciATH_launcher.conf]
   Version:           0.13.0
   MPI launcher:      none
   Submit command:    sh
   Blocking:          True
   Job-level ranks:   False
-[SciATH][ Executing text_diff ]from /Users/patrick/scratch/text_diff_output/sandbox
+[Executing text_diff]from /Users/patrick/scratch/text_diff_output/sandbox
 sh /Users/patrick/scratch/text_diff_output/text_diff.sh
 
-[SciATH][ *** Verification Reports *** ]
-[SciATH][ Report for text_diff ]
+[*** Verification Reports ***]
+[Report for text_diff]
 [Comparison] Expected file missing: text_diff.expected
 check stdout file:
     less /Users/patrick/scratch/text_diff_output/text_diff.stdout
 
-[SciATH][ *** Summary *** ]
+[*** Summary ***]
 [first]  deactivated
 [second]  deactivated
 [failing]  deactivated
