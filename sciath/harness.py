@@ -251,11 +251,13 @@ class Harness:
             handle.write(str(self.launcher) + '\n')
             handle.write('\n'.join(report) + '\n')
 
-    def run_from_args(self):  #pylint: disable=too-many-branches
+    def run_from_args(self):  #pylint: disable=too-many-branches, too-many-return-statements, too-many-statements
         """ Perform one or more actions, based on command line options
 
         This essentially defines the "main" function for the typical
         use of SciATH.
+
+        Returns an exit code, with 0 indicating success.
         """
         args = _parse_args()
 
@@ -275,7 +277,7 @@ class Harness:
                     format_info("Are you sure? Type 'y' to continue: "))
             if user_input[0] not in ['y', 'Y']:
                 print_info("Aborting.")
-                return
+                return 0
 
         if args.input_files:
             for input_file in args.input_files:
@@ -286,11 +288,11 @@ class Harness:
                                 input_file,
                                 file=sys.stderr)
                     print(exception, file=sys.stderr)
-                    return
+                    return 2
 
         if args.list:
             self.print_all_tests()
-            return
+            return 0
 
         if args.test:
             self._activate_tests_from_list(args.test)
@@ -300,7 +302,7 @@ class Harness:
 
         if args.configure_default:
             sciath.launcher.Launcher.write_default_definition(args.conf_file)
-            return
+            return 0
 
         self.launcher = sciath.launcher.Launcher(args.conf_file)
 
@@ -309,7 +311,7 @@ class Harness:
 
         if args.purge_output:
             self.clean()
-            return
+            return 0
 
         if not args.verify:
             self.execute()
@@ -321,7 +323,6 @@ class Harness:
                 print_warning("Update of expected file failed:")
                 print_info(exception)
                 print_warning("Not updating")
-                return
 
         if args.execute or (not args.verify and not self.launcher.blocking):
             if self.testruns:
@@ -336,7 +337,9 @@ class Harness:
 
         if args.error_on_test_failure:
             if not self.determine_overall_success():
-                sys.exit(1)
+                return 1
+
+        return 0
 
     def update_expected(self):
         """ Give each active test the chance to update its reference output """
