@@ -331,9 +331,8 @@ class Harness:
         else:
             self.verify()
             self.report()
-
-        if args.tap:
-            sciath.report_tap.print_tap(self)
+            if args.tap:
+                sciath.report_tap.print_tap(self)
 
         if args.error_on_test_failure:
             if not self.determine_overall_success():
