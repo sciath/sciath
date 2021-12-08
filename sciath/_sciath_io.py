@@ -3,6 +3,7 @@ from __future__ import print_function
 
 import os
 import sys
+from sciath import SCIATH_COLORS
 
 
 def py23input(prompt):
@@ -33,17 +34,89 @@ def command_join(command):
     return joined
 
 
-class NamedColors:  #pylint: disable=too-few-public-methods
-    """ Color codes to use for SciATH output """
+# Functions which color strings
+def color_error(string):
+    """ Colors a string as an error """
+    return "%s%s%s" % (SCIATH_COLORS.error, string, SCIATH_COLORS.endc)
 
-    def __init__(self):
-        self.set_colors()
 
-    def set_colors(self, use_bash=True):
-        """ Set color codes, based on whether or not bash colors are used """
-        self.header = '\033[35m' if use_bash else ''
-        self.subheader = '\033[36m' if use_bash else ''
-        self.okay = '\033[32m' if use_bash else ''
-        self.warning = '\033[33m' if use_bash else ''
-        self.fail = '\033[91m' if use_bash else ''
-        self.endc = '\033[0m' if use_bash else ''
+def color_fail(string):
+    """ Colors a string as a failure """
+    return "%s%s%s" % (SCIATH_COLORS.fail, string, SCIATH_COLORS.endc)
+
+
+def color_header(string):
+    """ Colors a string as a SciATH header """
+    return "%s%s%s" % (SCIATH_COLORS.header, string, SCIATH_COLORS.endc)
+
+
+def color_info(string):
+    """ Colors a string as SciATH info """
+    return string
+
+
+def color_okay(string):
+    """ Colors a string as okay """
+    return "%s%s%s" % (SCIATH_COLORS.okay, string, SCIATH_COLORS.endc)
+
+
+def color_subheader(string):
+    """ Colors a string as a SciATH subheader """
+    return "%s%s%s" % (SCIATH_COLORS.subheader, string, SCIATH_COLORS.endc)
+
+
+def color_warning(string):
+    """ Colors a string as a warning """
+    return "%s%s%s" % (SCIATH_COLORS.warning, string, SCIATH_COLORS.endc)
+
+
+# Functions which format strings
+def format_error(string):
+    """ Formats a string as a SciATH error """
+    return color_error("[SciATH] Error: %s" % string)
+
+
+def format_header(string):
+    """ Formats a string as a SciATH header """
+    return color_header("[SciATH][ *** %s *** ]" % string)
+
+
+def format_info(string):
+    """ Formats a string as SciATH info """
+    return color_info("[SciATH] %s" % string)
+
+
+def format_subheader(string):
+    """ Formats a string as a SciATH subheader """
+    return color_subheader("[SciATH][ %s ]" % string)
+
+
+def format_warning(string):
+    """ Formats a string as a SciATH warning """
+    return color_warning("[SciATH] Warning: %s" % string)
+
+
+# Functions which format and print strings
+def print_error(string, **kwargs):
+    """ Prints a string as a SciATH error """
+    print(format_error(string), **kwargs)
+
+
+def print_info(string, **kwargs):
+    """ Prints a string as SciATH information """
+    print(format_info(string), **kwargs)
+
+
+def print_header(string, **kwargs):
+    """ Prints a string as a SciATH header """
+    print(format_header(string), **kwargs)
+
+
+def print_subheader(string, **kwargs):
+    """ Prints a string as a SciATH subheader """
+    print(format_subheader(string), **kwargs)
+
+
+def print_warning(string, **kwargs):
+    """ Prints a string as a SciATH warning """
+    print(format_warning(string), **kwargs)

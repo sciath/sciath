@@ -1,17 +1,17 @@
-[35m[ *** Cleanup *** ][0m
-[ -- Removing output for Test: run -- ]
+[35m[SciATH][ *** Cleanup *** ][0m
+[SciATH] Removing output for Test: run
 
-[35m[ *** Executing Tests *** ][0m
+[35m[SciATH][ *** Executing Tests *** ][0m
 [SciATH] Batch queueing system configuration [SciATH_launcher.conf]
   Version:           0.13.0
   MPI launcher:      none
   Submit command:    sh
   Blocking:          True
   Job-level ranks:   False
-[36m[Executing run][0m from <<TEST DIR STRIPPED>>/verifier_line_order_sandbox/run_output/sandbox
+[36m[SciATH][ Executing run ][0mfrom <<TEST DIR STRIPPED>>/verifier_line_order_sandbox/run_output/sandbox
 sh <<TEST DIR STRIPPED>>/verifier_line_order_sandbox/run_output/run.sh
 
-[35m[ *** Summary *** ][0m
+[35m[SciATH][ *** Summary *** ][0m
 [32m[run]  pass[0m
 
 [32mSUCCESS[0m

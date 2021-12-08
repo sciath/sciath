@@ -1,18 +1,18 @@
-[35m[ *** Cleanup *** ][0m
-[ -- Removing output for Test: test -- ]
+[35m[SciATH][ *** Cleanup *** ][0m
+[SciATH] Removing output for Test: test
 
-[35m[ *** Executing Tests *** ][0m
+[35m[SciATH][ *** Executing Tests *** ][0m
 [SciATH] Batch queueing system configuration [SciATH_launcher.conf]
   Version:           0.13.0
   MPI launcher:      none
   Submit command:    sh
   Blocking:          True
   Job-level ranks:   False
-[36m[Executing job][0m from <<TEST DIR STRIPPED>>/harness5_sandbox/test_output/sandbox
+[36m[SciATH][ Executing job ][0mfrom <<TEST DIR STRIPPED>>/harness5_sandbox/test_output/sandbox
 sh <<TEST DIR STRIPPED>>/harness5_sandbox/test_output/job.sh
 
-[35m[ *** Verification Reports *** ][0m
-[36m[Report for test][0m
+[35m[SciATH][ *** Verification Reports *** ][0m
+[36m[SciATH][ Report for test ][0m
 --- <<TEST DIR STRIPPED>>/test_data/harness5/test.expected
 +++ <<TEST DIR STRIPPED>>/harness5_sandbox/test_output/job.stdout
 Report for 1 expected line(s) matching: '^\s*The\ first\ number\ is'
@@ -21,7 +21,7 @@ Output line 1 did not match line 1 in expected output:
 check stdout file:
     less <<TEST DIR STRIPPED>>/harness5_sandbox/test_output/job.stdout
 
-[35m[ *** Summary *** ][0m
+[35m[SciATH][ *** Summary *** ][0m
 [91m[test]  fail[0m
 
 [91mFAILURE[0m

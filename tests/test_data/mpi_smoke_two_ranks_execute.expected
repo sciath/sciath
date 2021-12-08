@@ -1,13 +1,13 @@
-[35m[ *** Cleanup *** ][0m
-[ -- Removing output for Test: two_ranks -- ]
+[35m[SciATH][ *** Cleanup *** ][0m
+[SciATH] Removing output for Test: two_ranks
 
-[35m[ *** Executing Tests *** ][0m
+[35m[SciATH][ *** Executing Tests *** ][0m
 [SciATH] Batch queueing system configuration [SciATH_launcher.conf]
   Version:           0.13.0
   MPI launcher:      /Users/patrick/code/petsc/arch-mpich-only/bin/mpiexec -n <ranks>
   Submit command:    sh
   Blocking:          True
   Job-level ranks:   False
-[36m[Executing two_ranks][0m from <<TEST DIR STRIPPED>>/mpi_smoke_two_ranks_execute_sandbox/two_ranks_output/sandbox
+[36m[SciATH][ Executing two_ranks ][0mfrom <<TEST DIR STRIPPED>>/mpi_smoke_two_ranks_execute_sandbox/two_ranks_output/sandbox
 sh <<TEST DIR STRIPPED>>/mpi_smoke_two_ranks_execute_sandbox/two_ranks_output/two_ranks.sh
 [SciATH] Not verifying or reporting
