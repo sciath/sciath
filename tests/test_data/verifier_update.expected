@@ -1,18 +1,18 @@
-[35m[SciATH][ *** Cleanup *** ][0m
+[35m[*** Cleanup ***][0m
 [SciATH] Removing output for Test: foo
 
-[35m[SciATH][ *** Executing Tests *** ][0m
+[35m[*** Executing Tests ***][0m
 [SciATH] Batch queueing system configuration [SciATH_launcher.conf]
   Version:           0.13.0
   MPI launcher:      none
   Submit command:    sh
   Blocking:          True
   Job-level ranks:   False
-[36m[SciATH][ Executing foo ][0mfrom <<TEST DIR STRIPPED>>/verifier_update_sandbox/foo_output/sandbox
+[36m[Executing foo][0mfrom <<TEST DIR STRIPPED>>/verifier_update_sandbox/foo_output/sandbox
 sh <<TEST DIR STRIPPED>>/verifier_update_sandbox/foo_output/foo.sh
 
-[35m[SciATH][ *** Verification Reports *** ][0m
-[36m[SciATH][ Report for foo ][0m
+[35m[*** Verification Reports ***][0m
+[36m[Report for foo][0m
 --- expected
 +++ <<TEST DIR STRIPPED>>/verifier_update_sandbox/foo_output/foo.stdout
 @@ -1 +1 @@
@@ -21,7 +21,7 @@ sh <<TEST DIR STRIPPED>>/verifier_update_sandbox/foo_output/foo.sh
 check stdout file:
     less <<TEST DIR STRIPPED>>/verifier_update_sandbox/foo_output/foo.stdout
 
-[35m[SciATH][ *** Summary *** ][0m
+[35m[*** Summary ***][0m
 [91m[foo]  fail[0m
 
 [91mFAILURE[0m
@@ -32,42 +32,42 @@ Report written to file:
   <<TEST DIR STRIPPED>>/verifier_update_sandbox/sciath_test_report.txt
 [SciATH] You have provided an argument to updated expected files.
 [SciATH] This will attempt to OVERWRITE your expected files!
-[SciATH] Are you sure? Type 'y' to continue: [35m[SciATH][ *** Cleanup *** ][0m
+[SciATH] Are you sure? Type 'y' to continue: [35m[*** Cleanup ***][0m
 [SciATH] Removing output for Test: foo
 
-[35m[SciATH][ *** Executing Tests *** ][0m
+[35m[*** Executing Tests ***][0m
 [SciATH] Batch queueing system configuration [SciATH_launcher.conf]
   Version:           0.13.0
   MPI launcher:      none
   Submit command:    sh
   Blocking:          True
   Job-level ranks:   False
-[36m[SciATH][ Executing foo ][0mfrom <<TEST DIR STRIPPED>>/verifier_update_sandbox/foo_output/sandbox
+[36m[Executing foo][0mfrom <<TEST DIR STRIPPED>>/verifier_update_sandbox/foo_output/sandbox
 sh <<TEST DIR STRIPPED>>/verifier_update_sandbox/foo_output/foo.sh
-[35m[SciATH][ *** Updating Expected Output *** ][0m
+[35m[*** Updating Expected Output ***][0m
 [SciATH] Updating output for Test: foo
 
-[35m[SciATH][ *** Summary *** ][0m
+[35m[*** Summary ***][0m
 [32m[foo]  pass[0m
 
 [32mSUCCESS[0m
 
 Report written to file:
   <<TEST DIR STRIPPED>>/verifier_update_sandbox/sciath_test_report.txt
-[35m[SciATH][ *** Cleanup *** ][0m
+[35m[*** Cleanup ***][0m
 [SciATH] Removing output for Test: foo
 
-[35m[SciATH][ *** Executing Tests *** ][0m
+[35m[*** Executing Tests ***][0m
 [SciATH] Batch queueing system configuration [SciATH_launcher.conf]
   Version:           0.13.0
   MPI launcher:      none
   Submit command:    sh
   Blocking:          True
   Job-level ranks:   False
-[36m[SciATH][ Executing foo ][0mfrom <<TEST DIR STRIPPED>>/verifier_update_sandbox/foo_output/sandbox
+[36m[Executing foo][0mfrom <<TEST DIR STRIPPED>>/verifier_update_sandbox/foo_output/sandbox
 sh <<TEST DIR STRIPPED>>/verifier_update_sandbox/foo_output/foo.sh
 
-[35m[SciATH][ *** Summary *** ][0m
+[35m[*** Summary ***][0m
 [32m[foo]  pass[0m
 
 [32mSUCCESS[0m
