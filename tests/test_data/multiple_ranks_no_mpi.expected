@@ -9,7 +9,7 @@
   Blocking:          True
   Job-level ranks:   False
 [36m[Executing two_ranks][0mfrom <<TEST DIR STRIPPED>>/multiple_ranks_no_mpi_sandbox/two_ranks_output/sandbox
-sh <<TEST DIR STRIPPED>>/multiple_ranks_no_mpi_sandbox/two_ranks_output/two_ranks.sh
+# skipped (MPI required)
 
 [35m[*** Verification Reports ***][0m
 [36m[Report for two_ranks][0m

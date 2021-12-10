@@ -215,6 +215,8 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
                                replace=replace_job,
                                delete=delete_job))
 
+        return script_filename
+
     def _populate_template(self):  #pylint: disable=too-many-branches
         """ Process the template file, interpreting a relative path
         with respect to the location of the configuration file
@@ -392,19 +394,23 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
                 'detected. Please delete it and re-run to reconfigure.' %
                 self.conf_filename)
 
-    def submit_job(self, job, output_path=None, exec_path=None):
-        """ Attempt to run a Job
+    def prepare_job(self, job, output_path=None, exec_path=None):
+        """ Prepare to submit a job.
 
-        Supply output_path to change the location where SciATH's output
-        files will be saved.
+            Prepares a launch script and forms the launch command.
+            Returns information about jobs that cannot be launched.
 
-        Supply exec_path to change the directory from which the command
-        will be executed.
+            Returns success, info, report, submit_data
 
-        Returns a triple (success, info, report) describing if the launch
-        succeeded, and a summary string and full report, if appropriate.
+            If success is false, the job could not be prepared,
+            and info and report give more information. submit_data
+            is a dict which is used by ``submit_job`` to launch.
+
+            This is to give controlling logic, such as that in :class:`Harness`,
+            the opportunity to print information about a job before launching
+            it (which may block), and to respond to situations where
+            the Launcher is not able to launch a job.
         """
-
         if output_path is None:
             output_path = os.getcwd()
         else:
@@ -416,19 +422,35 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
             if not os.path.isabs(exec_path):
                 raise ValueError('[SciATH] exec paths must be absolute')
 
+        ranks = job.resource_max('ranks')
+        if self.mpi_launch == 'none' and ranks is not None and ranks != 0:
+            return False, 'MPI required', ['Not launched: requires MPI'], None
+
+        submit_data = DotDict()
+        submit_data.job = job
+        submit_data.exec_path = exec_path
+        submit_data.output_path = output_path
+        script_filename = self._create_launch_script(job,
+                                                     output_path=output_path)
+        submit_data.launch_command = self.job_submission_command + [
+            script_filename
+        ]
+
+        return True, None, None, submit_data
+
+    def submit_job(self, submit_data):
+        """ Submit a prepared job from data prepared by ``prepare_job`` """
+        job = submit_data.job
+        exec_path = submit_data.exec_path
+        output_path = submit_data.output_path
+        launch_command = submit_data.launch_command
+
         if job_complete(job, output_path):
             raise Exception('[SciATH] trying to launch an already-complete Job')
         if job_launched(job, output_path):
             raise Exception('[SciATH] trying to launch an already-launched Job')
 
         _set_blocking_io_stdout()
-
-        ranks = job.resource_max('ranks')
-        if self.mpi_launch == 'none' and ranks is not None and ranks != 0:
-            return False, 'MPI required', ['Not launched: requires MPI']
-
-        self._create_launch_script(job, output_path=output_path)
-        launch_command = self.launch_command(job, output_path=output_path)
 
         cwd_back = os.getcwd()
         os.chdir(exec_path)
@@ -470,11 +492,6 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
     def _batch_filename(self, job):
         """ Returns the filename of the submission script, with respect to the output path """
         return job.name + os.path.splitext(self.template_filename)[1]
-
-    def launch_command(self, job, output_path=""):
-        """ Returns the command used to launch job from output_path """
-        script_filename = os.path.join(output_path, self._batch_filename(job))
-        return self.job_submission_command + [script_filename]
 
 
 def _process_lines(lines_in, replace=None, delete=None):
