@@ -2,9 +2,9 @@
 
 .. highlight:: none
 
-===============
-SciATH Tutorial
-===============
+============================
+SciATH Introductory Tutorial
+============================
 
 SciATH is designed to test programs
 written in any language, by working at the level of executables and expected
@@ -15,7 +15,7 @@ which should work from all POSIX-compatible shells.
 
 In typical usage, one would of course run scientific application executables (or scripts), to test them.
 
-It may also help to read :any:`concepts`.
+It may also help to read :doc:`/concepts`.
 
 Installing SciATH
 =================
@@ -51,7 +51,7 @@ Create a scratch directory to work in
 
 Create a file, ``tutorial1.yml``, with the following content
 
-.. literalinclude:: _static/tutorial/tutorial1.yml
+.. literalinclude:: /_static/tutorial/tutorial1.yml
     :language: YAML
 
 The file uses a subset of the `YAML <https://yaml.org>`__ format.
@@ -71,7 +71,7 @@ This information is stored in a file called ``SciATH_launcher.conf``.
 
 Once you've defined this information, you'll see output like the following
 
-.. literalinclude:: _static/tutorial/tutorial1_output.txt
+.. literalinclude:: /_static/tutorial/tutorial1_output.txt
 
 Note that you are given the full path for the "sandbox" from which your command is run.
 
@@ -104,7 +104,7 @@ Running a subset of Tests
 
 Create a new file, ``tutorial.yml``, with the following contents. Don't worry that you don't understand everything yet. Just note that it contains several tests, each with a unique name.
 
-.. literalinclude:: _static/tutorial/tutorial.yml
+.. literalinclude:: /_static/tutorial/tutorial.yml
   :language: YAML
 
 
@@ -122,7 +122,7 @@ You can run one or more of the tests, by name, with the ``-t`` option. For examp
 
 to generate output
 
-.. literalinclude:: _static/tutorial/first_output.txt
+.. literalinclude:: /_static/tutorial/first_output.txt
   :language: none
 
 or
@@ -133,7 +133,7 @@ or
 
 to generate output
 
-.. literalinclude:: _static/tutorial/first_and_second_output.txt
+.. literalinclude:: /_static/tutorial/first_and_second_output.txt
 
 A Failing Test
 ==============
@@ -143,7 +143,7 @@ which prints an error message to stderr and returns a non-zero exit code
 (``2`` on BSD and GNU systems).
 It is defined in the input file with
 
-.. literalinclude:: _static/tutorial/tutorial.yml
+.. literalinclude:: /_static/tutorial/tutorial.yml
   :language: YAML
   :start-at: - name: failing
   :end-at: type:
@@ -156,13 +156,13 @@ Run it with
 
 To produce output
 
-.. literalinclude:: _static/tutorial/failing_output.txt
+.. literalinclude:: /_static/tutorial/failing_output.txt
 
 Note that you are given information about the location of the output
 files at the end of the report for the failing test.
 You can copy-paste this line to see the error message:
 
-.. literalinclude:: _static/tutorial/failing_output.txt
+.. literalinclude:: /_static/tutorial/failing_output.txt
   :start-at: check non-empty stderr file
   :lines: 1-2
 
@@ -173,7 +173,7 @@ The test ``text_diff`` compares output to stdout against a reference file.
 
 It is defined in the input file with
 
-.. literalinclude:: _static/tutorial/tutorial.yml
+.. literalinclude:: /_static/tutorial/tutorial.yml
   :language: YAML
   :start-at: - name: text_diff
   :end-at: expected:
@@ -188,7 +188,7 @@ Run the test with
 
 It will fail because the expected file is not found:
 
-.. literalinclude:: _static/tutorial/text_diff_fail_output.txt
+.. literalinclude:: /_static/tutorial/text_diff_fail_output.txt
 
 Note that the full path where SciATH expected the file is printed. It looked for it in the same location as ``tutorial.yml``.
 
@@ -206,7 +206,7 @@ You will now notice that the expected file, ``text_diff.expected`` has appeared 
 
 Edit the newly created file to make the test fail, for example changing it to
 
-.. literalinclude:: _static/tutorial/text_diff.expected.wrong
+.. literalinclude:: /_static/tutorial/text_diff.expected.wrong
 
 and examine the output again.
 

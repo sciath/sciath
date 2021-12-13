@@ -27,7 +27,7 @@ use of parallel batch systems.
 How do I use it ?
 =================
 
-We recommend starting with the :doc:`tutorial`.
+We recommend starting with the :doc:`/tutorials/introduction`.
 
 SciATH can be run as a Python module, providing a convenient command-line interface to read a set of tests from a simple input file and run them.
 
@@ -51,7 +51,9 @@ Topics
 ======
 
 .. toctree ::
-  tutorial
+  :maxdepth: 2
+
+  tutorials/index
   concepts
   design
   api
