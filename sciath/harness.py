@@ -106,7 +106,7 @@ class Harness:
                         testrun.exec_path, self._sandbox_sentinel_filename)
                     if not os.path.exists(sentinel_file):
                         raise SciATHHarnessInconsistentStateException(
-                            '[SciATH] did not find expected sentinel file ' +
+                            'Did not find expected sentinel file ' +
                             sentinel_file)
                     shutil.rmtree(testrun.exec_path)
 
@@ -119,7 +119,7 @@ class Harness:
                 return False
         return True
 
-    def execute(self):
+    def execute(self):  #pylint: disable=too-many-branches
         """ Execute all tests """
         self.clean()
 
@@ -142,22 +142,24 @@ class Harness:
                         testrun.exec_path, self._sandbox_sentinel_filename)
                     if os.path.exists(sentinel_file):
                         raise SciATHHarnessInconsistentStateException(
-                            "[SciATH] Unexpected sentinel file %s" %
-                            sentinel_file)
+                            "Unexpected sentinel file %s" % sentinel_file)
                     with open(sentinel_file, 'w'):
                         pass
                 if not self.quiet:
                     print_subheader("Executing %s" % testrun.test.job.name,
                                     end="")
                     print("from %s" % testrun.exec_path)
-                    print(
-                        command_join(
-                            self.launcher.launch_command(
-                                testrun.test.job, testrun.output_path)))
-                success, info, report = self.launcher.submit_job(
+                success, info, report, submit_data = self.launcher.prepare_job(
                     testrun.test.job,
                     output_path=testrun.output_path,
                     exec_path=testrun.exec_path)
+                if success:
+                    if not self.quiet:
+                        print(command_join(submit_data.launch_command))
+                    success, info, report = self.launcher.submit_job(
+                        submit_data)
+                else:
+                    print("# skipped (%s)" % info)
                 if not success:
                     testrun.status = _TestRunStatus.SKIPPED
                     testrun.status_info = info

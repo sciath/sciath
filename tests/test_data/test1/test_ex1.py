@@ -13,9 +13,9 @@ EXEC_PATH = os.getcwd()
 job_launcher = Launcher()
 
 
-def test_print_pre(test, output_path, exec_path):
+def test_print_pre(test, exec_path, launch_command):
     print("[%s] Executing from %s" % (test.job.name, exec_path))
-    print(command_join(job_launcher.launch_command(test.job, output_path)))
+    print(command_join(launch_command))
 
 
 def test_print_post(test, output_path):
@@ -30,8 +30,10 @@ def test1():  # result: pass
     cmd = ['printf', '"aBc\nkspits=30\n"']
 
     t = Test(Job(Task(cmd), 'Test_1'))
-    test_print_pre(t, output_path=OUTPUT_PATH, exec_path=EXEC_PATH)
-    job_launcher.submit_job(t.job, output_path=OUTPUT_PATH, exec_path=EXEC_PATH)
+    success, info, report, data = job_launcher.prepare_job(
+        t.job, output_path=OUTPUT_PATH, exec_path=EXEC_PATH)
+    test_print_pre(t, exec_path=EXEC_PATH, launch_command=data.launch_command)
+    job_launcher.submit_job(data)
     t.verify(output_path=OUTPUT_PATH)
     test_print_post(t, output_path=OUTPUT_PATH)
     return t
@@ -41,8 +43,10 @@ def test2():  # result: pass
     cmd = ['printf', 'aBc\nkspits=30\n']
 
     t = Test(Job(Task(cmd), 'Test_2'))
-    test_print_pre(t, output_path=OUTPUT_PATH, exec_path=EXEC_PATH)
-    job_launcher.submit_job(t.job, output_path=OUTPUT_PATH, exec_path=EXEC_PATH)
+    success, info, report, data = job_launcher.prepare_job(
+        t.job, output_path=OUTPUT_PATH, exec_path=EXEC_PATH)
+    test_print_pre(t, exec_path=EXEC_PATH, launch_command=data.launch_command)
+    job_launcher.submit_job(data)
     t.verify(output_path=OUTPUT_PATH)
     test_print_post(t, output_path=OUTPUT_PATH)
     return t
@@ -53,8 +57,10 @@ def test3():  # result: fail
 
     t = Test(Job(Task(cmd), 'Test_3'))
     t.verifier.set_exit_codes_success([1])
-    test_print_pre(t, output_path=OUTPUT_PATH, exec_path=EXEC_PATH)
-    job_launcher.submit_job(t.job, output_path=OUTPUT_PATH, exec_path=EXEC_PATH)
+    success, info, report, data = job_launcher.prepare_job(
+        t.job, output_path=OUTPUT_PATH, exec_path=EXEC_PATH)
+    test_print_pre(t, exec_path=EXEC_PATH, launch_command=data.launch_command)
+    job_launcher.submit_job(data)
     t.verify(output_path=OUTPUT_PATH)
     test_print_post(t, output_path=OUTPUT_PATH)
     return t
@@ -64,8 +70,10 @@ def test4():  # result: pass
     cmd = ['printf', 'aBc\nkspits=30\n']
 
     t = Test(Job(Task(cmd), 'Test_4'))
-    test_print_pre(t, output_path=OUTPUT_PATH, exec_path=EXEC_PATH)
-    job_launcher.submit_job(t.job, output_path=OUTPUT_PATH, exec_path=EXEC_PATH)
+    success, info, report, data = job_launcher.prepare_job(
+        t.job, output_path=OUTPUT_PATH, exec_path=EXEC_PATH)
+    test_print_pre(t, exec_path=EXEC_PATH, launch_command=data.launch_command)
+    job_launcher.submit_job(data)
     return t
 
 

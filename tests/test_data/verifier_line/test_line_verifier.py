@@ -114,7 +114,9 @@ def main():
             test4(output_path),
             test5(output_path)
     ]:
-        launcher.submit_job(t.job, output_path=output_path)
+        success, info, report, data = launcher.prepare_job(
+            t.job, output_path=output_path)
+        launcher.submit_job(data)
         passing, info, report = t.verify(
             output_path=output_path)  # only makes sense if submit_job blocks
         print(passing)
