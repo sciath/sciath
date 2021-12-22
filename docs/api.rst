@@ -9,11 +9,11 @@ The SciATH API is based on a few key abstractions:
    -  a unique name;
    -  a :class:`Job`, containing one or more :class:`Task`\s, which consist of a command and a set of required resources (typically, a number of MPI ranks).
    -  a method to determine success (e.g., checking an error code or an output file)
+   -  An implementation of :class:`Verifier` to ascertain test success (e.g. by comparing output to a reference).
 
 -  A :class:`Launcher` to manage launching a serial or MPI
    :class:`Job`\s locally or via a batch/queuing system
--  A :class:`Harness` object to quickly define and process a set of :class:`Test` objects.
--  A set of :class:`Verifier` implementations to ascertain test success (e.g. by comparing output to a refernce).
+-  A :class:`Harness` object to interact with a user by managing a set of :class:`Test` objects and a :class:`Launcher`
 
 
 Task
@@ -36,21 +36,18 @@ Launcher
 
 Test
 ====
-
 .. automodule:: sciath.test
   :members:
   :undoc-members:
 
 Harness
 ========
-
 .. automodule:: sciath.harness
   :members:
   :undoc-members:
 
 Verifier
 ========
-
 .. automodule:: sciath.verifier
   :members:
   :undoc-members:

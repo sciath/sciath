@@ -51,9 +51,9 @@ Create a scratch directory to work in
    mkdir scratch
    cd scratch
 
-Create a file, ``tutorial1.yml``, with the following content
+Create a file, ``tutorial0.yml``, with the following content
 
-.. literalinclude:: /_static/tutorial/tutorial1.yml
+.. literalinclude:: /_static/tutorial/tutorial0.yml
     :language: YAML
 
 The file uses a subset of the `YAML <https://yaml.org>`__ format.
@@ -63,7 +63,7 @@ Execute the SciATH module to run the test
 
 .. code-block:: bash
 
-    python -m sciath tutorial1.yml
+    python -m sciath tutorial0.yml
 
 You will be prompted to describe information about how to run jobs on your system.
 This tutorial can be used on a local machine or a cluster.
@@ -73,7 +73,7 @@ This information is stored in a file called ``SciATH_launcher.conf``.
 
 Once you've defined this information, you'll see output like the following
 
-.. literalinclude:: /_static/tutorial/tutorial1_output.txt
+.. literalinclude:: /_static/tutorial/tutorial0_output.txt
 
 Note that you are given the full path for the "sandbox" from which your command is run.
 
@@ -89,7 +89,7 @@ To (re-)verify your test results, without re-running the tests, use ``-v``:
 
 .. code-block:: bash
 
-   python -m sciath tutorial1.yml -v
+   python -m sciath tutorial0.yml -v
 
 Take a look in the directory that was created, called ``first_output``.
 You will see several files and directories, including
@@ -104,9 +104,9 @@ You will see several files and directories, including
 Running a subset of Tests
 =========================
 
-Create a new file, ``tutorial.yml``, with the following contents. Don't worry that you don't understand everything yet. Just note that it contains several tests, each with a unique name.
+Create a new file, ``tutorial1.yml``, with the following contents. Don't worry that you don't understand everything yet. Just note that it contains several tests, each with a unique name.
 
-.. literalinclude:: /_static/tutorial/tutorial.yml
+.. literalinclude:: /_static/tutorial/tutorial1.yml
   :language: YAML
 
 
@@ -114,13 +114,13 @@ You can use the ``-l`` command line option to list all available tests.
 
 .. code-block:: bash
 
-  python -m sciath tutorial.yml -l
+  python -m sciath tutorial1.yml -l
 
 You can run one or more of the tests, by name, with the ``-t`` option. For example, run
 
 .. code-block:: bash
 
-    python -m sciath tutorial.yml -t first
+    python -m sciath tutorial1.yml -t first
 
 to generate output
 
@@ -145,7 +145,7 @@ which prints an error message to stderr and returns a non-zero exit code
 (``2`` on BSD and GNU systems).
 It is defined in the input file with
 
-.. literalinclude:: /_static/tutorial/tutorial.yml
+.. literalinclude:: /_static/tutorial/tutorial1.yml
   :language: YAML
   :start-at: - name: failing
   :end-at: type:
@@ -154,7 +154,7 @@ Run it with
 
 .. code-block:: bash
 
-    python -m sciath tutorial.yml -t failing
+    python -m sciath tutorial1.yml -t failing
 
 To produce output
 
@@ -177,7 +177,7 @@ The test ``text_diff`` compares output to stdout against a reference file.
 
 It is defined in the input file with
 
-.. literalinclude:: /_static/tutorial/tutorial.yml
+.. literalinclude:: /_static/tutorial/tutorial1.yml
   :language: YAML
   :start-at: - name: text_diff
   :end-at: expected:
@@ -188,7 +188,7 @@ Run the test with
 
 .. code-block:: bash
 
-    python -m sciath tutorial.yml -t text_diff
+    python -m sciath tutorial1.yml -t text_diff
 
 It will fail because the expected file is not found:
 
@@ -201,16 +201,21 @@ You can generate the expected file with the ``-u`` flag. Note that this will **o
 
 .. code-block:: bash
 
-    python -m sciath tutorial.yml -t text_diff -u
+    python -m sciath tutorial1.yml -t text_diff -u
 
 You will now notice that the expected file, ``text_diff.expected`` has appeared and now the test will pass if you re-run
 
 .. code-block:: bash
 
-    python -m sciath tutorial.yml -t text_diff
+    python -m sciath tutorial1.yml -t text_diff
 
 Edit the newly created file to make the test fail, for example changing it to
 
 .. literalinclude:: /_static/tutorial/text_diff.expected.wrong
 
 and examine the output again.
+
+Next steps
+==========
+
+For more functionality, see :doc:`advanced_input`.
