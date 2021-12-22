@@ -5,6 +5,8 @@ It's assumed that you know how to run your code from a "unix-style" terminal.
 Here, we review important concepts which should hopefully make it easier to work
 with SciATH.
 
+.. _sec_paths:
+
 Absolute and relative paths
 ---------------------------
 

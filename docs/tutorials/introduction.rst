@@ -17,6 +17,8 @@ In typical usage, one would of course run scientific application executables (or
 
 It may also help to read :doc:`/concepts`.
 
+.. _sec_installing_sciath:
+
 Installing SciATH
 =================
 
@@ -166,6 +168,8 @@ You can copy-paste this line to see the error message:
   :start-at: check non-empty stderr file
   :lines: 1-2
 
+.. _sec_comparison_test:
+
 A Comparison-Based Test
 =======================
 
@@ -190,7 +194,8 @@ It will fail because the expected file is not found:
 
 .. literalinclude:: /_static/tutorial/text_diff_fail_output.txt
 
-Note that the full path where SciATH expected the file is printed. It looked for it in the same location as ``tutorial.yml``.
+Note that the path where SciATH expected the file is printed. It looked for it in your current working directory.
+
 
 You can generate the expected file with the ``-u`` flag. Note that this will **overwrite** this file, if it already exists!
 
@@ -209,13 +214,3 @@ Edit the newly created file to make the test fail, for example changing it to
 .. literalinclude:: /_static/tutorial/text_diff.expected.wrong
 
 and examine the output again.
-
-Additional features
-===================
-
-Additional features not (yet) included in this tutorial include
-
-* Numerical tests
-* MPI-parallel tests
-* Tests with multiple commands
-* Using replacements in the input file (``HERE`` and environment variables)
