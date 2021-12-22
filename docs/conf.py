@@ -40,6 +40,7 @@ master_doc = 'index'
 extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.intersphinx',
+    'sphinx_copybutton',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
