@@ -438,7 +438,7 @@ class Launcher:  #pylint: disable=too-many-instance-attributes
 
         return True, None, None, submit_data
 
-    def submit_job(self, submit_data):
+    def submit_job(self, submit_data):  #pylint: disable=no-self-use
         """ Submit a prepared job from data prepared by ``prepare_job`` """
         job = submit_data.job
         exec_path = submit_data.exec_path
