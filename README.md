@@ -1,6 +1,6 @@
 # SciATH: Scientific Application Test Harness
 
-![CI](https://github.com/sciath/sciath/actions/workflows/ci.yml/badge.svg)
+[![CI](https://github.com/sciath/sciath/actions/workflows/ci.yml/badge.svg)](https://github.com/sciath/sciath/actions)
 
 [![Documentation](https://readthedocs.org/projects/sciath/badge/?version=latest)](https://sciath.readthedocs.io/en/latest/?badge=latest)
 
